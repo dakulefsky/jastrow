@@ -1,0 +1,18 @@
+{
+  "dictionary": "Jastrow",
+  "author": "Marcus Jastrow",
+  "edition": "London, Luzac, 1903",
+  "digitization": "Sefaria",
+  "license": "Public Domain (Sefaria version metadata)",
+  "source": "https://storage.googleapis.com/sefaria-mongo-backup/dump_small.tar.gz",
+  "source_date": "2026-10-13",
+  "entries": 32512,
+  "headword_keys": 36815,
+  "word_form_keys": 64410,
+  "unmatched_form_lookups": 0,
+  "source_sha256": {
+    "lexicon.bson": "96920a55e8cecb8b9b13a4eb6cb6b794619f41c5a7b879a4d75530a565142e0a",
+    "lexicon_entry.bson": "7d81cc6528adaebfdaed732935c69f4e3d56dbbc22ad712559ee4f39d0dc2734",
+    "word_form.bson": "f396b81fd6da8159b14901a20cc9a077fca998e5f1776cb3e5aaf1f344376f43"
+  }
+}

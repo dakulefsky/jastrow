@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "com.kulefsky.jastrow",
+  "name": "Jastrow",
+  "version": "1.1.0",
+  "description": "Offline Aramaic and rabbinic Hebrew to English dictionary, with Jastrow entries and word-form lookup.",
+  "author": "Avi Kulefsky",
+  "stability": "beta",
+  "entrypoint": "index.html",
+  "minAppVersion": "0.9.97",
+  "sdkVersion": "1.x",
+  "permissions": [
+    "app.startup_contributions",
+    "reader.context_menu",
+    "reader.open",
+    "app.run_on_startup",
+    "events.subscribe:reader.selection_changed"
+  ],
+  "network": {
+    "enabled": false,
+    "allowlist": []
+  },
+  "contributes": {
+    "toolTab": {
+      "title": "Jastrow",
+      "order": 900,
+      "defaultPinned": true,
+      "iconName": "book_24_regular"
+    },
+    "startup": {
+      "activationEvents": [
+        "reader.selection_changed"
+      ]
+    },
+    "background": {
+      "entrypoint": "background.html"
+    }
+  }
+}
