@@ -31,6 +31,8 @@ jobs:
         with:
           path: plugin
           build: 'true'
+          screenshots: screenshots/store-emblem.png
+          update-screenshots: 'true'
           otzaria-user: ${{ secrets.OTZARIA_USER }}
           otzaria-password: ${{ secrets.OTZARIA_PASSWORD }}
       - name: Save installable plugin
