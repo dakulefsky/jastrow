@@ -152,12 +152,12 @@ document.addEventListener('click',e=>{
 $('selection').hidden=true;
 if(window.Otzaria){
   Otzaria.on('theme.changed',theme);
-  Otzaria.on('reader.context_menu_item_clicked',p=>{if(p.itemId==='jastrow-lookup')search(p.selectedText||'');});
+  Otzaria.on('reader.context_menu_item_clicked',p=>{if(p.itemId==='jastrow-lookup')search(JastrowContext.selectionText(p));});
   Otzaria.on('plugin.boot',p=>{
     theme(p.theme);$('selection').hidden=false;
     $('selection').onclick=async()=>{
       try{const res=await Otzaria.call('reader.getSelection');
-      if(res?.success&&res.data?.text)search(res.data.text);else setStatus('Select a word in an Otzaria text first, then choose Jastrow — English from the context menu.');}
+      const text=JastrowContext.selectionText(res?.data);if(res?.success&&text)search(text);else setStatus('Select a word in an Otzaria text first, then choose Jastrow — English from the context menu.');}
       catch{setStatus('Could not read the selected word. You can type it in the search field.');}
     };
   });

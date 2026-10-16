@@ -1,3 +1,9 @@
+## 1.3.4 — reliable selected-word context menu
+
+Jastrow’s context-menu action is now a declarative `contributes.startup.contextMenuItems` item, available without running plugin JavaScript or granting background execution. It supports both normal and page-shape reader selections and opens the plugin on click. The background-registration script and its background/selection-event permissions were removed. Unknown or multiword selections are handled by the existing explicit no-match/single-word messages rather than hiding the menu asynchronously.
+
+Click and manual-selection lookup accept canonical nested selection payloads and legacy text fields. No root inference or new translations were added. The context-menu tests emulate the host’s documented cold-open/boot delivery; actual Otzaria device testing is still needed.
+
 ## 1.3.3 — plain dictionary interface
 
 Removed the header tagline, reader-companion slogan and promotional welcome text. The start view contains only dictionary lookup instructions. Added current-theme fallbacks for older Otzaria palettes. Theme-change events use the host’s automatic grant. Preview generation is opt-in with `python3 package.py --preview`; default builds only create plugin/source archives.
