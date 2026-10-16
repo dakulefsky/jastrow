@@ -25,6 +25,8 @@ jobs:
         run: |
           node test_search.cjs
           node test_context.cjs
+          node test_ranking.cjs
+          node test_krupnik.cjs
       - name: Validate, build, and publish
         id: publish
         uses: Otzaria/otzaria-plugin-validator@v1

@@ -1,0 +1,17 @@
+{
+  "title": "A Dictionary of the Talmud, the Midrash and the Targum",
+  "authors": [
+    "Baruch Krupnik",
+    "A. M. Silbermann"
+  ],
+  "edition": "London, 1927",
+  "digitization": "Sefaria",
+  "license": "Public Domain",
+  "licenseEvidence": "https://www.sefaria.org/digitized-by-sefaria",
+  "source": "https://storage.googleapis.com/sefaria-mongo-backup/dump_small.tar.gz",
+  "retrieved": "2026-10-16",
+  "sourceEntries": 20177,
+  "englishEntries": 15407,
+  "sourceRecordsSha256": "b8214b489d66a85ed32f26e67a96c07c71f15ed791666d3a4010a29894bcc10b",
+  "extraction": "Verbatim text of englishWithinHebrew spans before the English/German separator. Only headwords and explicitly supplied alternate headwords indexed; no inferred forms."
+}

@@ -15,7 +15,7 @@
     }
     if(kind!=='suggestions'&&order==='length'&&index.entryLengths){
       const tier=id=>direct.includes(id)?0:attested.includes(id)?1:2;
-      ids.sort((a,b)=>tier(a)-tier(b)||(index.entryLengths[b]||0)-(index.entryLengths[a]||0)||a-b);
+      ids.sort((a,b)=>tier(a)-tier(b)||Number(index.entries[b].source==='krupnik')-Number(index.entries[a].source==='krupnik')||(index.entryLengths[b]||0)-(index.entryLengths[a]||0)||a-b);
     }
     return {kind,ids:ids.slice(0,limit),total:ids.length};
   }

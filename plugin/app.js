@@ -7,7 +7,7 @@ function loadChunk(n){
   if(window.JASTROW_CHUNKS[n])return Promise.resolve(window.JASTROW_CHUNKS[n]);
   if(!chunkPromises.has(n)){
     const promise=new Promise((resolve,reject)=>{
-      const script=document.createElement('script');script.src='data/chunk-'+n+'.js';
+      const script=document.createElement('script');script.src='data/'+(n>=1000?'krupnik-':'chunk-')+n+'.js';
       script.onload=()=>{script.remove();window.JASTROW_CHUNKS[n]?resolve(window.JASTROW_CHUNKS[n]):reject(new Error('Missing dictionary chunk'));};
       script.onerror=()=>{script.remove();reject(new Error('Could not load dictionary file'));};
       document.head.append(script);
@@ -48,18 +48,24 @@ async function showEntry(id,record=true,targetPosition=null,word=query){
   if(!Number.isInteger(id)||id<0||id>=index.entries.length)return;
   const serial=++entrySerial;
   $('entry').setAttribute('aria-busy','true');
-  $('entry').replaceChildren(el('p','Opening Jastrow…','entry-loading'));
+  $('entry').replaceChildren(el('p','Opening dictionary entry…','entry-loading'));
   try{
     const entry=(await loadChunk(index.entries[id].b))[id];if(serial!==entrySerial)return;
     if(word!==query){limit=60;const serial=++requestSerial;paintMatches(JastrowSearch.lookup(index,word,60,$('match-order').value),word,serial);}
     query=word;$('query').value=query;
     if(record&&(trail[trailPosition]?.id!==id||trail[trailPosition]?.word!==word)){trail=trail.slice(0,trailPosition+1);trail.push({id,word});if(trail.length>50)trail.shift();trailPosition=trail.length-1;}else if(targetPosition!==null)trailPosition=targetPosition;
-    currentId=id;setStatus(word?'Showing '+entry.h+' for '+word+'.':'Browsing Jastrow’s dictionary.');renderTrail();syncEntryLink(id);$('entry').replaceChildren();renderWordLink(id,word);rememberLookup(id,word);
+    currentId=id;setStatus(word?'Showing '+entry.h+' for '+word+'.':'Browsing the dictionary.');renderTrail();syncEntryLink(id);$('entry').replaceChildren();renderWordLink(id,word);rememberLookup(id,word);
     $('entry').append(el('h2',entry.h,'entry-title'));
-    const meta=el('p',entry.alt.length?'Also listed as: '+entry.alt.join(' · '):'Jastrow · Original English definition','entry-meta');meta.dir='auto';$('entry').append(meta);
+    const meta=el('p',(entry.source==='krupnik'?'Krupnik & Silbermann · Original English definition':'Jastrow · Original English definition')+(entry.alt.length?' · Also listed as: '+entry.alt.join(' · '):''),'entry-meta');meta.dir='auto';$('entry').append(meta);
     const evidence=(index.attestedForms?.[JastrowSearch.normalize(query)]||[]).find(x=>x.id===id);
     if(evidence){const note=el('aside',undefined,'form-attestation');note.append(el('p','This form is explicitly discussed in this Jastrow entry.'),el('blockquote',evidence.quote));$('entry').append(note);}
-    const body=el('div',undefined,'definition');body.dir='ltr';body.innerHTML=entry.html;const passages=JastrowReadingView.renderPassages(body,word);if(passages)$('entry').append(passages);$('entry').append(JastrowReadingView.render(body));
+    const body=el('div',undefined,'definition');body.dir='ltr';body.innerHTML=entry.html;
+    if(entry.source==='krupnik'){
+      const definitions=el('section',undefined,'krupnik-definitions');definitions.append(el('h3','English definitions'));
+      for(const gloss of entry.glosses){const card=el('div',undefined,'meaning-card');if(gloss.label){const label=el('p',gloss.label,'entry-meta');label.dir='auto';card.append(label);}card.append(el('p',gloss.text));definitions.append(card);}
+      definitions.append(el('p','Original glosses, in source order. Check the full entry for examples and qualifications.','entry-meta'));
+      const details=el('details',undefined,'scholarly-entry');details.append(el('summary','Full entry · Hebrew, English, German & source quotations'));body.dir='auto';body.style.whiteSpace='pre-line';if(entry.notation?.length){const notation=el('p',entry.notation.join(' · '),'entry-meta');notation.dir='auto';details.append(notation);}details.append(body);$('entry').append(definitions,details);
+    }else{const passages=JastrowReadingView.renderPassages(body,word);if(passages)$('entry').append(passages);$('entry').append(JastrowReadingView.render(body));}
     const nav=el('div',undefined,'entry-nav');
     for(const [label,offset] of [['Previous entry',-1],['Next entry',1]]){
       const b=el('button',label);b.disabled=id+offset<0||id+offset>=index.entries.length;b.onclick=()=>showEntry(id+offset,true,null,'');nav.append(b);
@@ -77,7 +83,7 @@ async function fillMatchPreviews(ids,serial){
     const entry=(await loadChunk(index.entries[id].b))[id];if(serial!==requestSerial)return;
     const button=[...$('results').children].find(n=>Number(n.dataset.id)===id);if(!button)return;
     const body=el('div');body.innerHTML=entry.html;
-    const phrases=JastrowReadingView.phrases(body),snippet=el('span',undefined,'result-meaning');snippet.dir='ltr';
+    const phrases=entry.source==='krupnik'?entry.glosses:JastrowReadingView.phrases(body),snippet=el('span',undefined,'result-meaning');snippet.dir='ltr';
     snippet.textContent=phrases.length?phrases.slice(0,2).map(p=>(p.label?p.label+': ':'')+p.text).join(' / '):'Open the original entry';
     // Visual clipping only: the accessible text retains the complete phrase.
     button.append(snippet);
@@ -89,7 +95,7 @@ async function fillMatchPreviews(ids,serial){
 function paintMatches(r,word,serial){
  resultIds=r.ids;$('results').replaceChildren();$('more').hidden=r.total<=limit;
  $('match-count').textContent=r.total?r.total.toLocaleString()+(r.total===1?' match':' matches'):'';
- for(const id of r.ids){const b=el('button',index.entries[id].h,'result');b.dir='rtl';b.dataset.id=id;b.append(el('span',matchType(id,word),'result-kind'));b.setAttribute('aria-pressed','false');b.onclick=()=>showEntry(id,true,null,word);$('results').append(b);}
+ for(const id of r.ids){const b=el('button',index.entries[id].h,'result');b.dir='rtl';b.dataset.id=id;b.append(el('span',(index.entries[id].source==='krupnik'?'Krupnik & Silbermann':'Jastrow')+' · '+matchType(id,word),'result-kind'));b.setAttribute('aria-pressed','false');b.onclick=()=>showEntry(id,true,null,word);$('results').append(b);}
  $('ranking-note').hidden=r.total<2||r.kind==='suggestions'||$('match-order').value!=='length';
  fillMatchPreviews(r.ids,serial);
 }

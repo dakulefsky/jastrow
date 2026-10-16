@@ -105,3 +105,11 @@ Explicit italicized definition phrases are shown first, with associated verb-for
 ## Reading desk (1.1.0)
 
 The refreshed interface puts one-word search, right-click guidance, matching headwords, and the selected definition into a clearer reading layout. The offline dictionary data and exact-match policy are unchanged. Context-menu lookup is verified against Otzaria's current SDK contract and simulated selection events; final confirmation still requires installing it in the native app.
+
+## 1.5.0 — Krupnik & Silbermann
+
+Adds 15,407 entries with explicitly marked English glosses from Sefaria’s digitization of *A Dictionary of the Talmud*, London, 1927 (Baruch Krupnik and A. M. Silbermann; public-domain edition). Of 20,177 source records, 4,770 without marked English glosses are excluded from this English lookup. English is copied verbatim from the marked column, not machine translated. Binyan labels and sense numbers are retained. Full source wording, including Hebrew, German, examples and qualifications, remains expandable.
+
+Exact headword matches precede linked forms. Within each match type the concise source comes first, followed by Jastrow’s length ordering. No cross-dictionary sense equivalence or new inflection mapping is inferred. Both foreground and background load the supplementary index so the right-click menu also recognizes Krupnik-only headwords.
+
+Rebuild import: `python build_krupnik.py /path/to/lexicon_entry.bson` (requires pymongo). Bundled provenance records the SHA-256 of the original extracted records. Source/reuse statement: https://www.sefaria.org/digitized-by-sefaria. The app remains fully offline; original Jastrow data is unchanged.
