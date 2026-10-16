@@ -6,11 +6,11 @@ const {chromium,executablePath}=require('./browser_support.cjs');
  try{
   browser=await chromium.launch({executablePath,args:['--no-sandbox']});const page=await browser.newPage();const base='http://127.0.0.1:'+server.address().port;const errors=[],external=[];
   page.on('pageerror',e=>errors.push(String(e)));page.on('request',r=>{if(!r.url().startsWith(base))external.push(r.url());});
-  await page.goto(base);assert.equal(await page.locator('#count').innerText(),'47,919 entries');
+  await page.goto(base);assert.equal(await page.title(),'Aramaic to English Dictionary');assert.equal(await page.locator('h1').innerText(),'Aramaic to English Dictionary');assert.equal(await page.locator('#count').innerText(),'47,919 entries');
   await page.fill('#query','מא');await page.locator('.lookup-button').click();await page.locator('.result-meaning').first().waitFor();assert.match(await page.locator('.result').first().innerText(),/Krupnik & Silbermann/);
   await page.locator('.result').first().click();await page.locator('.krupnik-definitions').waitFor();assert.match(await page.locator('.krupnik-definitions').innerText(),/what\? how\?/);assert.match(await page.locator('.entry-meta').first().innerText(),/Krupnik/);
   assert.equal(await page.locator('.scholarly-entry').getAttribute('open'),null);await page.locator('.scholarly-entry summary').click();assert(!/was\? wie\?/.test(await page.locator('.definition').innerText()));
-  const kTitle=await page.locator('.entry-title').innerText();await page.getByRole('button',{name:'Check Jastrow',exact:true}).click();await page.locator('.result').filter({hasText:'Jastrow'}).first().click();await page.locator('.quick-meanings,.scholarly-entry').first().waitFor();assert.match(await page.locator('.entry-meta').first().innerText(),/Jastrow/);
+  const kTitle=await page.locator('.entry-title').innerText();await page.getByRole('button',{name:'Other dictionary',exact:true}).click();await page.locator('.result').filter({hasText:'Jastrow'}).first().click();await page.locator('.quick-meanings,.scholarly-entry').first().waitFor();assert.match(await page.locator('.entry-meta').first().innerText(),/Jastrow/);
   await page.getByRole('button',{name:'← Back',exact:true}).click();await page.locator('.krupnik-definitions').waitFor();assert.equal(await page.locator('.entry-title').innerText(),kTitle);
   // Use a direct Krupnik headword with several verbal stems; keep original labels.
   const id=await page.evaluate(()=>index.entries.findIndex(e=>e.source==='krupnik'&&e.h==='אוֹגַר'));assert(id>=32512);await page.evaluate(id=>showEntry(id,true,null,'אוגר'),id);assert.match(await page.locator('.krupnik-definitions').innerText(),/אפ׳/);assert.match(await page.locator('.krupnik-definitions').innerText(),/אתפ׳/);

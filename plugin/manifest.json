@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "id": "com.kulefsky.jastrow",
-  "name": "Jastrow",
-  "version": "1.5.1",
-  "description": "Offline Aramaic and rabbinic Hebrew to English lookup, with concise Krupnik & Silbermann definitions and detailed Jastrow entries.",
+  "name": "Aramaic to English Dictionary",
+  "version": "1.5.2",
+  "description": "Offline Aramaic and rabbinic Hebrew to English translation, with concise meanings and optional examples.",
   "author": "DanTheMan",
   "stability": "beta",
   "entrypoint": "index.html",
@@ -23,7 +23,7 @@
   },
   "contributes": {
     "toolTab": {
-      "title": "Jastrow",
+      "title": "Aramaic to English Dictionary",
       "order": 900,
       "defaultPinned": true,
       "iconName": "book_24_regular"

@@ -1,4 +1,4 @@
-## 1.4.0 — indexed-word availability and longer entries first
+# Aramaic to English Dictionary
 
 The context menu is filtered to single indexed words again. A separate background entrypoint checks selections; it starts on app startup and is kept alive so the next selection does not need to cold-start a WebView. Otzaria must grant background execution, background keep-alive, reader selection events and context-menu access. The visible dictionary identifies missing grants. No always-visible fallback menu item is registered. Rendered/source variants are checked to accommodate reader vowel settings; late responses cannot override newer selection events. Native menu visibility still depends on event delivery completing before a menu snapshot is taken.
 
@@ -119,3 +119,7 @@ Rebuild import: `python build_krupnik.py /path/to/lexicon_entry.bson` (requires 
 Removes German from displayed Krupnik source text. English glosses stay verbatim. Main reading view shows translations with brief source labels; match explanations, passage excerpts and per-phrase academic controls are removed. One collapsed “More detail” section retains examples and qualifications. Sorting controls are under Options.
 
 When Krupnik has an exact headword/alternate-headword entry, only that source is shown initially. Check Jastrow explicitly expands the search. Otherwise normal Jastrow form lookup remains available. No inflected form is assigned to Krupnik by guesswork.
+
+## 1.5.2 — Plugin name
+
+Renamed the store name, tool tab, page heading, browser title, context-menu item and instructions to Aramaic to English Dictionary. Existing plugin ID, selection item ID and preferences stay stable so updates retain compatibility. Dictionary authors remain credited as sources.

@@ -8,7 +8,7 @@ from build_ranking import build as build_ranking
 build_ranking()
 root=Path(__file__).parent
 manifest=json.loads((root/'plugin/manifest.json').read_text())
-stem='Jastrow-'+manifest['version'];output=root.parent
+stem='Aramaic-to-English-Dictionary-'+manifest['version'];output=root.parent
 with ZipFile(output/(stem+'.otzplugin'),'w',ZIP_DEFLATED,compresslevel=9) as z:
  for p in sorted((root/'plugin').rglob('*')):
   if p.is_file():z.write(p,p.relative_to(root/'plugin'))

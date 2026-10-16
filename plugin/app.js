@@ -54,7 +54,7 @@ async function showEntry(id,record=true,targetPosition=null,word=query){
       const definitions=el('section',undefined,'krupnik-definitions');definitions.append(el('h3','Translation'));
       for(const gloss of entry.glosses){const card=el('div',undefined,'meaning-card');if(gloss.label){const label=el('p',gloss.label,'entry-meta');label.dir='auto';card.append(label);}card.append(el('p',gloss.text));definitions.append(card);}
       
-      const details=el('details',undefined,'scholarly-entry');details.append(el('summary','More detail'));body.dir='auto';body.style.whiteSpace='pre-line';if(entry.notation?.length){const notation=el('p',entry.notation.join(' · '),'entry-meta');notation.dir='auto';details.append(notation);}details.append(body);$('entry').append(definitions,details);if(word){const compare=el('button','Check Jastrow','compare-source');compare.type='button';compare.onclick=()=>{includeJastrow=true;search(word,true);};$('entry').append(compare);}
+      const details=el('details',undefined,'scholarly-entry');details.append(el('summary','More detail'));body.dir='auto';body.style.whiteSpace='pre-line';if(entry.notation?.length){const notation=el('p',entry.notation.join(' · '),'entry-meta');notation.dir='auto';details.append(notation);}details.append(body);$('entry').append(definitions,details);if(word){const compare=el('button','Other dictionary','compare-source');compare.type='button';compare.onclick=()=>{includeJastrow=true;search(word,true);};$('entry').append(compare);}
     }else{$('entry').append(JastrowReadingView.render(body));}
     const nav=el('div',undefined,'entry-nav');
     for(const [label,offset] of [['Previous entry',-1],['Next entry',1]]){
@@ -158,11 +158,11 @@ if(window.Otzaria){
       const permissions=res?.data?.permissions;if(!res?.success||!Array.isArray(permissions))return;
       const required=['app.run_on_startup','app.background_keep_alive','events.subscribe:reader.selection_changed','reader.context_menu'];
       const missing=required.some(x=>!permissions.includes(x));$('right-click-state').hidden=!missing;
-      if(missing)$('right-click-state').textContent='For indexed-word-only right-click lookup, enable background execution, keep-alive and text-selection access in Otzaria’s permissions for Jastrow.';
+      if(missing)$('right-click-state').textContent='For indexed-word-only right-click lookup, enable background execution, keep-alive and text-selection access in Otzaria’s permissions for Aramaic to English Dictionary.';
     }).catch(()=>{});
     $('selection').onclick=async()=>{
       try{const res=await Otzaria.call('reader.getSelection');
-      const text=JastrowContext.selectionText(res?.data);if(res?.success&&text)search(text);else setStatus('Select a word in an Otzaria text first, then choose Jastrow — English from the context menu.');}
+      const text=JastrowContext.selectionText(res?.data);if(res?.success&&text)search(text);else setStatus('Select a word in an Otzaria text first, then choose Aramaic to English Dictionary from the context menu.');}
       catch{setStatus('Could not read the selected word. You can type it in the search field.');}
     };
   });
