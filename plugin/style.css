@@ -33,3 +33,10 @@ button:disabled{opacity:.5;cursor:default;transform:none}
 .ranking-note{display:none}
 .krupnik-definitions .meaning-card{display:block;padding:12px 16px}
 .entry-meta{font-size:.8rem}
+
+.single-lookup #layout{display:block}
+.single-lookup .matches-panel{display:none}
+.translation-group{padding:14px 0;border-bottom:1px solid var(--color-outline)}
+.translation-headword{font-size:1.2rem;text-align:left;margin:0 0 10px}
+.translation-label{color:var(--color-muted)}
+.lookup-options[hidden]{display:none}

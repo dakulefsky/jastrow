@@ -125,3 +125,7 @@ When Krupnik has an exact headword/alternate-headword entry, only that source is
 Renamed the store name, tool tab, page heading, browser title, context-menu item and instructions to Aramaic to English Dictionary. Existing plugin ID, selection item ID and preferences stay stable so updates retain compatibility. Dictionary authors remain credited as sources.
 
 Otzaria enforces a 14-character plugin/tab name. The store/tab label is Aramaic → Eng.; the full title Aramaic to English Dictionary appears in the page and context menu.
+
+## 1.6.0 — One translation flow
+
+Confirmed lookups show meanings directly, including ambiguous headwords, without choosing a dictionary or entry. Krupnik exact matches are preferred and Jastrow remains the fallback. Sources move into expandable details; no source chooser or dictionary browsing controls in the reading view. Multiple possible meanings remain explicitly labeled, with headword/form context preserved. Spelling suggestions still require an explicit choice and are never presented as confirmed translations.

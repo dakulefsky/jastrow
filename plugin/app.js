@@ -44,22 +44,18 @@ async function showEntry(id,record=true,targetPosition=null,word=query){
     if(word!==query){limit=60;const serial=++requestSerial;paintMatches(JastrowSearch.lookup(index,word,60,$('match-order').value,includeJastrow),word,serial);}
     query=word;$('query').value=query;
     if(record&&(trail[trailPosition]?.id!==id||trail[trailPosition]?.word!==word)){trail=trail.slice(0,trailPosition+1);trail.push({id,word});if(trail.length>50)trail.shift();trailPosition=trail.length-1;}else if(targetPosition!==null)trailPosition=targetPosition;
-    currentId=id;setStatus(word?'Showing '+entry.h+' for '+word+'.':'Browsing the dictionary.');renderTrail();syncEntryLink(id);$('entry').replaceChildren();rememberLookup(id,word);
+    currentId=id;setStatus('');renderTrail();syncEntryLink(id);$('entry').replaceChildren();rememberLookup(id,word);
     $('entry').append(el('h2',entry.h,'entry-title'));
-    const meta=el('p',(entry.source==='krupnik'?'Krupnik & Silbermann':'Jastrow')+(entry.alt.length?' · Also listed as: '+entry.alt.join(' · '):''),'entry-meta');meta.dir='auto';$('entry').append(meta);
+    const meta=el('p',(entry.source==='krupnik'?'Krupnik & Silbermann':'Jastrow')+(entry.alt.length?' · Also listed as: '+entry.alt.join(' · '):''),'entry-meta');meta.dir='auto';
     const evidence=(index.attestedForms?.[JastrowSearch.normalize(query)]||[]).find(x=>x.id===id);
-    if(evidence){const note=el('aside',undefined,'form-attestation');note.append(el('p','This form is explicitly discussed in this Jastrow entry.'),el('blockquote',evidence.quote));$('entry').append(note);}
     const body=el('div',undefined,'definition');body.dir='ltr';body.innerHTML=entry.html;
     if(entry.source==='krupnik'){
       const definitions=el('section',undefined,'krupnik-definitions');definitions.append(el('h3','Translation'));
       for(const gloss of entry.glosses){const card=el('div',undefined,'meaning-card');if(gloss.label){const label=el('p',gloss.label,'entry-meta');label.dir='auto';card.append(label);}card.append(el('p',gloss.text));definitions.append(card);}
       
-      const details=el('details',undefined,'scholarly-entry');details.append(el('summary','More detail'));body.dir='auto';body.style.whiteSpace='pre-line';if(entry.notation?.length){const notation=el('p',entry.notation.join(' · '),'entry-meta');notation.dir='auto';details.append(notation);}details.append(body);$('entry').append(definitions,details);if(word){const compare=el('button','Other dictionary','compare-source');compare.type='button';compare.onclick=()=>{includeJastrow=true;search(word,true);};$('entry').append(compare);}
+      const details=el('details',undefined,'scholarly-entry');details.append(el('summary','More detail'));body.dir='auto';body.style.whiteSpace='pre-line';if(entry.notation?.length){const notation=el('p',entry.notation.join(' · '),'entry-meta');notation.dir='auto';details.append(notation);}details.append(body);$('entry').append(definitions,details);
     }else{$('entry').append(JastrowReadingView.render(body));}
-    const nav=el('div',undefined,'entry-nav');
-    for(const [label,offset] of [['Previous entry',-1],['Next entry',1]]){
-      const b=el('button',label);b.disabled=id+offset<0||id+offset>=index.entries.length;b.onclick=()=>showEntry(id+offset,true,null,'');nav.append(b);
-    }$('entry').append(nav);
+    const sourceDetails=$('entry').querySelector('.scholarly-entry');if(sourceDetails){sourceDetails.open=false;if(entry.source!=='krupnik'&&!$('entry').querySelector('.quick-meanings'))$('entry').insertBefore(el('p','Open details for the original definition.'),sourceDetails);sourceDetails.append(meta);if(evidence)sourceDetails.append(el('blockquote',evidence.quote));}
     document.querySelectorAll('.result').forEach(b=>{const active=Number(b.dataset.id)===id;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
   }catch(e){if(serial===entrySerial){setStatus('Unable to open this entry. Try again. '+e.message);const retry=el('button','Try opening again');retry.type='button';retry.onclick=()=>showEntry(id,record,targetPosition,word);$('entry').replaceChildren(el('h2','This entry could not be loaded'),el('p','The dictionary file did not open. Retry without losing your word.'),retry);}}
   finally{if(serial===entrySerial)$('entry').removeAttribute('aria-busy');}
@@ -83,9 +79,10 @@ async function fillMatchPreviews(ids,serial){
 }
 
 function paintMatches(r,word,serial){
+ document.body.classList.toggle('single-lookup',r.kind!=='suggestions');
  resultIds=r.ids;$('results').replaceChildren();$('more').hidden=r.total<=limit;
  $('match-count').textContent=r.total?r.total.toLocaleString()+(r.total===1?' match':' matches'):'';
- for(const id of r.ids){const b=el('button',index.entries[id].h,'result');b.dir='rtl';b.dataset.id=id;b.append(el('span',(index.entries[id].source==='krupnik'?'Krupnik & Silbermann':'Jastrow'),'result-kind'));b.setAttribute('aria-pressed','false');b.onclick=()=>showEntry(id,true,null,word);$('results').append(b);}
+ for(const id of r.ids){const b=el('button',index.entries[id].h,'result');b.dir='rtl';b.dataset.id=id;b.setAttribute('aria-pressed','false');b.onclick=()=>showEntry(id,true,null,word);$('results').append(b);}
  $('ranking-note').hidden=r.total<2||r.kind==='suggestions'||$('match-order').value!=='length';
  fillMatchPreviews(r.ids,serial);
 }
@@ -97,15 +94,39 @@ async function search(word, more=false){
   const r=JastrowSearch.lookup(index,query,limit,$('match-order').value,includeJastrow);paintMatches(r,query,serial);
   if(!normalized){setStatus('Enter an Aramaic or Hebrew word in Hebrew letters.');$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a word in Hebrew letters to begin.'));currentId=null;return;}
   if(!r.ids.length){currentId=null;$('match-count').textContent='0 matches';$('entry').replaceChildren(el('h2','No matching entry'),el('p','Try a different spelling or the dictionary headword. Not every inflected form is indexed.'));setStatus('No entry found for '+query+'.');return;}
-  setStatus((r.kind==='suggestions'?'No exact match. Headwords beginning with this spelling: ':r.kind==='attested form'?'Source-attested word-form matches: ':r.kind==='word form'?'Indexed word-form matches: ':'Headword and indexed word-form matches: ')+r.total+(r.total>limit?' · showing '+limit:''));
+  setStatus(r.kind==='suggestions'?'No exact match. Try a similar spelling.':'');
   if(serial===requestSerial){
     if(r.ids.length===1&&r.kind!=='suggestions')await showEntry(r.ids[0]);
-    else {
-      currentId=null;
-      $('entry').replaceChildren(el('h2',r.kind==='suggestions'?'Similar spellings':'Translations'),el('p',r.kind==='suggestions'?'These headwords begin with your spelling. They are suggestions, not confirmed translations.':'Select a meaning from the list.'));
-    }
+    else if(r.kind==='suggestions'){$('entry').replaceChildren(el('h2','Similar spellings'),el('p','No exact match. Choose a spelling to check.'));currentId=null;}
+    else await showTranslations(r,query,serial);
   }
 }
+async function showTranslations(result,word,serial){
+ const panelSerial=entrySerial;
+ currentId=null;$('entry').replaceChildren(el('h2',word,'entry-title'),el('p','Possible meanings','translation-label'));
+ let offset=0;
+ const more=el('button','More meanings');more.type='button';
+ async function next(){
+  more.disabled=true;const ids=result.ids.slice(offset,offset+12);
+  const entries=await Promise.all(ids.map(async id=>{try{return {id,entry:(await loadChunk(index.entries[id].b))[id]};}catch{return {id,error:true};}}));
+  if(serial!==requestSerial||panelSerial!==entrySerial)return;
+  for(const item of entries){
+   const group=el('section',undefined,'translation-group');
+   if(item.error){const retry=el('button','Try loading this meaning again');retry.onclick=()=>showEntry(item.id,true,null,word);group.append(retry);$('entry').append(group);continue;}
+   const {id,entry}=item;const head=el('h3',entry.h,'translation-headword');head.dir='rtl';group.append(head);
+   const body=el('div',undefined,'definition');body.innerHTML=entry.html;
+   if(entry.source==='krupnik'){
+    for(const gloss of entry.glosses){const card=el('div',undefined,'meaning-card');if(gloss.label){const label=el('span',gloss.label,'meaning-form');label.dir='auto';card.append(label);}card.append(el('p',gloss.text));group.append(card);}
+    const details=el('details',undefined,'scholarly-entry');details.append(el('summary','More detail'));body.dir='auto';body.style.whiteSpace='pre-line';details.append(body);group.append(details);
+   }else{group.append(JastrowReadingView.render(body));group.querySelector('.meanings-heading')?.remove();}
+   const details=group.querySelector('.scholarly-entry');if(details){details.open=false;details.append(el('p',entry.source==='krupnik'?'Krupnik & Silbermann':'Jastrow','entry-meta'));}
+   $('entry').append(group);
+  }
+  offset+=ids.length;more.remove();if(offset<result.ids.length){more.disabled=false;$('entry').append(more);}else if(result.total>result.ids.length){more.disabled=false;more.onclick=()=>{limit+=60;search(word,true);};$('entry').append(more);}
+ }
+ more.onclick=next;await next();
+}
+
 function theme(t){
   if(t?.typography?.uiFontFamily)document.documentElement.style.setProperty('--font-main',t.typography.uiFontFamily+', system-ui, sans-serif');
   if(t?.typography?.fontFamily)document.documentElement.style.setProperty('--body',t.typography.fontFamily+', Georgia, serif');
@@ -135,7 +156,7 @@ $('text-smaller').onclick=()=>setReadingSize(readingSize-10);$('text-larger').on
 document.addEventListener('keydown',e=>{
  const typing=e.target.closest('input,textarea,[contenteditable=true]');
  if(e.key==='/'&&!typing&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();$('query').focus();$('query').select();}
- if(e.key==='ArrowDown'&&e.target===$('query')){e.preventDefault();if($('query').value.trim()!==query)search($('query').value).then(()=>$('results').firstElementChild?.focus());else $('results').firstElementChild?.focus();}
+ if(e.key==='ArrowDown'&&e.target===$('query')&&!document.body.classList.contains('single-lookup')){e.preventDefault();if($('query').value.trim()!==query)search($('query').value).then(()=>$('results').firstElementChild?.focus());else $('results').firstElementChild?.focus();}
  const button=e.target.closest('.result');if(button&&['ArrowDown','ArrowUp','Home','End'].includes(e.key)){
   e.preventDefault();const buttons=[...$('results').children],i=buttons.indexOf(button),next=e.key==='Home'?0:e.key==='End'?buttons.length-1:Math.max(0,Math.min(buttons.length-1,i+(e.key==='ArrowDown'?1:-1)));buttons[next]?.focus();
  }
