@@ -51,7 +51,7 @@ async function showEntry(id,record=true,targetPosition=null,word=query){
   $('entry').replaceChildren(el('p','Opening Jastrow…','entry-loading'));
   try{
     const entry=(await loadChunk(index.entries[id].b))[id];if(serial!==entrySerial)return;
-    if(word!==query){limit=60;const serial=++requestSerial;paintMatches(JastrowSearch.lookup(index,word,60),word,serial);}
+    if(word!==query){limit=60;const serial=++requestSerial;paintMatches(JastrowSearch.lookup(index,word,60,$('match-order').value),word,serial);}
     query=word;$('query').value=query;
     if(record&&(trail[trailPosition]?.id!==id||trail[trailPosition]?.word!==word)){trail=trail.slice(0,trailPosition+1);trail.push({id,word});if(trail.length>50)trail.shift();trailPosition=trail.length-1;}else if(targetPosition!==null)trailPosition=targetPosition;
     currentId=id;setStatus(word?'Showing '+entry.h+' for '+word+'.':'Browsing Jastrow’s dictionary.');renderTrail();syncEntryLink(id);$('entry').replaceChildren();renderWordLink(id,word);rememberLookup(id,word);
@@ -90,6 +90,7 @@ function paintMatches(r,word,serial){
  resultIds=r.ids;$('results').replaceChildren();$('more').hidden=r.total<=limit;
  $('match-count').textContent=r.total?r.total.toLocaleString()+(r.total===1?' match':' matches'):'';
  for(const id of r.ids){const b=el('button',index.entries[id].h,'result');b.dir='rtl';b.dataset.id=id;b.append(el('span',matchType(id,word),'result-kind'));b.setAttribute('aria-pressed','false');b.onclick=()=>showEntry(id,true,null,word);$('results').append(b);}
+ $('ranking-note').hidden=r.total<2||r.kind==='suggestions'||$('match-order').value!=='length';
  fillMatchPreviews(r.ids,serial);
 }
 async function search(word, more=false){
@@ -97,7 +98,7 @@ async function search(word, more=false){
   const serial=++requestSerial;++entrySerial;$('entry').removeAttribute('aria-busy');
   const normalized=JastrowSearch.normalize(query);
   if(query&&!JastrowSearch.validWord(query)){setStatus('Enter one Hebrew or Aramaic word in Hebrew letters, without English letters or numbers.');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a single Aramaic or Hebrew word to see its dictionary matches.'));currentId=null;return;}
-  const r=JastrowSearch.lookup(index,query,limit);paintMatches(r,query,serial);
+  const r=JastrowSearch.lookup(index,query,limit,$('match-order').value);paintMatches(r,query,serial);
   if(!normalized){setStatus('Enter an Aramaic or Hebrew word in Hebrew letters.');$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a word in Hebrew letters to begin.'));currentId=null;return;}
   if(!r.ids.length){currentId=null;$('match-count').textContent='0 matches';$('entry').replaceChildren(el('h2','No matching entry'),el('p','Try a different spelling or the dictionary headword. Not every inflected form is indexed.'));setStatus('No entry found for '+query+'.');return;}
   setStatus((r.kind==='suggestions'?'No exact match. Headwords beginning with this spelling: ':r.kind==='attested form'?'Source-attested word-form matches: ':r.kind==='word form'?'Indexed word-form matches: ':'Headword and indexed word-form matches: ')+r.total+(r.total>limit?' · showing '+limit:''));
@@ -121,8 +122,9 @@ let recentLookups=[],readingSize=100;
 try{const data=JSON.parse(localStorage.getItem('jastrow-student-v1')||'{}');
  if(Array.isArray(data.recent))recentLookups=data.recent.filter(x=>Number.isInteger(x.id)&&x.id>=0&&x.id<index.entries.length&&typeof x.word==='string'&&x.word.length<=120).slice(0,12);
  if([90,100,110,120,130,140].includes(data.readingSize))readingSize=data.readingSize;
+ if(['length','dictionary'].includes(data.matchOrder))$('match-order').value=data.matchOrder;
 }catch{}
-function savePreferences(){try{localStorage.setItem('jastrow-student-v1',JSON.stringify({recent:recentLookups,readingSize}));}catch{}}
+function savePreferences(){try{localStorage.setItem('jastrow-student-v1',JSON.stringify({recent:recentLookups,readingSize,matchOrder:$('match-order').value}));}catch{}}
 function renderRecent(){
  const nav=$('recent-lookups');nav.replaceChildren();nav.hidden=!recentLookups.length;if(nav.hidden)return;
  nav.append(el('span','Recent','recent-label'));
@@ -142,6 +144,7 @@ document.addEventListener('keydown',e=>{
   e.preventDefault();const buttons=[...$('results').children],i=buttons.indexOf(button),next=e.key==='Home'?0:e.key==='End'?buttons.length-1:Math.max(0,Math.min(buttons.length-1,i+(e.key==='ArrowDown'?1:-1)));buttons[next]?.focus();
  }
 });
+$('match-order').onchange=()=>{savePreferences();search($('query').value);};
 $('clear-query').onclick=()=>{search('');$('query').focus();};
 $('search-form').onsubmit=e=>{e.preventDefault();search($('query').value);};
 $('more').onclick=()=>{limit+=60;search(query,true);};
@@ -155,6 +158,12 @@ if(window.Otzaria){
   Otzaria.on('reader.context_menu_item_clicked',p=>{if(p.itemId==='jastrow-lookup')search(JastrowContext.selectionText(p));});
   Otzaria.on('plugin.boot',p=>{
     theme(p.theme);$('selection').hidden=false;
+    Otzaria.call('app.getGrantedPermissions').then(res=>{
+      const permissions=res?.data?.permissions;if(!res?.success||!Array.isArray(permissions))return;
+      const required=['app.run_on_startup','app.background_keep_alive','events.subscribe:reader.selection_changed','reader.context_menu'];
+      const missing=required.some(x=>!permissions.includes(x));$('right-click-state').hidden=!missing;
+      if(missing)$('right-click-state').textContent='For indexed-word-only right-click lookup, enable background execution, keep-alive and text-selection access in Otzaria’s permissions for Jastrow.';
+    }).catch(()=>{});
     $('selection').onclick=async()=>{
       try{const res=await Otzaria.call('reader.getSelection');
       const text=JastrowContext.selectionText(res?.data);if(res?.success&&text)search(text);else setStatus('Select a word in an Otzaria text first, then choose Jastrow — English from the context menu.');}

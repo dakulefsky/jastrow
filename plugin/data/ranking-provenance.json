@@ -1,0 +1,7 @@
+{
+  "metric": "Length of plain source text in each bundled Jastrow entry, in Unicode code points after collapsing whitespace",
+  "notFrequency": true,
+  "notSenseProbability": true,
+  "sourceSha256": "bc32f7c1df6e64659236ba8eb04737d529346fcbf65803974bb5711a434ba5d1",
+  "entries": 32512
+}

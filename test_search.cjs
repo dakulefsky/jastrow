@@ -2,6 +2,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const ctx={window:{JASTROW_CHUNKS:{}}};vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(path.join(__dirname,'plugin/data/index.js'),'utf8'),ctx);
 vm.runInContext(fs.readFileSync(path.join(__dirname,'plugin/data/attested-forms.js'),'utf8'),ctx);
+vm.runInContext(fs.readFileSync(path.join(__dirname,'plugin/data/ranking.js'),'utf8'),ctx);
 const index=ctx.window.JASTROW_INDEX,search=require('./plugin/search.js');
 assert.equal(index.entries.length,32512);
 assert.equal(Object.keys(index.forms).length,64410);

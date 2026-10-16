@@ -4,6 +4,8 @@ from zipfile import ZipFile,ZIP_DEFLATED
 import json,hashlib,base64,sys
 from build_attested import build as build_attested
 build_attested()
+from build_ranking import build as build_ranking
+build_ranking()
 root=Path(__file__).parent
 manifest=json.loads((root/'plugin/manifest.json').read_text())
 stem='Jastrow-'+manifest['version'];output=root.parent
@@ -13,7 +15,7 @@ with ZipFile(output/(stem+'.otzplugin'),'w',ZIP_DEFLATED,compresslevel=9) as z:
 if '--preview' in sys.argv:
  html=(root/'plugin/index.html').read_text().replace('<link rel="stylesheet" href="style.css">','<style>'+(root/'plugin/style.css').read_text()+'</style>')
  hashes=[]
- for name in ['search.js','data/index.js','data/attested-forms.js','context-menu.js','reading-view.js','app.js']:
+ for name in ['search.js','data/index.js','data/attested-forms.js','data/ranking.js','context-menu.js','reading-view.js','app.js']:
   code=(root/'plugin'/name).read_text()
   if name=='app.js':
    # Same application code; only the offline chunks are preloaded in the preview.

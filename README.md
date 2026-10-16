@@ -1,3 +1,9 @@
+## 1.4.0 — indexed-word availability and longer entries first
+
+The context menu is filtered to single indexed words again. A separate background entrypoint checks selections; it starts on app startup and is kept alive so the next selection does not need to cold-start a WebView. Otzaria must grant background execution, background keep-alive, reader selection events and context-menu access. The visible dictionary identifies missing grants. No always-visible fallback menu item is registered. Rendered/source variants are checked to accommodate reader vowel settings; late responses cannot override newer selection events. Native menu visibility still depends on event delivery completing before a menu snapshot is taken.
+
+Matching entries default to longer original source entries first within match-strength tiers (headwords, source-attested forms, then indexed forms). “Dictionary order” remains available. Plain entry-text length is deterministic and documented in data/ranking-provenance.json. This is a heuristic, not measured word frequency, a commonness probability or a claim about which meaning fits the sentence. No dictionary wording was changed.
+
 ## 1.3.4 — reliable selected-word context menu
 
 Jastrow’s context-menu action is now a declarative `contributes.startup.contextMenuItems` item, available without running plugin JavaScript or granting background execution. It supports both normal and page-shape reader selections and opens the plugin on click. The background-registration script and its background/selection-event permissions were removed. Unknown or multiword selections are handled by the existing explicit no-match/single-word messages rather than hiding the menu asynchronously.
