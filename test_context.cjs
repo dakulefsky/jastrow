@@ -2,9 +2,10 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const search=require('./plugin/search.js');
 const ctx={window:{},console};vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/index.js','utf8'),ctx);
+vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/attested-forms.js','utf8'),ctx);
 const index=ctx.window.JASTROW_INDEX;
-for(const w of ['מיתיבי','אָמַר','רחמנא','שקלא'])assert(search.hasTranslation(index,w),w);
-for(const w of ['','xyz','תניא','אמר דבר','zzאמרzz'])assert(!search.hasTranslation(index,w),w);
+for(const w of ['מיתיבי','אָמַר','רחמנא','שקלא','תניא','תנן'])assert(search.hasTranslation(index,w),w);
+for(const w of ['','xyz','אבגדהוזחטיכלמנסעפצקרשת','אמר דבר','zzאמרzz'])assert(!search.hasTranslation(index,w),w);
 const events={},calls=[];let release;
 ctx.window.Otzaria=ctx.Otzaria={on:(e,f)=>events[e]=f,call:async(m,p)=>{calls.push({m,p});if(release===undefined)await new Promise(r=>release=r);return {success:true};}};
 ctx.JastrowSearch=search;
@@ -16,12 +17,16 @@ vm.runInContext(fs.readFileSync(__dirname+'/plugin/context-menu.js','utf8'),ctx)
  assert(calls[0].p.openPlugin);
  assert(calls[0].p.contexts.includes('reader-page-shape-selection'));
  events['reader.selection_changed']({text:'רחמנא'});
- events['reader.selection_changed']({text:'תניא'});
+ events['reader.selection_changed']({text:'אבגדהוזחטיכלמנסעפצקרשת'});
  release();await new Promise(r=>setImmediate(r));
  assert.equal(calls.at(-1).m,'reader.removeContextMenuItem');
  events['reader.selection_changed']({text:'מיתיבי'});await new Promise(r=>setImmediate(r));
  assert.equal(calls.at(-1).m,'reader.addContextMenuItem');
  events['reader.selection_changed']({text:'אמר דבר'});await new Promise(r=>setImmediate(r));
  assert.equal(calls.at(-1).m,'reader.removeContextMenuItem');
+ // A cold start recovers the current word; a newer event wins a delayed read.
+ let initialResolve;ctx.Otzaria.call=async(m,p)=>{calls.push({m,p});if(m==='reader.getSelection')return new Promise(resolve=>initialResolve=resolve);return {success:true};};
+ const boot=events['plugin.boot']();events['reader.selection_changed']({text:'אבגדהוזחטיכלמנסעפצקרשת'});await new Promise(r=>setImmediate(r));initialResolve({success:true,data:{text:'רחמנא'}});await boot;await new Promise(r=>setImmediate(r));assert.equal(calls.at(-1).m,'reader.removeContextMenuItem');
+ ctx.Otzaria.call=async(m,p)=>{calls.push({m,p});return m==='reader.getSelection'?{success:true,data:{renderedSelectedText:'מיתיבי'}}:{success:true};};await events['plugin.boot']();await new Promise(r=>setImmediate(r));assert.equal(calls.at(-1).m,'reader.addContextMenuItem');assert.equal(calls.at(-1).p.showWhen.selectionContainsAny[0],'מיתיבי');
  console.log('PASS: known forms, nekudos, missing words, multiword selections, both reader layouts, and rapid-selection ordering');
 })().catch(e=>{console.error(e);process.exitCode=1});

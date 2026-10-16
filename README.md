@@ -1,8 +1,38 @@
+## 1.3.1
+
+Removed the suggested-word starter section. Source attribution remains in the visible footer, help panel, bundled data/provenance.json and source archive LICENSE. Plugin author remains separately identified in manifest.json.
+
+# Student reading update — 1.3.0
+
+- Match lists show up to two verbatim Jastrow phrase previews, with separate labels for headwords, indexed forms, source-attested forms and spelling suggestions. Preview text may be visually clipped; full accessible text is retained.
+- A selected-word → headword panel explains what the match means. It does not claim a root analysis or choose a meaning for the Gemara sentence.
+- Numbered meaning cards quote the existing conservative phrase extractor in source order. Six appear initially; additional phrases can be expanded. Jastrow’s form and section labels remain visible when supplied by the source.
+- Each card can expand the complete corresponding source sense, including examples and parenthetical qualifications. The full academic entry remains in its dropdown.
+- “Your word in Jastrow’s text” offers up to three original excerpts around literal Hebrew tokens matching the lookup after vowel normalization. Ellipses mark truncation. No prefix stripping or inferred translations are used.
+- Optional local recent lookups (12 maximum, clearable), six reading sizes from 90% to 140%, / to focus search, arrow-key match navigation and a clear-search button.
+- Back/Forward restore the original lookup word as well as the entry, keeping match labels and lists consistent. Loading failures show an in-place retry action.
+
+No dictionary entries or imported form mappings were changed. All 32,512 entries are still bundled offline. The extracted phrases are a reading aid and may omit additional meanings; they are not contextual translation decisions. Actual Otzaria host testing remains outstanding; connector behavior is covered by mocked browser tests.
+
+Validation: `python3 package.py`, then `node test_search.cjs`, `node test_context.cjs`, `node test_ui.cjs`, `node test_reading.cjs`, `node test_student.cjs`, and `node audit_reading.cjs`. `test_student.cjs` checks source-exact previews/context, word-form explanations, history, recent lookups, keyboard access, sizing, collapsed long entries, selected-word excerpts, narrow layouts and denied storage.
+
+## Version 1.2.1
+
+“Read in context” now opens the exact originating sense when a definition phrase repeats under different verb forms. The displayed wording remains verbatim Jastrow. Run `node test_reading.cjs` for the repeated-phrase regression.
+
 # Jastrow for Otzaria — offline dictionary
+
+## Version 1.2.0
+
+The standalone preview runs the packaged application with all dictionary chunks embedded. Quick meanings remain verbatim source phrases; each has a “Read in context” control opening the complete scholarly entry. Academic detail stays in its dropdown. This extraction is a reading aid, not a new translation or a claim that an isolated phrase explains every sense.
+
+Two source-attested supplemental form links, תניא and תנן, carry Jastrow’s exact explanatory note and are validated at build time. They do not alter the 64,410 imported base-index forms or introduce new English definitions. Entry history and reloadable entry links are included. Failed or empty chunk loads can be retried. Invalid mixed-script queries are rejected consistently by lookup and the context-menu availability check. The theme now controls definition colors and typography.
+
+Run `node test_search.cjs`, `node test_context.cjs`, and `node test_ui.cjs` after `python3 package.py`. Browser tests require Playwright and Chromium; set `PLAYWRIGHT_CHROMIUM_EXECUTABLE` if needed. `node audit_reading.cjs` checks all extracted phrases against their source entry and classifies dictionary cross-reference resolution; it does not certify semantic interpretation.
 
 ## Install
 
-1. Download `Jastrow-1.1.0.otzplugin`.
+1. Download `Jastrow-1.3.1.otzplugin`.
 2. In Otzaria open **כלים → תוספים → התקן תוסף חדש** (Tools → Plugins → Install new plugin).
 3. Select the downloaded file and approve the reader/context-menu permissions.
 4. Open **Jastrow** from the tools panel, or select a word in a text sefer and choose **Jastrow — English** from its context menu.
@@ -18,13 +48,13 @@ Requires Otzaria 0.9.97 or newer with plugin support. If your browser renames th
 - No exact match: offers headwords beginning with the entered spelling. It does not invent roots or definitions.
 - Original English definitions, grammatical labels, abbreviations, and examples are preserved.
 - Dictionary cross-references work offline. Text-source citations display as text; they do not open passages.
-- Not every inflected form is present in the source index. For example, תניא and איתמר are not indexed in this snapshot. Try the dictionary root/headword when necessary.
+- Not every inflected form is present in the source index. For example, איתמר is not indexed in this snapshot. תניא and תנן now have two explicitly documented supplemental links to Jastrow’s תְּנֵי entry, where he discusses them verbatim. Try the dictionary root/headword when necessary.
 - Context-menu lookup is for selectable text books. Scanned PDFs need text selection/OCR support from Otzaria and are not included in this integration.
 - No network calls, API keys, accounts, or AI translation services. No external fonts.
 
 ## Validation
 
-The package passes Otzaria's official plugin validator against its live SDK specification. Search, loading, cross-reference navigation, mobile layout, and simulated Otzaria SDK events are tested locally. Actual installation in the native Otzaria application remains to be confirmed on your device. Version 1.0.0 is marked beta for that reason.
+The package passes Otzaria's official plugin validator against its live SDK specification. Search, loading, cross-reference navigation, mobile layout, and simulated Otzaria SDK events are tested locally. Actual installation in the native Otzaria application remains to be confirmed on your device. Version 1.2.0 is marked beta for that reason.
 
 ## Data and licensing
 

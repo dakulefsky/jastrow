@@ -2,7 +2,7 @@
   'use strict';
   if(!window.Otzaria)return;
   const index=window.JASTROW_INDEX;
-  let pending=null, running=false;
+  let pending=null, running=false,selectionRevision=0;
   async function update(){
     if(running)return;
     running=true;
@@ -23,10 +23,22 @@
       }
     }finally{running=false;}
   }
-  Otzaria.on('reader.selection_changed',p=>{
-    pending=String(p.renderedSelectedText??p.text??'').trim();
+  function offer(text){
+    pending=String(text??'').trim();
     // SDK limits showWhen strings to 100 characters.
     if(pending.length>100)pending='';
     update().catch(()=>console.warn('Jastrow context-menu unavailable'));
+  }
+  Otzaria.on('reader.selection_changed',p=>{
+    selectionRevision++;
+    offer(p.renderedSelectedText??p.text);
+  });
+  Otzaria.on('plugin.boot',async()=>{
+    // Recover an already-active selection after a cold background/page start.
+    // A newer selection event must win over this asynchronous initial read.
+    const revision=selectionRevision;
+    try{const result=await Otzaria.call('reader.getSelection');
+      if(revision===selectionRevision&&result?.success)offer(result.data?.renderedSelectedText??result.data?.text);
+    }catch{console.warn('Jastrow initial selection unavailable');}
   });
 })();
