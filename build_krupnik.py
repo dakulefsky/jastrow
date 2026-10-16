@@ -12,10 +12,10 @@ from bson import decode_file_iter
 ROOT=Path(__file__).parent
 DATA=ROOT/'plugin/data'
 class English(HTMLParser):
- def __init__(self):super().__init__(convert_charrefs=True);self.depth=0;self.parts=[];self.current=[];self.glosses=[]
+ def __init__(self):super().__init__(convert_charrefs=True);self.depth=0;self.parts=[];self.current=[];self.glosses=[];self.german=False
  def handle_starttag(self,tag,attrs):
   if self.depth and tag=='span':self.depth+=1
-  elif tag=='span' and 'englishWithinHebrew' in dict(attrs).get('class','').split():self.depth=1;self.current=[]
+  elif tag=='span' and 'englishWithinHebrew' in dict(attrs).get('class','').split():self.depth=1;self.current=[];self.german=False
  def handle_endtag(self,tag):
   if self.depth and tag=='span':
    self.depth-=1
@@ -24,8 +24,12 @@ class English(HTMLParser):
     text=''.join(self.current).split('|',1)[0].strip()
     if text:self.glosses.append(text)
  def handle_data(self,text):
-  self.parts.append(text)
-  if self.depth:self.current.append(text)
+  if self.depth:
+   self.current.append(text)
+   if not self.german:
+    self.parts.append(text.split('|',1)[0])
+    if '|' in text:self.german=True
+  else:self.parts.append(text)
 def norm(s):return re.sub('[^א-ת]','',unicodedata.normalize('NFKD',s))
 def walk(node,label=''):
  if isinstance(node,list):

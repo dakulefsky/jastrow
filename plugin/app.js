@@ -2,6 +2,7 @@
 window.JASTROW_CHUNKS=window.JASTROW_CHUNKS||{};
 const index=window.JASTROW_INDEX, $=id=>document.getElementById(id);
 let resultIds=[], currentId=null, query='',limit=60, requestSerial=0, entrySerial=0;
+let includeJastrow=false;
 const chunkPromises=new Map();
 function loadChunk(n){
   if(window.JASTROW_CHUNKS[n])return Promise.resolve(window.JASTROW_CHUNKS[n]);
@@ -33,17 +34,6 @@ function matchType(id,word){
  if((index.attestedForms?.[n]||[]).some(x=>x.id===id))return 'Form discussed by Jastrow';
  return 'Spelling suggestion';
 }
-function renderWordLink(id,word){
- if(!word)return;
- const kind=matchType(id,word),box=el('div',undefined,'word-link');
- const words=el('div',undefined,'word-link-words');
- const selected=el('span',word,'selected-word');selected.dir='rtl';
- const arrow=el('span','→','word-link-arrow');arrow.setAttribute('aria-hidden','true');
- const head=el('span',index.entries[id].h,'matched-headword');head.dir='rtl';
- words.append(selected,arrow,head);
- box.append(el('span',kind,'match-kind'),words,el('p',kind==='Spelling suggestion'?'This is a suggested spelling, not a confirmed match for your word.':kind==='Headword match'?'Your spelling matches this dictionary headword or one of its listed spellings.':'Your word is linked to this dictionary entry. This does not select a particular meaning or verb form.'));
- $('entry').append(box);
-}
 async function showEntry(id,record=true,targetPosition=null,word=query){
   if(!Number.isInteger(id)||id<0||id>=index.entries.length)return;
   const serial=++entrySerial;
@@ -51,21 +41,21 @@ async function showEntry(id,record=true,targetPosition=null,word=query){
   $('entry').replaceChildren(el('p','Opening dictionary entry…','entry-loading'));
   try{
     const entry=(await loadChunk(index.entries[id].b))[id];if(serial!==entrySerial)return;
-    if(word!==query){limit=60;const serial=++requestSerial;paintMatches(JastrowSearch.lookup(index,word,60,$('match-order').value),word,serial);}
+    if(word!==query){limit=60;const serial=++requestSerial;paintMatches(JastrowSearch.lookup(index,word,60,$('match-order').value,includeJastrow),word,serial);}
     query=word;$('query').value=query;
     if(record&&(trail[trailPosition]?.id!==id||trail[trailPosition]?.word!==word)){trail=trail.slice(0,trailPosition+1);trail.push({id,word});if(trail.length>50)trail.shift();trailPosition=trail.length-1;}else if(targetPosition!==null)trailPosition=targetPosition;
-    currentId=id;setStatus(word?'Showing '+entry.h+' for '+word+'.':'Browsing the dictionary.');renderTrail();syncEntryLink(id);$('entry').replaceChildren();renderWordLink(id,word);rememberLookup(id,word);
+    currentId=id;setStatus(word?'Showing '+entry.h+' for '+word+'.':'Browsing the dictionary.');renderTrail();syncEntryLink(id);$('entry').replaceChildren();rememberLookup(id,word);
     $('entry').append(el('h2',entry.h,'entry-title'));
-    const meta=el('p',(entry.source==='krupnik'?'Krupnik & Silbermann · Original English definition':'Jastrow · Original English definition')+(entry.alt.length?' · Also listed as: '+entry.alt.join(' · '):''),'entry-meta');meta.dir='auto';$('entry').append(meta);
+    const meta=el('p',(entry.source==='krupnik'?'Krupnik & Silbermann':'Jastrow')+(entry.alt.length?' · Also listed as: '+entry.alt.join(' · '):''),'entry-meta');meta.dir='auto';$('entry').append(meta);
     const evidence=(index.attestedForms?.[JastrowSearch.normalize(query)]||[]).find(x=>x.id===id);
     if(evidence){const note=el('aside',undefined,'form-attestation');note.append(el('p','This form is explicitly discussed in this Jastrow entry.'),el('blockquote',evidence.quote));$('entry').append(note);}
     const body=el('div',undefined,'definition');body.dir='ltr';body.innerHTML=entry.html;
     if(entry.source==='krupnik'){
-      const definitions=el('section',undefined,'krupnik-definitions');definitions.append(el('h3','English definitions'));
+      const definitions=el('section',undefined,'krupnik-definitions');definitions.append(el('h3','Translation'));
       for(const gloss of entry.glosses){const card=el('div',undefined,'meaning-card');if(gloss.label){const label=el('p',gloss.label,'entry-meta');label.dir='auto';card.append(label);}card.append(el('p',gloss.text));definitions.append(card);}
-      definitions.append(el('p','Original glosses, in source order. Check the full entry for examples and qualifications.','entry-meta'));
-      const details=el('details',undefined,'scholarly-entry');details.append(el('summary','Full entry · Hebrew, English, German & source quotations'));body.dir='auto';body.style.whiteSpace='pre-line';if(entry.notation?.length){const notation=el('p',entry.notation.join(' · '),'entry-meta');notation.dir='auto';details.append(notation);}details.append(body);$('entry').append(definitions,details);
-    }else{const passages=JastrowReadingView.renderPassages(body,word);if(passages)$('entry').append(passages);$('entry').append(JastrowReadingView.render(body));}
+      
+      const details=el('details',undefined,'scholarly-entry');details.append(el('summary','More detail'));body.dir='auto';body.style.whiteSpace='pre-line';if(entry.notation?.length){const notation=el('p',entry.notation.join(' · '),'entry-meta');notation.dir='auto';details.append(notation);}details.append(body);$('entry').append(definitions,details);if(word){const compare=el('button','Check Jastrow','compare-source');compare.type='button';compare.onclick=()=>{includeJastrow=true;search(word,true);};$('entry').append(compare);}
+    }else{$('entry').append(JastrowReadingView.render(body));}
     const nav=el('div',undefined,'entry-nav');
     for(const [label,offset] of [['Previous entry',-1],['Next entry',1]]){
       const b=el('button',label);b.disabled=id+offset<0||id+offset>=index.entries.length;b.onclick=()=>showEntry(id+offset,true,null,'');nav.append(b);
@@ -95,16 +85,16 @@ async function fillMatchPreviews(ids,serial){
 function paintMatches(r,word,serial){
  resultIds=r.ids;$('results').replaceChildren();$('more').hidden=r.total<=limit;
  $('match-count').textContent=r.total?r.total.toLocaleString()+(r.total===1?' match':' matches'):'';
- for(const id of r.ids){const b=el('button',index.entries[id].h,'result');b.dir='rtl';b.dataset.id=id;b.append(el('span',(index.entries[id].source==='krupnik'?'Krupnik & Silbermann':'Jastrow')+' · '+matchType(id,word),'result-kind'));b.setAttribute('aria-pressed','false');b.onclick=()=>showEntry(id,true,null,word);$('results').append(b);}
+ for(const id of r.ids){const b=el('button',index.entries[id].h,'result');b.dir='rtl';b.dataset.id=id;b.append(el('span',(index.entries[id].source==='krupnik'?'Krupnik & Silbermann':'Jastrow'),'result-kind'));b.setAttribute('aria-pressed','false');b.onclick=()=>showEntry(id,true,null,word);$('results').append(b);}
  $('ranking-note').hidden=r.total<2||r.kind==='suggestions'||$('match-order').value!=='length';
  fillMatchPreviews(r.ids,serial);
 }
 async function search(word, more=false){
-  query=String(word).trim();$('query').value=query;if(!more)limit=60;
+  query=String(word).trim();$('query').value=query;if(!more){limit=60;includeJastrow=false;}
   const serial=++requestSerial;++entrySerial;$('entry').removeAttribute('aria-busy');
   const normalized=JastrowSearch.normalize(query);
   if(query&&!JastrowSearch.validWord(query)){setStatus('Enter one Hebrew or Aramaic word in Hebrew letters, without English letters or numbers.');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a single Aramaic or Hebrew word to see its dictionary matches.'));currentId=null;return;}
-  const r=JastrowSearch.lookup(index,query,limit,$('match-order').value);paintMatches(r,query,serial);
+  const r=JastrowSearch.lookup(index,query,limit,$('match-order').value,includeJastrow);paintMatches(r,query,serial);
   if(!normalized){setStatus('Enter an Aramaic or Hebrew word in Hebrew letters.');$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a word in Hebrew letters to begin.'));currentId=null;return;}
   if(!r.ids.length){currentId=null;$('match-count').textContent='0 matches';$('entry').replaceChildren(el('h2','No matching entry'),el('p','Try a different spelling or the dictionary headword. Not every inflected form is indexed.'));setStatus('No entry found for '+query+'.');return;}
   setStatus((r.kind==='suggestions'?'No exact match. Headwords beginning with this spelling: ':r.kind==='attested form'?'Source-attested word-form matches: ':r.kind==='word form'?'Indexed word-form matches: ':'Headword and indexed word-form matches: ')+r.total+(r.total>limit?' · showing '+limit:''));
@@ -112,7 +102,7 @@ async function search(word, more=false){
     if(r.ids.length===1&&r.kind!=='suggestions')await showEntry(r.ids[0]);
     else {
       currentId=null;
-      $('entry').replaceChildren(el('h2',r.kind==='suggestions'?'Choose a suggested headword':'Choose a matching entry'),el('p',r.kind==='suggestions'?'These headwords begin with your spelling. They are suggestions, not confirmed translations.':'Compare the original meaning previews in the list, then open the entry that fits your passage. No meaning has been selected automatically.'));
+      $('entry').replaceChildren(el('h2',r.kind==='suggestions'?'Similar spellings':'Translations'),el('p',r.kind==='suggestions'?'These headwords begin with your spelling. They are suggestions, not confirmed translations.':'Select a meaning from the list.'));
     }
   }
 }

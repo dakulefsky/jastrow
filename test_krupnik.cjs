@@ -14,6 +14,6 @@ for(const word of ['מא','אמר','אוֹגַר','תניא']){
  for(const id of found.ids){if(!direct.has(id))sawForm=true;else assert(!sawForm,'Exact matches must precede forms');}
 }
 const kOnly=Object.keys(c.window.KRUPNIK_DATA.direct).find(w=>!i.forms[w]&&!i.direct[w].some(id=>id<32512));assert(kOnly);assert(S.hasTranslation(i,kOnly));assert(!S.hasTranslation(i,'hello'));assert(!S.hasTranslation(i,'מא אמר'));
-const ma=S.lookup(i,'מא').ids;assert.equal(i.entries[ma[0]].source,'krupnik');
+const ma=S.lookup(i,'מא').ids;assert(ma.every(id=>i.entries[id].source==='krupnik'));assert.equal(i.entries[ma[0]].source,'krupnik');assert(S.lookup(i,'מא',100,'length',true).ids.some(id=>id<32512));assert(S.lookup(i,'דאמר').ids.some(id=>id<32512));
 assert(c.window.JASTROW_CHUNKS[i.entries[ma[0]].b][ma[0]].glosses.some(g=>g.text==='what? how?'));
 console.log('PASS: '+count+' offline English entries; chunk pointers, original glosses, concise-source preference, exact-first ordering, Krupnik-only context availability.');

@@ -2,12 +2,13 @@
   'use strict';
   function normalize(s){return String(s).normalize('NFKD').replace(/[^\u05d0-\u05ea]/g,'');}
   function validWord(text){const word=String(text).trim();return !!word && word.length<=120 && word.split(/\s+/).length===1 && !/[A-Za-z0-9]/.test(word) && !!normalize(word);}
-  function lookup(index, query, limit=100, order='length'){
+  function lookup(index, query, limit=100, order='length',includeJastrow=false){
     if(!validWord(query))return {kind:String(query).trim()?'invalid':'empty',ids:[],total:0};
     const q=normalize(query);if(!q)return {kind:'empty',ids:[],total:0};
     const direct=index.direct[q]||[];
     const forms=index.forms[q]||[],attested=(index.attestedForms?.[q]||[]).map(x=>x.id);
     let ids=[...new Set([...direct,...forms,...attested])];
+    if(!includeJastrow&&direct.some(id=>index.entries[id].source==='krupnik'))ids=direct.filter(id=>index.entries[id].source==='krupnik');
     let kind=direct.length?'headword':forms.length?'word form':attested.length?'attested form':'suggestions';
     if(!ids.length){
       // Suggestions are spelling matches, never invented translations or inferred roots.

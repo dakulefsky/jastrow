@@ -53,7 +53,7 @@
     const passages=wordPassages(body,word);if(!passages.length)return null;
     const section=document.createElement('details');section.className='word-passages';
     const summary=document.createElement('summary');summary.textContent='Your word in Jastrow’s text';section.append(summary);
-    const note=document.createElement('p');note.textContent='Original excerpts around this spelling. These passages may discuss different usages.';section.append(note);
+    const note=document.createElement('p');note.textContent='Original excerpts around this spelling. These passages may discuss different usages.';
     for(const p of passages){const quote=document.createElement('blockquote'),mark=document.createElement('mark');mark.dir='auto';mark.textContent=p.word;quote.append((p.leading?'…':'')+p.before,mark,p.after+(p.trailing?'…':''));section.append(quote);}
     return section;
   }
@@ -61,44 +61,32 @@
     const meanings=phrases(body);
     const fragment=document.createDocumentFragment();
     const details=document.createElement('details');details.className='scholarly-entry';details.open=!meanings.length;
-    const summary=document.createElement('summary');summary.textContent='Full Jastrow entry · academic detail, sources & grammar';details.append(summary);
+    const summary=document.createElement('summary');summary.textContent='More detail';details.append(summary);
     if(meanings.length){
       const section=document.createElement('section');section.className='quick-meanings';
       const heading=document.createElement('div');heading.className='meanings-heading';
-      const title=document.createElement('h3');title.textContent='Meanings';heading.append(title);
-      const count=document.createElement('span');count.textContent=meanings.length+' '+(meanings.length===1?'phrase':'phrases')+' · source order';heading.append(count);section.append(heading);
-      const note=document.createElement('p');note.className='reading-note';note.textContent='Jastrow’s own wording. These are entry meanings, not a translation chosen for your sentence. Expand a card for usage and qualifications.';section.append(note);
+      const title=document.createElement('h3');title.textContent='Translation';heading.append(title);
+      const count=document.createElement('span');count.textContent=meanings.length+' '+(meanings.length===1?'phrase':'phrases')+' · source order';section.append(heading);
+      const note=document.createElement('p');note.className='reading-note';note.textContent='Jastrow’s own wording. These are entry meanings, not a translation chosen for your sentence. Expand a card for usage and qualifications.';
       const list=document.createElement('ol');
       for(const [number,meaning] of meanings.entries()){
         const li=document.createElement('li');li.className='meaning-card';li.hidden=number>=6;
         const badge=document.createElement('span');badge.className='meaning-number';badge.textContent=number+1;badge.setAttribute('aria-hidden','true');li.append(badge);
         const content=document.createElement('div');content.className='meaning-content';
-        if(meaning.label){const label=document.createElement('span');label.className='meaning-form';label.dir='auto';label.textContent='Jastrow’s form: '+meaning.label;content.append(label);}
-        if(meaning.section){const label=document.createElement('span');label.className='meaning-section';label.dir='auto';label.textContent='Jastrow’s section: '+meaning.section;content.append(label);}
+        if(meaning.label){const label=document.createElement('span');label.className='meaning-form';label.dir='auto';label.textContent=meaning.label;content.append(label);}
+        if(meaning.section){const label=document.createElement('span');label.className='meaning-section';label.dir='auto';label.textContent=meaning.section;content.append(label);}
         const text=document.createElement('p');text.className='meaning-text';text.textContent=meaning.text;content.append(text);
         const target=body.querySelectorAll('i')[meaning.sourceIndex];
         const sense=target?.closest('.sense');
-        if(sense){
-          const usage=document.createElement('details');usage.className='meaning-usage';
-          const toggle=document.createElement('summary');toggle.textContent='Usage & qualifications';
-          const source=document.createElement('div');source.className='usage-source';source.dir='ltr';
-          const copy=sense.cloneNode(true);copy.querySelectorAll('.sense').forEach(n=>n.remove());
-          // Display complete source wording for this sense; do not pair examples
-          // and translations by guesswork or silently drop parenthetical limits.
-          copy.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));source.append(copy);
-          usage.append(toggle,source);content.append(usage);
-        }
-        const context=document.createElement('button');context.type='button';context.className='meaning-context';context.textContent='Locate in full entry';context.setAttribute('aria-label','Read this phrase in the full Jastrow entry');
-        context.onclick=()=>{details.open=true;body.querySelectorAll('.meaning-highlight').forEach(n=>n.classList.remove('meaning-highlight'));if(target){target.classList.add('meaning-highlight');target.scrollIntoView({block:'center'});}};
-        content.append(context);li.append(content);list.append(li);
+        li.append(content);list.append(li);
       }
       section.append(list);
       if(meanings.length>6){
         let expanded=false;const moreButton=document.createElement('button');moreButton.type='button';moreButton.className='more-meanings';moreButton.setAttribute('aria-expanded','false');
-        const update=()=>{moreButton.textContent=expanded?'Show fewer phrases':'Show '+(meanings.length-6)+' more definition phrases';moreButton.setAttribute('aria-expanded',String(expanded));count.textContent=(expanded?meanings.length:'6 of '+meanings.length)+' phrases · source order';};
+        const update=()=>{moreButton.textContent=expanded?'Show fewer meanings':'More meanings';moreButton.setAttribute('aria-expanded',String(expanded));count.textContent=(expanded?meanings.length:'6 of '+meanings.length)+' phrases · source order';};
         moreButton.onclick=()=>{expanded=!expanded;[...list.children].slice(6).forEach(n=>n.hidden=!expanded);update();};update();section.append(moreButton);
       }
-      const more=document.createElement('p');more.className='reading-note';more.textContent='The full entry may contain further meanings, forms and qualifications.';section.append(more);fragment.append(section);
+      const more=document.createElement('p');more.className='reading-note';more.textContent='The full entry may contain further meanings, forms and qualifications.';fragment.append(section);
     }
     details.append(body);fragment.append(details);
     return fragment;

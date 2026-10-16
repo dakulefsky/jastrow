@@ -113,3 +113,9 @@ Adds 15,407 entries with explicitly marked English glosses from Sefaria’s digi
 Exact headword matches precede linked forms. Within each match type the concise source comes first, followed by Jastrow’s length ordering. No cross-dictionary sense equivalence or new inflection mapping is inferred. Both foreground and background load the supplementary index so the right-click menu also recognizes Krupnik-only headwords.
 
 Rebuild import: `python build_krupnik.py /path/to/lexicon_entry.bson` (requires pymongo). Bundled provenance records the SHA-256 of the original extracted records. Source/reuse statement: https://www.sefaria.org/digitized-by-sefaria. The app remains fully offline; original Jastrow data is unchanged.
+
+## 1.5.1 — Translation first
+
+Removes German from displayed Krupnik source text. English glosses stay verbatim. Main reading view shows translations with brief source labels; match explanations, passage excerpts and per-phrase academic controls are removed. One collapsed “More detail” section retains examples and qualifications. Sorting controls are under Options.
+
+When Krupnik has an exact headword/alternate-headword entry, only that source is shown initially. Check Jastrow explicitly expands the search. Otherwise normal Jastrow form lookup remains available. No inflected form is assigned to Krupnik by guesswork.
