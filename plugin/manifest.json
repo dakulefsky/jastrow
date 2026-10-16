@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "id": "com.kulefsky.jastrow",
-  "name": "Aramaic to English Dictionary",
-  "version": "1.5.2",
+  "name": "Aramaic → Eng.",
+  "version": "1.5.3",
   "description": "Offline Aramaic and rabbinic Hebrew to English translation, with concise meanings and optional examples.",
   "author": "DanTheMan",
   "stability": "beta",
@@ -23,7 +23,7 @@
   },
   "contributes": {
     "toolTab": {
-      "title": "Aramaic to English Dictionary",
+      "title": "Aramaic → Eng.",
       "order": 900,
       "defaultPinned": true,
       "iconName": "book_24_regular"
