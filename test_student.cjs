@@ -1,9 +1,10 @@
 const assert=require('node:assert/strict'),path=require('node:path'),{pathToFileURL}=require('node:url');
+const fs=require('node:fs'),http=require('node:http');
 const {chromium,executablePath}=require('./browser_support.cjs');
-(async()=>{const browser=await chromium.launch({executablePath,args:['--no-sandbox']});try{
+(async()=>{const server=http.createServer((req,res)=>{try{const p=path.join(__dirname,'plugin',req.url==='/'?'index.html':req.url);res.setHeader('Content-Type',p.endsWith('.js')?'text/javascript':p.endsWith('.css')?'text/css':'text/html');res.end(fs.readFileSync(p));}catch{res.statusCode=404;res.end();}});await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({executablePath,args:['--no-sandbox']});try{
  const context=await browser.newContext({viewport:{width:1440,height:1050}}),page=await context.newPage(),errors=[];
  page.on('pageerror',e=>errors.push(String(e)));
- const url=pathToFileURL(path.join(__dirname,'../Jastrow-Preview.html')).href;
+ const url='http://127.0.0.1:'+server.address().port;
  await page.goto(url);assert.equal(await page.locator('.examples-label, .examples, [data-query]').count(),0);await page.evaluate(()=>{localStorage.clear();});await page.reload();
  const lookup=async word=>{await page.fill('#query',word);await page.click('.lookup-button');};
  await lookup('דאמר');await page.locator('.result-meaning').first().waitFor();
@@ -52,4 +53,4 @@ const {chromium,executablePath}=require('./browser_support.cjs');
  // Optional storage failure cannot block lookup or reading controls.
  const blocked=await context.newPage();await blocked.addInitScript(()=>{Storage.prototype.getItem=()=>{throw Error('denied')};Storage.prototype.setItem=()=>{throw Error('denied')};});await blocked.goto(url);await blocked.fill('#query','מיתיבי');await blocked.click('.lookup-button');await blocked.locator('.entry-title').waitFor();await blocked.locator('#text-larger').click();assert.equal(await blocked.locator('#text-size').innerText(),'110%');
  assert.deepEqual(errors,[]);console.log('PASS: source-exact match previews and sense passages, word-form explanation, selected-word excerpts, history query restoration, recent lookup, keyboard navigation, reading-size persistence, narrow layout and blocked storage.');
- }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1});
+ }finally{await browser.close();await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e);process.exitCode=1});

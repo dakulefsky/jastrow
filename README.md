@@ -1,3 +1,7 @@
+## 1.3.3 — plain dictionary interface
+
+Removed the header tagline, reader-companion slogan and promotional welcome text. The start view contains only dictionary lookup instructions. Added current-theme fallbacks for older Otzaria palettes. Theme-change events use the host’s automatic grant. Preview generation is opt-in with `python3 package.py --preview`; default builds only create plugin/source archives.
+
 ## 1.3.1
 
 Removed the suggested-word starter section. Source attribution remains in the visible footer, help panel, bundled data/provenance.json and source archive LICENSE. Plugin author remains separately identified in manifest.json.
@@ -32,7 +36,7 @@ Run `node test_search.cjs`, `node test_context.cjs`, and `node test_ui.cjs` afte
 
 ## Install
 
-1. Download `Jastrow-1.3.1.otzplugin`.
+1. Download `Jastrow-1.3.3.otzplugin`.
 2. In Otzaria open **כלים → תוספים → התקן תוסף חדש** (Tools → Plugins → Install new plugin).
 3. Select the downloaded file and approve the reader/context-menu permissions.
 4. Open **Jastrow** from the tools panel, or select a word in a text sefer and choose **Jastrow — English** from its context menu.

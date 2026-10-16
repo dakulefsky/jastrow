@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "com.kulefsky.jastrow",
   "name": "Jastrow",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Offline Aramaic and rabbinic Hebrew to English dictionary, with Jastrow entries and word-form lookup.",
   "author": "DanTheMan",
   "stability": "beta",

@@ -113,9 +113,9 @@ function theme(t){
   if(t?.typography?.uiFontFamily)document.documentElement.style.setProperty('--font-main',t.typography.uiFontFamily+', system-ui, sans-serif');
   if(t?.typography?.fontFamily)document.documentElement.style.setProperty('--body',t.typography.fontFamily+', Georgia, serif');
   const c=t?.colorScheme;if(!c)return;
-  for(const [key,role] of Object.entries({'primary':'primary','on-primary':'onPrimary','surface':'surface','on-surface':'onSurface','surface-container':'surfaceContainerHigh','outline':'outline','muted':'onSurfaceVariant','accent':'tertiary','book-accent':'onPrimary'})){
-    if(c[role])document.documentElement.style.setProperty('--color-'+key,c[role]);
-  }
+  const colors={primary:c.primary,'on-primary':c.onPrimary,surface:c.surface,'on-surface':c.onSurface,'surface-container':c.surfaceContainerHigh||c.surfaceContainerHighest||c.surface,outline:c.outline,muted:c.onSurfaceVariant||c.onSurface,accent:c.tertiary||c.primary,'book-accent':c.onPrimary};
+  for(const [key,color] of Object.entries(colors))if(color)document.documentElement.style.setProperty('--color-'+key,color);
+  document.documentElement.style.colorScheme=t.mode==='dark'?'dark':'light';
 }
 let recentLookups=[],readingSize=100;
 try{const data=JSON.parse(localStorage.getItem('jastrow-student-v1')||'{}');
