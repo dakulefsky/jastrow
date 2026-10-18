@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "com.kulefsky.aramaic-hebrew",
-  "name": "מילון ארמי־עברי",
+  "name": "ארמית לעברית",
   "version": "1.1.0",
   "description": "מילון ארמי־עברי על פי הנוסח העברי המקורי של קרופניק וזילברמן, לשימוש ללא חיבור לרשת.",
   "author": "DanTheMan",
@@ -22,7 +22,7 @@
   },
   "contributes": {
     "toolTab": {
-      "title": "מילון ארמי־עברי",
+      "title": "ארמית לעברית",
       "order": 900,
       "defaultPinned": true,
       "iconName": "book_24_regular"
