@@ -16,12 +16,13 @@
   return pair[0]==='A03220|accident, occurrence'&&pair[1]==='KRU02095|in accident';
  }
  function sameMeaning(group,item){
-  if(group.form!==stem(item.meaning.label)||!group.sources.every(s=>compatible(s.spelling,item.spelling)))return false;
+  if(group.form!==stem(item.meaning.label)||!group.sources.every(s=>S.normalize(s.spelling)===S.normalize(item.spelling)))return false;
   if(clean(group.text)===clean(item.meaning.text)||group.sources.some(s=>reviewedEquivalent(s,item)))return true;
   const a=parts(group.text),b=parts(item.meaning.text);
-  // Only consolidate identical glosses or a shared, explicit synonym list.
-  // Two meanings merely sharing one ambiguous English word stay separate.
-  return Math.min(a.length,b.length)>=2&&(a.every(x=>b.includes(x))||b.every(x=>a.includes(x)));
+  // Consolidate identical English meanings and contained synonym lists.
+  // Different lists merely sharing one word remain separate. Original vowel
+  // readings belong to their source references, not duplicate meaning cards.
+  return Math.min(a.length,b.length)>=1&&(a.every(x=>b.includes(x))||b.every(x=>a.includes(x)));
  }
  function merge(records,word){
   const groups=[];
@@ -31,7 +32,7 @@
    let group=groups.find(g=>sameMeaning(g,item));
    if(!group){group={text:meaning.text,form:stem(meaning.label),spelling,sources:[],rank:S.vowelRank(entry,word)};groups.push(group);}
    if(parts(meaning.text).length>parts(group.text).length)group.text=meaning.text;
-   group.rank=Math.min(group.rank,S.vowelRank(entry,word));
+   const rank=S.vowelRank(entry,word);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
    if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label)))group.sources.push(item);
   }
   if(S.hasVowels(word))groups.sort((a,b)=>a.rank-b.rank);

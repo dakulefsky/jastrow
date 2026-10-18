@@ -98,9 +98,10 @@ async function search(word, more=false){
 async function searchWords(words,serial){
  const phrase=query;currentId=null;document.body.classList.add('single-lookup');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';
  const segments=JastrowSearch.segmentWords(index,phrase);
- setStatus(segments.some(s=>s.result)?'Dictionary expressions are shown together.':'Word-by-word lookup. Choose each meaning for its context.');
+ setStatus('');
  try{history.replaceState(null,'','#'+new URLSearchParams({word:phrase}));}catch{}
- $('entry').replaceChildren(el('h2',phrase,'entry-title'),el('p',segments.some(s=>s.result)?'Expressions and words':'Word by word · dictionary meanings for each word','translation-label'));
+ if(segments.length===1&&segments[0].result){rememberLookup(segments[0].result.ids[0],phrase);await showTranslations(segments[0].result,phrase,serial);return;}
+ $('entry').replaceChildren();
  const jobs=segments.map(({word,result})=>{const target=el('section',undefined,'phrase-word');$('entry').append(target);return {word,target,result:result||JastrowSearch.lookup(index,word,10000,'length')};});
  const first=jobs.find(j=>j.result.ids.length&&j.result.kind!=='suggestions');if(first)rememberLookup(first.result.ids[0],phrase);
  await Promise.all(jobs.map(async({word,target,result})=>{
@@ -110,7 +111,7 @@ async function searchWords(words,serial){
 }
 async function showTranslations(result,word,serial,target=$('entry'),pageSize=12){
  const panelSerial=entrySerial;
- currentId=null;target.replaceChildren(el('h2',word,'entry-title'),el('p',result.kind==='phrase'?'Expression meaning':'Possible meanings','translation-label'));
+ currentId=null;target.replaceChildren(el('h2',word,'entry-title'));
  target.dataset.matchKind=result.kind;
  const ids=result.ids.slice(0,Math.max(60,limit));
  const items=await Promise.all(ids.map(async id=>{try{

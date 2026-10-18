@@ -1,6 +1,12 @@
+# 1.9.1 — one result heading, no duplicate meanings for vowel variants
+
+A recognized expression now has one result heading followed directly by its meaning cards. The repeated “Expressions and words”, “Expression meaning” and “Possible meanings” labels have been removed. Longer selections show each recognized unit directly without another repeated overall heading.
+
+Consolidation groups English meanings, retaining variant dictionary pointing within source references. Identical glosses and contained synonym lists may share one card even when the sources point the same consonantal headword differently; distinct stems and non-contained meaning lists remain separate. The best matching pointing is displayed. Actual נפקא entries now produce two cards (excrements; outlet/opening), each crediting both dictionaries. Generic tests cover this behavior beyond this word.
+
 # 1.9.0 — unified meanings
 
-All lookup paths now render the same numbered meaning cards. Exact duplicate glosses and nested synonym lists with at least two shared English terms are consolidated only when the matched Hebrew spellings have compatible vowels and their stem labels agree. Every original gloss and full dictionary entry is retained under the card's numbered source links. Sharing one ambiguous English term alone does not merge different definitions. A narrowly reviewed equivalence also combines Krupnik’s “in accident” (KRU02095) with Jastrow’s “accident, occurrence” (A03220): both give אִרְעָא and cite Targum Ruth 2:3. Both original glosses remain visible under sources.
+All lookup paths now render the same numbered meaning cards. Exact duplicate glosses and contained synonym lists are consolidated when the matched Hebrew consonantal spellings and stem labels agree. Every original gloss and full dictionary entry is retained under the card's numbered source links. Sharing one ambiguous English term alone does not merge different definitions. A narrowly reviewed equivalence also combines Krupnik’s “in accident” (KRU02095) with Jastrow’s “accident, occurrence” (A03220): both give אִרְעָא and cite Targum Ruth 2:3. Both original glosses remain visible under sources.
 
 Vowel ranking checks explicit alternate headwords as well as primary headings, accepts partially supplied pointing and ignores cantillation. Matching readings appear first; other readings remain available in a collapsed alternatives section. For אַרְעָא, the Krupnik alternate spelling and Jastrow headword agree and their overlapping land/ground lists form one card. The accident reading remains separate. The Hebrew spelling is preserved on each card.
 
