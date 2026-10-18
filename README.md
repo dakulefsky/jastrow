@@ -1,3 +1,11 @@
+# 1.6.2 — Consistent student lookup and store card image
+
+The same typed, selected, recent or reopened word now uses the same default candidate order. Recent words reopen the complete lookup instead of one previously selected entry. A match in the concise dictionary no longer suppresses Jastrow candidates with additional meanings. Exact indexed headwords and explicit alternate headwords remain ahead of linked forms; source preference and entry length break ties, without a frequency claim.
+
+Student headings show the matching Hebrew spelling and remove dictionary Roman/superscript entry numbers. Original headwords, full source text and attribution remain in collapsed details. For צפרא, regression tests check both the morning and bird entries, along with distinct same-spelling entries and repeated/vowelled lookups. The unpointed spelling alone cannot select a meaning for the learner's sentence.
+
+The release workflow now runs the lookup regression in Chromium before publishing. It separately uploads the supplied logo to the store's card-image field; the screenshot gallery and in-plugin logo are different assets. No dictionary source texts were rewritten.
+
 # Aramaic to English Dictionary
 
 The context menu is filtered to single indexed words again. A separate background entrypoint checks selections; it starts on app startup and is kept alive so the next selection does not need to cold-start a WebView. Otzaria must grant background execution, background keep-alive, reader selection events and context-menu access. The visible dictionary identifies missing grants. No always-visible fallback menu item is registered. Rendered/source variants are checked to accommodate reader vowel settings; late responses cannot override newer selection events. Native menu visibility still depends on event delivery completing before a menu snapshot is taken.

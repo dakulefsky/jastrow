@@ -74,7 +74,7 @@
         const badge=document.createElement('span');badge.className='meaning-number';badge.textContent=number+1;badge.setAttribute('aria-hidden','true');li.append(badge);
         const content=document.createElement('div');content.className='meaning-content';
         if(meaning.label){const label=document.createElement('span');label.className='meaning-form';label.dir='auto';label.textContent=meaning.label;content.append(label);}
-        if(meaning.section){const label=document.createElement('span');label.className='meaning-section';label.dir='auto';label.textContent=meaning.section;content.append(label);}
+        if(meaning.section && !/^[—\s]*(?:[IVXLCDM]+|\d+)[).]?\s*$/.test(meaning.section)){const label=document.createElement('span');label.className='meaning-section';label.dir='auto';label.textContent=meaning.section;content.append(label);}
         const text=document.createElement('p');text.className='meaning-text';text.textContent=meaning.text;content.append(text);
         const target=body.querySelectorAll('i')[meaning.sourceIndex];
         const sense=target?.closest('.sense');

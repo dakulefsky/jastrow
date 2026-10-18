@@ -8,7 +8,8 @@
     const direct=index.direct[q]||[];
     const forms=index.forms[q]||[],attested=(index.attestedForms?.[q]||[]).map(x=>x.id);
     let ids=[...new Set([...direct,...forms,...attested])];
-    if(!includeJastrow&&direct.some(id=>index.entries[id].source==='krupnik'))ids=direct.filter(id=>index.entries[id].source==='krupnik');
+    // Keep every attested candidate: a concise source match must not hide
+    // another dictionary's distinct meaning for the same spelling.
     let kind=direct.length?'headword':forms.length?'word form':attested.length?'attested form':'suggestions';
     if(!ids.length){
       // Suggestions are spelling matches, never invented translations or inferred roots.
@@ -26,7 +27,11 @@
     const q=normalize(word);
     return !!q && !!((index.direct[q]||[]).length || (index.forms[q]||[]).length || (index.attestedForms?.[q]||[]).length);
   }
-  const api={normalize,lookup,hasTranslation,validWord};
+  function displayHeadword(entry,word=''){
+    const same=[entry.h,...(entry.alt||[])].find(h=>normalize(h)===normalize(word));
+    return (same||entry.h).replace(/\s+[IVXLCDM]+$/,'').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+$/,'').replace(/^\*/, '').trim();
+  }
+  const api={normalize,lookup,hasTranslation,validWord,displayHeadword};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.JastrowSearch=api;
 })(typeof window!=='undefined'?window:globalThis);

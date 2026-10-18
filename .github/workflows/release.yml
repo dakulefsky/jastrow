@@ -27,6 +27,12 @@ jobs:
           node test_context.cjs
           node test_ranking.cjs
           node test_krupnik.cjs
+          node test_consistency.cjs
+      - name: Test consistent student lookup in Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+          node test_consistency_ui.cjs
       - name: Validate, build, and publish
         id: publish
         uses: Otzaria/otzaria-plugin-validator@v1
@@ -37,6 +43,12 @@ jobs:
           update-screenshots: 'true'
           otzaria-user: ${{ secrets.OTZARIA_USER }}
           otzaria-password: ${{ secrets.OTZARIA_PASSWORD }}
+      - name: Update the separate store card icon
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          OTZARIA_USER: ${{ secrets.OTZARIA_USER }}
+          OTZARIA_PASSWORD: ${{ secrets.OTZARIA_PASSWORD }}
+        run: node sync_store_icon.cjs
       - name: Save installable plugin
         if: steps.publish.outputs.plugin-file != ''
         uses: actions/upload-artifact@v4
