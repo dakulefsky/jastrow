@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "com.kulefsky.jastrow",
   "name": "Aramaic → Eng.",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Offline Aramaic and rabbinic Hebrew to English translation, with concise meanings and optional examples.",
   "author": "DanTheMan",
   "stability": "beta",

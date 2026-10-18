@@ -39,8 +39,26 @@
     const words=value.split(/[\s\u05be]+/).map(w=>w.replace(/^[,.;:!?״׳"'()\[\]{}–—]+|[,.;:!?״׳"'()\[\]{}–—]+$/g,'')).filter(Boolean);
     return words.length<=12&&words.every(validWord)?words:[];
   }
-  function hasSelectionTranslations(index,text){const words=splitWords(text);return !!words.length&&words.every(word=>hasTranslation(index,word));}
-  const api={hasSelectionTranslations,splitWords,normalize,lookup,hasTranslation,validWord,displayHeadword};
+  function phraseLookup(index,text){
+    const words=splitWords(text),key=words.map(normalize).join(' ');
+    const ids=words.length>1?[...(index.phrases?.[key]||[])]:[];
+    return {kind:'phrase',ids,total:ids.length};
+  }
+  function segmentWords(index,text){
+    const words=splitWords(text),segments=[];
+    for(let start=0;start<words.length;){
+      let found=false;
+      for(let end=words.length;end>start+1;end--){
+        const word=words.slice(start,end).join(' '),result=phraseLookup(index,word);
+        if(result.ids.length){segments.push({word,result});start=end;found=true;break;}
+      }
+      if(!found){segments.push({word:words[start],result:null});start++;}
+    }
+    return segments;
+  }
+  function hasSelectionTranslations(index,text){const segments=segmentWords(index,text);return !!segments.length&&segments.every(s=>s.result?.ids.length||hasTranslation(index,s.word));}
+
+  const api={phraseLookup,segmentWords,hasSelectionTranslations,splitWords,normalize,lookup,hasTranslation,validWord,displayHeadword};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.JastrowSearch=api;
 })(typeof window!=='undefined'?window:globalThis);

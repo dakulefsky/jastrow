@@ -1,3 +1,13 @@
+# 1.8.0 — Dictionary expressions first
+
+Full multiword headwords and explicit alternate headwords from both bundled dictionaries are indexed with their word boundaries intact: 933 unique phrase spellings (913 Krupnik and 29 Jastrow phrase-to-entry links). This includes technical terms, expressions and names; the count is not a claim that every item is an Aramaic idiom. Abbreviated source headwords are not guessed or expanded. Expressions mentioned only inside example prose are not automatically indexed.
+
+Run `python3 build_phrases.py` before `node test_phrases.cjs`; packaging also rebuilds the phrase index and its source audit.
+
+Known expressions take priority over component-word lookup. Within a longer selection, the longest matching expression is grouped before lookup continues with the remaining words. Unlisted combinations retain the word-by-word fallback. The right-click menu label is shortened to Aramaic → Eng.
+
+For a Krupnik phrase entry, the short definition uses the original English spans before a new subentry or verbal-stem block. The complete entry remains in More detail. Thus נפקא מינה displays “the practical difference is”; the following אפק/אתפק definitions do not become meanings of that phrase. The phrase audit preserves exact source spellings and primary source HTML. Four reviewed digitization faults have explicit notes: stray German “sagen”, the misplaced English tag around “hip-joint”, damaged italic markup before “fasces”, and a missing separator before the German rendering of “one after the other”. Original source text is retained in the details. No sentence translations are generated.
+
 # 1.7.0 — Several-word lookup and matching vowels
 
 Paste up to twelve Hebrew/Aramaic words to see a separate dictionary lookup for each. Punctuation and Hebrew maqaf are handled at word boundaries. Unknown tokens remain explicitly unmatched; no sentence translation is generated. Right-click selection is offered for a phrase only when every word has an indexed match. Results, sources and alternatives remain available offline, with per-word expansion.

@@ -35,6 +35,7 @@ function matchType(id,word){
  return 'Spelling suggestion';
 }
 async function showEntry(id,record=true,targetPosition=null,word=query){
+  if(JastrowSearch.phraseLookup(index,word).ids.includes(id)){await search(word);return;}
   if(!Number.isInteger(id)||id<0||id>=index.entries.length)return;
   const serial=++entrySerial;
   $('entry').setAttribute('aria-busy','true');
@@ -107,10 +108,11 @@ async function search(word, more=false){
 }
 async function searchWords(words,serial){
  const phrase=query;currentId=null;document.body.classList.add('single-lookup');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';
- setStatus('Word-by-word lookup. Choose each meaning for its context.');
+ const segments=JastrowSearch.segmentWords(index,phrase);
+ setStatus(segments.some(s=>s.result)?'Dictionary expressions are shown together.':'Word-by-word lookup. Choose each meaning for its context.');
  try{history.replaceState(null,'','#'+new URLSearchParams({word:phrase}));}catch{}
- $('entry').replaceChildren(el('h2',phrase,'entry-title'),el('p','Word by word · dictionary meanings for each word','translation-label'));
- const jobs=words.map(word=>{const target=el('section',undefined,'phrase-word');$('entry').append(target);const result=JastrowSearch.lookup(index,word,10000,'length');return {word,target,result};});
+ $('entry').replaceChildren(el('h2',phrase,'entry-title'),el('p',segments.some(s=>s.result)?'Expressions and words':'Word by word · dictionary meanings for each word','translation-label'));
+ const jobs=segments.map(({word,result})=>{const target=el('section',undefined,'phrase-word');$('entry').append(target);return {word,target,result:result||JastrowSearch.lookup(index,word,10000,'length')};});
  const first=jobs.find(j=>j.result.ids.length&&j.result.kind!=='suggestions');if(first)rememberLookup(first.result.ids[0],phrase);
  await Promise.all(jobs.map(async({word,target,result})=>{
   if(!result.ids.length||result.kind==='suggestions'){target.append(el('h2',word),el('p','No indexed translation for this word.'));const b=el('button','Look up this word');b.type='button';b.onclick=()=>search(word);target.append(b);return;}
@@ -119,7 +121,8 @@ async function searchWords(words,serial){
 }
 async function showTranslations(result,word,serial,target=$('entry'),pageSize=12){
  const panelSerial=entrySerial;
- currentId=null;target.replaceChildren(el('h2',word,'entry-title'),el('p','Possible meanings','translation-label'));
+ currentId=null;target.replaceChildren(el('h2',word,'entry-title'),el('p',result.kind==='phrase'?'Expression meaning':'Possible meanings','translation-label'));
+ target.dataset.matchKind=result.kind;
  let offset=0;
  const more=el('button','More meanings');more.type='button';
  async function next(){
@@ -132,10 +135,10 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
    const {id,entry}=item;const head=el('h3',JastrowSearch.displayHeadword(entry,word),'translation-headword');head.dir='rtl';group.append(head);
    const body=el('div',undefined,'definition');body.innerHTML=entry.html;
    if(entry.source==='krupnik'){
-    for(const gloss of entry.glosses){const card=el('div',undefined,'meaning-card');if(gloss.label){const label=el('span',gloss.label,'meaning-form');label.dir='auto';card.append(label);}card.append(el('p',gloss.text));group.append(card);}
+    for(const gloss of (result.kind==='phrase'?(index.phraseGlosses?.[id]||[]):entry.glosses)){const card=el('div',undefined,'meaning-card');if(gloss.label){const label=el('span',gloss.label,'meaning-form');label.dir='auto';card.append(label);}card.append(el('p',gloss.text));group.append(card);}
     const details=el('details',undefined,'scholarly-entry');details.append(el('summary','More detail'));body.dir='auto';body.style.whiteSpace='pre-line';details.append(body);group.append(details);
    }else{group.append(JastrowReadingView.render(body));group.querySelector('.meanings-heading')?.remove();}
-   const details=group.querySelector('.scholarly-entry');if(details){details.open=false;details.append(el('p',(entry.source==='krupnik'?'Krupnik & Silbermann':'Jastrow')+' · Dictionary headword: '+entry.h,'entry-meta'));}
+   const details=group.querySelector('.scholarly-entry');if(details){details.open=false;if(result.kind==='phrase'&&index.phraseNotes?.[id])details.append(el('p',index.phraseNotes[id],'entry-meta'));details.append(el('p',(entry.source==='krupnik'?'Krupnik & Silbermann':'Jastrow')+' · Dictionary headword: '+entry.h,'entry-meta'));}
    target.append(group);
   }
   offset+=ids.length;more.remove();if(offset<result.ids.length){more.disabled=false;target.append(more);}else if(result.total>result.ids.length){more.disabled=false;more.onclick=()=>{limit+=60;search(word,true);};target.append(more);}
@@ -199,7 +202,7 @@ if(window.Otzaria){
     }).catch(()=>{});
     $('selection').onclick=async()=>{
       try{const res=await Otzaria.call('reader.getSelection');
-      const text=JastrowContext.selectionText(res?.data);if(res?.success&&text)search(text);else setStatus('Select a word in an Otzaria text first, then choose Aramaic to English Dictionary from the context menu.');}
+      const text=JastrowContext.selectionText(res?.data);if(res?.success&&text)search(text);else setStatus('Select a word in an Otzaria text first, then choose Aramaic → Eng. from the context menu.');}
       catch{setStatus('Could not read the selected word. You can type it in the search field.');}
     };
   });

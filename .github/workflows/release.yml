@@ -23,11 +23,13 @@ jobs:
           node-version: '22'
       - name: Check dictionary and selection lookup
         run: |
+          python3 build_phrases.py
           node test_search.cjs
           node test_context.cjs
           node test_ranking.cjs
           node test_krupnik.cjs
           node test_consistency.cjs
+          node test_phrases.cjs
       - name: Test consistent student lookup in Chromium
         run: |
           npm install --no-save playwright
