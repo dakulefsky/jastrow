@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "com.kulefsky.aramaic-hebrew",
   "name": "ארמית לעברית",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "מילון ארמי־עברי על פי הנוסח העברי המקורי של קרופניק וזילברמן, לשימוש ללא חיבור לרשת.",
   "author": "DanTheMan",
   "stability": "beta",

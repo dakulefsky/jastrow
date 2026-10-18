@@ -94,6 +94,12 @@ jobs:
           reports-consent: 'true'
           otzaria-user: ${{ secrets.OTZARIA_USER }}
           otzaria-password: ${{ secrets.OTZARIA_PASSWORD }}
+      - name: Update Hebrew store card icon
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          OTZARIA_USER: ${{ secrets.OTZARIA_USER }}
+          OTZARIA_PASSWORD: ${{ secrets.OTZARIA_PASSWORD }}
+        run: node hebrew/sync_store_icon.cjs
       - uses: actions/upload-artifact@v4
         if: steps.hebrew.outputs.plugin-file != ''
         with:
