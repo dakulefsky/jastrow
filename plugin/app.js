@@ -177,9 +177,9 @@ if(window.Otzaria){
     theme(p.theme);$('selection').hidden=false;
     Otzaria.call('app.getGrantedPermissions').then(res=>{
       const permissions=res?.data?.permissions;if(!res?.success||!Array.isArray(permissions))return;
-      const required=['app.run_on_startup','app.background_keep_alive','events.subscribe:reader.selection_changed','reader.context_menu','ui.feedback'];
+      const required=['app.run_on_startup','app.background_keep_alive','events.subscribe:reader.selection_changed','reader.context_menu'];
       const missing=required.some(x=>!permissions.includes(x));$('right-click-state').hidden=!missing;
-      if(missing)$('right-click-state').textContent='For indexed-word-only right-click lookup, enable background execution, keep-alive, text-selection access and UI feedback in Otzaria’s permissions for Aramaic to English Dictionary.';
+      if(missing)$('right-click-state').textContent='For indexed-word-only right-click lookup, enable background execution, keep-alive, text-selection access in Otzaria’s permissions for Aramaic to English Dictionary.';
     }).catch(()=>{});
     $('selection').onclick=async()=>{
       try{const res=await Otzaria.call('reader.getSelection');

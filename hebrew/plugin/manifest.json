@@ -14,8 +14,7 @@
     "reader.context_menu",
     "app.run_on_startup",
     "app.background_keep_alive",
-    "events.subscribe:reader.selection_changed",
-    "ui.feedback"
+    "events.subscribe:reader.selection_changed"
   ],
   "network": {
     "enabled": false,

@@ -6,5 +6,5 @@
  function message(word,items){const short=s=>s.length>180?s.slice(0,177)+'…':s;return [word,...items.slice(0,2).map((s,i)=>(i+1)+'. '+short(s)),items.length>2?'More meanings — click to open dictionary':'Click for full entry and sources'].join('\n');}
  async function show(word){const current=++serial;try{const items=await meanings(word);if(current!==serial||!items.length)return;const res=await root.Otzaria.call('ui.showMessage',{message:message(word,items),tapPayload:{dictionaryWord:word},tapOpenPlugin:true});if(res?.success===false)console.warn('Quick dictionary lookup unavailable; use Open dictionary.');}catch{if(current===serial)console.warn('Quick dictionary lookup failed; use Open dictionary.');}}
  root.DictionaryQuick={meanings,message,show};
- if(root.Otzaria){root.Otzaria.on('dictionary.quickLookup',p=>show(root.JastrowContext.selectionText(p)));}
+ if(root.Otzaria){root.Otzaria.on('reader.context_menu_item_clicked',p=>p.itemId==='jastrow-lookup'&&show(root.JastrowContext.selectionText(p)));}
 })(typeof window==='undefined'?globalThis:window);
