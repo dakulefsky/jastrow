@@ -51,7 +51,7 @@
     return !!q && !!((index.direct[q]||[]).length || (index.forms[q]||[]).length || (index.attestedForms?.[q]||[]).length);
   }
   function displayHeadword(entry,word=''){
-    const same=[entry.h,...(entry.alt||[])].find(h=>normalize(h)===normalize(word));
+    const same=[entry.h,...(entry.alt||[])].filter(h=>normalize(h)===normalize(word)).sort((a,b)=>vowelRank({h:a},word)-vowelRank({h:b},word))[0];
     return (same||entry.h).replace(/\s+[IVXLCDM]+$/,'').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+$/,'').replace(/^\*/, '').trim();
   }
   function splitWords(text){
