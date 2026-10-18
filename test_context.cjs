@@ -8,7 +8,8 @@ vm.runInContext(fs.readFileSync(__dirname+'/plugin/availability.js','utf8'),ctx)
 const flush=()=>new Promise(r=>setImmediate(r));
 (async()=>{selected='מיתיבי';await events['plugin.boot']();await flush();assert.equal(calls.at(-1).m,'reader.addContextMenuItem');assert(calls.at(-1).p.showWhen.selectionContainsAny.includes(selected));assert(calls.at(-1).p.openPlugin);
  selected='אבגדהוזחטיכלמנסעפצקרשת';events['reader.selection_changed']({text:selected});await flush();assert.equal(calls.at(-1).m,'reader.removeContextMenuItem');
- selected='אמר דבר';events['reader.selection_changed']({text:selected});await flush();assert.equal(calls.at(-1).m,'reader.removeContextMenuItem');
+ selected='אמר אבגדהוזחטיכלמנסעפצקרשת';events['reader.selection_changed']({text:selected});await flush();assert.equal(calls.at(-1).m,'reader.removeContextMenuItem');
+ selected='צפרא טבא';events['reader.selection_changed']({text:selected});await flush();assert.equal(calls.at(-1).m,'reader.addContextMenuItem');assert(calls.at(-1).p.showWhen.selectionContainsAny.includes(selected));
  selected='אמר';events['reader.selection_changed']({text:'אָמַר'});await flush();assert.equal(calls.at(-1).m,'reader.addContextMenuItem');assert(calls.at(-1).p.showWhen.selectionContainsAny.includes('אמר'));assert(calls.at(-1).p.showWhen.selectionContainsAny.includes('אָמַר'));
  delay={};events['reader.selection_changed']({text:'רחמנא'});await flush();events['reader.selection_changed']({text:'אבגדהוזחטיכלמנסעפצקרשת'});delay.resolve({success:true,data:{renderedSelectedText:'רחמנא'}});delay=null;await flush();assert.equal(calls.at(-1).m,'reader.removeContextMenuItem');
  for(const text of ['תניא','תנן','רחמנא']){selected=text;events['reader.selection_changed']({text});await flush();assert.equal(calls.at(-1).m,'reader.addContextMenuItem');}

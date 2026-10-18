@@ -4,6 +4,9 @@
   function validWord(text){const word=String(text).trim();return !!word && word.length<=120 && word.split(/\s+/).length===1 && !/[A-Za-z0-9]/.test(word) && !!normalize(word);}
   function lookup(index, query, limit=100, order='length',includeJastrow=false){
     if(!validWord(query))return {kind:String(query).trim()?'invalid':'empty',ids:[],total:0};
+    const pointed=String(query).normalize('NFKD').replace(/[^\u05b0-\u05bc\u05c1\u05c2\u05c7\u05d0-\u05ea]/g,'');
+    const hasVowels=/[\u05b0-\u05bc\u05c1\u05c2\u05c7]/.test(pointed);
+    const vowelFit=id=>hasVowels&&String(index.entries[id].h).normalize('NFKD').replace(/[^\u05b0-\u05bc\u05c1\u05c2\u05c7\u05d0-\u05ea]/g,'')===pointed?0:1;
     const q=normalize(query);if(!q)return {kind:'empty',ids:[],total:0};
     const direct=index.direct[q]||[];
     const forms=index.forms[q]||[],attested=(index.attestedForms?.[q]||[]).map(x=>x.id);
@@ -17,7 +20,7 @@
     }
     if(kind!=='suggestions'&&order==='length'&&index.entryLengths){
       const tier=id=>direct.includes(id)?0:attested.includes(id)?1:2;
-      ids.sort((a,b)=>tier(a)-tier(b)||Number(index.entries[b].source==='krupnik')-Number(index.entries[a].source==='krupnik')||(index.entryLengths[b]||0)-(index.entryLengths[a]||0)||a-b);
+      ids.sort((a,b)=>tier(a)-tier(b)||vowelFit(a)-vowelFit(b)||Number(index.entries[b].source==='krupnik')-Number(index.entries[a].source==='krupnik')||(index.entryLengths[b]||0)-(index.entryLengths[a]||0)||a-b);
     }
     return {kind,ids:ids.slice(0,limit),total:ids.length};
   }
@@ -31,7 +34,13 @@
     const same=[entry.h,...(entry.alt||[])].find(h=>normalize(h)===normalize(word));
     return (same||entry.h).replace(/\s+[IVXLCDM]+$/,'').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+$/,'').replace(/^\*/, '').trim();
   }
-  const api={normalize,lookup,hasTranslation,validWord,displayHeadword};
+  function splitWords(text){
+    const value=String(text).trim();if(!value||value.length>500||/[A-Za-z0-9]/.test(value))return [];
+    const words=value.split(/[\s\u05be]+/).map(w=>w.replace(/^[,.;:!?״׳"'()\[\]{}–—]+|[,.;:!?״׳"'()\[\]{}–—]+$/g,'')).filter(Boolean);
+    return words.length<=12&&words.every(validWord)?words:[];
+  }
+  function hasSelectionTranslations(index,text){const words=splitWords(text);return !!words.length&&words.every(word=>hasTranslation(index,word));}
+  const api={hasSelectionTranslations,splitWords,normalize,lookup,hasTranslation,validWord,displayHeadword};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.JastrowSearch=api;
 })(typeof window!=='undefined'?window:globalThis);

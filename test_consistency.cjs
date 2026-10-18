@@ -14,3 +14,14 @@ assert.equal(S.displayHeadword({h:'צְפַר²'},'צפר'),'צְפַר');
 for(const q of ['צפרא','ספרא','אמר','מא']){const r=S.lookup(index,q),direct=new Set(index.direct[S.normalize(q)]||[]);let linked=false;for(const id of r.ids){if(!direct.has(id))linked=true;else assert(!linked,'direct match after linked form');}}
 assert(S.lookup(index,'ספרא').ids.some(id=>entry(id).glosses?.some(g=>g.text==='book')));
 console.log('PASS: morning and bird retained, Roman labels removed only from display, repeated/vowelled searches stable, exact matches first, distinct same-spelling entries retained.');
+
+assert.deepEqual(S.splitWords('צפרא, טבא!'),['צפרא','טבא']);
+assert.deepEqual(S.splitWords('צפרא־טבא'),['צפרא','טבא']);
+assert.deepEqual(S.splitWords('צפרא abc'),[]);
+assert.deepEqual(S.splitWords(Array(13).fill('צפרא').join(' ')),[]);
+assert(S.hasSelectionTranslations(index,'צפרא טבא'));
+assert(!S.hasSelectionTranslations(index,'צפרא אבגדהוזחטיכלמנסעפצקרשת'));
+const pointedIndex={entries:[{h:'סָפַר'},{h:'סֵפֶר'}],direct:{ספר:[0,1]},forms:{},entryLengths:[100,10]};
+assert.equal(S.lookup(pointedIndex,'ספר').ids[0],0);
+assert.equal(S.lookup(pointedIndex,'סֵפֶר').ids[0],1);
+console.log('PASS: bounded multiword parsing, punctuation, known-only phrase selection and exact vowel priority.');

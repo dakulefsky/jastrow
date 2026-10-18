@@ -7,7 +7,8 @@ const index=ctx.window.JASTROW_INDEX,search=require('./plugin/search.js');
 assert.equal(index.entries.length,32512);
 assert.equal(Object.keys(index.forms).length,64410);
 assert.equal(search.normalize('אָמַר'),'אמר');
-assert.deepEqual(search.lookup(index,'אָמַר').ids,search.lookup(index,'אמר').ids);
+assert.deepEqual([...search.lookup(index,'אָמַר').ids].sort((a,b)=>a-b),[...search.lookup(index,'אמר').ids].sort((a,b)=>a-b));
+assert.equal(index.entries[search.lookup(index,'אָמַר').ids[0]].h,'אָמַר I');
 for(const [word,expected] of [['איבעיא','בְּעֵי I'],['מיתיבי','תּוּב I'],['רחמנא','רַחֲמָן ²']]){
   const result=search.lookup(index,word);assert(result.ids.some(i=>index.entries[i].h===expected));
 }

@@ -89,8 +89,10 @@ function paintMatches(r,word,serial){
 async function search(word, more=false){
   query=String(word).trim();$('query').value=query;if(!more){limit=60;includeJastrow=false;}
   const serial=++requestSerial;++entrySerial;$('entry').removeAttribute('aria-busy');
+  const words=JastrowSearch.splitWords(query);
+  if(words.length>1){await searchWords(words,serial);return;}
   const normalized=JastrowSearch.normalize(query);
-  if(query&&!JastrowSearch.validWord(query)){setStatus('Enter one Hebrew or Aramaic word in Hebrew letters, without English letters or numbers.');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a single Aramaic or Hebrew word to see its dictionary matches.'));currentId=null;return;}
+  if(query&&!JastrowSearch.validWord(query)){setStatus('Enter a Hebrew or Aramaic word, or up to 12 words, without English letters or numbers.');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a single Aramaic or Hebrew word to see its dictionary matches.'));currentId=null;return;}
   const r=JastrowSearch.lookup(index,query,limit,'length',includeJastrow);paintMatches(r,query,serial);
   try{history.replaceState(null,'','#'+new URLSearchParams({word:query}));}catch{}
   if(!normalized){setStatus('Enter an Aramaic or Hebrew word in Hebrew letters.');$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a word in Hebrew letters to begin.'));currentId=null;return;}
@@ -103,18 +105,30 @@ async function search(word, more=false){
     else await showTranslations(r,query,serial);
   }
 }
-async function showTranslations(result,word,serial){
+async function searchWords(words,serial){
+ const phrase=query;currentId=null;document.body.classList.add('single-lookup');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';
+ setStatus('Word-by-word lookup. Choose each meaning for its context.');
+ try{history.replaceState(null,'','#'+new URLSearchParams({word:phrase}));}catch{}
+ $('entry').replaceChildren(el('h2',phrase,'entry-title'),el('p','Word by word · dictionary meanings for each word','translation-label'));
+ const jobs=words.map(word=>{const target=el('section',undefined,'phrase-word');$('entry').append(target);const result=JastrowSearch.lookup(index,word,10000,'length');return {word,target,result};});
+ const first=jobs.find(j=>j.result.ids.length&&j.result.kind!=='suggestions');if(first)rememberLookup(first.result.ids[0],phrase);
+ await Promise.all(jobs.map(async({word,target,result})=>{
+  if(!result.ids.length||result.kind==='suggestions'){target.append(el('h2',word),el('p','No indexed translation for this word.'));const b=el('button','Look up this word');b.type='button';b.onclick=()=>search(word);target.append(b);return;}
+  await showTranslations(result,word,serial,target,3);
+ }));
+}
+async function showTranslations(result,word,serial,target=$('entry'),pageSize=12){
  const panelSerial=entrySerial;
- currentId=null;$('entry').replaceChildren(el('h2',word,'entry-title'),el('p','Possible meanings','translation-label'));
+ currentId=null;target.replaceChildren(el('h2',word,'entry-title'),el('p','Possible meanings','translation-label'));
  let offset=0;
  const more=el('button','More meanings');more.type='button';
  async function next(){
-  more.disabled=true;const ids=result.ids.slice(offset,offset+12);
+  more.disabled=true;const ids=result.ids.slice(offset,offset+pageSize);
   const entries=await Promise.all(ids.map(async id=>{try{return {id,entry:(await loadChunk(index.entries[id].b))[id]};}catch{return {id,error:true};}}));
   if(serial!==requestSerial||panelSerial!==entrySerial)return;
   for(const item of entries){
    const group=el('section',undefined,'translation-group');
-   if(item.error){const retry=el('button','Try loading this meaning again');retry.onclick=()=>showEntry(item.id,true,null,word);group.append(retry);$('entry').append(group);continue;}
+   if(item.error){const retry=el('button','Try loading this meaning again');retry.onclick=()=>showEntry(item.id,true,null,word);group.append(retry);target.append(group);continue;}
    const {id,entry}=item;const head=el('h3',JastrowSearch.displayHeadword(entry,word),'translation-headword');head.dir='rtl';group.append(head);
    const body=el('div',undefined,'definition');body.innerHTML=entry.html;
    if(entry.source==='krupnik'){
@@ -122,9 +136,9 @@ async function showTranslations(result,word,serial){
     const details=el('details',undefined,'scholarly-entry');details.append(el('summary','More detail'));body.dir='auto';body.style.whiteSpace='pre-line';details.append(body);group.append(details);
    }else{group.append(JastrowReadingView.render(body));group.querySelector('.meanings-heading')?.remove();}
    const details=group.querySelector('.scholarly-entry');if(details){details.open=false;details.append(el('p',(entry.source==='krupnik'?'Krupnik & Silbermann':'Jastrow')+' · Dictionary headword: '+entry.h,'entry-meta'));}
-   $('entry').append(group);
+   target.append(group);
   }
-  offset+=ids.length;more.remove();if(offset<result.ids.length){more.disabled=false;$('entry').append(more);}else if(result.total>result.ids.length){more.disabled=false;more.onclick=()=>{limit+=60;search(word,true);};$('entry').append(more);}
+  offset+=ids.length;more.remove();if(offset<result.ids.length){more.disabled=false;target.append(more);}else if(result.total>result.ids.length){more.disabled=false;more.onclick=()=>{limit+=60;search(word,true);};target.append(more);}
  }
  more.onclick=next;await next();
 }
@@ -139,7 +153,7 @@ function theme(t){
 }
 let recentLookups=[],readingSize=100;
 try{const data=JSON.parse(localStorage.getItem('jastrow-student-v1')||'{}');
- if(Array.isArray(data.recent))recentLookups=data.recent.filter(x=>Number.isInteger(x.id)&&x.id>=0&&x.id<index.entries.length&&typeof x.word==='string'&&x.word.length<=120).slice(0,12);
+ if(Array.isArray(data.recent))recentLookups=data.recent.filter(x=>Number.isInteger(x.id)&&x.id>=0&&x.id<index.entries.length&&typeof x.word==='string'&&x.word.length<=500).slice(0,12);
  if([90,100,110,120,130,140].includes(data.readingSize))readingSize=data.readingSize;
  // One consistent default for typed, selected, recent and reopened words.
 }catch{}
@@ -194,5 +208,5 @@ $('count').textContent=index.entries.length.toLocaleString()+' entries';
 setStatus('Ready · Search with or without nekudos.');
 
 renderTrail();
-function readEntryLink(){try{const p=new URLSearchParams(location.hash.slice(1)),id=Number(p.get('entry'));if(p.get('word')&&JastrowSearch.validWord(p.get('word'))){search(p.get('word'));return;}if(p.has('entry')&&Number.isInteger(id)&&id>=0&&id<index.entries.length){requestSerial++;query=p.get('word')||'';$('query').value=query;showEntry(id);}}catch{}}
+function readEntryLink(){try{const p=new URLSearchParams(location.hash.slice(1)),id=Number(p.get('entry'));if(p.get('word')&&JastrowSearch.splitWords(p.get('word')).length){search(p.get('word'));return;}if(p.has('entry')&&Number.isInteger(id)&&id>=0&&id<index.entries.length){requestSerial++;query=p.get('word')||'';$('query').value=query;showEntry(id);}}catch{}}
 window.addEventListener('hashchange',readEntryLink);readEntryLink();

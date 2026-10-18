@@ -40,3 +40,5 @@ button:disabled{opacity:.5;cursor:default;transform:none}
 .translation-headword{font-size:1.2rem;text-align:left;margin:0 0 10px}
 .translation-label{color:var(--color-muted)}
 .lookup-options[hidden]{display:none}
+
+.phrase-word{margin-top:24px;padding-top:18px;border-top:1px solid var(--color-outline)}

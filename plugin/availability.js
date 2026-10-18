@@ -9,15 +9,15 @@
    while(pending){
     const job=pending;pending=null;
     let text=JastrowContext.selectionText(job.payload),rendered=text;
-    if(JastrowSearch.hasTranslation(index,text)&&!job.payload.renderedSelectedText){
+    if(JastrowSearch.hasSelectionTranslations(index,text)&&!job.payload.renderedSelectedText){
      try{const res=await Otzaria.call('reader.getSelection');const current=JastrowContext.selectionText(res?.data);
       if(job.revision!==revision)continue;
-      if(res?.success&&JastrowSearch.normalize(current)===JastrowSearch.normalize(text))rendered=current;
+      if(res?.success&&JastrowSearch.splitWords(current).map(JastrowSearch.normalize).join(' ')===JastrowSearch.splitWords(text).map(JastrowSearch.normalize).join(' '))rendered=current;
      }catch{}
     }
     if(job.revision!==revision)continue;
-    const matched=JastrowSearch.hasTranslation(index,text);
-    const variants=[...new Set([rendered,text,JastrowSearch.normalize(text)])].filter(x=>x&&x.length<=100);
+    const matched=JastrowSearch.hasSelectionTranslations(index,text);
+    const variants=[...new Set([rendered,text,JastrowSearch.splitWords(text).map(JastrowSearch.normalize).join(' ')])].filter(x=>x&&x.length<=100);
     const method=matched&&variants.length?'reader.addContextMenuItem':'reader.removeContextMenuItem';
     const args=method==='reader.addContextMenuItem'?{id:'jastrow-lookup',title:'Aramaic to English Dictionary',icon:'book_24_regular',contexts:['reader-selection','reader-page-shape-selection'],openPlugin:true,showWhen:{selectionContainsAny:variants}}:{id:'jastrow-lookup'};
     const res=await Otzaria.call(method,args);

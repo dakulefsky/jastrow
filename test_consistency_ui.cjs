@@ -20,6 +20,10 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   // A new query wins over old chunk and overview work.
   await page.evaluate(()=>{search('דאמר');search('צפרא');});await page.waitForFunction(()=>document.querySelector('#entry').innerText.includes('fowl, bird'));assert.equal(await page.locator('#entry').innerText(),first);
   await page.locator('.scholarly-entry summary').nth(2).click();assert.match(await page.locator('#entry').innerText(),/Dictionary headword:.*IV/);
+  await page.evaluate(()=>search('צפרא ספרא'));assert.equal(await page.locator('.phrase-word').count(),2);assert.match(await page.locator('.phrase-word').first().innerText(),/morning/);assert.match(await page.locator('.phrase-word').first().innerText(),/fowl, bird/);assert.match(await page.locator('.phrase-word').nth(1).innerText(),/book/);
+  const phrase=await page.locator('#entry').innerText();await page.reload();await page.waitForFunction(()=>document.querySelectorAll('.phrase-word').length===2&&document.querySelector('#entry').innerText.includes('book'));assert.equal(await page.locator('#entry').innerText(),phrase);
+  await page.evaluate(()=>search('צפרא אבגדהוזחטיכלמנסעפצקרשת'));assert.match(await page.locator('.phrase-word').nth(1).innerText(),/No indexed translation/);assert.match(await page.locator('.phrase-word').first().innerText(),/morning/);
+  await page.evaluate(()=>{search('צפרא טבא');search('ספרא');});await page.waitForFunction(()=>document.querySelector('#entry').innerText.includes('scribe, copyist'));assert.equal(await page.locator('.phrase-word').count(),0);
   await page.evaluate(()=>search('אבגדהוזחטיכלמנסעפצקרשת'));await page.waitForFunction(()=>document.querySelector('#entry').innerText.includes('No matching entry'));
   assert.deepEqual(errors,[]);assert.deepEqual(external,[]);console.log('PASS: complete separate meanings; stable typed/recent/reloaded/racing lookups; source numbering only in collapsed details; no network or browser errors.');
  }finally{if(browser)await browser.close();await new Promise(r=>server.close(r));}

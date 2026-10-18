@@ -1,3 +1,9 @@
+# 1.7.0 — Several-word lookup and matching vowels
+
+Paste up to twelve Hebrew/Aramaic words to see a separate dictionary lookup for each. Punctuation and Hebrew maqaf are handled at word boundaries. Unknown tokens remain explicitly unmatched; no sentence translation is generated. Right-click selection is offered for a phrase only when every word has an indexed match. Results, sources and alternatives remain available offline, with per-word expansion.
+
+Pointed queries now prefer an exact pointed headword within the same match tier, before source preference and source-entry length. This is spelling evidence, not a claim about sense frequency or sentence meaning. Unpointed searches keep the existing deterministic order and expose other possible meanings.
+
 # 1.6.2 — Consistent student lookup and store card image
 
 The same typed, selected, recent or reopened word now uses the same default candidate order. Recent words reopen the complete lookup instead of one previously selected entry. A match in the concise dictionary no longer suppresses Jastrow candidates with additional meanings. Exact indexed headwords and explicit alternate headwords remain ahead of linked forms; source preference and entry length break ties, without a frequency claim.
