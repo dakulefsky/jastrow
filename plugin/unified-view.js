@@ -9,9 +9,15 @@
   if(S.normalize(a)!==S.normalize(b))return false;
   return aa.every((x,i)=>!x.marks.length||!bb[i].marks.length||x.marks.join('')===bb[i].marks.join(''));
  }
+ // Reviewed source equivalence: both cite Targum Ruth 2:3 for אִרְעָא.
+ // Restrict this to these original glosses, not a general synonym rewrite.
+ function reviewedEquivalent(source,item){
+  const pair=[source,item].map(s=>s.entry.r+'|'+s.meaning.text).sort();
+  return pair[0]==='A03220|accident, occurrence'&&pair[1]==='KRU02095|in accident';
+ }
  function sameMeaning(group,item){
   if(group.form!==stem(item.meaning.label)||!group.sources.every(s=>compatible(s.spelling,item.spelling)))return false;
-  if(clean(group.text)===clean(item.meaning.text))return true;
+  if(clean(group.text)===clean(item.meaning.text)||group.sources.some(s=>reviewedEquivalent(s,item)))return true;
   const a=parts(group.text),b=parts(item.meaning.text);
   // Only consolidate identical glosses or a shared, explicit synonym list.
   // Two meanings merely sharing one ambiguous English word stay separate.
