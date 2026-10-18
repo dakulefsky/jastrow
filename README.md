@@ -1,10 +1,10 @@
-# Unreleased — unified meanings draft
+# 1.9.0 — unified meanings
 
 All lookup paths now render the same numbered meaning cards. Exact duplicate glosses and nested synonym lists with at least two shared English terms are consolidated only when the matched Hebrew spellings have compatible vowels and their stem labels agree. Every original gloss and full dictionary entry is retained under the card's numbered source links. Sharing one ambiguous English term alone does not merge different definitions. A narrowly reviewed equivalence also combines Krupnik’s “in accident” (KRU02095) with Jastrow’s “accident, occurrence” (A03220): both give אִרְעָא and cite Targum Ruth 2:3. Both original glosses remain visible under sources.
 
 Vowel ranking checks explicit alternate headwords as well as primary headings, accepts partially supplied pointing and ignores cantillation. Matching readings appear first; other readings remain available in a collapsed alternatives section. For אַרְעָא, the Krupnik alternate spelling and Jastrow headword agree and their overlapping land/ground lists form one card. The accident reading remains separate. The Hebrew spelling is preserved on each card.
 
-This draft is held for further user additions. The student-unified-results branch runs source and browser tests only; packaging and publication are restricted to main.
+The unified renderer applies to ordinary words, recognized expressions, multiword selections and direct source lookups. Source and browser tests check the actual ara entries alongside generic duplicate, stem and vowel cases.
 
 # 1.8.1 — Dictionary expressions first
 
