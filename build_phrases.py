@@ -17,7 +17,9 @@ def phrase(word):
  if not re.fullmatch(r'[א-ת\u0591-\u05c7 ]+',word):return None
  words=word.replace('\u05be',' ').split()
  if not 2<=len(words)<=12 or any(len(norm(w))<2 for w in words):return None
- return ' '.join(norm(w) for w in words)
+ normalized=[norm(w) for w in words]
+ if 'בנסמך' in normalized or (len(set(normalized))==1 and len(set(words))>1):return None
+ return ' '.join(normalized)
 
 class English(HTMLParser):
  def __init__(self):super().__init__();self.depth=0;self.current=[];self.values=[]
@@ -46,6 +48,11 @@ def primary(node,label=''):
   text=' '.join(str(node.get(k,'')) for k in ['definition','notes'])
   if text.strip():yield text.split('<b>',1)[0],own
   if 'senses' in node:yield from primary(node['senses'],own)
+  elif 'binyans' in node and node['binyans']:
+   first=node['binyans'][0]
+   if isinstance(first,list) and not any(isinstance(x,dict) and 'binyan-form' in x for x in first):
+    for item in first:
+     if isinstance(item,dict) and 'senses' in item:yield from primary(item['senses'],own)
 
 def build():
  source_records=gzip.decompress((ROOT/'phrase-source.json.gz').read_bytes())
@@ -83,6 +90,10 @@ def build():
      values=[{'text':'one after the other','label':''}]
      notes[id]='The digitization omits the separator before the italic German translation. The short translation uses the English words before it.'
     glosses[id]=values
+   # Cross-reference-only entries remain available in the original dictionary.
+   # Do not offer them as a phrase translation without a primary English gloss.
+   if source=='krupnik' and not glosses[id]:continue
+   if source=='jastrow' and not re.search(r'<i[ >]',entry['html']):continue
    for spelling,key in candidates:
     ids=phrases.setdefault(key,[])
     if int(id) in ids:continue

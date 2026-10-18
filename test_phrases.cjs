@@ -18,7 +18,8 @@ for(const [query,meaning] of [['נפקא מינה','the practical difference is'
  assert.deepEqual(S.segmentWords(i,query).map(s=>s.word),[query]);
 }
 const nafka=S.phraseLookup(i,'נפקא מינה').ids[0];assert.deepEqual(Array.from(i.phraseGlosses[nafka],g=>g.text),['the practical difference is']);
-assert.equal(S.phraseLookup(i,'מאישנא').ids.length,0);assert(!i.phrases['בית א']);
+assert.equal(S.phraseLookup(i,'מאישנא').ids.length,0);assert(!i.phrases['גלל בנסמך גלל']);
+for(const ids of Object.values(i.phrases))for(const id of ids)if(id>=32512)assert(i.phraseGlosses[id].length,'no phrase answer without a primary gloss');assert(!i.phrases['בית א']);
 assert.equal(S.segmentWords(i,'נפקא מינה טבא').length,2);
 const fake={phrases:{'אבא אמא':[1],'אבא אמא אחא':[2]}};
 assert.equal(S.segmentWords(fake,'אבא אמא אחא')[0].result.ids[0],2);
