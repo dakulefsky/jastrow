@@ -46,17 +46,7 @@ async function showEntry(id,record=true,targetPosition=null,word=query){
     query=word;$('query').value=query;
     if(record&&(trail[trailPosition]?.id!==id||trail[trailPosition]?.word!==word)){trail=trail.slice(0,trailPosition+1);trail.push({id,word});if(trail.length>50)trail.shift();trailPosition=trail.length-1;}else if(targetPosition!==null)trailPosition=targetPosition;
     currentId=id;setStatus('');renderTrail();syncEntryLink(id);$('entry').replaceChildren();rememberLookup(id,word);
-    $('entry').append(el('h2',JastrowSearch.displayHeadword(entry,word),'entry-title'));
-    const meta=el('p',(entry.source==='krupnik'?'Krupnik & Silbermann':'Jastrow')+' · Dictionary headword: '+entry.h+(entry.alt.length?' · Also listed as: '+entry.alt.join(' · '):''),'entry-meta');meta.dir='auto';
-    const evidence=(index.attestedForms?.[JastrowSearch.normalize(query)]||[]).find(x=>x.id===id);
-    const body=el('div',undefined,'definition');body.dir='ltr';body.innerHTML=entry.html;
-    if(entry.source==='krupnik'){
-      const definitions=el('section',undefined,'krupnik-definitions');definitions.append(el('h3','Translation'));
-      for(const gloss of entry.glosses){const card=el('div',undefined,'meaning-card');if(gloss.label){const label=el('p',gloss.label,'entry-meta');label.dir='auto';card.append(label);}card.append(el('p',gloss.text));definitions.append(card);}
-      
-      const details=el('details',undefined,'scholarly-entry');details.append(el('summary','More detail'));body.dir='auto';body.style.whiteSpace='pre-line';if(entry.notation?.length){const notation=el('p',entry.notation.join(' · '),'entry-meta');notation.dir='auto';details.append(notation);}details.append(body);$('entry').append(definitions,details);
-    }else{$('entry').append(JastrowReadingView.render(body));}
-    const sourceDetails=$('entry').querySelector('.scholarly-entry');if(sourceDetails){sourceDetails.open=false;if(entry.source!=='krupnik'&&!$('entry').querySelector('.quick-meanings'))$('entry').insertBefore(el('p','Open details for the original definition.'),sourceDetails);sourceDetails.append(meta);if(evidence)sourceDetails.append(el('blockquote',evidence.quote));}
+    await showTranslations({ids:[id],total:1,kind:'headword'},word,requestSerial);
     document.querySelectorAll('.result').forEach(b=>{const active=Number(b.dataset.id)===id;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
   }catch(e){if(serial===entrySerial){setStatus('Unable to open this entry. Try again. '+e.message);const retry=el('button','Try opening again');retry.type='button';retry.onclick=()=>showEntry(id,record,targetPosition,word);$('entry').replaceChildren(el('h2','This entry could not be loaded'),el('p','The dictionary file did not open. Retry without losing your word.'),retry);}}
   finally{if(serial===entrySerial)$('entry').removeAttribute('aria-busy');}
@@ -101,8 +91,7 @@ async function search(word, more=false){
   setStatus(r.kind==='suggestions'?'No exact match. Try a similar spelling.':'');
   if(serial===requestSerial){
     if(r.kind!=='suggestions')rememberLookup(r.ids[0],query);
-    if(r.ids.length===1&&r.kind!=='suggestions')await showEntry(r.ids[0]);
-    else if(r.kind==='suggestions'){$('entry').replaceChildren(el('h2','Similar spellings'),el('p','No exact match. Choose a spelling to check.'));currentId=null;}
+    if(r.kind==='suggestions'){$('entry').replaceChildren(el('h2','Similar spellings'),el('p','No exact match. Choose a spelling to check.'));currentId=null;}
     else await showTranslations(r,query,serial);
   }
 }
@@ -123,27 +112,17 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
  const panelSerial=entrySerial;
  currentId=null;target.replaceChildren(el('h2',word,'entry-title'),el('p',result.kind==='phrase'?'Expression meaning':'Possible meanings','translation-label'));
  target.dataset.matchKind=result.kind;
- let offset=0;
- const more=el('button','More meanings');more.type='button';
- async function next(){
-  more.disabled=true;const ids=result.ids.slice(offset,offset+pageSize);
-  const entries=await Promise.all(ids.map(async id=>{try{return {id,entry:(await loadChunk(index.entries[id].b))[id]};}catch{return {id,error:true};}}));
-  if(serial!==requestSerial||panelSerial!==entrySerial)return;
-  for(const item of entries){
-   const group=el('section',undefined,'translation-group');
-   if(item.error){const retry=el('button','Try loading this meaning again');retry.onclick=()=>showEntry(item.id,true,null,word);group.append(retry);target.append(group);continue;}
-   const {id,entry}=item;const head=el('h3',JastrowSearch.displayHeadword(entry,word),'translation-headword');head.dir='rtl';group.append(head);
-   const body=el('div',undefined,'definition');body.innerHTML=entry.html;
-   if(entry.source==='krupnik'){
-    for(const gloss of (result.kind==='phrase'?(index.phraseGlosses?.[id]||[]):entry.glosses)){const card=el('div',undefined,'meaning-card');if(gloss.label){const label=el('span',gloss.label,'meaning-form');label.dir='auto';card.append(label);}card.append(el('p',gloss.text));group.append(card);}
-    const details=el('details',undefined,'scholarly-entry');details.append(el('summary','More detail'));body.dir='auto';body.style.whiteSpace='pre-line';details.append(body);group.append(details);
-   }else{group.append(JastrowReadingView.render(body));group.querySelector('.meanings-heading')?.remove();}
-   const details=group.querySelector('.scholarly-entry');if(details){details.open=false;if(result.kind==='phrase'&&index.phraseNotes?.[id])details.append(el('p',index.phraseNotes[id],'entry-meta'));details.append(el('p',(entry.source==='krupnik'?'Krupnik & Silbermann':'Jastrow')+' · Dictionary headword: '+entry.h,'entry-meta'));}
-   target.append(group);
-  }
-  offset+=ids.length;more.remove();if(offset<result.ids.length){more.disabled=false;target.append(more);}else if(result.total>result.ids.length){more.disabled=false;more.onclick=()=>{limit+=60;search(word,true);};target.append(more);}
- }
- more.onclick=next;await next();
+ const ids=result.ids.slice(0,Math.max(60,limit));
+ const items=await Promise.all(ids.map(async id=>{try{
+   const entry=(await loadChunk(index.entries[id].b))[id],body=el('div');body.innerHTML=entry.html;
+   const meanings=entry.source==='krupnik'?(result.kind==='phrase'?(index.phraseGlosses?.[id]||[]):entry.glosses):JastrowReadingView.phrases(body);
+   return {id,entry,meanings};
+ }catch{return {id,error:true};}}));
+ if(serial!==requestSerial||panelSerial!==entrySerial)return;
+ const records=items.filter(x=>!x.error);
+ target.append(DictionaryMeanings.render(records,word,result.kind==='phrase'?index.phraseNotes:{}));
+ for(const failed of items.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
+ if(result.total>ids.length){const more=el('button','More matching entries');more.type='button';more.onclick=()=>{limit+=60;search(word,true);};target.append(more);}
 }
 
 function theme(t){

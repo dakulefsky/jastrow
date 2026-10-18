@@ -1,3 +1,11 @@
+# Unreleased — unified meanings draft
+
+All lookup paths now render the same numbered meaning cards. Exact duplicate glosses and nested synonym lists with at least two shared English terms are consolidated only when the matched Hebrew spellings have compatible vowels and their stem labels agree. Every original gloss and full dictionary entry is retained under the card's numbered source links. Sharing one ambiguous English term alone does not merge different definitions.
+
+Vowel ranking checks explicit alternate headwords as well as primary headings, accepts partially supplied pointing and ignores cantillation. Matching readings appear first; other readings remain available in a collapsed alternatives section. For אַרְעָא, the Krupnik alternate spelling and Jastrow headword agree and their overlapping land/ground lists form one card. The accident reading remains separate. The Hebrew spelling is preserved on each card.
+
+This draft is held for further user additions. The student-unified-results branch runs source and browser tests only; packaging and publication are restricted to main.
+
 # 1.8.1 — Dictionary expressions first
 
 Full multiword headwords and explicit alternate headwords from both bundled dictionaries are indexed with their word boundaries intact: 919 unique phrase spellings (906 Krupnik and 19 Jastrow phrase-to-entry links). This includes technical terms, expressions and names; the count is not a claim that every item is an Aramaic idiom. Abbreviated headwords and grammatical headings are excluded; source references without a safe primary English gloss stay in the original dictionary view. Abbreviated source headwords are not guessed or expanded. Expressions mentioned only inside example prose are not automatically indexed.

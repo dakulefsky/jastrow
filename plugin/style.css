@@ -42,3 +42,12 @@ button:disabled{opacity:.5;cursor:default;transform:none}
 .lookup-options[hidden]{display:none}
 
 .phrase-word{margin-top:24px;padding-top:18px;border-top:1px solid var(--color-outline)}
+
+.unified-meanings .meaning-spelling{font-size:1.05rem;direction:rtl;text-align:left;margin-bottom:5px}
+.meaning-references{display:flex;gap:8px;margin:2px 0 8px;font-size:.75rem}
+.meaning-references a{color:var(--color-primary)}
+.unified-meanings .scholarly-entry{margin:4px 0 0;border:0;background:transparent}
+.meaning-source+.meaning-source{border-top:1px solid var(--color-outline);margin-top:18px;padding-top:12px}
+.source-headword{direction:rtl;text-align:left}.source-gloss{margin:8px 0;font-weight:600}
+.other-readings{margin-top:20px}.other-readings>summary{cursor:pointer;color:var(--color-muted);padding:10px 0}
+.other-readings[open]>summary{margin-bottom:10px}

@@ -57,11 +57,12 @@ def primary(node,label=''):
 def build():
  source_records=gzip.decompress((ROOT/'phrase-source.json.gz').read_bytes())
  docs={d['rid']:d for d in json.loads(source_records)}
- phrases={};glosses={};notes={};counts={'jastrow':0,'krupnik':0};evidence=[]
+ phrases={};glosses={};notes={};aliases={};counts={'jastrow':0,'krupnik':0};evidence=[]
  for path in sorted((ROOT/'plugin/data').glob('*.js')):
   if not re.fullmatch(r'(chunk-\d+|krupnik-1\d+)\.js',path.name):continue
   entries=json.loads(path.read_text().split('=',1)[1].rstrip(';\n'))
   for id,entry in entries.items():
+   if entry.get('alt'):aliases[id]=entry['alt']
    candidates=[(w,phrase(w)) for w in [entry['h'],*entry.get('alt',[])]]
    candidates=[(w,key) for w,key in candidates if key]
    if not candidates:continue
@@ -102,6 +103,7 @@ def build():
  for ids in phrases.values():ids.sort(key=lambda id:(id<32512,id))
  code='window.JASTROW_INDEX.phrases='+json.dumps(phrases,ensure_ascii=False,separators=(',',':'))+';\n'
  code+='window.JASTROW_INDEX.phraseGlosses='+json.dumps(glosses,ensure_ascii=False,separators=(',',':'))+';\n'
+ code+='window.JASTROW_INDEX.aliases='+json.dumps(aliases,ensure_ascii=False,separators=(',',':'))+';\n'
  code+='window.JASTROW_INDEX.phraseNotes='+json.dumps(notes,ensure_ascii=False,separators=(',',':'))+';\n'
  (ROOT/'plugin/data/phrases.js').write_text(code)
  audit={'method':__doc__,'counts':counts,'uniquePhrases':len(phrases),'sourceRecordsSha256':hashlib.sha256(source_records).hexdigest(),'entries':evidence}

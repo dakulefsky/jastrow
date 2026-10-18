@@ -2,7 +2,7 @@ name: Validate and publish Jastrow
 
 on:
   push:
-    branches: [main]
+    branches: [main, student-unified-results]
   pull_request:
   workflow_dispatch:
 
@@ -30,12 +30,14 @@ jobs:
           node test_krupnik.cjs
           node test_consistency.cjs
           node test_phrases.cjs
+          node test_unified.cjs
       - name: Test consistent student lookup in Chromium
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
           node test_consistency_ui.cjs
       - name: Validate, build, and publish
+        if: github.ref == 'refs/heads/main'
         id: publish
         uses: Otzaria/otzaria-plugin-validator@v1
         with:
