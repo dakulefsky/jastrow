@@ -1,0 +1,1 @@
+const fs=require('node:fs');let api;try{api=require('playwright');}catch{api=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');}module.exports={chromium:api.chromium,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE||(fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':api.chromium.executablePath())};

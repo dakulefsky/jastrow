@@ -1,0 +1,17 @@
+'use strict';
+const $=id=>document.getElementById(id),el=(tag,text,cls)=>{const n=document.createElement(tag);n.textContent=text;if(cls)n.className=cls;return n;};
+function search(q){$('query').value=q;const out=$('results');out.replaceChildren();$('clear').hidden=!q;if(!q.trim()){$('status').textContent='';return;}const records=HebrewLookup.lookup(q);$('status').textContent=records.length?'':!HebrewLookup.valid(q)?'יש להזין מילה או ביטוי באותיות עבריות.':'לא נמצא ערך למילה או לביטוי זה.';if(!records.length)return;
+ out.append(el('h2',q,'query-title'));const groups=new Map();
+ for(const e of records)for(const p of e.parts){const text=p.meaning||p.text,key=[HebrewLookup.normalize(e.word),p.label.replace(/\b\d+\b/g,''),text].join('|');if(!groups.has(key))groups.set(key,{word:e.word,text,items:[]});groups.get(key).items.push({e,p});}
+ let number=0;for(const g of groups.values()){const card=el('article','','meaning-card');card.append(el('span',String(++number),'number'),el('h3',g.word),el('p',g.text));const details=el('details','');details.append(el('summary','הערך המלא ומקורו'));for(const {e,p} of g.items){details.append(el('p',p.text),el('small','קרופניק וזילברמן · '+e.rid+(p.label?' · '+p.label:'')));}card.append(details);out.append(card);}}
+$('form').onsubmit=e=>{e.preventDefault();search($('query').value);};$('clear').onclick=()=>{search('');$('query').focus();};
+$('selected').onclick=async()=>{try{const r=await Otzaria.call('reader.getSelection');const text=HebrewLookup.selectionText(r?.data);if(r?.success&&text)search(text);else $('status').textContent='יש לבחור מילה בטקסט תחילה.';}catch{$('status').textContent='לא ניתן לקרוא את הבחירה. אפשר להקליד בשדה החיפוש.';}};
+document.addEventListener('keydown',e=>{if(e.key==='/'&&!e.target.closest('input,textarea,[contenteditable]')){e.preventDefault();$('query').focus();}});
+if(window.Otzaria){
+ Otzaria.on('ui.messageClicked',p=>{const word=p?.payload?.dictionaryWord;if(typeof word==='string')search(word);});Otzaria.on('reader.context_menu_item_clicked',p=>{if(p.itemId==='aramaic-hebrew-open')search(HebrewLookup.selectionText(p));});Otzaria.on('theme.changed',theme);Otzaria.on('plugin.boot',p=>{theme(p.theme);$('selected').hidden=false;});}
+function theme(t){const c=t?.colorScheme;if(c){for(const [k,v] of Object.entries({'color-surface':c.surface,'color-on-surface':c.onSurface,'color-surface-container':c.surfaceContainerHigh||c.surface,'color-muted':c.onSurfaceVariant,'color-outline':c.outline,'color-primary':c.primary,'color-on-primary':c.onPrimary}))if(v)document.documentElement.style.setProperty('--'+k,v);}if(t?.typography?.uiFontFamily)document.body.style.fontFamily=t.typography.uiFontFamily+',system-ui,sans-serif';}
+
+$('help-toggle').onclick=()=>{const open=$('help').hidden;$('help').hidden=!open;$('help-toggle').setAttribute('aria-expanded',String(open));};
+let readingSize=100;try{const n=Number(localStorage.getItem('aramaic-hebrew-reading-size'));if([90,100,110,120,130,140].includes(n))readingSize=n;}catch{}
+function resize(n){readingSize=Math.max(90,Math.min(140,n));document.documentElement.style.setProperty('--reading-scale',String(readingSize/100));$('text-size').textContent=readingSize+'%';$('text-smaller').disabled=readingSize===90;$('text-larger').disabled=readingSize===140;try{localStorage.setItem('aramaic-hebrew-reading-size',String(readingSize));}catch{}}
+$('text-smaller').onclick=()=>resize(readingSize-10);$('text-larger').onclick=()=>resize(readingSize+10);resize(readingSize);

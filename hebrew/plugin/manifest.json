@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "com.kulefsky.aramaic-hebrew",
+  "name": "מילון ארמי־עברי",
+  "version": "1.1.0",
+  "description": "מילון ארמי־עברי על פי הנוסח העברי המקורי של קרופניק וזילברמן, לשימוש ללא חיבור לרשת.",
+  "author": "DanTheMan",
+  "stability": "beta",
+  "entrypoint": "index.html",
+  "minAppVersion": "0.9.97",
+  "sdkVersion": "1.x",
+  "permissions": [
+    "app.startup_contributions",
+    "reader.context_menu",
+    "app.run_on_startup",
+    "app.background_keep_alive",
+    "events.subscribe:reader.selection_changed",
+    "ui.feedback"
+  ],
+  "network": {
+    "enabled": false,
+    "allowlist": []
+  },
+  "contributes": {
+    "toolTab": {
+      "title": "מילון ארמי־עברי",
+      "order": 900,
+      "defaultPinned": true,
+      "iconName": "book_24_regular"
+    },
+    "startup": {
+      "activationEvents": [
+        "app.startup",
+        "reader.selection_changed"
+      ],
+      "keepAlive": true
+    },
+    "background": {
+      "entrypoint": "background.html"
+    }
+  }
+}

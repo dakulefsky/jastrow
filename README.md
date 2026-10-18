@@ -170,3 +170,5 @@ Confirmed lookups show meanings directly, including ambiguous headwords, without
 ## 1.6.1 — Dictionary emblem
 
 Adds the supplied gold translation emblem to the lookup header and store artwork. Removes the descriptive eyebrow line; the plugin and page keep the concise name “Aramaic to English Dictionary.” The Otzaria tab retains its short supported label. Lookup data and dictionary attribution are unchanged.
+
+Quick lookup: right-click now requests a host-native clickable message containing the first two distinct meanings; tap opens the full dictionary through ui.messageClicked and its dictionaryWord payload. Separate direct-open menu remains available. Requires ui.feedback permission and background execution. Uses documented ui.showMessage/tapOpenPlugin API (Otzaria >=0.9.97). Host owns placement and six-second default timeout; this is not a custom reader popover and does not implement Escape/outside-click dismissal. Verified against dev API_REFERENCE.md and lib/core/ui_snack.dart on 2026-10-18; actual host visual validation remains pending. No automatic store publication performed for this change.

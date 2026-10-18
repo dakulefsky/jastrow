@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "com.kulefsky.jastrow",
   "name": "Aramaic → Eng.",
-  "version": "1.9.1",
+  "version": "1.10.0",
   "description": "Offline Aramaic and rabbinic Hebrew to English translation, with concise meanings and optional examples.",
   "author": "DanTheMan",
   "stability": "beta",
@@ -15,7 +15,8 @@
     "reader.open",
     "app.run_on_startup",
     "app.background_keep_alive",
-    "events.subscribe:reader.selection_changed"
+    "events.subscribe:reader.selection_changed",
+    "ui.feedback"
   ],
   "network": {
     "enabled": false,

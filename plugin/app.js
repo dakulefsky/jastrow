@@ -170,15 +170,16 @@ document.addEventListener('click',e=>{
 });
 $('selection').hidden=true;
 if(window.Otzaria){
+ Otzaria.on('ui.messageClicked',p=>{const word=p?.payload?.dictionaryWord;if(typeof word==='string')search(word);});
   Otzaria.on('theme.changed',theme);
-  Otzaria.on('reader.context_menu_item_clicked',p=>{if(p.itemId==='jastrow-lookup')search(JastrowContext.selectionText(p));});
+  Otzaria.on('reader.context_menu_item_clicked',p=>{if(p.itemId==='jastrow-open')search(JastrowContext.selectionText(p));});
   Otzaria.on('plugin.boot',p=>{
     theme(p.theme);$('selection').hidden=false;
     Otzaria.call('app.getGrantedPermissions').then(res=>{
       const permissions=res?.data?.permissions;if(!res?.success||!Array.isArray(permissions))return;
-      const required=['app.run_on_startup','app.background_keep_alive','events.subscribe:reader.selection_changed','reader.context_menu'];
+      const required=['app.run_on_startup','app.background_keep_alive','events.subscribe:reader.selection_changed','reader.context_menu','ui.feedback'];
       const missing=required.some(x=>!permissions.includes(x));$('right-click-state').hidden=!missing;
-      if(missing)$('right-click-state').textContent='For indexed-word-only right-click lookup, enable background execution, keep-alive and text-selection access in Otzaria’s permissions for Aramaic to English Dictionary.';
+      if(missing)$('right-click-state').textContent='For indexed-word-only right-click lookup, enable background execution, keep-alive, text-selection access and UI feedback in Otzaria’s permissions for Aramaic to English Dictionary.';
     }).catch(()=>{});
     $('selection').onclick=async()=>{
       try{const res=await Otzaria.call('reader.getSelection');

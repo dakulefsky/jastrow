@@ -31,6 +31,7 @@ jobs:
           node test_consistency.cjs
           node test_phrases.cjs
           node test_unified.cjs
+          node test_quick.cjs
       - name: Test consistent student lookup in Chromium
         run: |
           npm install --no-save playwright
@@ -60,3 +61,41 @@ jobs:
           name: Jastrow-plugin
           path: ${{ steps.publish.outputs.plugin-file }}
           if-no-files-found: error
+
+  hebrew-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build Hebrew source data
+        run: |
+          python3 -c "import gzip,pathlib; p=pathlib.Path('hebrew/source.json.gz'); p.with_suffix('').write_bytes(gzip.decompress(p.read_bytes()))"
+          python3 hebrew/build.py
+          node hebrew/test.cjs
+          node hebrew/test_host.cjs
+          node hebrew/test_quick.cjs
+      - name: Check Hebrew interface in Chromium
+        env:
+          HEBREW_STORE_SCREENSHOT: hebrew-store.png
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+          node hebrew/test_browser.cjs
+      - name: Validate and publish Hebrew dictionary
+        if: github.ref == 'refs/heads/main'
+        id: hebrew
+        uses: Otzaria/otzaria-plugin-validator@v1
+        with:
+          path: hebrew/plugin
+          build: 'true'
+          screenshots: hebrew-store.png
+          reports-consent: 'true'
+          otzaria-user: ${{ secrets.OTZARIA_USER }}
+          otzaria-password: ${{ secrets.OTZARIA_PASSWORD }}
+      - uses: actions/upload-artifact@v4
+        if: steps.hebrew.outputs.plugin-file != ''
+        with:
+          name: Hebrew-dictionary-plugin
+          path: ${{ steps.hebrew.outputs.plugin-file }}

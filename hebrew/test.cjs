@@ -1,0 +1,5 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const ctx={};ctx.window=ctx;vm.createContext(ctx);for(const f of ['data.js','lookup.js'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/'+f,'utf8'),ctx);
+const d=ctx.HEBREW_DICTIONARY;assert.equal(d.entries.length,20177);assert(d.entries.every(e=>/^KRU\d+$/.test(e.rid)));assert(!JSON.stringify(d).includes('englishWithinHebrew'));
+const r=ctx.HebrewLookup.lookup('נפקא מינה');assert.equal(r.length,1);assert.equal(r[0].parts[0].meaning,'היוצא לנו מזה למעשה');assert(!r[0].parts[0].text.includes('the practical difference'));assert(r[0].parts[0].text.includes('אפיקו ליה ריפתא'));assert.equal(ctx.HebrewLookup.lookup('נַפְקָא מִינָהּ')[0].rid,r[0].rid);assert.equal(ctx.HebrewLookup.lookup('zzzzz').length,0);
+assert.equal(ctx.HebrewLookup.lookup('abc נפקא').length,0);assert.equal(ctx.HebrewLookup.rank('נַפְקָא','נַפקא'),0);assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);console.log('PASS: data and pointed lookup assertions');
