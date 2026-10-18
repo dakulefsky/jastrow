@@ -5,7 +5,7 @@ English phrase glosses stop before a new bold subentry or verbal-stem block.
 """
 from pathlib import Path
 from html.parser import HTMLParser
-import hashlib,json,re,unicodedata
+import gzip,hashlib,json,re,unicodedata
 ROOT=Path(__file__).parent
 
 def norm(word):
@@ -48,7 +48,8 @@ def primary(node,label=''):
   if 'senses' in node:yield from primary(node['senses'],own)
 
 def build():
- docs={d['rid']:d for d in json.loads((ROOT/'krupnik-source.json').read_text())}
+ source_records=gzip.decompress((ROOT/'phrase-source.json.gz').read_bytes())
+ docs={d['rid']:d for d in json.loads(source_records)}
  phrases={};glosses={};notes={};counts={'jastrow':0,'krupnik':0};evidence=[]
  for path in sorted((ROOT/'plugin/data').glob('*.js')):
   if not re.fullmatch(r'(chunk-\d+|krupnik-1\d+)\.js',path.name):continue
@@ -92,7 +93,7 @@ def build():
  code+='window.JASTROW_INDEX.phraseGlosses='+json.dumps(glosses,ensure_ascii=False,separators=(',',':'))+';\n'
  code+='window.JASTROW_INDEX.phraseNotes='+json.dumps(notes,ensure_ascii=False,separators=(',',':'))+';\n'
  (ROOT/'plugin/data/phrases.js').write_text(code)
- audit={'method':__doc__,'counts':counts,'uniquePhrases':len(phrases),'sourceRecordsSha256':hashlib.sha256((ROOT/'krupnik-source.json').read_bytes()).hexdigest(),'entries':evidence}
+ audit={'method':__doc__,'counts':counts,'uniquePhrases':len(phrases),'sourceRecordsSha256':hashlib.sha256(source_records).hexdigest(),'entries':evidence}
  (ROOT/'plugin/data/phrase-provenance.json').write_text(json.dumps(audit,ensure_ascii=False,indent=2)+'\n')
  print('Indexed phrase headwords:',counts,'unique phrases:',len(phrases))
 if __name__=='__main__':build()
