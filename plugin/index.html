@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'none'; img-src 'self' data:; object-src 'none'; base-uri 'none'">
   <title>Aramaic to English Dictionary</title>
+  <style>html{background:#f4f5f1}body{visibility:hidden}@media(prefers-color-scheme:dark){html{background:#202522}}</style>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="single-lookup">
@@ -20,4 +21,6 @@
   <footer><span>Offline dictionary</span><span id="count" hidden></span></footer>
 </main>
 <script src="search.js"></script><script src="data/index.js"></script><script src="data/attested-forms.js"></script><script src="data/ranking.js"></script><script src="data/krupnik-index.js"></script><script src="data/phrases.js"></script><script src="context-menu.js"></script><script src="reading-view.js"></script><script src="unified-view.js"></script><script src="quick-lookup.js"></script><script src="app.js"></script>
+<script>/* Show the dictionary after Otzaria supplies its theme, with a fallback for standalone use. */
+(function(){var shown=false;function reveal(){if(shown)return;shown=true;document.body.style.visibility="visible";}if(window.Otzaria){Otzaria.on("plugin.boot",function(){requestAnimationFrame(reveal);});}else{requestAnimationFrame(reveal);}setTimeout(reveal,700);})();</script>
 </body></html>
