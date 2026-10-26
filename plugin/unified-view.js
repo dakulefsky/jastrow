@@ -26,13 +26,13 @@
  }
  function merge(records,word){
   const groups=[];
-  for(const {id,entry,meanings} of records)for(const meaning of meanings){
+  for(const {id,entry,meanings,lookupWord} of records)for(const meaning of meanings){
    if(!meaning.text?.trim())continue;
-   const spelling=S.displayHeadword(entry,word),item={id,entry,meaning,spelling};
+   const matchingWord=lookupWord||word,spelling=S.displayHeadword(entry,matchingWord),item={id,entry,meaning,spelling};
    let group=groups.find(g=>sameMeaning(g,item));
-   if(!group){group={text:meaning.text,form:stem(meaning.label),spelling,sources:[],rank:S.vowelRank(entry,word)};groups.push(group);}
+   if(!group){group={text:meaning.text,form:stem(meaning.label),spelling,sources:[],rank:S.vowelRank(entry,matchingWord)};groups.push(group);}
    if(parts(meaning.text).length>parts(group.text).length)group.text=meaning.text;
-   const rank=S.vowelRank(entry,word);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
+   const rank=S.vowelRank(entry,matchingWord);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
    if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label)))group.sources.push(item);
   }
   if(S.hasVowels(word))groups.sort((a,b)=>a.rank-b.rank);

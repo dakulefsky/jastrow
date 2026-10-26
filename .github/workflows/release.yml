@@ -25,6 +25,7 @@ jobs:
         run: |
           python3 build_phrases.py
           node test_search.cjs
+          node test_prefixes.cjs
           node test_context.cjs
           node test_ranking.cjs
           node test_krupnik.cjs
@@ -37,6 +38,7 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
           node test_consistency_ui.cjs
+          node test_prefixes_ui.cjs
       - name: Validate, build, and publish
         if: github.ref == 'refs/heads/main'
         id: publish

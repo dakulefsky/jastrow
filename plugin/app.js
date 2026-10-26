@@ -46,7 +46,8 @@ async function showEntry(id,record=true,targetPosition=null,word=query){
     query=word;$('query').value=query;
     if(record&&(trail[trailPosition]?.id!==id||trail[trailPosition]?.word!==word)){trail=trail.slice(0,trailPosition+1);trail.push({id,word});if(trail.length>50)trail.shift();trailPosition=trail.length-1;}else if(targetPosition!==null)trailPosition=targetPosition;
     currentId=id;setStatus('');renderTrail();syncEntryLink(id);$('entry').replaceChildren();rememberLookup(id,word);
-    await showTranslations({ids:[id],total:1,kind:'headword'},word,requestSerial);
+    const fullMatch=JastrowSearch.lookup(index,word,10000);
+    await showTranslations({...fullMatch,ids:[id],total:1,kind:fullMatch.kind==='prefixed form'?'prefixed form':'headword'},word,requestSerial);
     document.querySelectorAll('.result').forEach(b=>{const active=Number(b.dataset.id)===id;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
   }catch(e){if(serial===entrySerial){setStatus('Unable to open this entry. Try again. '+e.message);const retry=el('button','Try opening again');retry.type='button';retry.onclick=()=>showEntry(id,record,targetPosition,word);$('entry').replaceChildren(el('h2','This entry could not be loaded'),el('p','The dictionary file did not open. Retry without losing your word.'),retry);}}
   finally{if(serial===entrySerial)$('entry').removeAttribute('aria-busy');}
@@ -113,11 +114,15 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
  const panelSerial=entrySerial;
  currentId=null;target.replaceChildren(el('h2',word,'entry-title'));
  target.dataset.matchKind=result.kind;
+ if(result.kind==='prefixed form'){
+   const analyses=[...new Set(result.prefixMatches.map(m=>m.prefix+' + '+m.base))];
+   target.append(el('p','Possible base forms: '+analyses.join('; '),'prefix-analysis'));
+ }
  const ids=result.ids.slice(0,Math.max(60,limit));
  const items=await Promise.all(ids.map(async id=>{try{
    const entry=(await loadChunk(index.entries[id].b))[id],body=el('div');body.innerHTML=entry.html;
    const meanings=entry.source==='krupnik'?(result.kind==='phrase'?(index.phraseGlosses?.[id]||[]):entry.glosses):JastrowReadingView.phrases(body);
-   return {id,entry,meanings};
+   return {id,entry,meanings,lookupWord:JastrowSearch.matchingQuery(index,result.prefixMatches,id,word)};
  }catch{return {id,error:true};}}));
  if(serial!==requestSerial||panelSerial!==entrySerial)return;
  const records=items.filter(x=>!x.error);
@@ -194,3 +199,6 @@ setStatus('Ready · Search with or without nekudos.');
 renderTrail();
 function readEntryLink(){try{const p=new URLSearchParams(location.hash.slice(1)),id=Number(p.get('entry'));if(p.get('word')&&JastrowSearch.splitWords(p.get('word')).length){search(p.get('word'));return;}if(p.has('entry')&&Number.isInteger(id)&&id>=0&&id<index.entries.length){requestSerial++;query=p.get('word')||'';$('query').value=query;showEntry(id);}}catch{}}
 window.addEventListener('hashchange',readEntryLink);readEntryLink();
+// External script is permitted by script-src 'self'; an inline reveal would
+// be blocked by the plugin's CSP and leave the entire dictionary hidden.
+(function(){let shown=false;function reveal(){if(shown)return;shown=true;document.body.style.visibility='visible';}if(window.Otzaria){Otzaria.on('plugin.boot',()=>requestAnimationFrame(reveal));}else{requestAnimationFrame(reveal);}setTimeout(reveal,700);})();

@@ -1,3 +1,11 @@
+# Unreleased — attached-prefix lookup
+
+When the complete word has no indexed match, lookup now tries bounded combinations of attached ו, ד/ש, ב/כ/ל/מ and ה, provided the remainder is an existing dictionary headword, indexed form or source-attested form. Exact full-word matches retain precedence. For example, לצפרא and בצפרא can reach צפרא; דאמרינן can reach the already indexed אמרינן. No dictionary definitions or imported form links are changed.
+
+The reading view labels these as possible base forms and retains alternative meanings. Supplied vowels on the remaining word guide ordering. Typed searches, multiple-word selections, recent/reopened lookups, right-click availability and quick messages share this lookup. Quick messages identify possible prefixed forms. This is candidate matching, not a contextual translation or a claim that a removed letter is certainly a prefix. Arbitrary internal letters, verbal נ and suffixes are not deleted; additional inflected forms need actual examples and source-backed mappings.
+
+Validation: `node test_prefixes.cjs` checks real dictionary examples, combinations, original-match precedence, base-form ambiguity, vowels and unknown rejection. `node test_prefixes_ui.cjs` checks rendered meanings, quick messages, multiword lookup, reopen and reload in Chromium. Existing search, context, ranking, concise dictionary, phrase, unified-meaning and quick-message tests pass. The quick-message test's expected text now includes the Markdown bold markers already emitted by the previous application. Browser validation also exposed a pre-existing CSP-blocked inline page-reveal script; it now runs in the permitted external application script, preserving the theme callback/fallback. The existing unified browser suite passes. Packaging succeeds; official validation passes with zero errors/warnings using its bundled SDK fallback. Native Otzaria menu behavior has not been newly tested. No store publication is performed.
+
 # 1.9.1 — one result heading, no duplicate meanings for vowel variants
 
 A recognized expression now has one result heading followed directly by its meaning cards. The repeated “Expressions and words”, “Expression meaning” and “Possible meanings” labels have been removed. Longer selections show each recognized unit directly without another repeated overall heading.
