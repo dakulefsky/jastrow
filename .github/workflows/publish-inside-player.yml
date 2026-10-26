@@ -19,6 +19,11 @@ jobs:
           repository: dakulefsky/ShiurListener
           ref: ce099b8a5fbfb0f1b01815d28a0a9d8d0e77a978
           sparse-checkout: player
+      - uses: actions/checkout@v4
+        with:
+          path: publisher
+          sparse-checkout: .github/assets
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -34,6 +39,8 @@ jobs:
           fail-on-warnings: 'true'
           build: 'true'
           publish: 'true'
+          screenshots: publisher/.github/assets/inside-player-1.6.1.png
+          description: 'נגן שיעורים לקובצי שמע מקומיים בתוך אוצריא, עם שמירת מיקום לכל שיעור, תיקיות, חיפוש, סימניות, שינוי מהירות, דילוגים וטיימר שינה. הקבצים נשארים במכשיר. נדרש להשאיר את חלונית הנגן גלויה. בדיקת דיבור ומוזיקה מקומית היא ניסיונית ואינה מושלמת. הגרסה ניסיונית.'
           otzaria-user: ${{ secrets.OTZARIA_USER }}
           otzaria-password: ${{ secrets.OTZARIA_PASSWORD }}
       - uses: actions/upload-artifact@v4
