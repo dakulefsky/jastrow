@@ -48,6 +48,11 @@ const {chromium,executablePath}=require('./browser_support.cjs');
    await choose(display,source);await reader.getByRole('button',{name:'Aramaic → Eng.',exact:true}).click();await reader.locator('#message button').waitFor();assert.match(messages.at(-1).message,/possible inflected form/);assert.equal(messages.at(-1).tapPayload.dictionaryWord,display);
    await reader.getByRole('button',{name:'Open dictionary',exact:true}).click();await reader.waitForFunction(word=>document.body.dataset.openedWord===word,display);await foreground.locator('.unified-meanings').waitFor();assert.equal(await foreground.locator('#query').inputValue(),display);assert.match(await foreground.locator('.prefix-analysis').innerText(),/Possible base forms/);
   }
+  // Real redirect-only entry: אבדתא → אברתא (hyssop). Previously the
+  // registered quick action returned without showing anything.
+  await choose('אבדתא');await reader.getByRole('button',{name:'Aramaic → Eng.',exact:true}).click();await reader.locator('#message button').waitFor();assert.match(messages.at(-1).message,/hyssop/);assert.equal(messages.at(-1).tapPayload.dictionaryWord,'אבדתא');
+  await reader.locator('#message button').click();await reader.waitForFunction(()=>document.body.dataset.openedWord==='אבדתא');await foreground.locator('.unified-meanings').waitFor();assert.equal(await foreground.locator('#query').inputValue(),'אבדתא');assert.match(await foreground.locator('#entry').innerText(),/hyssop/);
+  assert((await foreground.locator('.meaning-source').allTextContents()).some(t=>t.includes('אַבְרָתָא')),'meaning must credit the target entry');
   await choose('אבגדהוזחטיכלמנסעפצקרשת','אבגדהוזחטיכלמנסעפצקרשת',false);assert.equal(await reader.locator('#menu button').count(),0);
   assert.deepEqual(errors,[]);console.log('PASS reader right-click → actual background prefix/suffix lookup → quick-message payload → cold-open/full dictionary; direct-open, marked text, both reader context registrations, unknown exclusion. Host-contract simulation, not native Otzaria.');
  }finally{if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}

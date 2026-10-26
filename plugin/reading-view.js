@@ -35,6 +35,35 @@
     }
     return results;
   }
+  function redirectTarget(body){
+    const links=[...body.querySelectorAll('a[data-headword]')];
+    const targets=[...new Set(links.map(a=>a.dataset.headword).filter(Boolean))];
+    if(targets.length!==1)return null;
+    const copy=body.cloneNode(true);copy.querySelectorAll('a,.morphology').forEach(n=>n.remove());
+    const remainder=copy.textContent.replace(/\b(?:v|q|same|plur|of|see|variant|form|spelling|h|ch|foreg|preced)\b\.?/gi,'');
+    // Only a standalone cross-reference, never an etymology, example or an
+    // entry with its own substantive prose. Ambiguous references stay visible.
+    return /^[\s,.;:=()[\]—–-]*$/.test(remainder)?targets[0]:null;
+  }
+  async function records(index,id,load,word,{phrase=false,lookupWord=word}={}){
+    const output=[],seen=new Set();let budget=40;
+    async function visit(current,query,depth){
+      if(seen.has(current)||depth>6||budget--<=0)return;
+      seen.add(current);
+      const entry=(await load(index.entries[current].b))[current];
+      if(!entry)throw Error('Missing dictionary entry');
+      let body;
+      const meanings=entry.source==='krupnik'?(phrase?(index.phraseGlosses?.[current]||[]):entry.glosses):phrases(body=Object.assign(document.createElement('div'),{innerHTML:entry.html}));
+      output.push({id:current,entry,meanings,lookupWord:query});
+      if(meanings.length||phrase)return;
+      if(!body){body=document.createElement('div');body.innerHTML=entry.html;}
+      const target=redirectTarget(body);if(!target)return;
+      const candidates=index.direct[root.JastrowSearch.normalize(target)]||[];
+      const exact=candidates.filter(n=>index.entries[n].h===target);
+      for(const next of exact.length?exact:root.JastrowSearch.validWord(target)?candidates:[])await visit(next,target,depth+1);
+    }
+    await visit(id,lookupWord,0);return output;
+  }
   function wordPassages(body,word){
     const normalize=root.JastrowSearch.normalize,q=normalize(word);if(!q)return [];
     const text=body.textContent,results=[];
@@ -91,5 +120,5 @@
     details.append(body);fragment.append(details);
     return fragment;
   }
-  root.JastrowReadingView={phrases,render,wordPassages,renderPassages};
+  root.JastrowReadingView={phrases,redirectTarget,records,render,wordPassages,renderPassages};
 })(window);

@@ -120,14 +120,12 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
  }
  const ids=result.ids.slice(0,Math.max(60,limit));
  const items=await Promise.all(ids.map(async id=>{try{
-   const entry=(await loadChunk(index.entries[id].b))[id],body=el('div');body.innerHTML=entry.html;
-   const meanings=entry.source==='krupnik'?(result.kind==='phrase'?(index.phraseGlosses?.[id]||[]):entry.glosses):JastrowReadingView.phrases(body);
-   return {id,entry,meanings,lookupWord:JastrowSearch.matchingQuery(index,result.prefixMatches,id,word)};
- }catch{return {id,error:true};}}));
+   return await JastrowReadingView.records(index,id,loadChunk,word,{phrase:result.kind==='phrase',lookupWord:JastrowSearch.matchingQuery(index,result.prefixMatches,id,word)});
+ }catch{return [{id,error:true}];}}));
  if(serial!==requestSerial||panelSerial!==entrySerial)return;
- const records=items.filter(x=>!x.error);
+ const expanded=items.flat(),records=expanded.filter(x=>!x.error);
  target.append(DictionaryMeanings.render(records,word,result.kind==='phrase'?index.phraseNotes:{}));
- for(const failed of items.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
+ for(const failed of expanded.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
  if(result.total>ids.length){const more=el('button','More matching entries');more.type='button';more.onclick=()=>{limit+=60;search(word,true);};target.append(more);}
 }
 
