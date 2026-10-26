@@ -115,7 +115,7 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
  currentId=null;target.replaceChildren(el('h2',word,'entry-title'));
  target.dataset.matchKind=result.kind;
  if(['prefixed form','inflected form'].includes(result.kind)){
-   const analyses=[...new Set(result.prefixMatches.map(m=>result.kind==='inflected form'?m.base+' ('+m.label+')':m.prefix+' + '+m.base))];
+   const analyses=[...new Set(result.prefixMatches.map(m=>m.label?m.base+' ('+m.label+')':m.prefix+' + '+m.base))];
    target.append(el('p','Possible base forms: '+analyses.join('; '),'prefix-analysis'));
  }
  const ids=result.ids.slice(0,Math.max(60,limit));
