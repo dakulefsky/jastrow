@@ -41,6 +41,7 @@ jobs:
           npx playwright install --with-deps chromium
           node test_consistency_ui.cjs
           node test_prefixes_ui.cjs
+          node test_reader_lookup.cjs
       - name: Validate, build, and publish
         if: github.ref == 'refs/heads/main'
         id: publish
