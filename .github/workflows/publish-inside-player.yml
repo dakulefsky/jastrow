@@ -1,0 +1,44 @@
+name: Publish reviewed Inside player 1.6.1
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-inside-player.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: publish-reviewed-inside-player
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      # Pin the reviewed source; this job does not publish arbitrary future changes.
+      - uses: actions/checkout@v4
+        with:
+          repository: dakulefsky/ShiurListener
+          ref: ce099b8a5fbfb0f1b01815d28a0a9d8d0e77a978
+          sparse-checkout: player
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check player and analysis regressions
+        run: |
+          node player/build/check_store_manifest.cjs
+          node --test player/tests/test_load_reliability.cjs player/tests/test_offline_analysis.cjs player/tests/test_minimum_duration.cjs player/tests/test_resume.cjs player/experiments/browser-two-check/test_guards.cjs player/experiments/browser-two-check/test_deadline.cjs
+      - name: Publish the reviewed Inside player
+        id: publish
+        uses: Otzaria/otzaria-plugin-validator@64ee7c7806a03fcba16c111a7b6c3185e4d92804
+        with:
+          path: player/plugin
+          fail-on-warnings: 'true'
+          build: 'true'
+          publish: 'true'
+          otzaria-user: ${{ secrets.OTZARIA_USER }}
+          otzaria-password: ${{ secrets.OTZARIA_PASSWORD }}
+      - uses: actions/upload-artifact@v4
+        if: steps.publish.outputs.plugin-file != ''
+        with:
+          name: Inside-player-1.6.1
+          path: ${{ steps.publish.outputs.plugin-file }}
+          if-no-files-found: error

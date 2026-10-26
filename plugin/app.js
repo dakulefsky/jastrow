@@ -197,6 +197,3 @@ setStatus('Ready · Search with or without nekudos.');
 renderTrail();
 function readEntryLink(){try{const p=new URLSearchParams(location.hash.slice(1)),id=Number(p.get('entry'));if(p.get('word')&&JastrowSearch.splitWords(p.get('word')).length){search(p.get('word'));return;}if(p.has('entry')&&Number.isInteger(id)&&id>=0&&id<index.entries.length){requestSerial++;query=p.get('word')||'';$('query').value=query;showEntry(id);}}catch{}}
 window.addEventListener('hashchange',readEntryLink);readEntryLink();
-// External script is permitted by script-src 'self'; an inline reveal would
-// be blocked by the plugin's CSP and leave the entire dictionary hidden.
-(function(){let shown=false;function reveal(){if(shown)return;shown=true;document.body.style.visibility='visible';}if(window.Otzaria){Otzaria.on('plugin.boot',()=>requestAnimationFrame(reveal));}else{requestAnimationFrame(reveal);}setTimeout(reveal,700);})();

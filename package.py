@@ -19,7 +19,7 @@ with ZipFile(output/(stem+'.otzplugin'),'w',ZIP_DEFLATED,compresslevel=9) as z:
 if '--preview' in sys.argv:
  html=(root/'plugin/index.html').read_text().replace('<link rel="stylesheet" href="style.css">','<style>'+(root/'plugin/style.css').read_text()+'</style>')
  hashes=[]
- for name in ['search.js','data/index.js','data/attested-forms.js','data/ranking.js','data/krupnik-index.js','data/phrases.js','data/inflections.js','context-menu.js','reading-view.js','unified-view.js','quick-lookup.js','app.js']:
+ for name in ['search.js','data/index.js','data/attested-forms.js','data/ranking.js','data/krupnik-index.js','data/phrases.js','data/inflections.js','context-menu.js','reading-view.js','unified-view.js','quick-lookup.js','app.js','reveal.js']:
   code=(root/'plugin'/name).read_text()
   if name=='app.js':
    # Same application code; only the offline chunks are preloaded in the preview.
