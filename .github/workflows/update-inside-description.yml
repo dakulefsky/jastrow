@@ -1,0 +1,22 @@
+name: Update Inside developer API description
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/update-inside-description.yml', '.github/assets/inside-player-api.he.txt']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: Otzaria/otzaria-plugin-validator
+          ref: 64ee7c7806a03fcba16c111a7b6c3185e4d92804
+          path: validator
+      - run: node .github/scripts/update-inside-description.cjs
+        env:
+          OTZARIA_USER: ${{ secrets.OTZARIA_USER }}
+          OTZARIA_PASSWORD: ${{ secrets.OTZARIA_PASSWORD }}
