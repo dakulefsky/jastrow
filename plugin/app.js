@@ -186,7 +186,7 @@ if(window.Otzaria){
     }).catch(()=>{});
     $('selection').onclick=async()=>{
       try{const res=await Otzaria.call('reader.getSelection');
-      const text=JastrowContext.selectionText(res?.data);if(res?.success&&text)search(text);else setStatus('Select a word in an Otzaria text first, then choose Aramaic → Eng. from the context menu.');}
+      const text=JastrowContext.selectionText(res?.data);if(res?.success&&text)search(text);else setStatus('Select a word in an Otzaria text first, then choose Aramaic → Eng. — Quick result from the context menu.');}
       catch{setStatus('Could not read the selected word. You can type it in the search field.');}
     };
   });

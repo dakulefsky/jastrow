@@ -41,16 +41,16 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   }
   await choose('לצפרא');assert.equal(await reader.locator('#menu button').count(),2);
   for(const item of items.values())assert.deepEqual(item.contexts,['reader-selection','reader-page-shape-selection']);
-  await reader.getByRole('button',{name:'Aramaic → Eng.',exact:true}).click();await reader.locator('#message button').waitFor();
+  await reader.getByRole('button',{name:'Aramaic → Eng. — Quick result',exact:true}).click();await reader.locator('#message button').waitFor();
   assert.match(messages.at(-1).message,/possible prefixed form/);assert.equal(messages.at(-1).tapPayload.dictionaryWord,'לצפרא');
   await reader.locator('#message button').click();await reader.waitForFunction(()=>document.body.dataset.openedWord==='לצפרא');await foreground.locator('.unified-meanings').waitFor();assert.equal(await foreground.locator('#query').inputValue(),'לצפרא');assert.match(await foreground.locator('#entry').innerText(),/morning/);
   for(const [display,source] of [['דמילתייכו','דמילתייכו'],['בֵּיתֵיהוֹן','ביתיהון'],['כתבינן','כתבינן']]){
-   await choose(display,source);await reader.getByRole('button',{name:'Aramaic → Eng.',exact:true}).click();await reader.locator('#message button').waitFor();assert.match(messages.at(-1).message,/possible inflected form/);assert.equal(messages.at(-1).tapPayload.dictionaryWord,display);
+   await choose(display,source);await reader.getByRole('button',{name:'Aramaic → Eng. — Quick result',exact:true}).click();await reader.locator('#message button').waitFor();assert.match(messages.at(-1).message,/possible inflected form/);assert.equal(messages.at(-1).tapPayload.dictionaryWord,display);
    await reader.getByRole('button',{name:'Open dictionary',exact:true}).click();await reader.waitForFunction(word=>document.body.dataset.openedWord===word,display);await foreground.locator('.unified-meanings').waitFor();assert.equal(await foreground.locator('#query').inputValue(),display);assert.match(await foreground.locator('.prefix-analysis').innerText(),/Possible base forms/);
   }
   // Real redirect-only entry: אבדתא → אברתא (hyssop). Previously the
   // registered quick action returned without showing anything.
-  await choose('אבדתא');await reader.getByRole('button',{name:'Aramaic → Eng.',exact:true}).click();await reader.locator('#message button').waitFor();assert.match(messages.at(-1).message,/hyssop/);assert.equal(messages.at(-1).tapPayload.dictionaryWord,'אבדתא');
+  await choose('אבדתא');await reader.getByRole('button',{name:'Aramaic → Eng. — Quick result',exact:true}).click();await reader.locator('#message button').waitFor();assert.match(messages.at(-1).message,/hyssop/);assert.equal(messages.at(-1).tapPayload.dictionaryWord,'אבדתא');
   await reader.locator('#message button').click();await reader.waitForFunction(()=>document.body.dataset.openedWord==='אבדתא');await foreground.locator('.unified-meanings').waitFor();assert.equal(await foreground.locator('#query').inputValue(),'אבדתא');assert.match(await foreground.locator('#entry').innerText(),/hyssop/);
   assert((await foreground.locator('.meaning-source').allTextContents()).some(t=>t.includes('אַבְרָתָא')),'meaning must credit the target entry');
   await choose('אבגדהוזחטיכלמנסעפצקרשת','אבגדהוזחטיכלמנסעפצקרשת',false);assert.equal(await reader.locator('#menu button').count(),0);
