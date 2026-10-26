@@ -1,0 +1,1 @@
+Screenshot of the reviewed Inside player 1.6.1 interface in Chromium at 1280px, using a simulated Otzaria bridge and one sample recording row. This does not depict an installed native Otzaria application or demonstrate physical audio output. Generated during the design review; no user recording or personal library data is included.
