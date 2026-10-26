@@ -37,6 +37,39 @@
     }
     return matches;
   }
+  function endingMatches(index,query){
+    if(!index.inflections)return [];
+    const letters=markedLetters(query),q=normalize(query),matches=[],medial=s=>s.replace(/[ךםןףץ]/g,c=>({'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'})[c]);
+    for(let n=0;n<=4&&q.length-n>=3;n++){
+      const prefix=q.slice(0,n);if(n&&!/^ו?[דש]?[בכלמ]?ה?$/.test(prefix))continue;
+      const word=q.slice(n);
+      for(const rule of index.inflections.rules)for(const suffix of rule.endings){
+        if(!word.endsWith(suffix))continue;
+        const stem=word.slice(0,-suffix.length);if(stem.length<2)continue;
+        for(const item of index.inflections.stems[medial(stem)]||[]){
+          if(item.family!==rule.family)continue;
+          // Keep vowels on retained consonants; final-letter restoration and
+          // dictionary emphatic aleph do not invent vowel marks.
+          const retained=letters.slice(n,n+stem.length);
+          const baseQuery=[...item.base].map((c,i)=>c+(retained[i]?.marks.join('')||'')).join('');
+          matches.push({...item,prefix,suffix,baseQuery,label:rule.label});
+        }
+      }
+      // Consonant-preserving imperfect forms: one verbal person/modal prefix,
+      // optionally followed by a plural ending. Do not infer weak-root changes.
+      if(index.inflections.verbalPrefixes.includes(word[0]))for(const suffix of index.inflections.imperfectEndings){
+        if(suffix&&!word.endsWith(suffix))continue;
+        const stem=word.slice(1,suffix?-suffix.length:undefined);if(stem.length<3)continue;
+        for(const item of index.inflections.stems[medial(stem)]||[]){
+          if(item.family!=='verb')continue;
+          const retained=letters.slice(n+1,n+1+stem.length);
+          const baseQuery=[...item.base].map((c,i)=>c+(retained[i]?.marks.join('')||'')).join('');
+          matches.push({...item,prefix:prefix+word[0],suffix,baseQuery,label:'possible verb form'});
+        }
+      }
+    }
+    return matches;
+  }
   function matchingQuery(index,matches,id,query){
     const entry={...index.entries[id],alt:index.aliases?.[id]||[]};
     const choices=(matches||[]).filter(m=>m.id===id);
@@ -57,6 +90,10 @@
     if(!ids.length){
       prefixed=prefixMatches(index,query);
       if(prefixed.length){ids=[...new Set(prefixed.map(m=>m.id))];kind='prefixed form';}
+      else{
+        prefixed=endingMatches(index,query);
+        if(prefixed.length){ids=[...new Set(prefixed.map(m=>m.id))];kind='inflected form';}
+      }
     }
     if(!ids.length){
       // Suggestions are spelling matches, never invented translations or inferred roots.
@@ -72,7 +109,7 @@
     const word=String(text).trim();
     if(!validWord(word))return false;
     const q=normalize(word);
-    return !!q && !!(indexedMatches(index,q).length||prefixMatches(index,word).length);
+    return !!q && !!(indexedMatches(index,q).length||prefixMatches(index,word).length||endingMatches(index,word).length);
   }
   function displayHeadword(entry,word=''){
     const same=[entry.h,...(entry.alt||[])].filter(h=>normalize(h)===normalize(word)).sort((a,b)=>vowelRank({h:a},word)-vowelRank({h:b},word))[0];
@@ -102,7 +139,7 @@
   }
   function hasSelectionTranslations(index,text){const segments=segmentWords(index,text);return !!segments.length&&segments.every(s=>s.result?.ids.length||hasTranslation(index,s.word));}
 
-  const api={hasVowels,vowelRank,markedLetters,prefixMatches,matchingQuery,phraseLookup,segmentWords,hasSelectionTranslations,splitWords,normalize,lookup,hasTranslation,validWord,displayHeadword};
+  const api={hasVowels,vowelRank,markedLetters,prefixMatches,endingMatches,matchingQuery,phraseLookup,segmentWords,hasSelectionTranslations,splitWords,normalize,lookup,hasTranslation,validWord,displayHeadword};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.JastrowSearch=api;
 })(typeof window!=='undefined'?window:globalThis);

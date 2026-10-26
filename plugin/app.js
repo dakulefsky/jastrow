@@ -47,7 +47,7 @@ async function showEntry(id,record=true,targetPosition=null,word=query){
     if(record&&(trail[trailPosition]?.id!==id||trail[trailPosition]?.word!==word)){trail=trail.slice(0,trailPosition+1);trail.push({id,word});if(trail.length>50)trail.shift();trailPosition=trail.length-1;}else if(targetPosition!==null)trailPosition=targetPosition;
     currentId=id;setStatus('');renderTrail();syncEntryLink(id);$('entry').replaceChildren();rememberLookup(id,word);
     const fullMatch=JastrowSearch.lookup(index,word,10000);
-    await showTranslations({...fullMatch,ids:[id],total:1,kind:fullMatch.kind==='prefixed form'?'prefixed form':'headword'},word,requestSerial);
+    await showTranslations({...fullMatch,ids:[id],total:1,kind:['prefixed form','inflected form'].includes(fullMatch.kind)?fullMatch.kind:'headword'},word,requestSerial);
     document.querySelectorAll('.result').forEach(b=>{const active=Number(b.dataset.id)===id;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
   }catch(e){if(serial===entrySerial){setStatus('Unable to open this entry. Try again. '+e.message);const retry=el('button','Try opening again');retry.type='button';retry.onclick=()=>showEntry(id,record,targetPosition,word);$('entry').replaceChildren(el('h2','This entry could not be loaded'),el('p','The dictionary file did not open. Retry without losing your word.'),retry);}}
   finally{if(serial===entrySerial)$('entry').removeAttribute('aria-busy');}
@@ -114,8 +114,8 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
  const panelSerial=entrySerial;
  currentId=null;target.replaceChildren(el('h2',word,'entry-title'));
  target.dataset.matchKind=result.kind;
- if(result.kind==='prefixed form'){
-   const analyses=[...new Set(result.prefixMatches.map(m=>m.prefix+' + '+m.base))];
+ if(['prefixed form','inflected form'].includes(result.kind)){
+   const analyses=[...new Set(result.prefixMatches.map(m=>result.kind==='inflected form'?m.base+' ('+m.label+')':m.prefix+' + '+m.base))];
    target.append(el('p','Possible base forms: '+analyses.join('; '),'prefix-analysis'));
  }
  const ids=result.ids.slice(0,Math.max(60,limit));

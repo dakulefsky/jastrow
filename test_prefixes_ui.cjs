@@ -18,6 +18,10 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   const messages=await page.evaluate(async()=>{const calls=[];window.Otzaria={call:async(method,args)=>{calls.push({method,args});return {success:true};}};try{await DictionaryQuick.show('לצפרא');await DictionaryQuick.show('לצפרא טבא');return calls;}finally{delete window.Otzaria;}});
   assert.equal(messages.length,2);for(const call of messages){assert.equal(call.method,'ui.showMessage');assert.match(call.args.message,/possible prefixed form/);assert.equal(call.args.tapOpenPlugin,true);}assert.equal(messages[0].args.tapPayload.dictionaryWord,'לצפרא');
   await lookup('צפרא');assert.equal(await page.locator('.prefix-analysis').count(),0);
+  await lookup('מילתיהון');assert.match(await page.locator('.prefix-analysis').innerText(),/possible noun ending/);assert.match(await page.locator('#entry').innerText(),/word|thing|affair/);
+  await page.reload();await page.locator('.unified-meanings').waitFor();assert.equal(await page.locator('#query').inputValue(),'מילתיהון');assert.match(await page.locator('.prefix-analysis').innerText(),/noun ending/);
+  await lookup('דמילתייכו טבא');assert.equal(await page.locator('.phrase-word').count(),2);assert.match(await page.locator('.prefix-analysis').innerText(),/noun ending/);
+  const inflected=await page.evaluate(async()=>{const calls=[];window.Otzaria={call:async(method,args)=>{calls.push(args);return {success:true};}};try{await DictionaryQuick.show('ביתיהון');return calls;}finally{delete window.Otzaria;}});assert.equal(inflected.length,1);assert.match(inflected[0].message,/possible inflected form/);assert.equal(inflected[0].tapPayload.dictionaryWord,'ביתיהון');
   assert.deepEqual(errors,[]);console.log('PASS rendered prefix analysis, full ambiguous base meanings, vowel ranking, reload, direct entry, multiword and quick-lookup consistency.');
  }finally{if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}
 })().catch(e=>{console.error(e);process.exitCode=1;});

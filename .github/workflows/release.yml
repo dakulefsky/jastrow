@@ -24,8 +24,10 @@ jobs:
       - name: Check dictionary and selection lookup
         run: |
           python3 build_phrases.py
+          python3 build_inflections.py
           node test_search.cjs
           node test_prefixes.cjs
+          node test_inflections.cjs
           node test_context.cjs
           node test_ranking.cjs
           node test_krupnik.cjs
