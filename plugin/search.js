@@ -88,19 +88,18 @@
     // another dictionary's distinct meaning for the same spelling.
     let kind=direct.length?'headword':forms.length?'word form':attested.length?'attested form':'suggestions';
     if(!ids.length){
-      prefixed=prefixMatches(index,query);
-      if(prefixed.length){ids=[...new Set(prefixed.map(m=>m.id))];kind='prefixed form';}
-      else{
-        prefixed=endingMatches(index,query);
-        if(prefixed.length){ids=[...new Set(prefixed.map(m=>m.id))];kind='inflected form';}
-      }
+      const prefixes=prefixMatches(index,query);
+      // Both analyses are tentative. A prefixed dictionary word must not hide
+      // a different eligible stem with a grammatical ending (e.g. ביתיה).
+      prefixed=[...prefixes,...endingMatches(index,query)];
+      if(prefixed.length){ids=[...new Set(prefixed.map(m=>m.id))];kind=prefixes.length?'prefixed form':'inflected form';}
     }
     if(!ids.length){
       // Suggestions are spelling matches, never invented translations or inferred roots.
       ids=index.entries.map((e,i)=>({i,n:normalize(e.h)})).filter(e=>e.n.startsWith(q)).map(e=>e.i);
     }
     if(kind!=='suggestions'&&order==='length'&&index.entryLengths){
-      const tier=id=>{const m=prefixed.find(m=>m.id===id);return m?m.prefix.length*3+((index.direct[m.base]||[]).includes(id)?0:(index.attestedForms?.[m.base]||[]).some(x=>x.id===id)?1:2):direct.includes(id)?0:attested.includes(id)?1:2;};
+      const tier=id=>{const matches=prefixed.filter(m=>m.id===id);return matches.length?Math.min(...matches.map(m=>(m.suffix!==undefined?20:0)+m.prefix.length*3+((index.direct[m.base]||[]).includes(id)?0:(index.attestedForms?.[m.base]||[]).some(x=>x.id===id)?1:2))):direct.includes(id)?0:attested.includes(id)?1:2;};
       ids.sort((a,b)=>tier(a)-tier(b)||vowelFit(a)-vowelFit(b)||Number(index.entries[b].source==='krupnik')-Number(index.entries[a].source==='krupnik')||(index.entryLengths[b]||0)-(index.entryLengths[a]||0)||a-b);
     }
     return {kind,ids:ids.slice(0,limit),total:ids.length,...(prefixed.length?{prefixMatches:prefixed.filter(m=>ids.slice(0,limit).includes(m.id))}:{})};

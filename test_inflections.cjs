@@ -11,6 +11,15 @@ for(const word of ['מלכין','גברין','מילתין','אמרינן','תנ
 for(const word of ['אבגדהוזחטיכלמנסעפצקרשת','מילתאabc','דיניהון2','מילנתא'])assert(!S.hasTranslation(index,word),word);
 const limited=S.lookup(index,'מילתיהון',1);assert.equal(limited.ids.length,1);assert(limited.prefixMatches.every(m=>limited.ids.includes(m.id)));
 const future=S.lookup(index,'דנכתבון');assert.equal(future.kind,'inflected form');assert(future.prefixMatches.some(m=>m.family==='verb'&&m.base==='כתב'&&m.prefix==='דנ'&&m.suffix==='ון'));
+// A plausible ב + יתיה must not suppress בית + יה (house + suffix).
+for(const word of ['ביתיה','וביתיה','ביתך']){
+ const r=S.lookup(index,word);
+ assert.equal(r.kind,'prefixed form');
+ assert(r.prefixMatches.some(m=>m.suffix&&m.base==='בית'),word+': lost house analysis');
+ assert(r.prefixMatches.some(m=>m.suffix===undefined),word+': lost prefix analysis');
+ assert(r.ids.some(id=>S.normalize(index.entries[id].h)==='בית'),word);
+}
+for(const word of ['בית','ביתא','אמרינן'])assert.equal(S.lookup(index,word).prefixMatches,undefined,'full-word evidence keeps priority');
 const provenance=JSON.parse(zlib.gunzipSync(fs.readFileSync(__dirname+'/audit/inflection-provenance.json.gz')));
 for(const [name,digest] of Object.entries(provenance.inputSha256))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(__dirname+'/plugin/data/'+name)).digest('hex'),digest,name);
 for(const items of Object.values(index.inflections.stems))for(const m of items){
