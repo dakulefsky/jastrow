@@ -14,6 +14,32 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      hebrew: ${{ steps.scope.outputs.hebrew }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: scope
+        name: Detect changes to the separate Hebrew plugin
+        shell: python
+        run: |
+          import json, os, subprocess
+          with open(os.environ['GITHUB_EVENT_PATH']) as f:
+              event = json.load(f)
+          kind = os.environ['GITHUB_EVENT_NAME']
+          if kind == 'workflow_dispatch':
+              changed = True
+          else:
+              if kind == 'pull_request':
+                  before, after = event['pull_request']['base']['sha'], event['pull_request']['head']['sha']
+              else:
+                  before, after = event['before'], event['after']
+              changed = before == '0' * 40 or bool(subprocess.check_output(['git', 'diff', '--name-only', before, after, '--', 'hebrew/']).strip())
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write('hebrew=' + str(changed).lower() + '\n')
   release:
     runs-on: ubuntu-latest
     steps:
@@ -24,7 +50,10 @@ jobs:
       - name: Check dictionary and selection lookup
         run: |
           python3 build_phrases.py
+          python3 build_inflections.py
           node test_search.cjs
+          node test_prefixes.cjs
+          node test_inflections.cjs
           node test_context.cjs
           node test_ranking.cjs
           node test_krupnik.cjs
@@ -37,6 +66,9 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
           node test_consistency_ui.cjs
+          node test_prefixes_ui.cjs
+          node test_reader_lookup.cjs
+          node test_redirects_ui.cjs
       - name: Validate, build, and publish
         if: github.ref == 'refs/heads/main'
         id: publish
@@ -63,6 +95,8 @@ jobs:
           if-no-files-found: error
 
   hebrew-release:
+    needs: changes
+    if: needs.changes.outputs.hebrew == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
