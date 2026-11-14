@@ -9,6 +9,7 @@ const {chromium,executablePath}=require('./browser_support.cjs');
  await page.goto(base+'/',{waitUntil:'networkidle'});
  await page.evaluate("testEvents['plugin.boot'].forEach(f=>f({theme:{colorScheme:{primary:'#315e50',surface:'#f4f5f1',onSurface:'#23342d',surfaceContainerHigh:'#e8eee8',outline:'#d6dfd8',onSurfaceVariant:'#68776f'}}}))");
  assert.equal(await page.locator('#count').innerText(),'47,919 entries');assert.equal(await page.locator('.intro,.welcome-kicker,.welcome-foot').count(),0);assert.equal(await page.locator('.welcome h2').innerText(),'Dictionary lookup');
+ await page.fill('#query','WHO CREATED THIS?');await page.click('.lookup-button');assert.equal(await page.locator('#entry p').innerText(),'Daniel Avrahom');await page.reload({waitUntil:'networkidle'});
  await page.screenshot({path:path.join(__dirname,'preview-home.png'),fullPage:true});
  await page.fill('#query','מיתיבי');await page.click('.lookup-button');if(await page.locator('.result').count()>1)await page.locator('.result').filter({hasText:'Jastrow'}).first().click();await page.locator('.entry-title').waitFor();assert((await page.locator('.quick-meanings').innerText()).length>10);assert(await page.locator('.scholarly-entry summary').isVisible());
  await page.fill('#query','דאמר');await page.click('.lookup-button');assert.equal(await page.locator('#entry h2').innerText(),'Translations');
