@@ -80,6 +80,11 @@ function paintMatches(r,word,serial){
 }
 async function search(word, more=false){
   query=String(word).trim();$('query').value=query;if(!more){limit=60;includeJastrow=false;}
+  if(query.toLowerCase()==='who created this?'){
+    ++requestSerial;++entrySerial;resultIds=[];$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';currentId=null;
+    $('entry').replaceChildren(el('h2','A little secret'),el('p','Daniel Avrahom'));
+    setStatus('');return;
+  }
   const serial=++requestSerial;++entrySerial;$('entry').removeAttribute('aria-busy');
   const words=JastrowSearch.splitWords(query);
   if(words.length>1){await searchWords(words,serial);return;}
