@@ -181,4 +181,18 @@ async function permissionReadFailureDoesNotRevokeGrant(){
 }
 await permissionReadFailureDoesNotRevokeGrant();
 
-console.log('PASS: permission gating, durable offline queue, race-safe sync, transient permission-read failures, and reconnect recovery.');
+
+async function hostEventWinsOverStalePermissionRead(){
+ const listeners=new Map(),values=new Map();let resolveRead;
+ const root={DICTIONARY_COMMUNITY_API:'https://otzaria-dictionary-community.dakulefsky.workers.dev',navigator:{onLine:true},dispatchEvent:()=>{},addEventListener:()=>{},Otzaria:{call:async method=>{if(method==='app.getGrantedPermissions')return await new Promise(resolve=>resolveRead=resolve);if(method==='app.getConnectivity')return {success:true,data:{isOfflineMode:false,isOnline:true}};throw Error(method);},on:(name,fn)=>{if(!listeners.has(name))listeners.set(name,[]);listeners.get(name).push(fn);}}};
+ const context={window:root,globalThis:root,URL,Event,AbortSignal,TextEncoder,localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)},crypto:{randomUUID:()=> '12345678-1234-1234-1234-123456789012'},fetch:async()=>new Response(JSON.stringify({ok:true}),{status:200})};
+ vm.runInNewContext(source,context);const api=root.DictionaryCommunity;
+ await new Promise(resolve=>setTimeout(resolve,0));
+ for(const fn of listeners.get('plugin.boot')||[])await fn({permissions:['network.access']});
+ resolveRead({success:true,data:{permissions:[]}});
+ await api.ready;
+ assert.equal(api.enabled,true,'a stale pre-boot permission response must not overwrite the host boot snapshot');
+}
+await hostEventWinsOverStalePermissionRead();
+
+console.log('PASS: permission gating, boot snapshot precedence, durable offline queue, race-safe sync, and reconnect recovery.');
