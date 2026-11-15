@@ -54,6 +54,7 @@ jobs:
           node --check hebrew/plugin/app.js
           node --input-type=module --check < community/worker/src/index.js
           node community/test_worker.mjs
+          node community/test_client.mjs
       - name: Check cross-link generator syntax
         run: |
           python -m py_compile community/build_entry_links.py
