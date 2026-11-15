@@ -69,3 +69,23 @@ button:disabled{opacity:.5;cursor:default;transform:none}
 .community-vote-status{font-size:.78rem;color:var(--color-muted,inherit)}
 .community-match-row{display:flex;align-items:center;gap:.35rem}
 .community-match-row>.result{flex:1;min-width:0}
+
+
+/* Refined, unobtrusive community voting */
+.community-feedback{display:block;margin:1.5rem 0 0;padding:1rem 1.1rem;border:1px solid var(--line);border-radius:var(--radius-lg);background:linear-gradient(145deg,var(--paper),var(--page));}
+.community-feedback-heading{margin-bottom:.85rem}
+.community-feedback-kicker{display:block;font:700 .58rem/1.4 var(--ui);letter-spacing:.14em;color:var(--gold);text-transform:uppercase;margin-bottom:.35rem}
+.community-feedback-label{font:600 .95rem/1.4 var(--ui);color:var(--ink);margin:0 0 .25rem}
+.community-feedback-description{font:.72rem/1.55 var(--ui);color:var(--muted);margin:0}
+.community-vote-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:.5rem}
+.community-vote,.community-match-row .community-vote{display:flex;flex-direction:column;align-items:stretch;gap:.25rem;min-width:0;text-align:start;padding:.65rem .75rem;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--page);color:var(--ink);transition:border-color .15s,background .15s}
+.community-vote:hover{border-color:var(--gold);background:var(--paper)}
+.community-vote-main{display:flex;align-items:center;justify-content:space-between;gap:.6rem}
+.community-vote-headword{font:600 1rem/1.4 var(--body);overflow-wrap:anywhere}
+.community-vote-source{flex:none;font:600 .58rem/1.4 var(--ui);color:var(--muted);border:1px solid var(--line);border-radius:var(--radius-pill);padding:.12rem .4rem}
+.community-vote-gloss{font:.7rem/1.45 var(--ui);color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.community-vote-action{align-self:flex-end;font:600 .65rem/1.4 var(--ui);color:var(--forest);margin-top:.1rem}
+.community-vote.is-selected{border-color:var(--forest);background:var(--color-surface-container)}
+.community-vote.is-selected .community-vote-action{color:var(--forest)}
+.community-vote-status{display:block;margin-top:.7rem;font:.7rem/1.5 var(--ui);color:var(--forest)}
+@media(max-width:520px){.community-feedback{padding:.85rem}.community-vote-options{grid-template-columns:1fr}}
