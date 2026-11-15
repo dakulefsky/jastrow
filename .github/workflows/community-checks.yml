@@ -58,6 +58,17 @@ jobs:
           node community/test_worker.mjs
           node community/test_client.mjs
           node community/test_context_menu.mjs
+      - name: Validate exact HTTPS network allowlists
+        run: |
+          python - <<'PY'
+          import json
+          expected = ["https://otzaria-dictionary-community.dakulefsky.workers.dev"]
+          for path in ("plugin/manifest.json", "hebrew/plugin/manifest.json"):
+              with open(path, encoding="utf-8") as f:
+                  manifest = json.load(f)
+              assert manifest["network"]["enabled"] is True, path
+              assert manifest["network"]["allowlist"] == expected, path
+          PY
       - name: Check cross-link generator syntax
         run: |
           python -m py_compile community/build_entry_links.py
