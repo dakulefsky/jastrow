@@ -26,7 +26,7 @@ function renderMatches(records,word){
 }
 if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-synced',()=>{document.querySelectorAll('.community-vote-status').forEach(node=>{if(node.textContent.includes('נשמרה במכשיר'))node.textContent='ההצבעה נשלחה כעת לקהילה.';});});
 if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',()=>{
- document.querySelectorAll('.community-vote,.community-vote-status,.community-match-preview').forEach(node=>node.remove());
+ document.querySelectorAll('.community-feedback,.community-vote,.community-vote-status,.community-match-preview').forEach(node=>node.remove());
  if(window.Otzaria)for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'aramaic-hebrew-community-vote-'+i})).catch(()=>{});}catch{}}
 });
 let lastSearched='',searchSerial=0;
