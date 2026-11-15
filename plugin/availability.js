@@ -2,8 +2,9 @@
  'use strict';
  if(!window.Otzaria)return;
  const index=window.JASTROW_INDEX;
- let pending=null,running=false,revision=0,latestPayload=null;
- function removeCommunityItems(){revision++;pending=null;for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i})).catch(()=>{});}catch{}}}
+ let pending=null,running=false,revision=0,latestPayload=null,removalRequested=false;
+ async function drainCommunityRemovals(){if(running)return;running=true;removalRequested=false;try{for(let i=0;i<3;i++)await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i});}catch{}finally{running=false;if(pending)update().catch(()=>{});else if(removalRequested)drainCommunityRemovals().catch(()=>{});}}
+ function removeCommunityItems(){revision++;pending=null;removalRequested=true;if(!running)drainCommunityRemovals().catch(()=>{});}
  if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',removeCommunityItems);
  if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-permission-granted',()=>{if(latestPayload)offer(latestPayload);});
  async function update(){
@@ -45,7 +46,7 @@
     }
     if(res?.success===false&&res.error?.code!=='error.not_found')console.warn('Dictionary filtered lookup registration failed',res.error?.code);
    }
-  }finally{running=false;if(pending)update().catch(()=>console.warn('Dictionary filtered lookup unavailable'));}
+  }finally{running=false;if(pending)update().catch(()=>console.warn('Dictionary filtered lookup unavailable'));else if(removalRequested)drainCommunityRemovals().catch(()=>{});}
  }
  function offer(payload){latestPayload=payload||{};pending={payload:latestPayload,revision:++revision};update().catch(()=>console.warn('Dictionary filtered lookup unavailable'));}
  Otzaria.on('reader.selection_changed',offer);
