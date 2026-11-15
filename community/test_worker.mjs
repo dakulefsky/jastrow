@@ -158,7 +158,7 @@ assert.equal(partial.preferredEntryId, null, 'votes for omitted candidates must 
 // Input validation and payload limits remain enforced.
 const invalidFeature = await call('/v1/vote', { method: 'POST', headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ word: 'נפקא', entryId: 'krupnik:KRU1', voterId: token(12), scope: 'context', contextKey: keyA, features: [{ type: 'exact', hash: 'not-a-hash' }] }) });
-assert.equal((await invalidFeature.json()).error, 'invalid_context');
+assert.equal((await invalidFeature.json()).error, 'invalid_context_features');
 const oversized = await call('/v1/vote', { method: 'POST', body: JSON.stringify({ word: 'נפקא', entryId: 'krupnik:KRU1', voterId: token(13), padding: 'x'.repeat(5000) }) });
 assert.equal(oversized.status, 413, 'request body limit must apply even without Content-Length');
 const nullBody = await call('/v1/vote', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: 'null' });
