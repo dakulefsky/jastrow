@@ -23,14 +23,16 @@
     const res=await Otzaria.call(method,args);
     if(job.revision!==revision)continue;
     await Otzaria.call(method,method==='reader.addContextMenuItem'?{...args,id:'jastrow-open',title:'Open dictionary',label:'Open dictionary',openPlugin:true,onClickEvent:'reader.context_menu_item_clicked'}:{id:'jastrow-open'});
-    const candidates=matched&&window.DictionaryCommunity?.enabled?JastrowSearch.lookup(index,text,3,'length',false).ids:[];
-    for(let i=0;i<3;i++){
-     const id='jastrow-community-vote-'+i;
-     if(job.revision!==revision)continue;
-     if(candidates[i]!==undefined){
-      const entry=index.entries[candidates[i]],title='👍 '+entry.h;
-      await Otzaria.call('reader.addContextMenuItem',{id,title,label:title,contexts:['reader-selection','reader-page-shape-selection'],openPlugin:false,onClickEvent:'reader.context_menu_item_clicked',showWhen:{selectionContainsAny:variants}});
-     }else await Otzaria.call('reader.removeContextMenuItem',{id});
+    if(window.DictionaryCommunity?.enabled){
+     const candidates=matched?JastrowSearch.lookup(index,text,3,'length',false).ids:[];
+     for(let i=0;i<3;i++){
+      const id='jastrow-community-vote-'+i;
+      if(job.revision!==revision)continue;
+      if(candidates[i]!==undefined){
+       const entry=index.entries[candidates[i]],title='👍 '+entry.h;
+       await Otzaria.call('reader.addContextMenuItem',{id,title,label:title,contexts:['reader-selection','reader-page-shape-selection'],openPlugin:false,onClickEvent:'reader.context_menu_item_clicked',showWhen:{selectionContainsAny:variants}});
+      }else await Otzaria.call('reader.removeContextMenuItem',{id});
+     }
     }
     if(res?.success===false&&res.error?.code!=='error.not_found')console.warn('Dictionary filtered lookup registration failed',res.error?.code);
    }
