@@ -1,7 +1,7 @@
 (function(){
  if(!window.Otzaria)return;
  let revision=0,queue=Promise.resolve(),latestPayload=null;
- function removeCommunityItems(){revision++;for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'aramaic-hebrew-community-vote-'+i})).catch(()=>{});}catch{}}}
+ function removeCommunityItems(){revision++;queue=queue.catch(()=>{}).then(async()=>{for(let i=0;i<3;i++)await Otzaria.call('reader.removeContextMenuItem',{id:'aramaic-hebrew-community-vote-'+i});}).catch(()=>{});}
  if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',removeCommunityItems);
  if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-permission-granted',()=>{if(latestPayload)offer(latestPayload);});
  function offer(p){
