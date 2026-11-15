@@ -3,6 +3,7 @@
  let revision=0,queue=Promise.resolve(),latestPayload=null;
  function removeCommunityItems(){for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'aramaic-hebrew-community-vote-'+i})).catch(()=>{});}catch{}}}
  if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',removeCommunityItems);
+ if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-permission-granted',()=>{if(latestPayload)offer(latestPayload);});
  function offer(p){
   latestPayload=p||{};
   const rev=++revision,text=HebrewLookup.selectionText(latestPayload);
@@ -20,7 +21,7 @@
      const id='aramaic-hebrew-community-vote-'+i,entry=candidates[i];
      if(entry){
       const preview=entry.parts?.map(part=>part.meaning||part.text).find(Boolean)||'';
-     const title='👍 '+entry.word+(preview?' — '+preview.slice(0,55):'');
+     const title='אישור התאמה · '+entry.word+(preview?' — '+preview.slice(0,55):'');
       await Otzaria.call('reader.addContextMenuItem',{id,title,label:title,contexts:['reader-selection','reader-page-shape-selection'],openPlugin:false,onClickEvent:'reader.context_menu_item_clicked',showWhen:{selectionContainsAny:[text]}});
      }else await Otzaria.call('reader.removeContextMenuItem',{id});
     }

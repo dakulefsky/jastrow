@@ -42,7 +42,7 @@
    networkAvailable=true;emit('dictionary-community-enabled');return true;
   }catch{
    const wasEnabled=networkAvailable;networkAvailable=false;
-   if(wasEnabled)emit('dictionary-community-disabled');
+   if(wasEnabled)emit('dictionary-community-offline');
    return false;
   }
  }
@@ -63,12 +63,12 @@
   try{
    const u=new URL(API+'/v1/suggestions');u.searchParams.set('word',normalize(word));u.searchParams.set('ids',ids.join(','));
    const r=await fetch(u,{headers:{Accept:'application/json'},signal:AbortSignal.timeout(1800)});
-   if(!r.ok){networkAvailable=false;emit('dictionary-community-disabled');return {preferredEntryId:null,entries};}
+   if(!r.ok){networkAvailable=false;emit('dictionary-community-offline');return {preferredEntryId:null,entries};}
    const data=await r.json(),preferred=data.preferredEntryId;
    if(!preferred)return {preferredEntryId:null,entries};
    const reordered=[...entries].sort((a,b)=>{const aid=typeof a==='string'?a:idFor(a),bid=typeof b==='string'?b:idFor(b);return aid===preferred?-1:bid===preferred?1:0;});
    return {preferredEntryId:preferred,entries:reordered,votes:data.totalVotes||0};
-  }catch{networkAvailable=false;emit('dictionary-community-disabled');return {preferredEntryId:null,entries};}
+  }catch{networkAvailable=false;emit('dictionary-community-offline');return {preferredEntryId:null,entries};}
  }
  function enqueue(word,entryId,voter){
   const normalized=normalize(word);if(!normalized||!entryId||!voter)return {ok:false,reason:'unavailable'};
@@ -88,10 +88,10 @@
     if(!permissionGranted||!networkAvailable||!(await checkConnectivity()))break;
     try{
      const r=await fetch(API+'/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:item.word,entryId:item.entryId,voterId:item.voterId}),signal:AbortSignal.timeout(3000)});
-     if(!r.ok){networkAvailable=false;emit('dictionary-community-disabled');break;}
+     if(!r.ok){networkAvailable=false;emit('dictionary-community-offline');break;}
      const data=await r.json();if(typeof data.accepted!=='boolean'){networkAvailable=false;break;}
      q=q.filter(x=>x.id!==item.id);writeQueue(q);synced++;
-    }catch{networkAvailable=false;emit('dictionary-community-disabled');break;}
+    }catch{networkAvailable=false;emit('dictionary-community-offline');break;}
    }
   }finally{syncing=false;emit('dictionary-community-queue-updated');if(synced&&pendingCount()===0)emit('dictionary-community-synced');}
   return {synced,pending:pendingCount()};
@@ -103,10 +103,10 @@
   if(!networkAvailable||!(await checkConnectivity()))return enqueue(word,entryId,voter);
   try{
    const r=await fetch(API+'/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:normalize(word),entryId,voterId:voter}),signal:AbortSignal.timeout(2500)});
-   if(!r.ok){networkAvailable=false;emit('dictionary-community-disabled');return enqueue(word,entryId,voter);}
-   const data=await r.json();if(typeof data.accepted!=='boolean'){networkAvailable=false;return enqueue(word,entryId,voter);}
+   if(!r.ok){networkAvailable=false;emit('dictionary-community-offline');return enqueue(word,entryId,voter);}
+   const data=await r.json();if(typeof data.accepted!=='boolean'){networkAvailable=false;emit('dictionary-community-offline');return enqueue(word,entryId,voter);}
    return {ok:data.accepted===true,duplicate:data.duplicate===true,votes:data.votes||0};
-  }catch{networkAvailable=false;emit('dictionary-community-disabled');return enqueue(word,entryId,voter);}
+  }catch{networkAvailable=false;emit('dictionary-community-offline');return enqueue(word,entryId,voter);}
  }
  const permissionChanged=detail=>{
   const permissions=Array.isArray(detail?.permissions)?detail.permissions:[];
@@ -114,8 +114,9 @@
   if(permissionGranted)checkHealth().then(ok=>ok&&flushQueue()).catch(()=>{});
  };
  try{root.Otzaria?.on?.('plugin.permissions_changed',permissionChanged);}catch{}
- try{root.addEventListener?.('online',async()=>{if(permissionGranted&&await checkHealth())await flushQueue();});}catch{}
- try{root.addEventListener?.('focus',async()=>{if(permissionGranted&&!networkAvailable&&await checkHealth())await flushQueue();});}catch{}
+ try{root.Otzaria?.on?.('plugin.boot',async payload=>{if(Array.isArray(payload?.permissions)){setPermission(payload.permissions.includes('network.access'));if(permissionGranted&&await checkHealth())await flushQueue();}else await refreshPermissions();});}catch{}
+ try{root.addEventListener?.('online',async()=>{if(!permissionGranted)await refreshPermissions();else if(await checkHealth())await flushQueue();});}catch{}
+ try{root.addEventListener?.('focus',async()=>{if(!permissionGranted)await refreshPermissions();else if(!networkAvailable&&await checkHealth())await flushQueue();});}catch{}
  const api={ready:Promise.resolve(false),normalize,idFor,rank,vote,flushQueue,refreshPermissions};
  Object.defineProperties(api,{enabled:{enumerable:true,get:()=>permissionGranted},online:{enumerable:true,get:()=>networkAvailable},pending:{enumerable:true,get:pendingCount}});
  root.DictionaryCommunity=api;

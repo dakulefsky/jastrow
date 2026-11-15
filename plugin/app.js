@@ -119,16 +119,27 @@ async function searchWords(words,serial){
 function renderCommunityVotes(result,word,target,records=[]){
  if(!window.DictionaryCommunity?.enabled||!result.ids.length)return;
  const panel=el('section',undefined,'community-feedback');
- panel.append(el('p','Which dictionary entry fits this word?','community-feedback-label'));
+ const heading=el('div',undefined,'community-feedback-heading');
+ heading.append(el('span','COMMUNITY CONTRIBUTION','community-feedback-kicker'));
+ heading.append(el('h3','Which entry best fits this word?','community-feedback-label'));
+ heading.append(el('p','Your choice helps improve future lookups for everyone.','community-feedback-description'));
+ panel.append(heading);
+ const options=el('div',undefined,'community-vote-options');
  for(const id of result.ids.slice(0,12)){
   const meta=index.entries[id],record=records.find(item=>item.id===id),preview=record?.meanings?.find(item=>item.text)?.text||'';
-  const source=meta.source==='krupnik'?'Krupnik':'Jastrow',label='👍 '+meta.h+' · '+source+(preview?' — '+preview.slice(0,55):'');
-  const button=el('button',label,'community-vote');
-  button.type='button';button.dir='auto';button.title=label;button.setAttribute('aria-label',label);
-  button.onclick=async()=>{button.disabled=true;const outcome=await DictionaryCommunity.vote(word,meta);if(!outcome.ok&&!outcome.duplicate){panel.remove();return;}const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);note.textContent=outcome.queued?'Saved on this device — it will sync when you’re online.':outcome.ok?'Thanks — your vote was counted.':'You already confirmed this match.';button.disabled=false;};
-  panel.append(button);
+  const source=meta.source==='krupnik'?'Krupnik & Silbermann':'Jastrow';
+  const button=el('button',undefined,'community-vote');
+  button.type='button';button.dir='auto';button.title='Vote for '+meta.h+' ('+source+')';button.setAttribute('aria-label','Choose '+meta.h+' from '+source);
+  const main=el('span',undefined,'community-vote-main');
+  main.append(el('strong',meta.h,'community-vote-headword'),el('span',source,'community-vote-source'));
+  button.append(main);
+  if(preview)button.append(el('span',preview.slice(0,90),'community-vote-gloss'));
+  const action=el('span','Choose','community-vote-action');button.append(action);
+  button.onclick=async()=>{button.disabled=true;const outcome=await DictionaryCommunity.vote(word,meta);if(!outcome.ok&&!outcome.duplicate){button.disabled=false;return;}const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);note.textContent=outcome.queued?'Saved on this device — it will sync when you’re online.':outcome.ok?'Thank you. Your choice has been recorded.':'You have already confirmed this match.';button.classList.add('is-selected');button.querySelector('.community-vote-action').textContent='Selected';button.disabled=true;};
+  options.append(button);
  }
- target.append(panel);
+ panel.append(options);
+ const meanings=target.querySelector('.unified-meanings');if(meanings)target.insertBefore(panel,meanings);else target.append(panel);
 }
 if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-synced',()=>{document.querySelectorAll('.community-vote-status').forEach(node=>{if(node.textContent.includes('Saved on this device'))node.textContent='Your offline vote has now been sent to the community.';});});
 if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',()=>{
@@ -223,4 +234,5 @@ setStatus('Ready · Search with or without nekudos.');
 renderTrail();
 function readEntryLink(){try{const p=new URLSearchParams(location.hash.slice(1)),id=Number(p.get('entry'));if(p.get('word')&&JastrowSearch.splitWords(p.get('word')).length){search(p.get('word'));return;}if(p.has('entry')&&Number.isInteger(id)&&id>=0&&id<index.entries.length){requestSerial++;query=p.get('word')||'';$('query').value=query;showEntry(id);}}catch{}}
 window.addEventListener('hashchange',readEntryLink);readEntryLink();
+window.addEventListener('dictionary-community-permission-granted',()=>{if(query)search(query,true);});
 window.DictionaryCommunity?.ready?.then(()=>{if(window.DictionaryCommunity.enabled&&query)search(query,true);}).catch(()=>{});

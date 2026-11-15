@@ -5,6 +5,7 @@
  let pending=null,running=false,revision=0,latestPayload=null;
  function removeCommunityItems(){for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i})).catch(()=>{});}catch{}}}
  if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',removeCommunityItems);
+ if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-permission-granted',()=>{if(latestPayload)offer(latestPayload);});
  async function update(){
   if(running)return;running=true;
   try{
@@ -35,7 +36,7 @@
       if(job.revision!==revision)continue;
       if(candidates[i]!==undefined){
        const entry=index.entries[candidates[i]],preview=previews.find(x=>x.id===candidates[i])?.meaning||'';
-       const source=entry.source==='krupnik'?'Krupnik':'Jastrow',title='👍 '+entry.h+' · '+source+(preview?' — '+preview.slice(0,55):'');
+       const source=entry.source==='krupnik'?'Krupnik':'Jastrow',title='Use this match · '+entry.h+' · '+source+(preview?' — '+preview.slice(0,55):'');
        await Otzaria.call('reader.addContextMenuItem',{id,title,label:title,contexts:['reader-selection','reader-page-shape-selection'],openPlugin:false,onClickEvent:'reader.context_menu_item_clicked',showWhen:{selectionContainsAny:variants}});
       }else await Otzaria.call('reader.removeContextMenuItem',{id});
      }

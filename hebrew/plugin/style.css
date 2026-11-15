@@ -61,10 +61,25 @@ button:disabled{opacity:.5;cursor:default;transform:none}
 
 
 /* Shared community match feedback */
-.community-feedback{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;margin:1.1rem 0;padding:.8rem;border:1px solid var(--color-outline, #888);border-radius:.7rem}
+.community-feedback{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;margin:1.1rem 0;padding:.8rem;border:1px solid var(--line);border-radius:.7rem}
 .community-feedback-label{flex-basis:100%;margin:0;font-size:.9rem;color:var(--color-muted,inherit)}
-.community-vote,.community-match-row .community-vote{font:inherit;font-size:.82rem;border:1px solid var(--color-outline, #888);border-radius:999px;padding:.32rem .65rem;background:transparent;color:inherit;cursor:pointer}
+.community-vote,.community-match-row .community-vote{font:inherit;font-size:.82rem;border:1px solid var(--line);border-radius:var(--radius-pill);padding:.32rem .65rem;background:transparent;color:inherit;cursor:pointer}
 .community-vote:disabled{opacity:.55;cursor:wait}
 .community-vote-status{font-size:.78rem;color:var(--color-muted,inherit)}
 .community-match-row{display:flex;align-items:center;gap:.35rem}
 .community-match-row>.result{flex:1;min-width:0}.community-match-preview{flex:1;min-width:0;font-size:.76rem;color:var(--color-muted,inherit);overflow:hidden;text-overflow:ellipsis}
+
+
+/* תרומה לקהילה — עיצוב שקט, נקי ובהתאם למילון */
+.community-feedback-he{display:block;margin:0 0 .75rem;padding:.8rem .9rem;border:1px solid var(--line);border-radius:var(--radius-md);background:linear-gradient(145deg,var(--paper),var(--page))}
+.community-feedback-kicker{display:block;font:700 .58rem/1.4 var(--ui);letter-spacing:.1em;color:var(--gold);margin-bottom:.25rem}
+.community-feedback-label{font:600 .9rem/1.4 var(--ui);color:var(--ink);margin:0 0 .2rem}
+.community-feedback-description{font:.7rem/1.5 var(--ui);color:var(--muted);margin:0}
+.community-match-row{display:flex;flex-wrap:wrap;align-items:center;padding:.35rem 0;border-bottom:1px solid color-mix(in srgb,var(--line) 65%,transparent)}
+.community-match-row:last-child{border-bottom:0}
+.community-match-row>.result{flex:1;min-width:0}
+.community-match-row .community-vote{display:inline-flex;flex:none;align-items:center;justify-content:center;min-width:65px;padding:.35rem .65rem;border-radius:var(--radius-pill);font:600 .68rem/1.3 var(--ui);background:transparent;color:var(--forest);border:1px solid var(--line)}
+.community-match-row .community-vote:hover{background:var(--color-surface-container);border-color:var(--gold)}
+.community-match-row .community-vote.is-selected{background:var(--color-surface-container);border-color:var(--forest);color:var(--forest)}
+.community-match-row .community-vote-status{display:block;flex-basis:100%;font:.68rem/1.5 var(--ui);color:var(--forest)}
+.community-match-row .community-vote-preview{font:.68rem/1.45 var(--ui);color:var(--muted)}
