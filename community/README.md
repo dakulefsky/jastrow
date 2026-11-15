@@ -8,7 +8,7 @@ This is an optional, privacy-minimal community ranking service for the English J
 - Krupnik records use `krupnik:KRU…`; Jastrow records use `jastrow:<source rid>`.
 - `entry_links` maps only high-confidence Jastrow-to-Krupnik links to the Krupnik canonical ID.
 - No selected sentence, page text, account name, email, or device identifier is sent. The client creates a random per-install voter token; the service stores only its SHA-256 hash.
-- One installation can vote once for a given word/entry pair. Votes are not transferable between different surface words.
+- Each installation has one active vote per selected surface word and can change its choice. Votes are not transferable between different surface words.
 - A community result is promoted only after at least 3 votes and at least 65% of votes for that candidate. Alternatives remain available.
 - Original dictionary records and definitions are never modified.
 
