@@ -48,5 +48,5 @@ const duplicate=await (await call('/v1/vote',{method:'POST',headers:{'Content-Ty
 assert.equal(duplicate.duplicate,true,'same installation cannot vote twice for the same word');
 await call('/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:'נפקא',entryId:'krupnik:KRU2',voterId:'voter-token-1-abcdefghijklmnop'})});
 result=await (await call('/v1/suggestions?word=%D7%A0%D7%A4%D7%A7%D7%90&ids=jastrow%3AJAS1%2Ckrupnik%3AKRU2')).json();
-assert.equal(result.preferredEntryId,null,'a changed vote must move, not duplicate, the installation vote');
+assert.equal(result.preferredEntryId,'jastrow:JAS1','one changed vote moves but does not erase other users’ consensus');\nawait call('/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:'נפקא',entryId:'krupnik:KRU2',voterId:'voter-token-2-abcdefghijklmnop'})});\nresult=await (await call('/v1/suggestions?word=%D7%A0%D7%A4%D7%A7%D7%90&ids=jastrow%3AJAS1%2Ckrupnik%3AKRU2')).json();\nassert.equal(result.preferredEntryId,'krupnik:KRU2','community consensus should move when users change their choice');
 console.log('PASS: Worker health, three-vote threshold, Jastrow/Krupnik shared IDs, duplicate prevention, and vote changes.');
