@@ -44,11 +44,51 @@ assert.equal(failing.api.idFor({ source: 'jastrow', r: 'A03220' }), 'jastrow:A03
 assert.equal(failing.api.idFor({ source: 'krupnik', r: 'KRU02095' }), 'krupnik:KRU02095');
 assert.equal(failing.api.idFor({ rid: 'KRU02095' }), 'krupnik:KRU02095');
 const failedVote = await failing.api.vote('נפקא', { rid: 'KRU02095' });
-assert.equal(failedVote.ok, false);
+assert.equal(failedVote.ok, true, 'a failed network submission should be retained locally');
+assert.equal(failedVote.queued, true);
+assert.equal(failing.api.pending, 1);
 assert.equal(failing.api.enabled, false);
 assert.deepEqual(failing.events, ['dictionary-community-disabled']);
 const before = failing.calls.length;
 await failing.api.rank('נפקא', [{ rid: 'KRU02095' }]);
 assert.equal(failing.calls.length, before, 'after failure the client must remain offline and silent');
 
-console.log('PASS: offline denial, shared entry IDs, silent fail-closed transition, and no repeat requests after service failure.');
+
+async function offlineQueueRoundTrip(){
+ const events=new Map(),values=new Map([['otzaria-dictionary-community-network-approved-v1','1']]),calls=[];
+ const root={
+  DICTIONARY_COMMUNITY_API:'https://community.example',
+  navigator:{onLine:false},
+  dispatchEvent:event=>{for(const fn of events.get(event.type)||[])fn(event);},
+  addEventListener:(type,fn)=>{if(!events.has(type))events.set(type,[]);events.get(type).push(fn);}
+ };
+ let sent=[];
+ const context={
+  window:root,globalThis:root,URL,Event,AbortSignal,TextEncoder,
+  localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)},
+  crypto:{randomUUID:()=> '12345678-1234-1234-1234-123456789012'},
+  fetch:async(input,init={})=>{
+   const url=String(input);calls.push({url,method:init.method||'GET'});
+   if(url.endsWith('/health'))return new Response(JSON.stringify({ok:true}),{status:200});
+   if(url.endsWith('/v1/vote')){sent.push(JSON.parse(init.body));return new Response(JSON.stringify({accepted:true,votes:1}),{status:200});}
+   throw new Error('Unexpected URL '+url);
+  }
+ };
+ vm.runInNewContext(source,context);
+ await root.DictionaryCommunity.ready;
+ assert.equal(root.DictionaryCommunity.enabled,true,'previously approved users can vote offline');
+ const queued=await root.DictionaryCommunity.vote('נפקא','krupnik:KRU02095');
+ assert.equal(queued.queued,true);
+ assert.equal(root.DictionaryCommunity.pending,1);
+ assert.equal(calls.some(x=>x.url.endsWith('/v1/vote')),false,'offline vote must not attempt network');
+ root.navigator.onLine=true;
+ for(const fn of events.get('online')||[])await fn();
+ assert.equal(root.DictionaryCommunity.pending,0,'confirmed submission must be removed from queue');
+ assert.equal(sent.length,1);
+ assert.equal(sent[0].entryId,'krupnik:KRU02095');
+ const again=await root.DictionaryCommunity.flushQueue();
+ assert.equal(again.pending,0,'retries must not re-submit an acknowledged vote');
+}
+await offlineQueueRoundTrip();
+
+console.log('PASS: offline denial, durable queued votes, automatic reconnect sync, retry safety, shared entry IDs, and silent fail-closed behavior.');
