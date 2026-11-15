@@ -19,6 +19,6 @@ This is an optional, privacy-minimal community ranking service for the English J
 3. From `community/worker`, run `npx wrangler d1 migrations apply otzaria-dictionary-community --remote`.
 4. Deploy with `npx wrangler deploy`.
 5. Set the resulting Worker URL in each plugin's `community-config.js`, and add that exact host to the plugin manifest network allowlist and CSP `connect-src`.
-6. Generate the cross-dictionary link seed using `python3 build_entry_links.py`, then import the generated SQL/CSV into D1. Review generated links before import; only exact unique headword/alternate-headword matches are emitted.
+6. The deployment workflow generates `entry-links.sql` from the committed Jastrow and Krupnik indexes and imports it into D1. The builder emits only exact, unique headword/alternate-headword matches; ambiguous and fuzzy matches are skipped.
 
 No Worker is deployed and no votes are collected until a Cloudflare database and Worker URL are configured. The API has no paid dependency, but Cloudflare account limits and pricing apply.
