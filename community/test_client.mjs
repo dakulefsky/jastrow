@@ -74,7 +74,7 @@ assert.equal(failing.calls.length, before, 'after failure the client must remain
 async function bootPermissionSnapshot(){
  const listeners=new Map(),values=new Map(),calls=[];
  const root={
-  DICTIONARY_COMMUNITY_API:'https://community.example',navigator:{onLine:true},
+  DICTIONARY_COMMUNITY_API:'https://otzaria-dictionary-community.dakulefsky.workers.dev',navigator:{onLine:true},
   dispatchEvent:event=>{},addEventListener:()=>{},
   Otzaria:{
    call:async method=>{if(method==='app.getGrantedPermissions')return {success:true,data:{permissions:[]}};if(method==='app.getConnectivity')return {success:true,data:{isOfflineMode:false,isOnline:true}};throw new Error(method);},
@@ -93,7 +93,7 @@ await bootPermissionSnapshot();
 async function offlineQueueRoundTrip(){
  const events=new Map(),values=new Map(),calls=[];
  const root={
-  DICTIONARY_COMMUNITY_API:'https://community.example',
+  DICTIONARY_COMMUNITY_API:'https://otzaria-dictionary-community.dakulefsky.workers.dev',
   navigator:{onLine:false},
   dispatchEvent:event=>{for(const fn of events.get(event.type)||[])fn(event);},
   addEventListener:(type,fn)=>{if(!events.has(type))events.set(type,[]);events.get(type).push(fn);},
