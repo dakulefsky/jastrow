@@ -1,7 +1,7 @@
 (function(root){
  'use strict';
  let API=String(root.DICTIONARY_COMMUNITY_API||'').replace(/\/+$/,'');
- try{const parsed=new URL(API);if(parsed.protocol!=='https:'||parsed.hostname!=='otzaria-dictionary-community.dakulefsky.workers.dev')API='';}catch{API='';}
+ if(!/^https:\/\/otzaria-dictionary-community\.dakulefsky\.workers\.dev$/.test(API))API='';
  const voterKey='otzaria-dictionary-community-voter-v1';
  const queueKey='otzaria-dictionary-community-pending-v1';
  let permissionGranted=false,permissionKnown=false,permissionEpoch=0,networkAvailable=false,offlineMode=false,syncing=false,permissionRead=null;
