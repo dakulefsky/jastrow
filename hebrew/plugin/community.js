@@ -36,8 +36,10 @@
    return [...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,'0')).join('');
   }catch{return '';}
  }
- function contextWindow(selection){
+ function contextWindow(selection,word){
   let selected=selection?.selection||selection||{};
+  const selectedText=selected.renderedSelectedText||selected.normalizedSelectedText||selected.sourceSelectedText||selected.text||selection?.selectedText||'';
+  if(selectedText&&normalize(selectedText)!==normalize(word))return null;
   if(Array.isArray(selected.sections)){
    if(selected.sections.length!==1)return null;
    selected=selected.sections[0];
@@ -62,7 +64,7 @@
   return [...unique.values()];
  }
  async function buildContext(selection,word){
-  const windowFeatures=contextWindow(selection);if(!windowFeatures)return null;
+  const windowFeatures=contextWindow(selection,word);if(!windowFeatures)return null;
   const contextKey=await digestHex('otzaria-context-v1|'+normalize(word)+'|'+JSON.stringify(windowFeatures[0][1]));
   if(!contextKey)return null;
   const features=[];
