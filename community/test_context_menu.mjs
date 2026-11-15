@@ -54,7 +54,7 @@ async function hebrew() {
     },
     addEventListener:()=>{}
   };
-  const context={window:root,globalThis:root,console};
+  const context={window:root,globalThis:root,Otzaria:root.Otzaria,HebrewLookup:root.HebrewLookup,console};
   vm.runInNewContext(await read('hebrew/plugin/availability.js'),context);
   vm.runInNewContext(await read('hebrew/plugin/quick-lookup.js'),context);
   for(const fn of events.get('reader.selection_changed')||[])fn({selection:{renderedSelectedText:'נפקא'}});
