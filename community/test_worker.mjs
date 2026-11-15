@@ -131,7 +131,7 @@ const contextC = [feature('exact', 'h'), feature('pair', 'i'), feature('left1', 
 const keyA = hex('1'), keyB = hex('2'), keyC = hex('3');
 for (const [n, key, features] of [[5,keyA,contextA],[6,keyB,contextB]]) {
   const r = await (await vote('נפקא', 'krupnik:KRU2', n, 'context', { contextKey: key, features })).json();
-  assert.equal(r.accepted, true);
+  assert.equal(r.accepted, true, JSON.stringify(r));
 }
 let contextual = await suggestions('נפקא', ['jastrow:JAS1', 'krupnik:KRU2'], 'context', contextA);
 assert.equal(contextual.preferredEntryId, 'krupnik:KRU2', 'a similar context should learn from both neighboring usage patterns');
