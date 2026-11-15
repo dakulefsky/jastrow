@@ -113,7 +113,7 @@ async function bootPermissionSnapshot(){
   }
  };
  const context={window:root,globalThis:root,URL,Event,AbortSignal,TextEncoder,localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)},crypto:{randomUUID:()=> '12345678-1234-1234-1234-123456789012'},fetch:async input=>{calls.push(String(input));return new Response(JSON.stringify({ok:true}),{status:200});}};
- vm.runInNewContext(source,context);await root.DictionaryCommunity.ready;
+ root.crypto=context.crypto;vm.runInNewContext(source,context);await root.DictionaryCommunity.ready;
  assert.equal(root.DictionaryCommunity.enabled,false,'pre-boot empty permission response must not be treated as granted');
  for(const fn of listeners.get('plugin.boot')||[])await fn({permissions:['network.access']});
  assert.equal(root.DictionaryCommunity.enabled,true,'the documented boot permission snapshot must activate community features');
@@ -149,7 +149,7 @@ async function offlineQueueRoundTrip(){
    throw new Error('Unexpected URL '+url);
   }
  };
- vm.runInNewContext(source,context);
+ root.crypto=context.crypto;vm.runInNewContext(source,context);
  await root.DictionaryCommunity.ready;
  assert.equal(root.DictionaryCommunity.enabled,true,'users who granted network access can vote offline');
  const queued=await root.DictionaryCommunity.vote('נפקא','krupnik:KRU02095');
@@ -185,7 +185,7 @@ async function contextualOfflineQueueRoundTrip(){
    throw Error('Unexpected request '+url);
   }
  };
- vm.runInNewContext(source,context);const api=root.DictionaryCommunity;await api.ready;
+ root.crypto=context.crypto;vm.runInNewContext(source,context);const api=root.DictionaryCommunity;await api.ready;
  const queued=await api.vote('נפקא','krupnik:KRU1',{scope:'contextual',selection:contextSelection});
  assert.equal(queued.queued,true,'contextual vote should queue while offline');
  const saved=JSON.parse(values.get('otzaria-dictionary-community-pending-v1'));
@@ -224,7 +224,7 @@ async function preservesNewChoiceDuringSync(){
    throw Error('Unexpected request '+url);
   }
  };
- vm.runInNewContext(source,context);const api=root.DictionaryCommunity;await api.ready;
+ root.crypto=context.crypto;vm.runInNewContext(source,context);const api=root.DictionaryCommunity;await api.ready;
  assert.equal((await api.vote('נפקא','krupnik:KRU1')).queued,true,'first offline choice is queued');
  root.navigator.onLine=true;
  const sync=api.refreshPermissions();
@@ -243,7 +243,7 @@ async function permissionReadFailureDoesNotRevokeGrant(){
  let failRead=false;const values=new Map(),events=[];
  const root={DICTIONARY_COMMUNITY_API:'https://otzaria-dictionary-community.dakulefsky.workers.dev',navigator:{onLine:true},dispatchEvent:e=>events.push(e.type),addEventListener:()=>{},Otzaria:{call:async method=>{if(method==='app.getGrantedPermissions')return failRead?{success:false}:{success:true,data:{permissions:['network.access']}};if(method==='app.getConnectivity')return {success:true,data:{isOfflineMode:false,isOnline:true}};throw Error(method);},on:()=>{}}};
  const context={window:root,globalThis:root,URL,Event,AbortSignal,TextEncoder,localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)},crypto:{randomUUID:()=> '12345678-1234-1234-1234-123456789012'},fetch:async()=>new Response(JSON.stringify({ok:true}),{status:200})};
- vm.runInNewContext(source,context);const api=root.DictionaryCommunity;await api.ready;assert.equal(api.enabled,true);
+ root.crypto=context.crypto;vm.runInNewContext(source,context);const api=root.DictionaryCommunity;await api.ready;assert.equal(api.enabled,true);
  failRead=true;await api.refreshPermissions();assert.equal(api.enabled,true,'a temporary host permission-read error must not be mistaken for explicit denial');
  assert(!events.includes('dictionary-community-disabled'));
 }
@@ -254,7 +254,7 @@ async function hostEventWinsOverStalePermissionRead(){
  const listeners=new Map(),values=new Map();let resolveRead;
  const root={DICTIONARY_COMMUNITY_API:'https://otzaria-dictionary-community.dakulefsky.workers.dev',navigator:{onLine:true},dispatchEvent:()=>{},addEventListener:()=>{},Otzaria:{call:async method=>{if(method==='app.getGrantedPermissions')return await new Promise(resolve=>resolveRead=resolve);if(method==='app.getConnectivity')return {success:true,data:{isOfflineMode:false,isOnline:true}};throw Error(method);},on:(name,fn)=>{if(!listeners.has(name))listeners.set(name,[]);listeners.get(name).push(fn);}}};
  const context={window:root,globalThis:root,URL,Event,AbortSignal,TextEncoder,localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)},crypto:{randomUUID:()=> '12345678-1234-1234-1234-123456789012'},fetch:async()=>new Response(JSON.stringify({ok:true}),{status:200})};
- vm.runInNewContext(source,context);const api=root.DictionaryCommunity;
+ root.crypto=context.crypto;vm.runInNewContext(source,context);const api=root.DictionaryCommunity;
  await new Promise(resolve=>setTimeout(resolve,0));
  for(const fn of listeners.get('plugin.boot')||[])await fn({permissions:['network.access']});
  resolveRead({success:true,data:{permissions:[]}});
