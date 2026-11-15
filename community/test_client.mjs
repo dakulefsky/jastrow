@@ -7,7 +7,7 @@ const source = await readFile(new URL('../plugin/community.js', import.meta.url)
 async function load({ health = true, voteStatus = 200, permission = true, online = true } = {}) {
   const events = [], calls = [], values = new Map();
   const root = {
-    DICTIONARY_COMMUNITY_API: 'https://community.example',
+    DICTIONARY_COMMUNITY_API: 'https://otzaria-dictionary-community.dakulefsky.workers.dev',
     navigator: { onLine: online },
     dispatchEvent: event => events.push(event.type),
     addEventListener: () => {},
