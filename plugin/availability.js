@@ -36,7 +36,7 @@
       if(job.revision!==revision)continue;
       if(candidates[i]!==undefined){
        const entry=index.entries[candidates[i]],preview=previews.find(x=>x.id===candidates[i])?.meaning||'';
-       const source=entry.source==='krupnik'?'Krupnik':'Jastrow',title='👍 '+entry.h+' · '+source+(preview?' — '+preview.slice(0,55):'');
+       const source=entry.source==='krupnik'?'Krupnik':'Jastrow',title='Use this match · '+entry.h+' · '+source+(preview?' — '+preview.slice(0,55):'');
        await Otzaria.call('reader.addContextMenuItem',{id,title,label:title,contexts:['reader-selection','reader-page-shape-selection'],openPlugin:false,onClickEvent:'reader.context_menu_item_clicked',showWhen:{selectionContainsAny:variants}});
       }else await Otzaria.call('reader.removeContextMenuItem',{id});
      }
