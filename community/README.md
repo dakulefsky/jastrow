@@ -15,7 +15,7 @@ This is an optional, privacy-minimal community ranking service for the English J
 ## Deploy
 
 1. Add GitHub Actions repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
-2. Run **Actions → Deploy dictionary community API → Run workflow**. The workflow creates/reuses the D1 database, applies migrations, generates and imports exact unique Jastrow/Krupnik cross-links, and deploys the Worker.
+2. The Worker deploys automatically when backend or cross-link source files change on `main`. You can also run **Actions → Deploy dictionary community API → Run workflow** manually. The workflow creates/reuses the D1 database, applies migrations, generates and imports exact unique Jastrow/Krupnik cross-links, deploys the Worker, and verifies its health endpoint.
 3. The current deployed endpoint is `https://otzaria-dictionary-community.dakulefsky.workers.dev`. The open integration PR configures this endpoint in both plugin builds, restricts the manifest allowlist, and narrows the browser CSP to this host.
 4. Merge only after the English and Hebrew validation workflows pass. Existing installed plugin versions do not begin using the API until users install the updated builds and grant the optional network permission.
 
