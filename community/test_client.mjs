@@ -48,7 +48,7 @@ assert.equal(failedVote.ok, true, 'a failed network submission should be retaine
 assert.equal(failedVote.queued, true);
 assert.equal(failing.api.pending, 1);
 assert.equal(failing.api.enabled, false);
-assert.deepEqual(failing.events, ['dictionary-community-disabled']);
+assert.deepEqual(failing.events, ['dictionary-community-enabled', 'dictionary-community-queue-updated', 'dictionary-community-disabled', 'dictionary-community-queue-updated']);
 const before = failing.calls.length;
 await failing.api.rank('נפקא', [{ rid: 'KRU02095' }]);
 assert.equal(failing.calls.length, before, 'after failure the client must remain offline and silent');
