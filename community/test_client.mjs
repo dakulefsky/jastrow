@@ -71,6 +71,25 @@ const before = failing.calls.length;
 await failing.api.rank('נפקא', [{ rid: 'KRU02095' }]);
 assert.equal(failing.calls.length, before, 'after failure the client must remain offline and silent');
 
+async function bootPermissionSnapshot(){
+ const listeners=new Map(),values=new Map(),calls=[];
+ const root={
+  DICTIONARY_COMMUNITY_API:'https://community.example',navigator:{onLine:true},
+  dispatchEvent:event=>{},addEventListener:()=>{},
+  Otzaria:{
+   call:async method=>{if(method==='app.getGrantedPermissions')return {success:true,data:{permissions:[]}};if(method==='app.getConnectivity')return {success:true,data:{isOfflineMode:false,isOnline:true}};throw new Error(method);},
+   on:(name,fn)=>{if(!listeners.has(name))listeners.set(name,[]);listeners.get(name).push(fn);}
+  }
+ };
+ const context={window:root,globalThis:root,URL,Event,AbortSignal,TextEncoder,localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)},crypto:{randomUUID:()=> '12345678-1234-1234-1234-123456789012'},fetch:async input=>{calls.push(String(input));return new Response(JSON.stringify({ok:true}),{status:200});}};
+ vm.runInNewContext(source,context);await root.DictionaryCommunity.ready;
+ assert.equal(root.DictionaryCommunity.enabled,false,'pre-boot empty permission response must not be treated as granted');
+ for(const fn of listeners.get('plugin.boot')||[])await fn({permissions:['network.access']});
+ assert.equal(root.DictionaryCommunity.enabled,true,'the documented boot permission snapshot must activate community features');
+ assert(calls.some(url=>url.endsWith('/health')),'boot permission grant should initialize the service health check');
+}
+await bootPermissionSnapshot();
+
 async function offlineQueueRoundTrip(){
  const events=new Map(),values=new Map(),calls=[];
  const root={
