@@ -1,0 +1,45 @@
+name: Validate community dictionary code
+on:
+  pull_request:
+    paths:
+      - 'community/**'
+      - 'plugin/community.js'
+      - 'hebrew/plugin/community.js'
+      - 'plugin/app.js'
+      - 'plugin/quick-lookup.js'
+      - 'hebrew/plugin/app.js'
+      - 'hebrew/plugin/quick-lookup.js'
+  push:
+    branches: [community-dictionary-voting]
+    paths:
+      - 'community/**'
+      - 'plugin/community.js'
+      - 'hebrew/plugin/community.js'
+      - 'plugin/app.js'
+      - 'plugin/quick-lookup.js'
+      - 'hebrew/plugin/app.js'
+      - 'hebrew/plugin/quick-lookup.js'
+permissions:
+  contents: read
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Check JavaScript syntax
+        run: |
+          node --check plugin/community.js
+          node --check hebrew/plugin/community.js
+          node --check plugin/quick-lookup.js
+          node --check hebrew/plugin/quick-lookup.js
+          node --check plugin/app.js
+          node --check hebrew/plugin/app.js
+          node --input-type=module --check < community/worker/src/index.js
+      - name: Check cross-link generator syntax
+        run: python -m py_compile community/build_entry_links.py
