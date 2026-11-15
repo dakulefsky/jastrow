@@ -1,4 +1,4 @@
-# מילון ארמי־עברי — 1.2.5 (מועמד לעדכון)
+# מילון ארמי־עברי — 1.2.6
 
 Separate offline Otzaria release candidate; author DanTheMan. Does not replace the English dictionary and contains no Jastrow data.
 
@@ -10,7 +10,7 @@ Build: python3 build.py. Tests: node test.cjs; node test_host.cjs. Browser tests
 
 Digitization: Sefaria. Source edition: Krupnik & Silbermann, A Dictionary of the Talmud, the Midrash and the Targum, London 1927. Public domain provenance retained in plugin/provenance.json. Extracted Hebrew is not a new translation.
 
-Store status: version 1.2.3 was published and approved in Otzaria on 15 November 2026. Version 1.2.5 is the candidate in PR #12 and is not in the Store yet. The latest PR validation runs the source-data, host-simulation and Chromium browser suites; the actual native Otzaria menu and permission screens still need confirmation in the installed app.
+Store status: version 1.2.5 was published and approved in Otzaria on 15 November 2026. Version 1.2.6 is the next candidate and will publish after the current PR is merged. The latest PR validation runs the source-data, host-simulation and Chromium browser suites; the actual native Otzaria menu and permission screens still need confirmation in the installed app.
 
 The source contains 20,177 records, including abbreviations, Hebrew words, names and cross-references; this is not a claim of 20,177 distinct Aramaic translations. Partial pointing is compared letter by letter; source order remains deterministic for unpointed ambiguity. No frequency estimates are claimed.
 

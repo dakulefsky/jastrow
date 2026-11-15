@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http');
 const {chromium,executablePath}=require('./browser_support.cjs');
 (async()=>{
- const server=http.createServer((req,res)=>{try{const pathname=new URL(req.url,'http://localhost').pathname;if(pathname==='/community-config.js'){const enabled=req.headers['x-community-test']==='1';res.setHeader('Content-Type','text/javascript');res.end("window.DICTIONARY_COMMUNITY_API='"+(enabled?'https://community.example':'')+"';");return;}const p=path.join(__dirname,'plugin',pathname==='/'?'index.html':pathname);res.setHeader('Content-Type',p.endsWith('.js')?'text/javascript':p.endsWith('.css')?'text/css':p.endsWith('.png')?'image/png':'text/html');res.end(fs.readFileSync(p));}catch{res.statusCode=404;res.end();}});
+ const server=http.createServer((req,res)=>{try{const pathname=new URL(req.url,'http://localhost').pathname;if(pathname==='/community-config.js'){const enabled=req.headers['x-community-test']==='1';res.setHeader('Content-Type','text/javascript');res.end("window.DICTIONARY_COMMUNITY_API='"+(enabled?'https://otzaria-dictionary-community.dakulefsky.workers.dev':'')+"';");return;}const p=path.join(__dirname,'plugin',pathname==='/'?'index.html':pathname);res.setHeader('Content-Type',p.endsWith('.js')?'text/javascript':p.endsWith('.css')?'text/css':p.endsWith('.png')?'image/png':'text/html');res.end(fs.readFileSync(p));}catch{res.statusCode=404;res.end();}});
  await new Promise(r=>server.listen(0,'127.0.0.1',r));let browser;
  try{
   browser=await chromium.launch({executablePath,args:['--no-sandbox']});const page=await browser.newPage(),base='http://127.0.0.1:'+server.address().port,errors=[],external=[];

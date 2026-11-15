@@ -1,7 +1,7 @@
 (function(){
  if(!window.Otzaria)return;
  let revision=0,queue=Promise.resolve(),latestPayload=null;
- function removeCommunityItems(){for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'aramaic-hebrew-community-vote-'+i})).catch(()=>{});}catch{}}}
+ function removeCommunityItems(){revision++;queue=queue.catch(()=>{}).then(async()=>{for(let i=0;i<3;i++)await Otzaria.call('reader.removeContextMenuItem',{id:'aramaic-hebrew-community-vote-'+i});}).catch(()=>{});}
  if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',removeCommunityItems);
  if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-permission-granted',()=>{if(latestPayload)offer(latestPayload);});
  function offer(p){
@@ -14,10 +14,10 @@
     if(rev!==revision)return;
     await Otzaria.call(found?'reader.addContextMenuItem':'reader.removeContextMenuItem',found?{id,title,label:title,icon:'book_24_regular',contexts:['reader-selection','reader-page-shape-selection'],openPlugin,showWhen:{selectionContainsAny:[text]}}:{id});
    }
-   if(window.DictionaryCommunity?.enabled){
+   if(window.DictionaryCommunity?.enabled&&rev===revision){
     const candidates=found?records.slice(0,3):[];
     for(let i=0;i<3;i++){
-     if(rev!==revision)return;
+     if(rev!==revision||!window.DictionaryCommunity?.enabled)return;
      const id='aramaic-hebrew-community-vote-'+i,entry=candidates[i];
      if(entry){
       const preview=entry.parts?.map(part=>part.meaning||part.text).find(Boolean)||'';

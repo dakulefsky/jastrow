@@ -7,7 +7,7 @@ const source = await readFile(new URL('../plugin/community.js', import.meta.url)
 async function load({ health = true, voteStatus = 200, permission = true, online = true } = {}) {
   const events = [], calls = [], values = new Map();
   const root = {
-    DICTIONARY_COMMUNITY_API: 'https://community.example',
+    DICTIONARY_COMMUNITY_API: 'https://otzaria-dictionary-community.dakulefsky.workers.dev',
     navigator: { onLine: online },
     dispatchEvent: event => events.push(event.type),
     addEventListener: () => {},
@@ -74,7 +74,7 @@ assert.equal(failing.calls.length, before, 'after failure the client must remain
 async function bootPermissionSnapshot(){
  const listeners=new Map(),values=new Map(),calls=[];
  const root={
-  DICTIONARY_COMMUNITY_API:'https://community.example',navigator:{onLine:true},
+  DICTIONARY_COMMUNITY_API:'https://otzaria-dictionary-community.dakulefsky.workers.dev',navigator:{onLine:true},
   dispatchEvent:event=>{},addEventListener:()=>{},
   Otzaria:{
    call:async method=>{if(method==='app.getGrantedPermissions')return {success:true,data:{permissions:[]}};if(method==='app.getConnectivity')return {success:true,data:{isOfflineMode:false,isOnline:true}};throw new Error(method);},
@@ -93,7 +93,7 @@ await bootPermissionSnapshot();
 async function offlineQueueRoundTrip(){
  const events=new Map(),values=new Map(),calls=[];
  const root={
-  DICTIONARY_COMMUNITY_API:'https://community.example',
+  DICTIONARY_COMMUNITY_API:'https://otzaria-dictionary-community.dakulefsky.workers.dev',
   navigator:{onLine:false},
   dispatchEvent:event=>{for(const fn of events.get(event.type)||[])fn(event);},
   addEventListener:(type,fn)=>{if(!events.has(type))events.set(type,[]);events.get(type).push(fn);},
@@ -135,4 +135,64 @@ async function offlineQueueRoundTrip(){
 }
 await offlineQueueRoundTrip();
 
-console.log('PASS: explicit host permission, no requests when denied, offline queue, reconnect sync, retry safety, and permission persistence.');
+
+async function preservesNewChoiceDuringSync(){
+ const events=new Map(),values=new Map(),sent=[];let nextId=0,releaseFirst,firstStarted;
+ const started=new Promise(resolve=>firstStarted=resolve);
+ const root={
+  DICTIONARY_COMMUNITY_API:'https://otzaria-dictionary-community.dakulefsky.workers.dev',navigator:{onLine:false},
+  dispatchEvent:event=>{for(const fn of events.get(event.type)||[])fn(event);},
+  addEventListener:(type,fn)=>{if(!events.has(type))events.set(type,[]);events.get(type).push(fn);},
+  Otzaria:{call:async method=>{if(method==='app.getGrantedPermissions')return {success:true,data:{permissions:['network.access']}};if(method==='app.getConnectivity')return {success:true,data:{isOfflineMode:false,isOnline:root.navigator.onLine}};throw Error(method);},on:()=>{}}
+ };
+ const context={
+  window:root,globalThis:root,URL,Event,AbortSignal,TextEncoder,
+  localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)},
+  crypto:{randomUUID:()=>String(++nextId).padStart(8,'0')+'-1234-1234-1234-123456789012'},
+  fetch:async(input,init={})=>{
+   const url=String(input);
+   if(url.endsWith('/health'))return new Response(JSON.stringify({ok:true}),{status:200});
+   if(url.endsWith('/v1/vote')){const body=JSON.parse(init.body);sent.push(body);if(sent.length===1){firstStarted();return await new Promise(resolve=>releaseFirst=()=>resolve(new Response(JSON.stringify({accepted:true,votes:1}),{status:200})));}return new Response(JSON.stringify({accepted:true,votes:2}),{status:200});}
+   throw Error('Unexpected request '+url);
+  }
+ };
+ vm.runInNewContext(source,context);const api=root.DictionaryCommunity;await api.ready;
+ assert.equal((await api.vote('נפקא','krupnik:KRU1')).queued,true,'first offline choice is queued');
+ root.navigator.onLine=true;
+ const sync=api.refreshPermissions();
+ await started;
+ root.navigator.onLine=false;
+ assert.equal((await api.vote('נפקא','krupnik:KRU2')).queued,true,'newer choice is queued while the older choice is in flight');
+ root.navigator.onLine=true;releaseFirst();await sync;
+ assert.equal(api.pending,1,'finishing the older request must not erase the newer queued choice');
+ await api.refreshPermissions();
+ assert.equal(api.pending,0,'the newer choice should sync on the next pass');
+ assert.deepEqual(sent.map(x=>x.entryId),['krupnik:KRU1','krupnik:KRU2'],'the newest candidate must be the final server-side choice');
+}
+await preservesNewChoiceDuringSync();
+
+async function permissionReadFailureDoesNotRevokeGrant(){
+ let failRead=false;const values=new Map(),events=[];
+ const root={DICTIONARY_COMMUNITY_API:'https://otzaria-dictionary-community.dakulefsky.workers.dev',navigator:{onLine:true},dispatchEvent:e=>events.push(e.type),addEventListener:()=>{},Otzaria:{call:async method=>{if(method==='app.getGrantedPermissions')return failRead?{success:false}:{success:true,data:{permissions:['network.access']}};if(method==='app.getConnectivity')return {success:true,data:{isOfflineMode:false,isOnline:true}};throw Error(method);},on:()=>{}}};
+ const context={window:root,globalThis:root,URL,Event,AbortSignal,TextEncoder,localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)},crypto:{randomUUID:()=> '12345678-1234-1234-1234-123456789012'},fetch:async()=>new Response(JSON.stringify({ok:true}),{status:200})};
+ vm.runInNewContext(source,context);const api=root.DictionaryCommunity;await api.ready;assert.equal(api.enabled,true);
+ failRead=true;await api.refreshPermissions();assert.equal(api.enabled,true,'a temporary host permission-read error must not be mistaken for explicit denial');
+ assert(!events.includes('dictionary-community-disabled'));
+}
+await permissionReadFailureDoesNotRevokeGrant();
+
+
+async function hostEventWinsOverStalePermissionRead(){
+ const listeners=new Map(),values=new Map();let resolveRead;
+ const root={DICTIONARY_COMMUNITY_API:'https://otzaria-dictionary-community.dakulefsky.workers.dev',navigator:{onLine:true},dispatchEvent:()=>{},addEventListener:()=>{},Otzaria:{call:async method=>{if(method==='app.getGrantedPermissions')return await new Promise(resolve=>resolveRead=resolve);if(method==='app.getConnectivity')return {success:true,data:{isOfflineMode:false,isOnline:true}};throw Error(method);},on:(name,fn)=>{if(!listeners.has(name))listeners.set(name,[]);listeners.get(name).push(fn);}}};
+ const context={window:root,globalThis:root,URL,Event,AbortSignal,TextEncoder,localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)},crypto:{randomUUID:()=> '12345678-1234-1234-1234-123456789012'},fetch:async()=>new Response(JSON.stringify({ok:true}),{status:200})};
+ vm.runInNewContext(source,context);const api=root.DictionaryCommunity;
+ await new Promise(resolve=>setTimeout(resolve,0));
+ for(const fn of listeners.get('plugin.boot')||[])await fn({permissions:['network.access']});
+ resolveRead({success:true,data:{permissions:[]}});
+ await api.ready;
+ assert.equal(api.enabled,true,'a stale pre-boot permission response must not overwrite the host boot snapshot');
+}
+await hostEventWinsOverStalePermissionRead();
+
+console.log('PASS: permission gating, boot snapshot precedence, durable offline queue, race-safe sync, and reconnect recovery.');
