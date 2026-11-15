@@ -51,11 +51,14 @@ export default {
     if (url.pathname === "/v1/vote" && request.method === "POST") {
       // Content-Length is optional for streamed/chunked requests; enforce the
       // cap against the actual body bytes before parsing.
+      const declaredLength = Number(request.headers.get("Content-Length") || 0);
+      if (declaredLength > 2048) return json({ error: "payload_too_large" }, 413);
       let raw;
       try { raw = await request.text(); } catch { return json({ error: "invalid_json" }, 400); }
       if (new TextEncoder().encode(raw).byteLength > 2048) return json({ error: "payload_too_large" }, 413);
       let body;
       try { body = JSON.parse(raw); } catch { return json({ error: "invalid_json" }, 400); }
+      if (!body || typeof body !== "object" || Array.isArray(body)) return json({ error: "invalid_vote" }, 400);
       const word = normalizeWord(body.word), entryId = body.entryId, voterId = body.voterId;
       if (!word || !validId(entryId) || typeof voterId !== "string" || !/^[A-Za-z0-9-]{20,80}$/.test(voterId))
         return json({ error: "invalid_vote" }, 400);
