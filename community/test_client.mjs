@@ -53,7 +53,8 @@ assert.equal(unavailable.api.enabled, true, 'permission remains granted when the
 assert.equal((await unavailable.api.vote('נפקא', 'krupnik:KRU1')).queued, true);
 assert.equal(unavailable.api.pending, 1);
 assert(!unavailable.events.includes('dictionary-community-disabled'),'service outage must not revoke permission');
-assert.equal(unavailable.calls.length, 1, 'only the health check is attempted when the service is unavailable');
+assert.equal(unavailable.calls.filter(x => x.url.endsWith('/health')).length, 2, 'health may be rechecked before queueing an immediate vote');
+assert.equal(unavailable.calls.filter(x => x.url.endsWith('/v1/vote')).length, 0, 'an unavailable service must never receive a vote request');
 
 const failing = await load({ health: true, voteStatus: 503 });
 assert.equal(failing.api.enabled, true);
