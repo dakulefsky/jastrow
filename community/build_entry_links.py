@@ -1,0 +1,38 @@
+"""Build conservative, exact Jastrow -> Krupnik cross-links from source indexes.
+
+Run after build_data.py and build_krupnik.py. Only unique normalized exact
+headword/alternate-headword collisions are emitted. Similar spellings,
+translations, and fuzzy matches are intentionally excluded.
+"""
+import json, re, unicodedata
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[1]
+def norm(s):
+    return re.sub(r"[^א-ת]", "", unicodedata.normalize("NFKD", str(s)))
+def read_js(path, marker):
+    raw = path.read_text(encoding="utf-8").strip()
+    if not raw.startswith(marker) or not raw.endswith(";"):
+        raise ValueError(f"Unexpected generated file: {path}")
+    return json.loads(raw[len(marker):-1])
+def main():
+    j = read_js(ROOT/"plugin/data/index.js", "window.JASTROW_INDEX=")
+    k = read_js(ROOT/"plugin/data/krupnik-index.js", "window.KRUPNIK_DATA=")
+    krupnik = {}
+    for item in k["entries"]:
+        for word in [item["h"], *item.get("alt", [])]:
+            key = norm(word)
+            if key: krupnik.setdefault(key, set()).add(item["r"])
+    links = []
+    ambiguous = 0
+    for item in j["entries"]:
+        matches = set()
+        for word in [item["h"], *item.get("alt", [])]:
+            matches.update(krupnik.get(norm(word), set()))
+        if len(matches) == 1:
+            links.append({"alias_id": "jastrow:"+item["r"], "canonical_id": "krupnik:"+next(iter(matches)), "confidence": "exact"})
+        elif len(matches) > 1:
+            ambiguous += 1
+    output = ROOT/"community"/"entry-links.json"
+    output.write_text(json.dumps({"links": links, "ambiguousJastrowEntries": ambiguous}, ensure_ascii=False, indent=2)+"\n")
+    print(f"Wrote {len(links)} exact unique links; skipped {ambiguous} ambiguous Jastrow entries.")
+if __name__ == "__main__": main()
