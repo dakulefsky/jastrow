@@ -10,7 +10,8 @@
  const featureTypes=new Set(['exact','pair','left1','right1','left2','right2','left2right1','left1right2']);
  function storageGet(key,fallback){try{const value=localStorage.getItem(key);return value===null||value===undefined?fallback:value;}catch{return fallback;}}
  function storageSet(key,value){try{localStorage.setItem(key,value);return true;}catch{return false;}}
- function randomId(){try{if(root.crypto?.randomUUID)return root.crypto.randomUUID();if(root.crypto?.getRandomValues){const bytes=new Uint8Array(16);root.crypto.getRandomValues(bytes);return [...bytes].map(x=>x.toString(16).padStart(2,'0')).join('');}}catch{}return '';}
+ function cryptoApi(){try{return root.crypto||(typeof crypto!=='undefined'?crypto:null);}catch{return root.crypto||null;}}
+ function randomId(){try{const api=cryptoApi();if(api?.randomUUID)return api.randomUUID();if(api?.getRandomValues){const bytes=new Uint8Array(16);api.getRandomValues(bytes);return [...bytes].map(x=>x.toString(16).padStart(2,'0')).join('');}}catch{}return '';}
  function voterId(){let id=storageGet(voterKey,'');if(id)return id;id=randomId();if(id&&storageSet(voterKey,id))return id;return '';}
  function normalize(word){return String(word||'').normalize('NFKD').replace(/[\u0591-\u05c7]/g,'').replace(/[^א-ת]/g,'').slice(0,100);}
  function normalizeContextTokens(value){return (String(value||'').normalize('NFKD').replace(/[\u0591-\u05c7\u2060]/g,'').match(/[א-ת]+/g)||[]).map(x=>x.slice(0,32)).filter(Boolean);}
@@ -31,7 +32,7 @@
  async function request(url,options={},timeout=2500){const ctl=controllerFor(timeout);try{return await fetch(url,{...options,...(ctl.signal?{signal:ctl.signal}:{})});}finally{ctl.done();}}
  async function digestHex(value){
   try{
-   const subtle=root.crypto?.subtle;if(!subtle?.digest||typeof TextEncoder==='undefined')return '';
+   const subtle=cryptoApi()?.subtle;if(!subtle?.digest||typeof TextEncoder==='undefined')return '';
    const digest=await subtle.digest('SHA-256',new TextEncoder().encode(value));
    return [...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,'0')).join('');
   }catch{return '';}
