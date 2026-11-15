@@ -39,7 +39,7 @@ async function english() {
   assert.equal(votes[0].word,'נפקא');assert.equal(votes[0].entry,entries[1],'English menu item must vote for its exact candidate');assert.equal(votes[0].options.scope,'contextual','English right-click votes must default to contextual scope');assert(votes[0].options.selection.sourceRange,'English right-click vote must carry its local text anchor');
   assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,1,'successful vote may be acknowledged');
   failVote=true;
-  for(const fn of events.get('reader.context_menu_item_clicked')||[])await fn({itemId:'jastrow-community-vote-0',selection:{renderedSelectedText:'נפקא'}});
+  for(const fn of events.get('reader.context_menu_item_clicked')||[])await fn({itemId:'jastrow-community-vote-0',selection:{renderedSelectedText:'נפקא',sourceRange:{beforeText:{raw:'תא שמע '},afterText:{raw:' תנן'}}}});
   assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,2,'queued vote should be acknowledged accurately');
   assert.match(calls.filter(x=>x.method==='ui.showMessage').at(-1).args.message,/Saved on this device/);failVote=false;failSave=true;for(const fn of events.get('reader.context_menu_item_clicked')||[])await fn({itemId:'jastrow-community-vote-2',selection:{renderedSelectedText:'נפקא'}});assert.match(calls.filter(x=>x.method==='ui.showMessage').at(-1).args.message,/Could not save your vote/,'English right-click vote failure must be explained');
   assert.equal([...items.keys()].filter(id=>id.startsWith('jastrow-community-vote-')).length,3,'temporary service failure must leave English vote choices available');
