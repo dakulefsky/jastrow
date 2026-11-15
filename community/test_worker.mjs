@@ -105,7 +105,7 @@ await voteContext('krupnik:KRU2','context-a-1-abcdefghijklmnop',contextA,context
 let contextual=await (await call('/v1/suggestions?word=%D7%94%D7%A7%D7%A9%D7%A8&ids=jastrow%3AJAS1%2Ckrupnik%3AKRU2&context='+encodeURIComponent(JSON.stringify(contextA)))).json();
 assert.equal(contextual.contextualPreferredEntryId,null,'one contextual vote must not reorder entries');
 await voteContext('krupnik:KRU2','context-a-2-abcdefghijklmnop',contextA,contextWord);
-contextual=await (await call('/v1/suggestions?word=%D7%A0%D7%A4%D7%A7%D7%90&ids=jastrow%3AJAS1%2Ckrupnik%3AKRU2&context='+encodeURIComponent(JSON.stringify(contextA)))).json();
+contextual=await (await call('/v1/suggestions?word=%D7%94%D7%A7%D7%A9%D7%A8&ids=jastrow%3AJAS1%2Ckrupnik%3AKRU2&context='+encodeURIComponent(JSON.stringify(contextA)))).json();
 assert.equal(contextual.contextualPreferredEntryId,'krupnik:KRU2','two installations agreeing in this usage should promote the contextual match');
 assert.equal(contextual.preferenceScope,'contextual');
 assert.equal(contextual.totalVotes,0,'contextual votes must never inflate the general vote pool');
