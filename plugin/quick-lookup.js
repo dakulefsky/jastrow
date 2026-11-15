@@ -24,12 +24,16 @@
   }
   const result=phrase.ids.length?phrase:S.lookup(index,word,100,'length',false);
   if(['suggestions','invalid','empty'].includes(result.kind))return [];
-  const records=(await Promise.all(result.ids.map(id=>root.JastrowReadingView.records(index,id,load,word,{phrase:phrase.ids.length>0,lookupWord:S.matchingQuery(index,result.prefixMatches,id,word)})))).flat();
-  return root.DictionaryMeanings.merge(records,word).map(group=>({
+  let ids=result.ids,communityPreferred=false;
+  if(root.DictionaryCommunity?.enabled&&ids.length>1){const ranked=await root.DictionaryCommunity.rank(word,ids.map(id=>index.entries[id]));if(ranked.preferredEntryId){ids=ranked.entries.map(entry=>index.entries.indexOf(entry));communityPreferred=true;}}
+  const records=(await Promise.all(ids.map(id=>root.JastrowReadingView.records(index,id,load,word,{phrase:phrase.ids.length>0,lookupWord:S.matchingQuery(index,result.prefixMatches,id,word)})))).flat();
+  const merged=root.DictionaryMeanings.merge(records,word).map(group=>({
    text:group.text,spelling:group.spelling,
    // Numeric sense numbers are not grammatical qualifications.
    label:group.form?group.sources[0].meaning.label:'',
   }));
+  if(communityPreferred&&merged.length)merged[0].communityPreferred=true;
+  return merged;
  }
  async function meanings(word){
   return (await results(word)).map(item=>(item.selectedWord?item.selectedWord+': ':'')+item.text);
@@ -41,7 +45,7 @@
    const heading=[item.selectedWord,item.spelling,item.label].filter((s,n,a)=>s&&a.indexOf(s)===n).join(' · ');
    return (i+1)+'. **'+short(item.text).replace(/\*/g,'')+'**'+(heading?'\n'+heading.replace(/\*/g,''):'');
   });
-  return [word+(prefixed?' — possible '+(typeof prefixed==='string'?prefixed:'prefixed form'):''),...lines,
+  return [word+(items[0]?.communityPreferred?' — community-preferred match':'')+(prefixed?' — possible '+(typeof prefixed==='string'?prefixed:'prefixed form'):''),...lines,
    ...(prefixed?['Base-word meanings; check the grammatical form in context.']:[]),
    items.length>2?'More meanings — click to open dictionary':'Click for full entry and sources'].join('\n');
  }
@@ -54,6 +58,10 @@
  }
  async function show(word){
   const current=++serial;
+  if(String(word).trim().toLowerCase()==='who created this?'){
+   try{await root.Otzaria.call('ui.showMessage',{message:'Daniel Avrahom'});}catch{console.warn('Quick dictionary lookup unavailable');}
+   return;
+  }
   try{
    const items=await results(word);if(current!==serial)return;
    if(!items.length){
@@ -70,5 +78,14 @@
   }
  }
  root.DictionaryQuick={results,meanings,message,show};
- if(root.Otzaria)root.Otzaria.on('reader.context_menu_item_clicked',p=>p.itemId==='jastrow-lookup'&&show(root.JastrowContext.selectionText(p)));
+ if(root.Otzaria)root.Otzaria.on('reader.context_menu_item_clicked',async p=>{
+  const word=root.JastrowContext.selectionText(p);
+  if(p.itemId==='jastrow-lookup'){await show(word);return;}
+  const match=/^jastrow-community-vote-(\d)$/.exec(p.itemId||'');
+  if(match&&root.DictionaryCommunity?.enabled){
+   const candidates=root.JastrowSearch.lookup(root.JASTROW_INDEX,word,3,'length',false).ids;
+   const id=candidates[Number(match[1])],entry=Number.isInteger(id)?root.JASTROW_INDEX.entries[id]:null;
+   if(entry){const result=await root.DictionaryCommunity.vote(word,entry);await root.Otzaria.call('ui.showMessage',{message:result.ok?'Thanks — your choice was shared with the community.':result.duplicate?'You already confirmed this choice.':'Community voting is unavailable right now.'});}
+  }
+ });
 })(typeof window==='undefined'?globalThis:window);

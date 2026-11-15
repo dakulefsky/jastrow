@@ -1,0 +1,55 @@
+name: Deploy dictionary community API
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Wrangler
+        run: npm install --no-save wrangler@4
+      - name: Create or reuse D1 database
+        working-directory: community/worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          DB_ID="$(npx wrangler d1 list --json | jq -r '.[] | select(.name == "otzaria-dictionary-community") | .uuid' | head -n 1)"
+          if [ -z "$DB_ID" ]; then
+            npx wrangler d1 create otzaria-dictionary-community
+            DB_ID="$(npx wrangler d1 list --json | jq -r '.[] | select(.name == "otzaria-dictionary-community") | .uuid' | head -n 1)"
+          fi
+          test -n "$DB_ID"
+          sed -i "s/REPLACE_WITH_CLOUDFLARE_D1_DATABASE_ID/$DB_ID/" wrangler.toml
+      - name: Apply database migrations
+        working-directory: community/worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler d1 migrations apply otzaria-dictionary-community --remote
+      - name: Build conservative cross-dictionary links
+        run: python community/build_entry_links.py
+      - name: Import exact cross-dictionary links
+        working-directory: community/worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler d1 execute otzaria-dictionary-community --remote --file=../entry-links.sql
+      - name: Deploy Worker
+        id: deploy
+        working-directory: community/worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx wrangler deploy 2>&1 | tee deploy.log
+          URL="$(grep -Eo 'https://[^ ]+\.workers\.dev' deploy.log | tail -n 1)"
+          echo "worker_url=$URL" >> "$GITHUB_OUTPUT"
+          test -n "$URL"
+      - name: Report endpoint
+        run: echo "Community API deployed at ${{ steps.deploy.outputs.worker_url }}"

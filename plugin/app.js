@@ -81,11 +81,17 @@ function paintMatches(r,word,serial){
 async function search(word, more=false){
   query=String(word).trim();$('query').value=query;if(!more){limit=60;includeJastrow=false;}
   const serial=++requestSerial;++entrySerial;$('entry').removeAttribute('aria-busy');
+  if(query.toLowerCase()==='who created this?'){
+    document.body.classList.add('single-lookup');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';setStatus('');
+    $('entry').replaceChildren(el('p','Daniel Avrahom','creator-easter-egg'));
+    try{history.replaceState(null,'','#'+new URLSearchParams({word:query}));}catch{}
+    currentId=null;return;
+  }
   const words=JastrowSearch.splitWords(query);
   if(words.length>1){await searchWords(words,serial);return;}
   const normalized=JastrowSearch.normalize(query);
   if(query&&!JastrowSearch.validWord(query)){setStatus('Enter a Hebrew or Aramaic word, or up to 12 words, without English letters or numbers.');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a single Aramaic or Hebrew word to see its dictionary matches.'));currentId=null;return;}
-  const r=JastrowSearch.lookup(index,query,limit,'length',includeJastrow);paintMatches(r,query,serial);
+  let r=JastrowSearch.lookup(index,query,limit,'length',includeJastrow);if(window.DictionaryCommunity?.enabled&&r.ids.length>1&&r.kind!=='suggestions'){const ranked=await DictionaryCommunity.rank(query,r.ids.map(id=>index.entries[id]));if(serial!==requestSerial)return;if(ranked.preferredEntryId)r={...r,ids:ranked.entries.map(entry=>index.entries.indexOf(entry))};}paintMatches(r,query,serial);
   try{history.replaceState(null,'','#'+new URLSearchParams({word:query}));}catch{}
   if(!normalized){setStatus('Enter an Aramaic or Hebrew word in Hebrew letters.');$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a word in Hebrew letters to begin.'));currentId=null;return;}
   if(!r.ids.length){currentId=null;$('match-count').textContent='0 matches';$('entry').replaceChildren(el('h2','No matching entry'),el('p','Try a different spelling or the dictionary headword. Not every inflected form is indexed.'));setStatus('No entry found for '+query+'.');return;}
@@ -110,6 +116,18 @@ async function searchWords(words,serial){
   await showTranslations(result,word,serial,target,3);
  }));
 }
+function renderCommunityVotes(result,word,target){
+ if(!window.DictionaryCommunity?.enabled||!result.ids.length)return;
+ const panel=el('section',undefined,'community-feedback');
+ panel.append(el('p','Which dictionary entry fits this word?','community-feedback-label'));
+ for(const id of result.ids.slice(0,12)){
+  const meta=index.entries[id],button=el('button','👍 '+meta.h,'community-vote');
+  button.type='button';button.dir='auto';
+  button.onclick=async()=>{button.disabled=true;const outcome=await DictionaryCommunity.vote(word,meta);const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);note.textContent=outcome.ok?'Thanks — your vote was counted.':outcome.duplicate?'You already confirmed this match.':'Community voting is unavailable right now.';button.disabled=false;};
+  panel.append(button);
+ }
+ target.append(panel);
+}
 async function showTranslations(result,word,serial,target=$('entry'),pageSize=12){
  const panelSerial=entrySerial;
  currentId=null;target.replaceChildren(el('h2',word,'entry-title'));
@@ -125,6 +143,7 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
  if(serial!==requestSerial||panelSerial!==entrySerial)return;
  const expanded=items.flat(),records=expanded.filter(x=>!x.error);
  target.append(DictionaryMeanings.render(records,word,result.kind==='phrase'?index.phraseNotes:{}));
+ renderCommunityVotes(result,word,target);
  for(const failed of expanded.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
  if(result.total>ids.length){const more=el('button','More matching entries');more.type='button';more.onclick=()=>{limit+=60;search(word,true);};target.append(more);}
 }

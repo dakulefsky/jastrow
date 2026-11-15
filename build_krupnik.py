@@ -65,7 +65,7 @@ def main(path):
    if doc.get(key):entry['notation'].append(label+': '+(' · '.join(doc[key]) if isinstance(doc[key],list) else str(doc[key])))
   if doc.get('biblical'):entry['notation'].append('Marked biblical in source')
   if doc.get('no_binyan_kal'):entry['notation'].append('Source marks no qal form')
-  entries.append((id,entry));meta.append({'h':entry['h'],'r':entry['r'],'b':block,'source':'krupnik'})
+  entries.append((id,entry));meta.append({'h':entry['h'],'r':entry['r'],'b':block,'source':'krupnik','alt':entry['alt']})
   for word in [entry['h'],*entry['alt']]:
    key=norm(word)
    if key:direct.setdefault(key,[]).append(id)
