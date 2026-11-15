@@ -9,7 +9,7 @@ This is an optional, privacy-minimal community ranking service for the English J
 - `entry_links` maps only high-confidence Jastrow-to-Krupnik links to the Krupnik canonical ID.
 - No selected sentence, page text, account name, email, hardware ID, or account identifier is sent. The client sends a random per-install voter token with each vote; the service stores only its SHA-256 hash. The token is a resettable anonymous installation key, not a hardware ID or account identity.
 - Each installation has one active vote per selected surface word and can change its choice. Votes are not transferable between different surface words.
-- A community result is promoted only after at least 3 votes and at least 65% of votes for that candidate. Alternatives remain available.
+- A community result is promoted only after at least 3 votes and at least 65% of **all** votes for that normalized word. Votes for candidates omitted from the current lookup still count in the denominator. Alternatives remain available.
 - Original dictionary records and definitions are never modified.
 - Votes are an anonymous community signal, not scholarly verification or an abuse-proof poll. There is no login or robust identity/rate-limit layer; a determined person can reset the per-install token and vote again.
 
