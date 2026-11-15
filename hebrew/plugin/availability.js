@@ -19,7 +19,8 @@
      if(rev!==revision)return;
      const id='aramaic-hebrew-community-vote-'+i,entry=candidates[i];
      if(entry){
-      const title='👍 '+entry.word;
+      const preview=entry.parts?.map(part=>part.meaning||part.text).find(Boolean)||'';
+     const title='👍 '+entry.word+(preview?' — '+preview.slice(0,55):'');
       await Otzaria.call('reader.addContextMenuItem',{id,title,label:title,contexts:['reader-selection','reader-page-shape-selection'],openPlugin:false,onClickEvent:'reader.context_menu_item_clicked',showWhen:{selectionContainsAny:[text]}});
      }else await Otzaria.call('reader.removeContextMenuItem',{id});
     }
