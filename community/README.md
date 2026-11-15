@@ -16,8 +16,8 @@ This is an optional, privacy-minimal community ranking service for the English J
 
 1. Add GitHub Actions repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
 2. Run **Actions → Deploy dictionary community API → Run workflow**. The workflow creates/reuses the D1 database, applies migrations, generates and imports exact unique Jastrow/Krupnik cross-links, and deploys the Worker.
-3. Copy the Worker URL from the workflow output. Set it in both plugins' `community-config.js` files, then add its exact host to each plugin manifest network allowlist and CSP `connect-src`.
-4. Run the plugin validation workflows. Community lookup remains disabled until the URL and network permissions are configured.
+3. The current deployed endpoint is `https://otzaria-dictionary-community.dakulefsky.workers.dev`. The open integration PR configures this endpoint in both plugin builds, restricts the manifest allowlist, and narrows the browser CSP to this host.
+4. Merge only after the English and Hebrew validation workflows pass. Existing installed plugin versions do not begin using the API until users install the updated builds and grant the optional network permission.
 
 
-No Worker is deployed and no votes are collected until a Cloudflare database and Worker URL are configured. The API has no paid dependency, but Cloudflare account limits and pricing apply.
+The Worker and D1 database have been deployed. The current `main` plugin builds remain offline-only until the integration PR is merged and published. The API has no paid dependency, but Cloudflare account limits and pricing apply.
