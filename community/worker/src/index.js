@@ -9,7 +9,7 @@ const json = (data, status = 200) => new Response(JSON.stringify(data), {
     "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" }
 });
 const normalizeWord = value => String(value || "").normalize("NFKD")
-  .replace(/[\\u0591-\\u05C7]/g, "").replace(/[^א-ת]/g, "").slice(0, 100);
+  .replace(/\p{M}/gu, "").replace(/[^א-ת]/g, "").slice(0, 100);
 const validId = value => typeof value === "string" && /^(?:krupnik|jastrow):[A-Za-z0-9._-]{1,80}$/.test(value);
 const validFeatures = value => Array.isArray(value) && value.length > 0 && value.length <= 6 &&
   value.every(item => item && typeof item.hash === "string" && /^[a-f0-9]{64}$/.test(item.hash) &&
