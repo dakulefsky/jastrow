@@ -47,7 +47,7 @@
      q=q.filter(x=>x.id!==item.id);writeQueue(q);synced++;
     }catch{networkAvailable=false;emit('dictionary-community-disabled');break;}
    }
-  }finally{syncing=false;emit('dictionary-community-queue-updated');if(synced)emit('dictionary-community-synced');}
+  }finally{syncing=false;emit('dictionary-community-queue-updated');if(synced&&pendingCount()===0)emit('dictionary-community-synced');}
   return {synced,pending:pendingCount()};
  }
  async function vote(word,entry){
