@@ -131,7 +131,8 @@ export default {
       if (scope === "context") {
         features = validVoteFeatures(body.features);
         contextKey = body.contextKey;
-        if (!features.length || !validHash(contextKey)) return json({ error: "invalid_context" }, 400);
+        if (!features.length) return json({ error: "invalid_context_features" }, 400);
+        if (!validHash(contextKey)) return json({ error: "invalid_context_key" }, 400);
       }
       const canonical = (await canonicalize(env.DB, [entryId])).get(entryId);
       const voterHash = await hashVoter(voterId);
