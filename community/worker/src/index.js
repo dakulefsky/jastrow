@@ -57,11 +57,18 @@ export default {
         return json({ error: "invalid_vote" }, 400);
       const canonical = (await canonicalize(env.DB, [entryId])).get(entryId);
       const voterHash = await hashVoter(voterId);
-      const result = await env.DB.prepare("INSERT OR IGNORE INTO votes (surface_word, canonical_id, voter_hash) VALUES (?, ?, ?)")
+      const prior = await env.DB.prepare("SELECT canonical_id FROM votes WHERE surface_word = ? AND voter_hash = ?")
+        .bind(word, voterHash).first();
+      if (prior?.canonical_id === canonical) {
+        const count = await env.DB.prepare("SELECT COUNT(*) AS votes FROM votes WHERE surface_word = ? AND canonical_id = ?")
+          .bind(word, canonical).first();
+        return json({ accepted: false, duplicate: true, votes: Number(count?.votes || 0) });
+      }
+      await env.DB.prepare("INSERT INTO votes (surface_word, canonical_id, voter_hash) VALUES (?, ?, ?) ON CONFLICT(surface_word, voter_hash) DO UPDATE SET canonical_id = excluded.canonical_id, created_at = CURRENT_TIMESTAMP")
         .bind(word, canonical, voterHash).run();
       const count = await env.DB.prepare("SELECT COUNT(*) AS votes FROM votes WHERE surface_word = ? AND canonical_id = ?")
         .bind(word, canonical).first();
-      return json({ accepted: (result.meta?.changes || 0) > 0, votes: Number(count?.votes || 0) });
+      return json({ accepted: true, updated: !!prior, votes: Number(count?.votes || 0) });
     }
     return json({ error: "method_not_allowed" }, 405);
   }
