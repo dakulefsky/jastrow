@@ -39,6 +39,7 @@ async function load({ health = true, voteStatus = 200, permission = true, online
       throw new Error('Unexpected community request: ' + url);
     }
   };
+  root.crypto = context.crypto;
   vm.runInNewContext(source, context);
   await root.DictionaryCommunity.ready;
   return { api: root.DictionaryCommunity, events, calls, root };
