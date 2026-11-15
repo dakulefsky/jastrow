@@ -81,6 +81,12 @@ function paintMatches(r,word,serial){
 async function search(word, more=false){
   query=String(word).trim();$('query').value=query;if(!more){limit=60;includeJastrow=false;}
   const serial=++requestSerial;++entrySerial;$('entry').removeAttribute('aria-busy');
+  if(query.toLowerCase()==='who created this?'){
+    document.body.classList.add('single-lookup');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';setStatus('');
+    $('entry').replaceChildren(el('p','Daniel Avrahom','creator-easter-egg'));
+    try{history.replaceState(null,'','#'+new URLSearchParams({word:query}));}catch{}
+    currentId=null;return;
+  }
   const words=JastrowSearch.splitWords(query);
   if(words.length>1){await searchWords(words,serial);return;}
   const normalized=JastrowSearch.normalize(query);
