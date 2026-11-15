@@ -42,4 +42,7 @@ jobs:
           node --check hebrew/plugin/app.js
           node --input-type=module --check < community/worker/src/index.js
       - name: Check cross-link generator syntax
-        run: python -m py_compile community/build_entry_links.py
+        run: |
+          python -m py_compile community/build_entry_links.py
+          python community/build_entry_links.py
+          test -s community/entry-links.sql
