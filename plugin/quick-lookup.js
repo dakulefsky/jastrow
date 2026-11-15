@@ -78,5 +78,14 @@
   }
  }
  root.DictionaryQuick={results,meanings,message,show};
- if(root.Otzaria)root.Otzaria.on('reader.context_menu_item_clicked',p=>p.itemId==='jastrow-lookup'&&show(root.JastrowContext.selectionText(p)));
+ if(root.Otzaria)root.Otzaria.on('reader.context_menu_item_clicked',async p=>{
+  const word=root.JastrowContext.selectionText(p);
+  if(p.itemId==='jastrow-lookup'){show(word);return;}
+  const match=/^jastrow-community-vote-(\\d)$/.exec(p.itemId||'');
+  if(match&&root.DictionaryCommunity?.enabled){
+   const candidates=root.JastrowSearch.lookup(root.JASTROW_INDEX,word,3,'length',false).ids;
+   const id=candidates[Number(match[1])],entry=Number.isInteger(id)?root.JASTROW_INDEX.entries[id]:null;
+   if(entry){const result=await root.DictionaryCommunity.vote(word,entry);await root.Otzaria.call('ui.showMessage',{message:result.ok?'Thanks — your choice was shared with the community.':result.duplicate?'You already confirmed this choice.':'Community voting is unavailable right now.'});}
+  }
+ });
 })(typeof window==='undefined'?globalThis:window);
