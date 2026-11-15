@@ -126,9 +126,10 @@ assert.equal(result.preferredEntryId, 'jastrow:JAS1', 'legacy votes must not dis
 // Context votes generalize through overlapping hashed features, but stay separate
 // from general votes and from unrelated contexts.
 const contextA = [feature('exact', 'a'), feature('pair', 'b'), feature('left1', 'c'), feature('right1', 'd'), feature('left2', 'e')];
-const contextB = [feature('exact', 'e'), feature('pair', 'f'), feature('left1', 'c'), feature('right1', 'g'), feature('left2', '4')];
+const contextB = [feature('exact', 'e'), feature('pair', 'f'), feature('left1', 'c'), feature('right1', '9'), feature('left2', '4')];
 const contextC = [feature('exact', '8'), feature('pair', '7'), feature('left1', '6'), feature('right1', '5')];
 const keyA = hex('1'), keyB = hex('2'), keyC = hex('3');
+for (const item of [...contextA, ...contextB, ...contextC]) assert.match(item.hash, /^[a-f0-9]{64}$/, 'test context fingerprints must be valid lowercase hexadecimal SHA-256 values');
 for (const [n, key, features] of [[5,keyA,contextA],[6,keyB,contextB]]) {
   const r = await (await vote('נפקא', 'krupnik:KRU2', n, 'context', { contextKey: key, features })).json();
   assert.equal(r.accepted, true, JSON.stringify(r));
