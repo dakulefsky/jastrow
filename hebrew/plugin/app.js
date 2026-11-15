@@ -15,7 +15,7 @@ function renderMatches(records,word){
   const open=el('button',entry.word,'result');open.type='button';open.dir='rtl';open.onclick=()=>search(entry.word);row.append(open);
   if(window.DictionaryCommunity?.enabled){
    const vote=el('button','👍','community-vote');vote.type='button';vote.title='אישור שהערך מתאים למילה';vote.setAttribute('aria-label','אישור התאמת הערך '+entry.word);
-   vote.onclick=async()=>{vote.disabled=true;const result=await DictionaryCommunity.vote(word,{rid:entry.rid});const status=row.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!status.isConnected)row.append(status);status.textContent=result.ok?'תודה, ההצבעה נשמרה.':result.duplicate?'כבר אישרת את ההתאמה הזאת.':'ההצבעה הקהילתית אינה זמינה כרגע.';vote.disabled=false;};
+   vote.onclick=async()=>{vote.disabled=true;const result=await DictionaryCommunity.vote(word,{rid:entry.rid});if(!result.ok&&!result.duplicate){vote.remove();return;}const status=row.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!status.isConnected)row.append(status);status.textContent=result.ok?'תודה, ההצבעה נשמרה.':'כבר אישרת את ההתאמה הזאת.';vote.disabled=false;};
    row.append(vote);
   }
   list.append(row);
