@@ -78,6 +78,10 @@ button:disabled{opacity:.5;cursor:default;transform:none}
 .community-feedback-label{font:600 .95rem/1.4 var(--ui);color:var(--ink);margin:0 0 .25rem}
 .community-feedback-description{font:.72rem/1.55 var(--ui);color:var(--muted);margin:0}
 .community-vote-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:.5rem}
+.community-vote-card{display:flex;flex-direction:column;gap:.25rem;min-width:0}
+.community-vote-general{align-self:flex-end;border:0;background:transparent;color:var(--muted);font:600 .65rem/1.4 var(--ui);padding:.2rem .35rem;cursor:pointer}
+.community-vote-general:hover{text-decoration:underline;color:var(--forest)}
+.community-vote-general:focus-visible{outline:0;box-shadow:var(--focus-ring);border-radius:var(--radius-sm)}
 .community-vote,.community-match-row .community-vote{display:flex;flex-direction:column;align-items:stretch;gap:.25rem;min-width:0;text-align:start;padding:.65rem .75rem;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--page);color:var(--ink);transition:border-color .15s,background .15s}
 .community-vote:hover{border-color:var(--gold);background:var(--paper)}
 .community-vote-main{display:flex;align-items:center;justify-content:space-between;gap:.6rem}
