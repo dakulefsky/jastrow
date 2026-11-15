@@ -96,7 +96,7 @@ Validation: `python3 package.py`, then `node test_search.cjs`, `node test_contex
 
 # Jastrow for Otzaria — offline dictionary
 
-## Version 1.2.0
+## Version 1.2.1
 
 The standalone preview runs the packaged application with all dictionary chunks embedded. Quick meanings remain verbatim source phrases; each has a “Read in context” control opening the complete scholarly entry. Academic detail stays in its dropdown. This extraction is a reading aid, not a new translation or a claim that an isolated phrase explains every sense.
 
