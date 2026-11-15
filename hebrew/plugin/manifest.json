@@ -20,7 +20,7 @@
   "network": {
     "enabled": true,
     "allowlist": [
-      "otzaria-dictionary-community.dakulefsky.workers.dev"
+      "https://otzaria-dictionary-community.dakulefsky.workers.dev"
     ]
   },
   "contributes": {
