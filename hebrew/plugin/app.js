@@ -17,12 +17,13 @@ function renderMatches(records,word){
    const preview=entry.parts?.map(part=>part.meaning||part.text).find(Boolean)||'';
    if(preview)row.append(el('small',preview.slice(0,70),'community-match-preview'));
    const vote=el('button','👍','community-vote');vote.type='button';vote.title='אישור שהערך מתאים למילה'+(preview?': '+preview:'');vote.setAttribute('aria-label','אישור התאמת הערך '+entry.word+(preview?' — '+preview:''));
-   vote.onclick=async()=>{vote.disabled=true;const result=await DictionaryCommunity.vote(word,{rid:entry.rid});if(!result.ok&&!result.duplicate){vote.remove();return;}const status=row.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!status.isConnected)row.append(status);status.textContent=result.ok?'תודה, ההצבעה נשמרה.':'כבר אישרת את ההתאמה הזאת.';vote.disabled=false;};
+   vote.onclick=async()=>{vote.disabled=true;const result=await DictionaryCommunity.vote(word,{rid:entry.rid});if(!result.ok&&!result.duplicate){vote.remove();return;}const status=row.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!status.isConnected)row.append(status);status.textContent=result.queued?'ההצבעה נשמרה במכשיר ותישלח כשיהיה חיבור לרשת.':result.ok?'תודה, ההצבעה נשמרה.':'כבר אישרת את ההתאמה הזאת.';vote.disabled=false;};
    row.append(vote);
   }
   list.append(row);
  }
 }
+if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-synced',()=>{document.querySelectorAll('.community-vote-status').forEach(node=>{if(node.textContent.includes('נשמרה במכשיר'))node.textContent='ההצבעה נשלחה כעת לקהילה.';});});
 if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',()=>{
  document.querySelectorAll('.community-vote,.community-vote-status,.community-match-preview').forEach(node=>node.remove());
  if(window.Otzaria)for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'aramaic-hebrew-community-vote-'+i})).catch(()=>{});}catch{}}

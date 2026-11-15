@@ -125,11 +125,12 @@ function renderCommunityVotes(result,word,target,records=[]){
   const source=meta.source==='krupnik'?'Krupnik':'Jastrow',label='👍 '+meta.h+' · '+source+(preview?' — '+preview.slice(0,55):'');
   const button=el('button',label,'community-vote');
   button.type='button';button.dir='auto';button.title=label;button.setAttribute('aria-label',label);
-  button.onclick=async()=>{button.disabled=true;const outcome=await DictionaryCommunity.vote(word,meta);if(!outcome.ok&&!outcome.duplicate){panel.remove();return;}const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);note.textContent=outcome.ok?'Thanks — your vote was counted.':'You already confirmed this match.';button.disabled=false;};
+  button.onclick=async()=>{button.disabled=true;const outcome=await DictionaryCommunity.vote(word,meta);if(!outcome.ok&&!outcome.duplicate){panel.remove();return;}const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);note.textContent=outcome.queued?'Saved on this device — it will sync when you’re online.':outcome.ok?'Thanks — your vote was counted.':'You already confirmed this match.';button.disabled=false;};
   panel.append(button);
  }
  target.append(panel);
 }
+if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-synced',()=>{document.querySelectorAll('.community-vote-status').forEach(node=>{if(node.textContent.includes('Saved on this device'))node.textContent='Your offline vote has now been sent to the community.';});});
 if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',()=>{
  document.querySelectorAll('.community-feedback,.community-vote').forEach(node=>node.remove());
  if(window.Otzaria)for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i})).catch(()=>{});}catch{}}
