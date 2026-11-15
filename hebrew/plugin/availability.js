@@ -1,8 +1,11 @@
 (function(){
  if(!window.Otzaria)return;
- let revision=0,queue=Promise.resolve();
+ let revision=0,queue=Promise.resolve(),latestPayload=null;
+ function removeCommunityItems(){for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'aramaic-hebrew-community-vote-'+i})).catch(()=>{});}catch{}}}
+ window.addEventListener('dictionary-community-disabled',removeCommunityItems);
  function offer(p){
-  const rev=++revision,text=HebrewLookup.selectionText(p);
+  latestPayload=p||{};
+  const rev=++revision,text=HebrewLookup.selectionText(latestPayload);
   queue=queue.catch(()=>{}).then(async()=>{
    if(rev!==revision)return;
    const records=HebrewLookup.lookup(text),found=records.length>0;
