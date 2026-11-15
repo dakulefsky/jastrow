@@ -8,7 +8,7 @@
  function storageGet(k,fallback){try{const v=localStorage.getItem(k);return v===null?fallback:v;}catch{return fallback;}}
  function storageSet(k,v){try{localStorage.setItem(k,v);return true;}catch{return false;}}
  function voterId(){try{let id=localStorage.getItem(key);if(!id){id=crypto.randomUUID();localStorage.setItem(key,id);}return id;}catch{return '';}}
- function normalize(word){return String(word||'').normalize('NFKD').replace(/[\\u0591-\\u05c7]/g,'').replace(/[^א-ת]/g,'').slice(0,100);}
+ function normalize(word){return String(word||'').normalize('NFKD').replace(/[\u0591-\u05c7]/g,'').replace(/[^א-ת]/g,'').slice(0,100);}
  function idFor(entry){if(!entry||!(entry.r||entry.rid))return '';return (entry.source==='krupnik'||entry.rid?'krupnik:':'jastrow:')+(entry.r||entry.rid);}
  function readQueue(){try{const q=JSON.parse(storageGet(queueKey,'[]'));return Array.isArray(q)?q.filter(x=>x&&typeof x.word==='string'&&typeof x.entryId==='string'&&typeof x.voterId==='string'&&typeof x.id==='string').slice(-200):[];}catch{return [];}}
  function writeQueue(q){return storageSet(queueKey,JSON.stringify(q.slice(-200)));}
