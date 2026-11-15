@@ -6,7 +6,7 @@
  root.DictionaryQuick={meanings,message,show};
  if(root.Otzaria)root.Otzaria.on('reader.context_menu_item_clicked',async p=>{
   const word=root.HebrewLookup.selectionText(p);
-  if(p.itemId==='aramaic-hebrew-lookup'){show(word);return;}
+  if(p.itemId==='aramaic-hebrew-lookup'){await show(word);return;}
   const match=/^aramaic-hebrew-community-vote-(\d)$/.exec(p.itemId||'');
   if(match&&root.DictionaryCommunity?.enabled){
    const entry=root.HebrewLookup.lookup(word)[Number(match[1])];
