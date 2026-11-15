@@ -135,7 +135,7 @@ function renderCommunityVotes(result,word,target,records=[]){
   button.append(main);
   if(preview)button.append(el('span',preview.slice(0,90),'community-vote-gloss'));
   const action=el('span','Choose','community-vote-action');button.append(action);
-  button.onclick=async()=>{button.disabled=true;const outcome=await DictionaryCommunity.vote(word,meta);if(!outcome.ok&&!outcome.duplicate){button.disabled=false;return;}const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);note.textContent=outcome.queued?'Saved on this device — it will sync when you’re online.':outcome.ok?'Thank you. Your choice has been recorded.':'You have already confirmed this match.';button.classList.add('is-selected');button.disabled=true;};
+  button.onclick=async()=>{button.disabled=true;const outcome=await DictionaryCommunity.vote(word,meta);if(!outcome.ok&&!outcome.duplicate){button.disabled=false;return;}const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);note.textContent=outcome.queued?'Saved on this device — it will sync when you’re online.':outcome.ok?'Thank you. Your choice has been recorded.':'You have already confirmed this match.';button.classList.add('is-selected');button.querySelector('.community-vote-action').textContent='Selected';button.disabled=true;};
   options.append(button);
  }
  panel.append(options);
