@@ -10,7 +10,7 @@
   const match=/^aramaic-hebrew-community-vote-(\d)$/.exec(p.itemId||'');
   if(match&&root.DictionaryCommunity?.enabled){
    const entry=root.HebrewLookup.lookup(word)[Number(match[1])];
-   if(entry){const result=await root.DictionaryCommunity.vote(word,{rid:entry.rid});await root.Otzaria.call('ui.showMessage',{message:result.ok?'תודה, הבחירה שותפה עם הקהילה.':result.duplicate?'כבר אישרת את ההתאמה הזאת.':'ההצבעה הקהילתית אינה זמינה כרגע.'});}
+   if(entry){const result=await root.DictionaryCommunity.vote(word,{rid:entry.rid});if(result.ok||result.duplicate)await root.Otzaria.call('ui.showMessage',{message:result.ok?'תודה, הבחירה שותפה עם הקהילה.':'כבר אישרת את ההתאמה הזאת.'});}
   }
  });
 })(typeof window==='undefined'?globalThis:window);
