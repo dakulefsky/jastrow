@@ -49,7 +49,7 @@ async function contextualPreference(db, word, ids, canonical, features) {
     GROUP BY cv.vote_id
     LIMIT 1000`).bind(word, ...features.map(item => item.hash)).all();
   const candidateCanonical = new Set([...canonical.values()]);
-  const grouped = new Map();
+  const bestByVoter = new Map();
   for (const row of rows.results || []) {
     if (!candidateCanonical.has(row.canonical_id)) continue;
     const matched = String(row.matched_features || "").split(",").filter(Boolean);
@@ -57,10 +57,18 @@ async function contextualPreference(db, word, ids, canonical, features) {
     const similarity = matchedWeight / Math.max(totalWeight, 1);
     // One weak neighboring word is not enough to alter a dictionary result.
     if (matched.length < 2 || similarity < 0.35) continue;
-    if (!grouped.has(row.canonical_id)) grouped.set(row.canonical_id, { score: 0, voters: new Set() });
-    const group = grouped.get(row.canonical_id);
-    group.score += similarity;
-    group.voters.add(row.voter_hash);
+    const existing = bestByVoter.get(row.voter_hash);
+    // One installation may vote in several related passages, but it contributes
+    // only its strongest match to any one lookup.
+    if (!existing || similarity > existing.similarity)
+      bestByVoter.set(row.voter_hash, { canonicalId: row.canonical_id, similarity });
+  }
+  const grouped = new Map();
+  for (const [voterHash, vote] of bestByVoter) {
+    if (!grouped.has(vote.canonicalId)) grouped.set(vote.canonicalId, { score: 0, voters: new Set() });
+    const group = grouped.get(vote.canonicalId);
+    group.score += vote.similarity;
+    group.voters.add(voterHash);
   }
   const totalScore = [...grouped.values()].reduce((sum, group) => sum + group.score, 0);
   const ranked = [...grouped.entries()].sort((a, b) => b[1].score - a[1].score);
