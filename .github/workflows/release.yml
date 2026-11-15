@@ -69,6 +69,7 @@ jobs:
           node test_prefixes_ui.cjs
           node test_reader_lookup.cjs
           node test_redirects_ui.cjs
+          node test_unified_ui.cjs
       - name: Validate, build, and publish
         if: github.ref == 'refs/heads/main'
         id: publish
