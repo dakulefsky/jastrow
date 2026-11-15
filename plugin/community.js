@@ -22,7 +22,7 @@
   catch{networkAvailable=false;permissionGranted=false;emit('dictionary-community-disabled');return false;}
  }
  permissionGranted=storageGet(permissionKey,'')==='1';
- const ready=(async()=>{if(root.navigator?.onLine===false){networkAvailable=false;return false;}await checkHealth();return networkAvailable;})();
+ const ready=(async()=>{if(root.navigator?.onLine===false){networkAvailable=false;return false;}const ok=await checkHealth();if(ok)await flushQueue();return networkAvailable;})();
  async function rank(word,entries){if(!networkAvailable||!Array.isArray(entries)||!entries.length)return {preferredEntryId:null,entries};const ids=entries.map(x=>typeof x==='string'?x:idFor(x)).filter(Boolean).slice(0,40);if(!ids.length)return {preferredEntryId:null,entries};try{const u=new URL(API+'/v1/suggestions');u.searchParams.set('word',normalize(word));u.searchParams.set('ids',ids.join(','));const r=await fetch(u,{headers:{Accept:'application/json'},signal:AbortSignal.timeout(1800)});if(!r.ok){disable();return {preferredEntryId:null,entries};}const data=await r.json();const preferred=data.preferredEntryId;if(!preferred)return {preferredEntryId:null,entries};const reordered=[...entries].sort((a,b)=>{const aid=typeof a==='string'?a:idFor(a),bid=typeof b==='string'?b:idFor(b);return aid===preferred?-1:bid===preferred?1:0;});return {preferredEntryId:preferred,entries:reordered,votes:data.totalVotes||0};}catch{disable();return {preferredEntryId:null,entries};}}
  function enqueue(word,entryId,voter){
   const normalized=normalize(word);if(!normalized||!entryId||!voter)return {ok:false,reason:'unavailable'};
