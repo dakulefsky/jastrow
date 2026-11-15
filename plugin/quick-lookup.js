@@ -24,12 +24,16 @@
   }
   const result=phrase.ids.length?phrase:S.lookup(index,word,100,'length',false);
   if(['suggestions','invalid','empty'].includes(result.kind))return [];
-  const records=(await Promise.all(result.ids.map(id=>root.JastrowReadingView.records(index,id,load,word,{phrase:phrase.ids.length>0,lookupWord:S.matchingQuery(index,result.prefixMatches,id,word)})))).flat();
-  return root.DictionaryMeanings.merge(records,word).map(group=>({
+  let ids=result.ids,communityPreferred=false;
+  if(root.DictionaryCommunity?.enabled&&ids.length>1){const ranked=await root.DictionaryCommunity.rank(word,ids.map(id=>index.entries[id]));if(ranked.preferredEntryId){ids=ranked.entries.map(entry=>index.entries.indexOf(entry));communityPreferred=true;}}
+  const records=(await Promise.all(ids.map(id=>root.JastrowReadingView.records(index,id,load,word,{phrase:phrase.ids.length>0,lookupWord:S.matchingQuery(index,result.prefixMatches,id,word)})))).flat();
+  const merged=root.DictionaryMeanings.merge(records,word).map(group=>({
    text:group.text,spelling:group.spelling,
    // Numeric sense numbers are not grammatical qualifications.
    label:group.form?group.sources[0].meaning.label:'',
   }));
+  if(communityPreferred&&merged.length)merged[0].communityPreferred=true;
+  return merged;
  }
  async function meanings(word){
   return (await results(word)).map(item=>(item.selectedWord?item.selectedWord+': ':'')+item.text);
@@ -41,7 +45,7 @@
    const heading=[item.selectedWord,item.spelling,item.label].filter((s,n,a)=>s&&a.indexOf(s)===n).join(' · ');
    return (i+1)+'. **'+short(item.text).replace(/\*/g,'')+'**'+(heading?'\n'+heading.replace(/\*/g,''):'');
   });
-  return [word+(prefixed?' — possible '+(typeof prefixed==='string'?prefixed:'prefixed form'):''),...lines,
+  return [word+(items[0]?.communityPreferred?' — community-preferred match':'')+(prefixed?' — possible '+(typeof prefixed==='string'?prefixed:'prefixed form'):''),...lines,
    ...(prefixed?['Base-word meanings; check the grammatical form in context.']:[]),
    items.length>2?'More meanings — click to open dictionary':'Click for full entry and sources'].join('\n');
  }
