@@ -52,6 +52,7 @@ const unavailable = await load({ health: false });
 assert.equal(unavailable.api.enabled, true, 'permission remains granted when the service is unavailable');
 assert.equal((await unavailable.api.vote('נפקא', 'krupnik:KRU1')).queued, true);
 assert.equal(unavailable.api.pending, 1);
+assert(!unavailable.events.includes('dictionary-community-disabled'),'service outage must not revoke permission');
 assert.equal(unavailable.calls.length, 1, 'only the health check is attempted when the service is unavailable');
 
 const failing = await load({ health: true, voteStatus: 503 });
@@ -63,6 +64,8 @@ const failedVote = await failing.api.vote('נפקא', { rid: 'KRU02095' });
 assert.equal(failedVote.ok, true, 'a failed network submission should be retained locally');
 assert.equal(failedVote.queued, true);
 assert.equal(failing.api.pending, 1);
+assert(failing.events.includes('dictionary-community-offline'),'temporary vote failure should be reported as offline, not permission denial');
+assert(!failing.events.includes('dictionary-community-disabled'),'temporary vote failure must not disable community controls');
 assert.equal(failing.api.enabled, true, "temporary network failures do not revoke the user's permission");
 const before = failing.calls.length;
 await failing.api.rank('נפקא', [{ rid: 'KRU02095' }]);
