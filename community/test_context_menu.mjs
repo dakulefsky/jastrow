@@ -17,7 +17,9 @@ async function english() {
     JastrowContext:{selectionText:p=>p?.selection?.renderedSelectedText||p?.selectedText||''},
     JastrowSearch:{
       splitWords:w=>[w],normalize:w=>w,hasSelectionTranslations:()=>true,
-      lookup:()=>({ids:[0,1,2]})
+      lookup:()=>({ids:[0,1,2],prefixMatches:[]}),matchingQuery:()=> 'נפקא'
+    },
+    JastrowReadingView:{records:async(_index,id)=>[{id,meanings:[{text:'English candidate meaning '+id}]}]}
     },
     DictionaryCommunity:{enabled:true,ready:Promise.resolve(true),vote:async(word,entry)=>{votes.push({word,entry});return failVote?{ok:false,duplicate:false}:{ok:true,duplicate:false};}},
     Otzaria:{
@@ -32,6 +34,7 @@ async function english() {
   for(const fn of events.get('reader.selection_changed')||[])fn({selection:{renderedSelectedText:'נפקא'}});
   await settle();
   assert(items.has('jastrow-community-vote-0')&&items.has('jastrow-community-vote-1')&&items.has('jastrow-community-vote-2'),'English right-click menu must expose candidate votes');
+  assert.match(items.get('jastrow-community-vote-1').title,/English candidate meaning 1/,'English menu choices must distinguish candidate meanings');
   for(const fn of events.get('reader.context_menu_item_clicked')||[])await fn({itemId:'jastrow-community-vote-1',selection:{renderedSelectedText:'נפקא'}});
   assert.equal(votes[0].word,'נפקא');assert.equal(votes[0].entry,entries[1],'English menu item must vote for its exact candidate');
   assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,1,'successful vote may be acknowledged');
@@ -42,7 +45,7 @@ async function english() {
 
 async function hebrew() {
   const events=new Map(), calls=[], votes=[], items=new Map();let failVote=false;
-  const entries=[{word:'נפקא',rid:'KRU0001'},{word:'נפקא',rid:'KRU0002'},{word:'נפקא',rid:'KRU0003'}];
+  const entries=[{word:'נפקא',rid:'KRU0001',parts:[{meaning:'משמעות ראשונה'}]},{word:'נפקא',rid:'KRU0002',parts:[{meaning:'משמעות שנייה'}]},{word:'נפקא',rid:'KRU0003',parts:[{meaning:'משמעות שלישית'}]}];
   const root={
     HebrewLookup:{selectionText:p=>p?.selection?.renderedSelectedText||p?.selectedText||'',lookup:()=>entries},
     DictionaryCommunity:{enabled:true,ready:Promise.resolve(true),vote:async(word,entry)=>{votes.push({word,entry});return failVote?{ok:false,duplicate:false}:{ok:true,duplicate:false};}},
@@ -58,6 +61,7 @@ async function hebrew() {
   for(const fn of events.get('reader.selection_changed')||[])fn({selection:{renderedSelectedText:'נפקא'}});
   await settle();
   assert(items.has('aramaic-hebrew-community-vote-0')&&items.has('aramaic-hebrew-community-vote-1')&&items.has('aramaic-hebrew-community-vote-2'),'Hebrew right-click menu must expose candidate votes');
+  assert.match(items.get('aramaic-hebrew-community-vote-1').title,/משמעות שנייה/,'Hebrew menu choices must distinguish candidate meanings');
   for(const fn of events.get('reader.context_menu_item_clicked')||[])await fn({itemId:'aramaic-hebrew-community-vote-1',selection:{renderedSelectedText:'נפקא'}});
   assert.equal(votes[0].word,'נפקא');assert.deepEqual({...votes[0].entry},{rid:'KRU0002'},'Hebrew menu item must vote for its exact Krupnik ID');
   assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,1,'successful vote may be acknowledged');
