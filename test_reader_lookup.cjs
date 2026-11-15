@@ -13,7 +13,10 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   function installHost(){window.events={};window.Otzaria={on:(e,f)=>(events[e]??=[]).push(f),call:(method,args)=>window.hostRpc({method,args})};}
   async function open(word,kind){
    if(!foreground){foreground=await context.newPage();foreground.on('pageerror',e=>errors.push(String(e)));await foreground.exposeBinding('hostRpc',async(_,{method})=>method==='app.getGrantedPermissions'?{success:true,data:{permissions:manifest.permissions}}:{success:true});await foreground.addInitScript(installHost);await foreground.goto(base);await foreground.evaluate(()=>Promise.all(events['plugin.boot'].map(f=>f({theme:{}}))));}
+   const before=await foreground.locator('#entry').innerHTML();
    await foreground.evaluate(({word,kind})=>Promise.all(events[kind].map(f=>f(kind==='ui.messageClicked'?{payload:{dictionaryWord:word}}:{itemId:'jastrow-open',selection:{renderedSelectedText:word}}))),{word,kind});
+   await foreground.waitForFunction(before=>document.querySelector('#entry')?.innerHTML!==before,before);
+   await foreground.locator('.unified-meanings').first().waitFor();
   }
   const items=new Map(),messages=[];
   await bg.exposeBinding('hostRpc',async(_,{method,args})=>{
