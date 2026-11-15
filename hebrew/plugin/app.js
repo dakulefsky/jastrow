@@ -21,7 +21,7 @@ function renderMatches(records,word){
   list.append(row);
  }
 }
-window.addEventListener('dictionary-community-disabled',()=>{
+if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',()=>{
  document.querySelectorAll('.community-vote').forEach(node=>node.remove());
  if(window.Otzaria)for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'aramaic-hebrew-community-vote-'+i})).catch(()=>{});}catch{}}
 });
