@@ -59,3 +59,13 @@ button:disabled{opacity:.5;cursor:default;transform:none}
 .single-lookup .entry-panel{max-width:900px;margin-inline:auto}
 .translation-headword{line-height:1.65;overflow-wrap:anywhere}
 @media(max-width:600px){.masthead{flex-wrap:wrap}.brand{min-width:0;flex:1 1 230px}.search-heading{flex-wrap:wrap;gap:10px}.search-row{flex-wrap:wrap}.input-wrap{flex-basis:100%;min-width:0}.lookup-button{flex:1}.reading-toolbar{gap:6px}.entry-panel{padding:18px 14px}.meaning-references a{padding-block:6px}.meaning-spelling{line-height:1.8}}
+
+
+/* Shared community match feedback */
+.community-feedback{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;margin:1.1rem 0;padding:.8rem;border:1px solid var(--color-outline, #888);border-radius:.7rem}
+.community-feedback-label{flex-basis:100%;margin:0;font-size:.9rem;color:var(--color-muted,inherit)}
+.community-vote,.community-match-row .community-vote{font:inherit;font-size:.82rem;border:1px solid var(--color-outline, #888);border-radius:999px;padding:.32rem .65rem;background:transparent;color:inherit;cursor:pointer}
+.community-vote:disabled{opacity:.55;cursor:wait}
+.community-vote-status{font-size:.78rem;color:var(--color-muted,inherit)}
+.community-match-row{display:flex;align-items:center;gap:.35rem}
+.community-match-row>.result{flex:1;min-width:0}
