@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http');
 const {chromium,executablePath}=require('./browser_support.cjs');
 (async()=>{
- const server=http.createServer((req,res)=>{try{const pathname=new URL(req.url,'http://localhost').pathname;if(pathname==='/community-config.js'){const enabled=(req.headers.referer||'').includes('community=1');res.setHeader('Content-Type','text/javascript');res.end("window.DICTIONARY_COMMUNITY_API='"+(enabled?'https://community.example':'')+"';");return;}const p=path.join(__dirname,'plugin',pathname==='/'?'index.html':pathname);res.setHeader('Content-Type',p.endsWith('.js')?'text/javascript':p.endsWith('.css')?'text/css':p.endsWith('.png')?'image/png':'text/html');res.end(fs.readFileSync(p));}catch{res.statusCode=404;res.end();}});
+ const server=http.createServer((req,res)=>{try{const pathname=new URL(req.url,'http://localhost').pathname;if(pathname==='/community-config.js'){const enabled=req.headers['x-community-test']==='1';res.setHeader('Content-Type','text/javascript');res.end("window.DICTIONARY_COMMUNITY_API='"+(enabled?'https://community.example':'')+"';");return;}const p=path.join(__dirname,'plugin',pathname==='/'?'index.html':pathname);res.setHeader('Content-Type',p.endsWith('.js')?'text/javascript':p.endsWith('.css')?'text/css':p.endsWith('.png')?'image/png':'text/html');res.end(fs.readFileSync(p));}catch{res.statusCode=404;res.end();}});
  await new Promise(r=>server.listen(0,'127.0.0.1',r));let browser;
  try{
   browser=await chromium.launch({executablePath,args:['--no-sandbox']});const page=await browser.newPage(),base='http://127.0.0.1:'+server.address().port,errors=[],external=[];
@@ -22,7 +22,7 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   await page.evaluate(()=>search('אבגדהוזחטיכלמנסעפצקרשת'));assert.match(await page.locator('#entry').innerText(),/No matching entry/);assert.deepEqual(errors,[]);assert.deepEqual(external,[]);
   // A mocked healthy API should expose identifiable entry choices. If voting
   // fails later, all community controls disappear without an outage message.
-  const online=await browser.newPage();
+  const online=await browser.newPage();await online.setExtraHTTPHeaders({'x-community-test':'1'});
   await online.addInitScript(()=>{window.__failVote=false;window.fetch=async(input,init={})=>{const url=String(input);if(url.endsWith('/health'))return new Response(JSON.stringify({ok:true}),{status:200});if(url.endsWith('/v1/suggestions'))return new Response(JSON.stringify({preferredEntryId:null,totalVotes:0,suggestions:[]}),{status:200});if(url.endsWith('/v1/vote'))return window.__failVote?new Response(JSON.stringify({error:'offline'}),{status:503}):new Response(JSON.stringify({accepted:true,votes:1}),{status:200});throw new Error('Unexpected network request '+url);};});
   await online.goto(base+'/?community=1');await online.waitForFunction(()=>window.DictionaryCommunity?.enabled===true);
   const beforeOnline=await online.locator('#entry').innerHTML();await online.fill('#query','אַרְעָא');await online.locator('.lookup-button').click();await online.waitForFunction(before=>document.querySelector('#entry')?.innerHTML!==before,beforeOnline);await online.locator('.community-feedback').waitFor();
