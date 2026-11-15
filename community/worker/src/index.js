@@ -155,6 +155,11 @@ export default {
       const prior = await env.DB.prepare(`SELECT vote_id, canonical_id FROM context_votes
         WHERE surface_word = ? AND context_key = ? AND voter_hash = ?`).bind(word, key, voterHash).first();
       if (prior?.canonical_id === canonical) {
+        // Complete any feature rows left incomplete by an interrupted earlier request.
+        for (const feature of features) {
+          await env.DB.prepare("INSERT OR IGNORE INTO context_vote_features (vote_id, feature_hash) VALUES (?, ?)")
+            .bind(prior.vote_id, feature.hash).run();
+        }
         const count = await env.DB.prepare(`SELECT COUNT(*) AS votes FROM context_votes
           WHERE surface_word = ? AND context_key = ? AND canonical_id = ?`).bind(word, key, canonical).first();
         return json({ accepted: false, duplicate: true, votes: Number(count?.votes || 0), scope });
