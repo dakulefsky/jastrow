@@ -36,8 +36,6 @@ export default {
       const ids = (url.searchParams.get("ids") || "").split(",").filter(validId).slice(0, 40);
       if (!word || !ids.length) return json({ word, suggestions: [] });
       const canonical = await canonicalize(env.DB, ids);
-      const keys = [...new Set([...canonical.values()])];
-      const marks = keys.map(() => "?").join(",");
       // Count every vote for this surface word, not just the candidates in
       // this particular lookup. Otherwise a truncated candidate list can
       // manufacture a false 65% consensus.
