@@ -52,6 +52,8 @@ jobs:
           node --check hebrew/plugin/quick-lookup.js
           node --check plugin/app.js
           node --check hebrew/plugin/app.js
+          node --check plugin/availability.js
+          node --check hebrew/plugin/availability.js
           node --input-type=module --check < community/worker/src/index.js
           node community/test_worker.mjs
           node community/test_client.mjs
