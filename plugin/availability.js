@@ -42,8 +42,9 @@
    }
   }finally{running=false;}
  }
- function offer(payload){pending={payload:payload||{},revision:++revision};update().catch(()=>console.warn('Dictionary filtered lookup unavailable'));}
+ function offer(payload){latestPayload=payload||{};pending={payload:latestPayload,revision:++revision};update().catch(()=>console.warn('Dictionary filtered lookup unavailable'));}
  Otzaria.on('reader.selection_changed',offer);
+ window.DictionaryCommunity?.ready?.then(()=>{if(window.DictionaryCommunity.enabled&&latestPayload)offer(latestPayload);}).catch(()=>{});
  Otzaria.on('plugin.boot',async()=>{
   const before=revision;
   try{const res=await Otzaria.call('reader.getSelection');if(before===revision&&res?.success)offer(res.data||{});}catch{}
