@@ -92,7 +92,9 @@
   if(!permissionGranted)return {ok:false,reason:'permission'};
   const normalized=normalize(word),entryId=typeof entry==='string'?entry:idFor(entry),voter=voterId();
   if(!normalized||!entryId||!voter)return {ok:false,reason:'unavailable'};
-  if(!networkAvailable||!(await checkConnectivity()))return permissionGranted?enqueue(normalized,entryId,voter):{ok:false,reason:'permission'};
+  if(!networkAvailable&&!await checkHealth())return permissionGranted?enqueue(normalized,entryId,voter):{ok:false,reason:'permission'};
+  if(!permissionGranted)return {ok:false,reason:'permission'};
+  if(!(await checkConnectivity()))return permissionGranted?enqueue(normalized,entryId,voter):{ok:false,reason:'permission'};
   if(!permissionGranted)return {ok:false,reason:'permission'};
   try{const response=await request(API+'/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:normalized,entryId,voterId:voter})},timeoutMs.vote);if(!permissionGranted)return {ok:false,reason:'permission'};if(!response.ok)throw Error('vote');const data=await response.json();if(typeof data.accepted!=='boolean')throw Error('vote response');return {ok:data.accepted===true,duplicate:data.duplicate===true,votes:Number(data.votes)||0};}
   catch{if(!permissionGranted)return {ok:false,reason:'permission'};markOffline();return enqueue(normalized,entryId,voter);}
