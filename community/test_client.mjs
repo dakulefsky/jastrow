@@ -52,13 +52,14 @@ const readerSelection = { renderedSelectedText: 'נפקא', sourceRange: {
 } };
 await scoped.api.vote('נפקא', 'krupnik:KRU02095', { scope: 'general' });
 assert.equal(scoped.sent[0].scope, 'general', 'in-dictionary endorsements must be explicitly general');
+assert((scoped.api.contextWindow(readerSelection,'נפקא')||[]).length>=4,'reader anchor should produce reusable context features');
 const ranked = await scoped.api.rank('נפקא', [{ rid: 'KRU02095' }, { rid: 'KRU02096' }], readerSelection);
 assert.equal(ranked.scope, 'context', 'reader lookups must request contextual ranking');
 const rankRequest = scoped.calls.find(x => x.url.includes('/v1/suggestions'));
 assert(rankRequest.url.includes('scope=context'));
 assert(!rankRequest.url.includes('תניא') && !rankRequest.url.includes('הוא'), 'raw neighboring words must never leave the device');
 const contextualVote = await scoped.api.vote('נפקא', 'krupnik:KRU02095', { scope: 'context', selection: readerSelection });
-assert.equal(contextualVote.ok, true);
+assert.equal(contextualVote.ok, true, JSON.stringify(contextualVote));
 assert.equal(scoped.sent[1].scope, 'context');
 assert.match(scoped.sent[1].contextKey, /^[a-f0-9]{64}$/);
 assert(scoped.sent[1].features.length >= 4);
