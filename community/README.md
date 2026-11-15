@@ -14,11 +14,10 @@ This is an optional, privacy-minimal community ranking service for the English J
 
 ## Deploy
 
-1. Create a Cloudflare D1 database named `otzaria-dictionary-community`.
-2. Put its database ID in `worker/wrangler.toml`.
-3. From `community/worker`, run `npx wrangler d1 migrations apply otzaria-dictionary-community --remote`.
-4. Deploy with `npx wrangler deploy`.
-5. Set the resulting Worker URL in each plugin's `community-config.js`, and add that exact host to the plugin manifest network allowlist and CSP `connect-src`.
-6. The deployment workflow generates `entry-links.sql` from the committed Jastrow and Krupnik indexes and imports it into D1. The builder emits only exact, unique headword/alternate-headword matches; ambiguous and fuzzy matches are skipped.
+1. Add GitHub Actions repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+2. Run **Actions → Deploy dictionary community API → Run workflow**. The workflow creates/reuses the D1 database, applies migrations, generates and imports exact unique Jastrow/Krupnik cross-links, and deploys the Worker.
+3. Copy the Worker URL from the workflow output. Set it in both plugins' `community-config.js` files, then add its exact host to each plugin manifest network allowlist and CSP `connect-src`.
+4. Run the plugin validation workflows. Community lookup remains disabled until the URL and network permissions are configured.
+
 
 No Worker is deployed and no votes are collected until a Cloudflare database and Worker URL are configured. The API has no paid dependency, but Cloudflare account limits and pricing apply.
