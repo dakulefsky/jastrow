@@ -42,7 +42,7 @@ export default {
       const counts = new Map((rows.results || []).map(row => [row.canonical_id, Number(row.votes)]));
       const suggestions = ids.map(id => ({ entryId: id, canonicalId: canonical.get(id), votes: counts.get(canonical.get(id)) || 0 }))
         .sort((a,b) => b.votes - a.votes);
-      const total = suggestions.reduce((n,x) => n + x.votes, 0);
+      const total = keys.reduce((n,key) => n + (counts.get(key) || 0), 0);
       const winner = suggestions[0];
       const confident = !!winner && winner.votes >= 3 && winner.votes / Math.max(total, 1) >= 0.65;
       return json({ word, suggestions, preferredEntryId: confident ? winner.entryId : null, totalVotes: total });
