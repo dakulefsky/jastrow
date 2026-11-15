@@ -3,6 +3,7 @@
  let revision=0,queue=Promise.resolve(),latestPayload=null;
  function removeCommunityItems(){for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'aramaic-hebrew-community-vote-'+i})).catch(()=>{});}catch{}}}
  if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',removeCommunityItems);
+ if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-permission-granted',()=>{if(latestPayload)offer(latestPayload);});
  function offer(p){
   latestPayload=p||{};
   const rev=++revision,text=HebrewLookup.selectionText(latestPayload);
