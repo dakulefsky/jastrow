@@ -116,13 +116,15 @@ async function searchWords(words,serial){
   await showTranslations(result,word,serial,target,3);
  }));
 }
-function renderCommunityVotes(result,word,target){
+function renderCommunityVotes(result,word,target,records=[]){
  if(!window.DictionaryCommunity?.enabled||!result.ids.length)return;
  const panel=el('section',undefined,'community-feedback');
  panel.append(el('p','Which dictionary entry fits this word?','community-feedback-label'));
  for(const id of result.ids.slice(0,12)){
-  const meta=index.entries[id],button=el('button','👍 '+meta.h,'community-vote');
-  button.type='button';button.dir='auto';
+  const meta=index.entries[id],record=records.find(item=>item.id===id),preview=record?.meanings?.find(item=>item.text)?.text||'';
+  const label='👍 '+meta.h+(preview?' — '+preview.slice(0,55):'');
+  const button=el('button',label,'community-vote');
+  button.type='button';button.dir='auto';button.title=label;button.setAttribute('aria-label',label);
   button.onclick=async()=>{button.disabled=true;const outcome=await DictionaryCommunity.vote(word,meta);if(!outcome.ok&&!outcome.duplicate){panel.remove();return;}const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);note.textContent=outcome.ok?'Thanks — your vote was counted.':'You already confirmed this match.';button.disabled=false;};
   panel.append(button);
  }
@@ -147,7 +149,7 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
  if(serial!==requestSerial||panelSerial!==entrySerial)return;
  const expanded=items.flat(),records=expanded.filter(x=>!x.error);
  target.append(DictionaryMeanings.render(records,word,result.kind==='phrase'?index.phraseNotes:{}));
- renderCommunityVotes(result,word,target);
+ renderCommunityVotes(result,word,target,records);
  for(const failed of expanded.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
  if(result.total>ids.length){const more=el('button','More matching entries');more.type='button';more.onclick=()=>{limit+=60;search(word,true);};target.append(more);}
 }
