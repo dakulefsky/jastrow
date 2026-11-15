@@ -11,9 +11,10 @@ def norm(s):
     return re.sub(r"[^א-ת]", "", unicodedata.normalize("NFKD", str(s)))
 def read_js(path, marker):
     raw = path.read_text(encoding="utf-8").strip()
-    if not raw.startswith(marker) or not raw.endswith(";"):
+    if not raw.startswith(marker):
         raise ValueError(f"Unexpected generated file: {path}")
-    return json.loads(raw[len(marker):-1])
+    payload = raw[len(marker):].split(";\\n", 1)[0].rstrip(";")
+    return json.loads(payload)
 def main():
     j = read_js(ROOT/"plugin/data/index.js", "window.JASTROW_INDEX=")
     k = read_js(ROOT/"plugin/data/krupnik-index.js", "window.KRUPNIK_DATA=")
@@ -32,7 +33,12 @@ def main():
             links.append({"alias_id": "jastrow:"+item["r"], "canonical_id": "krupnik:"+next(iter(matches)), "confidence": "exact"})
         elif len(matches) > 1:
             ambiguous += 1
-    output = ROOT/"community"/"entry-links.json"
-    output.write_text(json.dumps({"links": links, "ambiguousJastrowEntries": ambiguous}, ensure_ascii=False, indent=2)+"\n")
-    print(f"Wrote {len(links)} exact unique links; skipped {ambiguous} ambiguous Jastrow entries.")
+    output = ROOT/"community"/"entry-links.sql"
+    statements = ["-- Exact, unique Jastrow/Krupnik headword links only."]
+    for link in links:
+        alias = link["alias_id"].replace("'", "''")
+        canonical = link["canonical_id"].replace("'", "''")
+        statements.append("INSERT OR REPLACE INTO entry_links (alias_id, canonical_id, confidence) VALUES ('"+alias+"', '"+canonical+"', 'exact');")
+    output.write_text("\\n".join(statements)+"\\n", encoding="utf-8")
+    print(f"Wrote {len(links)} exact unique links; skipped {ambiguous} ambiguous Jastrow entries. SQL: {output}")
 if __name__ == "__main__": main()
