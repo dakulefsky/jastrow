@@ -122,7 +122,7 @@ function renderCommunityVotes(result,word,target,records=[]){
  panel.append(el('p','Which dictionary entry fits this word?','community-feedback-label'));
  for(const id of result.ids.slice(0,12)){
   const meta=index.entries[id],record=records.find(item=>item.id===id),preview=record?.meanings?.find(item=>item.text)?.text||'';
-  const label='👍 '+meta.h+(preview?' — '+preview.slice(0,55):'');
+  const source=meta.source==='krupnik'?'Krupnik':'Jastrow',label='👍 '+meta.h+' · '+source+(preview?' — '+preview.slice(0,55):'');
   const button=el('button',label,'community-vote');
   button.type='button';button.dir='auto';button.title=label;button.setAttribute('aria-label',label);
   button.onclick=async()=>{button.disabled=true;const outcome=await DictionaryCommunity.vote(word,meta);if(!outcome.ok&&!outcome.duplicate){panel.remove();return;}const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);note.textContent=outcome.ok?'Thanks — your vote was counted.':'You already confirmed this match.';button.disabled=false;};
