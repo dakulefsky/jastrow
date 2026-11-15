@@ -115,8 +115,8 @@
  };
  try{root.Otzaria?.on?.('plugin.permissions_changed',permissionChanged);}catch{}
  try{root.Otzaria?.on?.('plugin.boot',async payload=>{if(Array.isArray(payload?.permissions)){setPermission(payload.permissions.includes('network.access'));if(permissionGranted&&await checkHealth())await flushQueue();}else await refreshPermissions();});}catch{}
- try{root.addEventListener?.('online',async()=>{if(permissionGranted&&await checkHealth())await flushQueue();});}catch{}
- try{root.addEventListener?.('focus',async()=>{if(permissionGranted&&!networkAvailable&&await checkHealth())await flushQueue();});}catch{}
+ try{root.addEventListener?.('online',async()=>{if(!permissionGranted)await refreshPermissions();else if(await checkHealth())await flushQueue();});}catch{}
+ try{root.addEventListener?.('focus',async()=>{if(!permissionGranted)await refreshPermissions();else if(!networkAvailable&&await checkHealth())await flushQueue();});}catch{}
  const api={ready:Promise.resolve(false),normalize,idFor,rank,vote,flushQueue,refreshPermissions};
  Object.defineProperties(api,{enabled:{enumerable:true,get:()=>permissionGranted},online:{enumerable:true,get:()=>networkAvailable},pending:{enumerable:true,get:pendingCount}});
  root.DictionaryCommunity=api;
