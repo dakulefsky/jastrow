@@ -63,3 +63,4 @@ jobs:
           python -m py_compile community/build_entry_links.py
           python community/build_entry_links.py
           test -s community/entry-links.sql
+          grep -q '^DELETE FROM entry_links;' community/entry-links.sql
