@@ -19,7 +19,7 @@
  async function checkHealth(){
   if(!API||root.navigator?.onLine===false){networkAvailable=false;return false;}
   try{const response=await fetch(API+'/health',{headers:{Accept:'application/json'},signal:AbortSignal.timeout(1800)});if(!response.ok)throw new Error('health');const data=await response.json();if(data.ok!==true)throw new Error('health');networkAvailable=true;permissionGranted=true;storageSet(permissionKey,'1');emit('dictionary-community-enabled');return true;}
-  catch{networkAvailable=false;permissionGranted=false;emit('dictionary-community-disabled');return false;}
+  catch{const wasEnabled=networkAvailable||permissionGranted;networkAvailable=false;permissionGranted=false;if(wasEnabled)emit('dictionary-community-disabled');return false;}
  }
  permissionGranted=storageGet(permissionKey,'')==='1';
  const ready=(async()=>{if(root.navigator?.onLine===false){networkAvailable=false;return false;}const ok=await checkHealth();if(ok)await flushQueue();return networkAvailable;})();
