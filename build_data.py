@@ -86,7 +86,7 @@ def write_js(path, prefix, obj):
 
 # Keep the search index light; load definitions only for the chosen chunk.
 chunk_size=400
-meta=[{'h':e['h'],'r':e['r'],'b':i//chunk_size} for i,e in enumerate(entries)]
+meta=[{'h':e['h'],'r':e['r'],'b':i//chunk_size,'alt':e.get('alt',[])} for i,e in enumerate(entries)]
 write_js(DATA/'index.js','window.JASTROW_INDEX=',{'entries':meta,'direct':{k:sorted(v) for k,v in direct.items()},'forms':{k:sorted(v) for k,v in forms.items()}})
 for start in range(0,len(entries),chunk_size):
     write_js(DATA/f'chunk-{start//chunk_size}.js',f'window.JASTROW_CHUNKS[{start//chunk_size}]=', {str(i):entries[i] for i in range(start,min(start+chunk_size,len(entries)))})
