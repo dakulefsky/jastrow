@@ -58,3 +58,13 @@ button:disabled{opacity:.5;cursor:default;transform:none}
 
 /* Hebrew edition: same two-panel workspace as the English dictionary, RTL-aware. */
 #layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:18px;align-items:start;min-height:380px}.matches-panel{min-width:0;padding:17px 15px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);box-shadow:0 5px 20px var(--color-shadow-soft)}.matches-panel .panel-heading{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:0 3px 13px;border-bottom:1px solid var(--color-outline);margin-bottom:12px}.matches-panel .panel-heading h2{font-size:.8125rem;margin:0;color:var(--forest)}#match-count{font-size:.625rem;color:var(--muted)}#matches{display:flex;flex-direction:column;gap:7px}.matches-panel .result{width:100%;text-align:right;font:1.25rem/1.45 var(--body);padding:9px 11px;border:1px solid transparent;background:transparent}.matches-panel .result:hover{border-color:var(--color-outline);background:var(--color-surface-container)}.entry-panel{min-width:0;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);box-shadow:0 5px 20px var(--color-shadow-soft);padding:25px 30px;overflow-wrap:anywhere}.entry-panel:empty{display:none}@media(max-width:760px){#layout{grid-template-columns:1fr;gap:12px}.matches-panel{padding:13px}.matches-panel #matches{max-height:170px;overflow:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.matches-panel .result{text-align:center;font-size:1.1rem;padding:6px}.entry-panel{padding:18px}}
+
+
+/* Shared community match feedback */
+.community-feedback{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;margin:1.1rem 0;padding:.8rem;border:1px solid var(--color-outline, #888);border-radius:.7rem}
+.community-feedback-label{flex-basis:100%;margin:0;font-size:.9rem;color:var(--color-muted,inherit)}
+.community-vote,.community-match-row .community-vote{font:inherit;font-size:.82rem;border:1px solid var(--color-outline, #888);border-radius:999px;padding:.32rem .65rem;background:transparent;color:inherit;cursor:pointer}
+.community-vote:disabled{opacity:.55;cursor:wait}
+.community-vote-status{font-size:.78rem;color:var(--color-muted,inherit)}
+.community-match-row{display:flex;align-items:center;gap:.35rem}
+.community-match-row>.result{flex:1;min-width:0}
