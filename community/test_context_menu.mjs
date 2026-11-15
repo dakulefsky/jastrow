@@ -41,7 +41,6 @@ async function english() {
   failVote=true;
   for(const fn of events.get('reader.context_menu_item_clicked')||[])await fn({itemId:'jastrow-community-vote-0',selection:{renderedSelectedText:'נפקא'}});
   assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,1,'network failure must not mention community voting');
-  assert.equal([...items.keys()].filter(id=>id.startsWith('aramaic-hebrew-community-vote-')).length,0,'Hebrew vote menu items must disappear on service failure');
   assert.equal([...items.keys()].filter(id=>id.startsWith('jastrow-community-vote-')).length,0,'English vote menu items must disappear on service failure');
 }
 
@@ -71,6 +70,7 @@ async function hebrew() {
   failVote=true;
   for(const fn of events.get('reader.context_menu_item_clicked')||[])await fn({itemId:'aramaic-hebrew-community-vote-0',selection:{renderedSelectedText:'נפקא'}});
   assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,1,'network failure must not mention community voting');
+  assert.equal([...items.keys()].filter(id=>id.startsWith('aramaic-hebrew-community-vote-')).length,0,'Hebrew vote menu items must disappear on service failure');
 }
 
 await english();
