@@ -13,7 +13,7 @@
  function voterId(){let id=storageGet(voterKey,'');if(id)return id;id=randomId();if(id&&storageSet(voterKey,id))return id;return '';}
  function normalize(word){return String(word||'').normalize('NFKD').replace(/[\u0591-\u05c7]/g,'').replace(/[^א-ת]/g,'').slice(0,100);}
  function contextRange(selection){return selection?.sourceRange||selection?.renderedRange||selection?.sections?.[0]?.sourceRange||selection?.sections?.[0]?.renderedRange||null;}
- function contextWords(raw){return String(raw||'').normalize('NFKD').replace(/[\\u0591-\\u05c7]/g,'').match(/[א-ת]+/g)||[];}
+ function contextWords(raw){return String(raw||'').normalize('NFKD').replace(/\p{M}/gu,'').match(/[א-ת]+/g)||[];}
  function contextFeatureSpecs(selection){
   const range=contextRange(selection);if(!range)return [];
   const left=contextWords(range.beforeText?.raw),right=contextWords(range.afterText?.raw),specs=[];
