@@ -1,10 +1,10 @@
-# 1.11.6 — permission-aware community voting and resilient offline use
+# 1.11.7 — permission-aware community voting and resilient offline use
 
 The optional shared community layer now distinguishes denied network permission from a temporary connection or Worker outage. Without the host-granted `network.access` permission, both dictionaries retain their ordinary offline lookup and hide all community controls. With permission granted, votes can be queued locally while offline or during a service outage, then synchronized after connectivity returns. Revoking permission removes community controls; granting it again restores them without requiring a plugin restart.
 
 The Hebrew interface and quick reader lookup now discard stale asynchronous ranking results, so a slower response for an earlier selection cannot replace a newer word. The English and Hebrew right-click vote menus also report when a choice is saved locally rather than already sent to the community.
 
-Validation for this release candidate includes the dictionary and Chromium suites for both plugins, plus Worker/client/context-menu tests for permission denial, vote queueing, reconnection, and permission restoration. The manifest version bumps in this branch are candidates for Store publication; the Store remains on English 1.11.5 and Hebrew 1.2.3 until this PR is merged and published.
+Validation for this release candidate includes the dictionary and Chromium suites for both plugins, plus Worker/client/context-menu tests for permission denial, vote queueing, reconnection, and permission restoration. The manifest version bumps in this branch are candidates for Store publication; the Store remains on English 1.11.5 and Hebrew 1.2.3; the proposed PR versions are English 1.11.7 and Hebrew 1.2.5 until this PR is merged and published.
 
 # 1.11.1 — clearer quick meanings and complete tentative analyses
 
