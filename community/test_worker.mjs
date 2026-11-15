@@ -53,6 +53,8 @@ const partial=await (await call('/v1/suggestions?word=%D7%91%D7%93%D7%99%D7%A7%D
 assert.equal(partial.preferredEntryId,null,'votes for omitted candidates must count against consensus');
 const oversized=await call('/v1/vote',{method:'POST',body:JSON.stringify({word:'נפקא',entryId:'krupnik:KRU1',voterId:'voter-token-9-abcdefghijklmnop',padding:'x'.repeat(3000)})});
 assert.equal(oversized.status,413,'request body limit must apply even without Content-Length');
+const nullBody=await call('/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:'null'});
+assert.equal(nullBody.status,400,'null JSON must be rejected as an invalid vote, not crash the Worker');
 const duplicate=await (await call('/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:'נפקא',entryId:'krupnik:KRU1',voterId:'voter-token-1-abcdefghijklmnop'})})).json();
 assert.equal(duplicate.duplicate,true,'same installation cannot vote twice for the same word');
 await call('/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:'נפקא',entryId:'krupnik:KRU2',voterId:'voter-token-1-abcdefghijklmnop'})});
