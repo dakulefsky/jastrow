@@ -11,6 +11,7 @@ This is an optional, privacy-minimal community ranking service for the English J
 - Each installation has one active vote per selected surface word and can change its choice. Votes are not transferable between different surface words.
 - A community result is promoted only after at least 3 votes and at least 65% of votes for that candidate. Alternatives remain available.
 - Original dictionary records and definitions are never modified.
+- Votes are an anonymous community signal, not scholarly verification or an abuse-proof poll. There is no login or robust identity/rate-limit layer; a determined person can reset the per-install token and vote again.
 
 ## Deploy
 
