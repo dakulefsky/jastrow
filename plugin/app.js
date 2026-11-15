@@ -121,8 +121,8 @@ function renderCommunityVotes(result,word,target,records=[]){
  const panel=el('section',undefined,'community-feedback');
  const heading=el('div',undefined,'community-feedback-heading');
  heading.append(el('span','COMMUNITY CONTRIBUTION','community-feedback-kicker'));
- heading.append(el('h3','Which entry best fits this word?','community-feedback-label'));
- heading.append(el('p','Your choice helps improve future lookups for everyone.','community-feedback-description'));
+ heading.append(el('h3','Which entry is generally the right meaning?','community-feedback-label'));
+ heading.append(el('p','This records a broad dictionary preference, not a vote for one passage.','community-feedback-description'));
  panel.append(heading);
  const options=el('div',undefined,'community-vote-options');
  for(const id of result.ids.slice(0,12)){
@@ -134,8 +134,8 @@ function renderCommunityVotes(result,word,target,records=[]){
   main.append(el('strong',meta.h,'community-vote-headword'),el('span',source,'community-vote-source'));
   button.append(main);
   if(preview)button.append(el('span',preview.slice(0,90),'community-vote-gloss'));
-  const action=el('span','Choose','community-vote-action');button.append(action);
-  button.onclick=async()=>{button.disabled=true;const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);try{const outcome=await DictionaryCommunity.vote(word,meta);if(!outcome.ok&&!outcome.duplicate){note.textContent=outcome.reason==='queue_full'?'Your offline vote queue is full. Reconnect and try again.':outcome.reason==='storage'?'This choice could not be saved on this device.':'This choice could not be recorded. Please try again.';button.disabled=false;return;}note.textContent=outcome.queued?'Saved on this device — it will sync when you’re online.':outcome.ok?'Thank you. Your choice has been recorded.':'You have already confirmed this match.';button.classList.add('is-selected');button.querySelector('.community-vote-action').textContent='Selected';button.disabled=true;}catch{note.textContent='Something went wrong. Please try again.';button.disabled=false;}};
+  const action=el('span','General meaning','community-vote-action');button.append(action);
+  button.onclick=async()=>{button.disabled=true;const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);try{const outcome=await DictionaryCommunity.vote(word,meta,{scope:'general'});if(!outcome.ok&&!outcome.duplicate){note.textContent=outcome.reason==='queue_full'?'Your offline vote queue is full. Reconnect and try again.':outcome.reason==='storage'?'This choice could not be saved on this device.':'This choice could not be recorded. Please try again.';button.disabled=false;return;}note.textContent=outcome.queued?'Saved on this device — it will sync when you’re online.':outcome.ok?'Thank you. Your choice has been recorded.':'You have already confirmed this match.';button.classList.add('is-selected');button.querySelector('.community-vote-action').textContent='Selected';button.disabled=true;}catch{note.textContent='Something went wrong. Please try again.';button.disabled=false;}};
   options.append(button);
  }
  panel.append(options);
