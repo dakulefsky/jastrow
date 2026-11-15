@@ -3,6 +3,7 @@
  if(!window.Otzaria)return;
  const index=window.JASTROW_INDEX;
  let pending=null,running=false,revision=0,latestPayload=null,removalRequested=false;
+ function hasContextAnchor(value){const s=value?.selection||value||{};if(Array.isArray(s.sections))return s.sections.length===1&&!!(s.sections[0]?.sourceRange?.beforeText&&s.sections[0]?.sourceRange?.afterText);const a=s.sourceRange||s.renderedRange;return !!(a?.beforeText&&a?.afterText);}
  async function drainCommunityRemovals(){if(running)return;running=true;removalRequested=false;try{for(let i=0;i<3;i++)await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i});}catch{}finally{running=false;if(pending)update().catch(()=>{});else if(removalRequested)drainCommunityRemovals().catch(()=>{});}}
  function removeCommunityItems(){revision++;pending=null;removalRequested=true;if(!running)drainCommunityRemovals().catch(()=>{});}
  if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',removeCommunityItems);
@@ -12,11 +13,11 @@
   try{
    while(pending){
     const job=pending;pending=null;
-    let text=JastrowContext.selectionText(job.payload),rendered=text;
-    if(JastrowSearch.hasSelectionTranslations(index,text)&&!job.payload.renderedSelectedText){
+    let text=JastrowContext.selectionText(job.payload),rendered=text,contextSelection=job.payload.selection||job.payload;
+    if(JastrowSearch.hasSelectionTranslations(index,text)&&!hasContextAnchor(contextSelection)){
      try{const res=await Otzaria.call('reader.getSelection');const current=JastrowContext.selectionText(res?.data);
       if(job.revision!==revision)continue;
-      if(res?.success&&JastrowSearch.splitWords(current).map(JastrowSearch.normalize).join(' ')===JastrowSearch.splitWords(text).map(JastrowSearch.normalize).join(' '))rendered=current;
+      if(res?.success&&JastrowSearch.splitWords(current).map(JastrowSearch.normalize).join(' ')===JastrowSearch.splitWords(text).map(JastrowSearch.normalize).join(' ')){rendered=current;contextSelection=res.data||contextSelection;}
      }catch{}
     }
     if(job.revision!==revision)continue;
@@ -27,7 +28,8 @@
     const res=await Otzaria.call(method,args);
     if(job.revision!==revision)continue;
     await Otzaria.call(method,method==='reader.addContextMenuItem'?{...args,id:'jastrow-open',title:'Open dictionary',label:'Open dictionary',openPlugin:true,onClickEvent:'reader.context_menu_item_clicked'}:{id:'jastrow-open'});
-    if(window.DictionaryCommunity?.enabled){
+    const contextReady=hasContextAnchor(contextSelection)&&(typeof window.DictionaryCommunity?.contextWindow!=='function'||window.DictionaryCommunity.contextWindow(contextSelection,text)?.length>0);
+    if(window.DictionaryCommunity?.enabled&&contextReady){
      const candidateResult=matched?JastrowSearch.lookup(index,text,3,'length',false):null;
      const candidates=candidateResult?.ids||[];
      const previews=candidateResult&&window.DictionaryQuick?.previewCandidates?await window.DictionaryQuick.previewCandidates(text,candidateResult):[];
