@@ -77,20 +77,21 @@ async function contextualRanking(db, word, ids, canonical, features) {
   ).bind(...params).all();
   const scores = new Map();
   for (const row of rows.results || []) {
-    const id = row.canonical_id, item = scores.get(id) || { score: 0, supporters: 0 };
-    item.score += Number(row.weight) || 0;
+    const id = row.canonical_id, weight = Number(row.weight) || 0, item = scores.get(id) || { score: 0, supporters: 0, strongSupporters: 0 };
+    item.score += weight;
     item.supporters += 1;
+    if (weight >= 2) item.strongSupporters += 1;
     scores.set(id, item);
   }
   const totalScore = [...scores.values()].reduce((sum, item) => sum + item.score, 0);
   const suggestions = ids.map(id => {
-    const item = scores.get(canonical.get(id)) || { score: 0, supporters: 0 };
-    return { entryId: id, canonicalId: canonical.get(id), score: item.score, supporters: item.supporters };
+    const item = scores.get(canonical.get(id)) || { score: 0, supporters: 0, strongSupporters: 0 };
+    return { entryId: id, canonicalId: canonical.get(id), score: item.score, supporters: item.supporters, strongSupporters: item.strongSupporters };
   }).sort((a, b) => b.score - a.score);
   const winner = suggestions[0];
   const confidence = winner && totalScore ? winner.score / totalScore : 0;
-  const confident = !!winner && winner.supporters >= 2 && confidence >= 0.65;
-  return { preferredEntryId: confident ? winner.entryId : null, suggestions, totalVotes: [...scores.values()].reduce((n, item) => n + item.supporters, 0), supporters: winner?.supporters || 0, confidence };
+  const confident = !!winner && winner.supporters >= 2 && winner.strongSupporters >= 2 && confidence >= 0.65;
+  return { preferredEntryId: confident ? winner.entryId : null, suggestions, totalVotes: [...scores.values()].reduce((n, item) => n + item.supporters, 0), supporters: winner?.supporters || 0, strongSupporters: winner?.strongSupporters || 0, confidence };
 }
 export default {
   async fetch(request, env) {
