@@ -28,7 +28,7 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   const beforeOnline=await online.locator('#entry').innerHTML();await online.fill('#query','אַרְעָא');await online.locator('.lookup-button').click();await online.waitForFunction(before=>document.querySelector('#entry')?.innerHTML!==before,beforeOnline);await online.locator('.community-feedback').waitFor();
   assert(await online.locator('.community-vote').count()>=1);assert.match(await online.locator('.community-vote').first().innerText(),/land|accident/);
   await online.locator('.community-vote').first().click();await online.locator('.community-vote-status').waitFor();assert.match(await online.locator('.community-vote-status').innerText(),/vote was counted/);
-  if(await online.locator('.community-vote').count()>1){await online.evaluate(()=>window.__failVote=true);await online.locator('.community-vote').nth(1).click();await online.locator('.community-feedback').waitFor({state:'detached'});assert.doesNotMatch(await online.locator('#entry').innerText(),/community|unavailable|voting/i);}
+  await online.evaluate(()=>window.__failVote=true);await online.locator('.community-vote').first().click();await online.locator('.community-feedback').waitFor({state:'detached'});assert.doesNotMatch(await online.locator('#entry').innerText(),/community|unavailable|voting/i);
   await online.close();console.log('PASS: unified meanings, offline-only fallback, identifiable in-dictionary votes, and silent outage removal.');
  }finally{if(browser)await browser.close();await new Promise(r=>server.close(r));}
 })().catch(e=>{console.error(e);process.exitCode=1;});
