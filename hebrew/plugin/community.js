@@ -38,11 +38,10 @@
  }
  async function refreshPermissions(){
   if(permissionRead)return permissionRead;
-  permissionRead=(async()=>{try{
+  permissionRead=(async()=>{const epoch=permissionEpoch;try{
    const result=await root.Otzaria?.call?.('app.getGrantedPermissions',{});
-   if(result?.success!==true||!Array.isArray(result.data?.permissions))return false;
-   const epoch=permissionEpoch;
    if(epoch!==permissionEpoch)return permissionGranted;
+   if(result?.success!==true||!Array.isArray(result.data?.permissions))return false;
    setPermission(result.data.permissions.includes('network.access'));
    if(!permissionGranted)return false;
    if(await checkHealth())await flushQueue();
