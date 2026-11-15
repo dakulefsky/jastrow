@@ -222,3 +222,4 @@ setStatus('Ready · Search with or without nekudos.');
 renderTrail();
 function readEntryLink(){try{const p=new URLSearchParams(location.hash.slice(1)),id=Number(p.get('entry'));if(p.get('word')&&JastrowSearch.splitWords(p.get('word')).length){search(p.get('word'));return;}if(p.has('entry')&&Number.isInteger(id)&&id>=0&&id<index.entries.length){requestSerial++;query=p.get('word')||'';$('query').value=query;showEntry(id);}}catch{}}
 window.addEventListener('hashchange',readEntryLink);readEntryLink();
+window.DictionaryCommunity?.ready?.then(()=>{if(window.DictionaryCommunity.enabled&&query)search(query,false);}).catch(()=>{});
