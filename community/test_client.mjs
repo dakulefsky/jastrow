@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
+import { webcrypto } from 'node:crypto';
 
 const source = await readFile(new URL('../plugin/community.js', import.meta.url), 'utf8');
 
@@ -26,10 +27,11 @@ async function load({ health = true, voteStatus = 200, permission = true, online
       getItem: key => values.get(key) || null,
       setItem: (key, value) => values.set(key, value)
     },
-    crypto: { randomUUID: () => '12345678-1234-1234-1234-123456789012' },
+    crypto: { randomUUID: () => '12345678-1234-1234-1234-123456789012', subtle: webcrypto.subtle },
     fetch: async (input, init = {}) => {
-      const url = String(input); calls.push({ url, method: init.method || 'GET' });
+      const url = String(input); calls.push({ url, method: init.method || 'GET', body: init.body ? JSON.parse(init.body) : null });
       if (url.endsWith('/health')) return new Response(JSON.stringify({ ok: health }), { status: 200 });
+      if (new URL(url).pathname === '/v1/suggestions') return new Response(JSON.stringify({ preferredEntryId: null, suggestions: [], totalVotes: 0 }), { status: 200 });
       if (url.endsWith('/v1/vote')) return new Response(
         JSON.stringify(voteStatus === 200 ? { accepted: true, votes: 1 } : { error: 'unavailable' }),
         { status: voteStatus }
@@ -41,6 +43,34 @@ async function load({ health = true, voteStatus = 200, permission = true, online
   await root.DictionaryCommunity.ready;
   return { api: root.DictionaryCommunity, events, calls, root };
 }
+
+const contextSelection = {
+  sourceRange: {
+    beforeText: { raw: 'אמר ליה רב יוסף ' },
+    afterText: { raw: ' מינה שמע מינה' }
+  }
+};
+const changedContext = {
+  sourceRange: {
+    beforeText: { raw: 'תא שמע מתניתין ' },
+    afterText: { raw: ' פלוני אמר ליה' }
+  }
+};
+const contextProbe = await load();
+const features = await contextProbe.api.contextFeatures(contextSelection);
+assert(features.length >= 2 && features.every(x => /^[a-f0-9]{64}$/.test(x.hash)), 'context is reduced to opaque hashes');
+assert.equal(contextProbe.api.hasContext(contextSelection), true);
+assert.equal(contextProbe.api.hasContext({sourceRange:{beforeText:{raw:'מילה '},afterText:{raw:''}}}), false, 'one weak context clue is not enough');
+assert.notDeepEqual(await contextProbe.api.contextFeatures(changedContext), features, 'different local usage produces a different fingerprint');
+const contextualVote = await contextProbe.api.vote('נפקא', 'krupnik:KRU1', {scope:'contextual',selection:contextSelection});
+assert.equal(contextualVote.ok, true);
+const sentContextVote = contextProbe.calls.find(call => call.url.endsWith('/v1/vote'));
+assert.equal(sentContextVote.body.scope, 'contextual');
+assert(sentContextVote.body.contextFeatures.length >= 2);
+assert(!JSON.stringify(sentContextVote.body).includes('אמר ליה רב יוסף'), 'raw nearby words must never leave the device');
+await contextProbe.api.rank('נפקא', [{rid:'KRU1'}], contextSelection);
+const rankedRequest = contextProbe.calls.find(call => new URL(call.url).pathname === '/v1/suggestions');
+assert(new URL(rankedRequest.url).searchParams.has('context'), 'context fingerprint is supplied when ranking similar usage');
 
 const denied = await load({ permission: false });
 assert.equal(denied.api.enabled, false);
@@ -135,6 +165,43 @@ async function offlineQueueRoundTrip(){
  assert.equal(again.pending,0,'retries must not re-submit an acknowledged vote');
 }
 await offlineQueueRoundTrip();
+
+async function contextualOfflineQueueRoundTrip(){
+ const events=new Map(),values=new Map(),sent=[];
+ const root={
+  DICTIONARY_COMMUNITY_API:'https://otzaria-dictionary-community.dakulefsky.workers.dev',navigator:{onLine:false},
+  dispatchEvent:event=>{for(const fn of events.get(event.type)||[])fn(event);},
+  addEventListener:(type,fn)=>{if(!events.has(type))events.set(type,[]);events.get(type).push(fn);},
+  Otzaria:{call:async method=>{if(method==='app.getGrantedPermissions')return {success:true,data:{permissions:['network.access']}};if(method==='app.getConnectivity')return {success:true,data:{isOfflineMode:false,isOnline:root.navigator.onLine}};throw Error(method);},on:()=>{}}
+ };
+ const context={
+  window:root,globalThis:root,URL,Event,AbortSignal,TextEncoder,
+  localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)},
+  crypto:{randomUUID:()=> 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',subtle:webcrypto.subtle},
+  fetch:async(input,init={})=>{
+   const url=String(input);
+   if(url.endsWith('/health'))return new Response(JSON.stringify({ok:true}),{status:200});
+   if(url.endsWith('/v1/vote')){sent.push(JSON.parse(init.body));return new Response(JSON.stringify({accepted:true,votes:1}),{status:200});}
+   throw Error('Unexpected request '+url);
+  }
+ };
+ vm.runInNewContext(source,context);const api=root.DictionaryCommunity;await api.ready;
+ const queued=await api.vote('נפקא','krupnik:KRU1',{scope:'contextual',selection:contextSelection});
+ assert.equal(queued.queued,true,'contextual vote should queue while offline');
+ const saved=JSON.parse(values.get('otzaria-dictionary-community-pending-v1'));
+ assert.equal(saved[0].scope,'contextual');
+ assert(saved[0].contextFeatures.every(x=>/^[a-f0-9]{64}$/.test(x.hash)));
+ assert(!JSON.stringify(saved).includes('אמר ליה רב יוסף'),'offline storage must not retain raw nearby words');
+ root.navigator.onLine=true;
+ for(const fn of events.get('online')||[])await fn();
+ assert.equal(api.pending,0);
+ assert.equal(sent.length,1);
+ assert.equal(sent[0].scope,'contextual');
+ assert(sent[0].contextFeatures.length>=2);
+}
+await contextualOfflineQueueRoundTrip();
+
+
 
 
 async function preservesNewChoiceDuringSync(){
