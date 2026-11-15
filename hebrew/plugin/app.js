@@ -10,15 +10,15 @@ function recordTrail(word){if(trail[trailPosition]===word)return;trail=trail.sli
 function renderMatches(records,word){
  const list=$('matches'),count=$('match-count');if(!list||!count)return;list.replaceChildren();
  const entries=[...new Map(records.map(e=>[e.rid,e])).values()];count.textContent=entries.length+' ערכים';
- if(window.DictionaryCommunity?.enabled&&entries.length){const intro=el('section','','community-feedback community-feedback-he');intro.append(el('span','תרומה לקהילה','community-feedback-kicker'),el('h3','איזה ערך מתאים למילה?','community-feedback-label'),el('p','הבחירה שלך תעזור לשפר את תוצאות החיפוש לכולם.','community-feedback-description'));list.append(intro);}
+ if(window.DictionaryCommunity?.enabled&&entries.length){const intro=el('section','','community-feedback community-feedback-he');intro.append(el('span','תרומה לקהילה','community-feedback-kicker'),el('h3','איזה ערך הוא המשמעות הכללית של המילה?','community-feedback-label'),el('p','הבחירה הזאת מסמנת משמעות כללית, ולא תרגום שמתאים רק לקטע מסוים.','community-feedback-description'));list.append(intro);}
  for(const entry of entries){
   const row=el('div','','community-match-row');
   const open=el('button',entry.word,'result');open.type='button';open.dir='rtl';open.onclick=()=>search(entry.word);row.append(open);
   if(window.DictionaryCommunity?.enabled){
    const preview=entry.parts?.map(part=>part.meaning||part.text).find(Boolean)||'';
    if(preview)row.append(el('small',preview.slice(0,70),'community-match-preview'));
-   const vote=el('button','בחירה','community-vote');vote.type='button';vote.title='בחירת הערך המתאים';vote.setAttribute('aria-label','בחירת הערך '+entry.word+(preview?' — '+preview:''));
-   vote.onclick=async()=>{vote.disabled=true;const status=row.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!status.isConnected)row.append(status);try{const result=await DictionaryCommunity.vote(word,{rid:entry.rid});if(!result.ok&&!result.duplicate){status.textContent=result.reason==='queue_full'?'תור הבחירות הלא־מקוונות מלא. יש להתחבר לרשת ולנסות שוב.':result.reason==='storage'?'לא ניתן לשמור את הבחירה במכשיר.':'לא ניתן לשמור את הבחירה. אפשר לנסות שוב.';vote.disabled=false;return;}status.textContent=result.queued?'הבחירה נשמרה במכשיר ותישלח כשיהיה חיבור לרשת.':result.ok?'תודה. הבחירה נשמרה.':'כבר אישרת את ההתאמה הזאת.';vote.textContent='נבחר';vote.classList.add('is-selected');vote.disabled=true;}catch{status.textContent='אירעה שגיאה. אפשר לנסות שוב.';vote.disabled=false;}};
+   const vote=el('button','משמעות כללית','community-vote');vote.type='button';vote.title='בחירת הערך המתאים';vote.setAttribute('aria-label','בחירת הערך '+entry.word+(preview?' — '+preview:''));
+   vote.onclick=async()=>{vote.disabled=true;const status=row.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!status.isConnected)row.append(status);try{const result=await DictionaryCommunity.vote(word,{rid:entry.rid},{scope:'general'});if(!result.ok&&!result.duplicate){status.textContent=result.reason==='queue_full'?'תור הבחירות הלא־מקוונות מלא. יש להתחבר לרשת ולנסות שוב.':result.reason==='storage'?'לא ניתן לשמור את הבחירה במכשיר.':'לא ניתן לשמור את הבחירה. אפשר לנסות שוב.';vote.disabled=false;return;}status.textContent=result.queued?'הבחירה נשמרה במכשיר ותישלח כשיהיה חיבור לרשת.':result.ok?'תודה. הבחירה נשמרה.':'כבר אישרת את ההתאמה הזאת.';vote.textContent='נבחר';vote.classList.add('is-selected');vote.disabled=true;}catch{status.textContent='אירעה שגיאה. אפשר לנסות שוב.';vote.disabled=false;}};
    vote.classList.add('community-vote-compact');row.append(vote);
   }
   list.append(row);
