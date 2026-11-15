@@ -95,7 +95,7 @@
   const match=/^jastrow-community-vote-(\d)$/.exec(p.itemId||'');
   if(match&&root.DictionaryCommunity?.enabled){
    const candidates=root.JastrowSearch.lookup(root.JASTROW_INDEX,word,3,'length',false).ids;
-   const id=candidates[Number(match[1])],entry=Number.isInteger(id)?root.JASTROW_INDEX.entries[id]:null;
+   const id=candidates[Number(match[1])],entryId=typeof p.param==='string'?p.param:'',entry=entryId?root.JASTROW_INDEX.entries.find(item=>root.DictionaryCommunity.idFor(item)===entryId):(Number.isInteger(id)?root.JASTROW_INDEX.entries[id]:null);
    if(entry){const result=await root.DictionaryCommunity.vote(word,entry,{scope:'context',selection:p.selection||p});if(result.queued)await root.Otzaria.call('ui.showMessage',{message:'Saved on this device — it will sync when you’re online.'});else if(result.ok||result.duplicate)await root.Otzaria.call('ui.showMessage',{message:result.ok?'Thanks — your vote was recorded.':'You already voted for this word.'});else if(result.reason!=='permission')await root.Otzaria.call('ui.showMessage',{message:result.reason==='queue_full'?'Your offline vote queue is full. Reconnect and try again.':'Could not save your vote. Please try again.'});}
   }
  });
