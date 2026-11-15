@@ -12,6 +12,7 @@ on:
       - 'hebrew/plugin/quick-lookup.js'
       - 'hebrew/plugin/availability.js'
       - 'plugin/index.html'
+      - 'plugin/style.css'
       - 'hebrew/plugin/index.html'
       - 'plugin/manifest.json'
       - 'hebrew/plugin/manifest.json'
@@ -58,6 +59,14 @@ jobs:
           node community/test_worker.mjs
           node community/test_client.mjs
           node community/test_context_menu.mjs
+      - name: Check community styles use Otzaria design tokens
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          css = Path("plugin/style.css").read_text(encoding="utf-8")
+          assert "var(--color-outline, #888)" not in css
+          assert "border-radius:999px" not in css
+          PY
       - name: Validate exact HTTPS network allowlists
         run: |
           python - <<'PY'
