@@ -128,7 +128,7 @@ Requires Otzaria 0.9.97 or newer with plugin support. If your browser renames th
 
 ## Validation
 
-The package passes Otzaria's official plugin validator against its live SDK specification. Search, loading, cross-reference navigation, mobile layout, and simulated Otzaria SDK events are tested locally. Actual installation in the native Otzaria application remains to be confirmed on your device. Version 1.2.0 is marked beta for that reason.
+The package passes Otzaria's official plugin validator against its live SDK specification. Search, loading, cross-reference navigation, mobile layout, and simulated Otzaria SDK events are tested locally. Actual installation in the native Otzaria application remains to be confirmed on your device. Version 1.2.1 is marked beta for that reason.
 
 ## Data and licensing
 
