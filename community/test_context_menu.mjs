@@ -27,7 +27,7 @@ async function english() {
     },
     addEventListener:()=>{}
   };
-  const context={window:root,globalThis:root,Otzaria:root.Otzaria,console};
+  const context={window:root,globalThis:root,Otzaria:root.Otzaria,JastrowContext:root.JastrowContext,JastrowSearch:root.JastrowSearch,JASTROW_INDEX:root.JASTROW_INDEX,HebrewLookup:root.HebrewLookup,console};
   vm.runInNewContext(await read('plugin/availability.js'),context);
   vm.runInNewContext(await read('plugin/quick-lookup.js'),context);
   for(const fn of events.get('reader.selection_changed')||[])fn({selection:{renderedSelectedText:'נפקא'}});
