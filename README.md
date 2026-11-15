@@ -4,7 +4,7 @@ Both dictionaries receive a coordinated visual refinement: clearer reading hiera
 
 The Hebrew interface and quick reader lookup now discard stale asynchronous ranking results, so a slower response for an earlier selection cannot replace a newer word. The English and Hebrew right-click vote menus also report when a choice is saved locally rather than already sent to the community. In the English dictionary, the voting panel appears directly above the meanings after a word with dictionary candidates is searched; each option identifies its headword, source and short gloss. In the Hebrew dictionary, the prompt appears above the matching-entry list. Both right-click menus use concise native menu labels.
 
-Validation includes both dictionary suites, Chromium UI suites, and Worker/client/context-menu tests, including a regression for the in-flight queue overwrite race. The next Store versions are English 1.11.8 and Hebrew 1.2.6; publication will occur through the release workflow after merge.
+Validation includes both dictionary suites, Chromium UI suites, and Worker/client/context-menu tests, including a regression for the in-flight queue overwrite race. The next Store versions are English 1.11.8 and Hebrew 1.2.6; publication will occur through the release workflow after merge. Permission snapshots from Otzaria boot/events take precedence over stale asynchronous reads, and context-menu removal is serialized so a late registration cannot survive permission revocation.
 
 # 1.11.1 — clearer quick meanings and complete tentative analyses
 
