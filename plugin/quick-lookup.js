@@ -85,7 +85,7 @@
   if(match&&root.DictionaryCommunity?.enabled){
    const candidates=root.JastrowSearch.lookup(root.JASTROW_INDEX,word,3,'length',false).ids;
    const id=candidates[Number(match[1])],entry=Number.isInteger(id)?root.JASTROW_INDEX.entries[id]:null;
-   if(entry){const result=await root.DictionaryCommunity.vote(word,entry);await root.Otzaria.call('ui.showMessage',{message:result.ok?'Thanks — your choice was shared with the community.':result.duplicate?'You already confirmed this choice.':'Community voting is unavailable right now.'});}
+   if(entry){const result=await root.DictionaryCommunity.vote(word,entry);if(result.ok||result.duplicate)await root.Otzaria.call('ui.showMessage',{message:result.ok?'Thanks — your choice was shared with the community.':'You already confirmed this choice.'});}
   }
  });
 })(typeof window==='undefined'?globalThis:window);
