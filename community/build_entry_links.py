@@ -13,7 +13,7 @@ def read_js(path, marker):
     raw = path.read_text(encoding="utf-8").strip()
     if not raw.startswith(marker):
         raise ValueError(f"Unexpected generated file: {path}")
-    payload = raw[len(marker):].split(";\\n", 1)[0].rstrip(";")
+    payload = raw[len(marker):].split(";\n", 1)[0].rstrip(";")
     return json.loads(payload)
 def main():
     j = read_js(ROOT/"plugin/data/index.js", "window.JASTROW_INDEX=")
@@ -39,6 +39,6 @@ def main():
         alias = link["alias_id"].replace("'", "''")
         canonical = link["canonical_id"].replace("'", "''")
         statements.append("INSERT OR REPLACE INTO entry_links (alias_id, canonical_id, confidence) VALUES ('"+alias+"', '"+canonical+"', 'exact');")
-    output.write_text("\\n".join(statements)+"\\n", encoding="utf-8")
+    output.write_text("\n".join(statements)+"\n", encoding="utf-8")
     print(f"Wrote {len(links)} exact unique links; skipped {ambiguous} ambiguous Jastrow entries. SQL: {output}")
 if __name__ == "__main__": main()
