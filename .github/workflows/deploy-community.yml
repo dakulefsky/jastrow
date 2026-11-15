@@ -1,6 +1,15 @@
 name: Deploy dictionary community API
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'community/worker/**'
+      - 'community/build_entry_links.py'
+      - 'plugin/data/index.js'
+      - 'plugin/data/krupnik-index.js'
+      - 'build_data.py'
+      - 'build_krupnik.py'
 permissions:
   contents: read
 jobs:
