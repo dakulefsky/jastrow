@@ -7,9 +7,9 @@
  let permissionGranted=false,permissionKnown=false,networkAvailable=false,offlineMode=false,syncing=false,permissionRead=null;
  const inflight=new Set();
  const timeoutMs={health:1800,rank:1800,vote:3000};
- function storageGet(key,fallback){try{const value=root.localStorage?.getItem(key);return value===null||value===undefined?fallback:value;}catch{return fallback;}}
- function storageSet(key,value){try{root.localStorage?.setItem(key,value);return true;}catch{return false;}}
- function randomId(){try{if(root.crypto?.randomUUID)return root.crypto.randomUUID();if(root.crypto?.getRandomValues){const bytes=new Uint8Array(16);root.crypto.getRandomValues(bytes);return [...bytes].map(x=>x.toString(16).padStart(2,'0')).join('');}}catch{}return '';}
+ function storageGet(key,fallback){try{const value=localStorage.getItem(key);return value===null||value===undefined?fallback:value;}catch{return fallback;}}
+ function storageSet(key,value){try{localStorage.setItem(key,value);return true;}catch{return false;}}
+ function randomId(){try{if(crypto?.randomUUID)return root.crypto.randomUUID();if(crypto?.getRandomValues){const bytes=new Uint8Array(16);root.crypto.getRandomValues(bytes);return [...bytes].map(x=>x.toString(16).padStart(2,'0')).join('');}}catch{}return '';}
  function voterId(){let id=storageGet(voterKey,'');if(id)return id;id=randomId();if(id&&storageSet(voterKey,id))return id;return '';}
  function normalize(word){return String(word||'').normalize('NFKD').replace(/[\u0591-\u05c7]/g,'').replace(/[^א-ת]/g,'').slice(0,100);}
  function idFor(entry){if(!entry||!(entry.r||entry.rid))return '';return (entry.source==='krupnik'||entry.rid?'krupnik:':'jastrow:')+(entry.r||entry.rid);}
