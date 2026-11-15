@@ -89,3 +89,48 @@ button:disabled{opacity:.5;cursor:default;transform:none}
 .community-vote.is-selected .community-vote-action{color:var(--forest)}
 .community-vote-status{display:block;margin-top:.7rem;font:.7rem/1.5 var(--ui);color:var(--forest)}
 @media(max-width:520px){.community-feedback{padding:.85rem}.community-vote-options{grid-template-columns:1fr}}
+
+
+/* 2026 refinement: calm editorial hierarchy, compact controls and resilient layouts. */
+:root{--surface-raised:color-mix(in srgb,var(--paper) 86%,var(--page));--surface-hover:color-mix(in srgb,var(--color-surface-container) 72%,var(--paper));--border-soft:color-mix(in srgb,var(--line) 78%,transparent);--focus-ring:0 0 0 3px color-mix(in srgb,var(--forest) 18%,transparent)}
+body{min-height:100vh;background:radial-gradient(ellipse at 50% -18rem,color-mix(in srgb,var(--gold) 7%,transparent),transparent 42rem),var(--page)}
+main{width:min(100%,1320px);padding:clamp(18px,3vw,38px) clamp(14px,3.2vw,42px) 28px}
+.masthead{padding-bottom:20px}
+.brand{gap:15px}
+.brand-mark{border-radius:13px;box-shadow:0 2px 9px var(--color-shadow-soft)}
+h1{font-size:clamp(1.65rem,3vw,2.2rem);letter-spacing:-.035em}
+#help-toggle{border-color:var(--border-soft);background:transparent}
+#help-toggle:hover{background:var(--surface-hover)}
+#help{max-width:900px;margin-inline-start:auto;line-height:1.8}
+.search-panel{border-color:var(--border-soft);background:var(--surface-raised);box-shadow:0 10px 30px var(--color-shadow-soft);padding:clamp(15px,2.3vw,24px)}
+.search-heading label{letter-spacing:.01em}
+.input-wrap{background:var(--page);border-color:var(--border-soft)}
+.input-wrap:focus-within{box-shadow:var(--focus-ring)}
+.lookup-button{box-shadow:0 2px 6px color-mix(in srgb,var(--forest) 16%,transparent)}
+.lookup-button:hover{filter:brightness(1.06)}
+#layout{gap:clamp(12px,1.7vw,20px)}
+.matches-panel,.entry-panel{border-color:var(--border-soft);box-shadow:0 6px 24px var(--color-shadow-soft)}
+.matches-panel{padding:17px}
+.entry-panel{padding:clamp(18px,2.8vw,32px)}
+.panel-heading{padding-bottom:12px}
+.panel-heading h2{letter-spacing:.015em}
+.result{border-radius:9px;transition:background .16s,border-color .16s,color .16s}
+.result:hover,.result.active{border-color:color-mix(in srgb,var(--gold) 45%,var(--line));background:var(--surface-hover)}
+.result:focus-visible,.community-vote:focus-visible{outline:0;box-shadow:var(--focus-ring)}
+#entry h2.entry-title{font-size:clamp(2rem,4vw,2.55rem);letter-spacing:-.02em}
+.unified-meanings .meaning-card,.quick-meanings li.meaning-card{border-color:var(--border-soft);border-radius:12px;background:var(--surface-raised);transition:border-color .16s,background .16s}
+.unified-meanings .meaning-card:hover,.quick-meanings li.meaning-card:hover{border-color:color-mix(in srgb,var(--gold) 40%,var(--line))}
+.meaning-number{box-shadow:0 1px 3px var(--color-shadow-soft)}
+.reading-toolbar{gap:9px;padding:9px 0 12px;color:var(--muted)}
+.reading-toolbar button{min-width:34px;padding:6px 9px}
+#recent-lookups button,.definition-history button{border-color:var(--border-soft);background:transparent}
+#recent-lookups button:hover,.definition-history button:hover{background:var(--surface-hover)}
+.community-feedback{border-color:color-mix(in srgb,var(--gold) 34%,var(--line));background:linear-gradient(145deg,var(--surface-raised),var(--page));box-shadow:0 4px 16px var(--color-shadow-soft)}
+.community-vote{min-height:76px}
+.community-vote:focus-visible{border-color:var(--gold)}
+.community-vote-status{padding-inline-start:2px}
+footer{max-width:1320px;margin:24px auto 0;padding-top:14px;border-top:1px solid var(--border-soft);color:var(--muted);font-size:.7rem}
+@media(min-width:1000px){.single-lookup .entry-panel{padding-inline:clamp(24px,4vw,46px)}}
+@media(max-width:760px){main{padding-top:16px}.masthead{gap:12px;padding-bottom:15px}.brand{gap:11px}.brand-mark{width:46px;height:46px;flex-basis:46px}.search-panel{border-radius:13px}.entry-panel{border-radius:13px}#results{max-height:none}.community-vote{min-height:68px}}
+@media(max-width:460px){h1{font-size:1.45rem}.brand-mark{width:40px;height:40px;flex-basis:40px}#help-toggle{padding:8px 10px;font-size:.72rem}.search-heading{align-items:flex-start}.offline-mark{font-size:.62rem}.lookup-button{min-width:0}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
