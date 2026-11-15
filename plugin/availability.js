@@ -37,7 +37,7 @@
       if(job.revision!==revision||!window.DictionaryCommunity?.enabled)continue;
       if(candidates[i]!==undefined){
        const entry=index.entries[candidates[i]],preview=previews.find(x=>x.id===candidates[i])?.meaning||'';
-       const source=entry.source==='krupnik'?'Krupnik':'Jastrow',shortMeaning=String(preview||'').replace(/\s+/g,' ').trim(),title='Vote '+(i+1)+' · '+entry.h+' ('+source+')'+(shortMeaning?' — '+shortMeaning.slice(0,36)+(shortMeaning.length>36?'…':''):'');
+       const source=entry.source==='krupnik'?'Krupnik':'Jastrow',shortMeaning=String(preview||'').replace(/\s+/g,' ').trim(),title='Here · Vote '+(i+1)+' · '+entry.h+' ('+source+')'+(shortMeaning?' — '+shortMeaning.slice(0,36)+(shortMeaning.length>36?'…':''):'');
        await Otzaria.call('reader.addContextMenuItem',{id,title,label:title,contexts:['reader-selection','reader-page-shape-selection'],openPlugin:false,onClickEvent:'reader.context_menu_item_clicked',showWhen:{selectionContainsAny:variants}});
       }else await Otzaria.call('reader.removeContextMenuItem',{id});
      }
