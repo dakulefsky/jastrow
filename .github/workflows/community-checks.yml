@@ -14,6 +14,7 @@ on:
       - 'plugin/index.html'
       - 'plugin/style.css'
       - 'hebrew/plugin/index.html'
+      - 'hebrew/plugin/style.css'
       - 'plugin/manifest.json'
       - 'hebrew/plugin/manifest.json'
   push:
@@ -63,9 +64,10 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          css = Path("plugin/style.css").read_text(encoding="utf-8")
-          assert "var(--color-outline, #888)" not in css
-          assert "border-radius:999px" not in css
+          for name in ("plugin/style.css", "hebrew/plugin/style.css"):
+              css = Path(name).read_text(encoding="utf-8")
+              assert "var(--color-outline, #888)" not in css, name
+              assert "border-radius:999px" not in css, name
           PY
       - name: Validate exact HTTPS network allowlists
         run: |
