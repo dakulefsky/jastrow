@@ -18,8 +18,10 @@
     "reader.open"
   ],
   "network": {
-    "enabled": false,
-    "allowlist": []
+    "enabled": true,
+    "allowlist": [
+      "otzaria-dictionary-community.dakulefsky.workers.dev"
+    ]
   },
   "contributes": {
     "toolTab": {
