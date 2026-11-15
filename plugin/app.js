@@ -128,6 +128,10 @@ function renderCommunityVotes(result,word,target){
  }
  target.append(panel);
 }
+window.addEventListener('dictionary-community-disabled',()=>{
+ document.querySelectorAll('.community-feedback,.community-vote').forEach(node=>node.remove());
+ if(window.Otzaria)for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i})).catch(()=>{});}catch{}}
+});
 async function showTranslations(result,word,serial,target=$('entry'),pageSize=12){
  const panelSerial=entrySerial;
  currentId=null;target.replaceChildren(el('h2',word,'entry-title'));
