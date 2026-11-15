@@ -26,7 +26,7 @@ function renderMatches(records,word){
   if(window.DictionaryCommunity?.enabled){
    const preview=entry.parts?.map(part=>part.meaning||part.text).find(Boolean)||'';
    if(preview)row.append(el('small',preview.slice(0,70),'community-match-preview'));
-   const vote=el('button',contextual?'מתאים כאן':'העדפה כללית','community-vote');vote.type='button';vote.title='בחירת הערך למילה';
+   const controls=el('div','','community-vote-controls');const vote=el('button',contextual?'מתאים כאן':'העדפה כללית','community-vote');vote.type='button';vote.title='בחירת הערך למילה';
    vote.setAttribute('aria-label','בחירת הערך '+entry.word+(preview?' — '+preview:''));
    const submit=async(scope,control)=>{
     control.disabled=true;const status=row.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!status.isConnected)row.append(status);
@@ -38,8 +38,9 @@ function renderMatches(records,word){
     }catch{status.textContent='אירעה שגיאה. אפשר לנסות שוב.';control.disabled=false;}
    };
    vote.onclick=()=>submit(contextual?'contextual':'general',vote);
-   vote.classList.add('community-vote-compact');row.append(vote);
-   if(contextual){const general=el('button','העדפה כללית','community-vote-general');general.type='button';general.title='קביעת העדפה כללית למילה';general.onclick=()=>submit('general',general);row.append(general);}
+   vote.classList.add('community-vote-compact');controls.append(vote);
+   if(contextual){const general=el('button','העדפה כללית','community-vote-general');general.type='button';general.title='קביעת העדפה כללית למילה';general.onclick=()=>submit('general',general);controls.append(general);}
+   row.append(controls);
   }
   list.append(row);
  }
