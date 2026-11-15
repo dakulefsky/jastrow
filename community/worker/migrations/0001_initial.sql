@@ -10,6 +10,6 @@ CREATE TABLE IF NOT EXISTS votes (
   canonical_id TEXT NOT NULL,
   voter_hash TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (surface_word, canonical_id, voter_hash)
+  PRIMARY KEY (surface_word, voter_hash)
 );
 CREATE INDEX IF NOT EXISTS votes_word ON votes(surface_word, canonical_id);
