@@ -3,7 +3,7 @@
  if(!window.Otzaria)return;
  const index=window.JASTROW_INDEX;
  let pending=null,running=false,revision=0,latestPayload=null;
- function removeCommunityItems(){for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i})).catch(()=>{});}catch{}}}
+ function removeCommunityItems(){revision++;pending=null;for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i})).catch(()=>{});}catch{}}}
  if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',removeCommunityItems);
  if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-permission-granted',()=>{if(latestPayload)offer(latestPayload);});
  async function update(){
@@ -30,10 +30,10 @@
      const candidateResult=matched?JastrowSearch.lookup(index,text,3,'length',false):null;
      const candidates=candidateResult?.ids||[];
      const previews=candidateResult&&window.DictionaryQuick?.previewCandidates?await window.DictionaryQuick.previewCandidates(text,candidateResult):[];
-     if(job.revision!==revision)continue;
+     if(job.revision!==revision||!window.DictionaryCommunity?.enabled)continue;
      for(let i=0;i<3;i++){
       const id='jastrow-community-vote-'+i;
-      if(job.revision!==revision)continue;
+      if(job.revision!==revision||!window.DictionaryCommunity?.enabled)continue;
       if(candidates[i]!==undefined){
        const entry=index.entries[candidates[i]],preview=previews.find(x=>x.id===candidates[i])?.meaning||'';
        const source=entry.source==='krupnik'?'Krupnik':'Jastrow',title='Use this match · '+entry.h+' · '+source+(preview?' — '+preview.slice(0,55):'');
