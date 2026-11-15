@@ -123,7 +123,7 @@ function renderCommunityVotes(result,word,target){
  for(const id of result.ids.slice(0,12)){
   const meta=index.entries[id],button=el('button','👍 '+meta.h,'community-vote');
   button.type='button';button.dir='auto';
-  button.onclick=async()=>{button.disabled=true;const outcome=await DictionaryCommunity.vote(word,meta);const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);note.textContent=outcome.ok?'Thanks — your vote was counted.':outcome.duplicate?'You already confirmed this match.':'Community voting is unavailable right now.';button.disabled=false;};
+  button.onclick=async()=>{button.disabled=true;const outcome=await DictionaryCommunity.vote(word,meta);if(!outcome.ok&&!outcome.duplicate){panel.remove();return;}const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);note.textContent=outcome.ok?'Thanks — your vote was counted.':'You already confirmed this match.';button.disabled=false;};
   panel.append(button);
  }
  target.append(panel);
