@@ -44,7 +44,7 @@
     }
     if(res?.success===false&&res.error?.code!=='error.not_found')console.warn('Dictionary filtered lookup registration failed',res.error?.code);
    }
-  }finally{running=false;}
+  }finally{running=false;if(pending)update().catch(()=>console.warn('Dictionary filtered lookup unavailable'));}
  }
  function offer(payload){latestPayload=payload||{};pending={payload:latestPayload,revision:++revision};update().catch(()=>console.warn('Dictionary filtered lookup unavailable'));}
  Otzaria.on('reader.selection_changed',offer);
