@@ -126,7 +126,7 @@ assert.equal(result.preferredEntryId, 'jastrow:JAS1', 'legacy votes must not dis
 // Context votes generalize through overlapping hashed features, but stay separate
 // from general votes and from unrelated contexts.
 const contextA = [feature('exact', 'a'), feature('pair', 'b'), feature('left1', 'c'), feature('right1', 'd'), feature('left2', 'e')];
-const contextB = [feature('exact', 'e'), feature('pair', 'f'), feature('left1', 'c'), feature('right1', 'g'), feature('left2', 'l')];
+const contextB = [feature('exact', 'e'), feature('pair', 'f'), feature('left1', 'c'), feature('right1', 'g'), feature('left2', '4')];
 const contextC = [feature('exact', '8'), feature('pair', '7'), feature('left1', '6'), feature('right1', '5')];
 const keyA = hex('1'), keyB = hex('2'), keyC = hex('3');
 for (const [n, key, features] of [[5,keyA,contextA],[6,keyB,contextB]]) {
