@@ -130,7 +130,8 @@ function renderCommunityVotes(result,word,target,records=[]){
  }
  target.append(panel);
 }
-if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-synced',()=>{document.querySelectorAll('.community-vote-status').forEach(node=>{if(node.textContent.includes('Saved on this device'))node.textContent='Your offline vote has now been sent to the community.';});});\nif(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',()=>{
+if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-synced',()=>{document.querySelectorAll('.community-vote-status').forEach(node=>{if(node.textContent.includes('Saved on this device'))node.textContent='Your offline vote has now been sent to the community.';});});
+if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',()=>{
  document.querySelectorAll('.community-feedback,.community-vote').forEach(node=>node.remove());
  if(window.Otzaria)for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i})).catch(()=>{});}catch{}}
 });
