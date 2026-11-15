@@ -11,7 +11,7 @@
   const match=/^aramaic-hebrew-community-vote-(\d)$/.exec(p.itemId||'');
   if(match&&root.DictionaryCommunity?.enabled){
    const entry=root.HebrewLookup.lookup(word)[Number(match[1])];
-   if(entry){const result=await root.DictionaryCommunity.vote(word,{rid:entry.rid});if(result.queued)await root.Otzaria.call('ui.showMessage',{message:'ההצבעה נשמרה במכשיר ותישלח כשיהיה חיבור לרשת.'});else if(result.ok||result.duplicate)await root.Otzaria.call('ui.showMessage',{message:result.ok?'תודה, הבחירה שותפה עם הקהילה.':'כבר אישרת את ההתאמה הזאת.'});}
+   if(entry){const result=await root.DictionaryCommunity.vote(word,{rid:entry.rid});if(result.queued)await root.Otzaria.call('ui.showMessage',{message:'ההצבעה נשמרה במכשיר ותישלח כשיהיה חיבור לרשת.'});else if(result.ok||result.duplicate)await root.Otzaria.call('ui.showMessage',{message:result.ok?'תודה, ההצבעה נשמרה.':'כבר הצבעת עבור המילה הזאת.'});else if(result.reason!=='permission')await root.Otzaria.call('ui.showMessage',{message:result.reason==='queue_full'?'תור ההצבעות הלא־מקוונות מלא. יש להתחבר לרשת ולנסות שוב.':'לא ניתן לשמור את ההצבעה. אפשר לנסות שוב.'});}
   }
  });
 })(typeof window==='undefined'?globalThis:window);
