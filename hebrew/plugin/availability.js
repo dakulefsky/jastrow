@@ -10,14 +10,16 @@
     if(rev!==revision)return;
     await Otzaria.call(found?'reader.addContextMenuItem':'reader.removeContextMenuItem',found?{id,title,label:title,icon:'book_24_regular',contexts:['reader-selection','reader-page-shape-selection'],openPlugin,showWhen:{selectionContainsAny:[text]}}:{id});
    }
-   const candidates=found&&window.DictionaryCommunity?.enabled?records.slice(0,3):[];
-   for(let i=0;i<3;i++){
-    if(rev!==revision)return;
-    const id='aramaic-hebrew-community-vote-'+i,entry=candidates[i];
-    if(entry){
-     const title='👍 '+entry.word;
-     await Otzaria.call('reader.addContextMenuItem',{id,title,label:title,contexts:['reader-selection','reader-page-shape-selection'],openPlugin:false,onClickEvent:'reader.context_menu_item_clicked',showWhen:{selectionContainsAny:[text]}});
-    }else await Otzaria.call('reader.removeContextMenuItem',{id});
+   if(window.DictionaryCommunity?.enabled){
+    const candidates=found?records.slice(0,3):[];
+    for(let i=0;i<3;i++){
+     if(rev!==revision)return;
+     const id='aramaic-hebrew-community-vote-'+i,entry=candidates[i];
+     if(entry){
+      const title='👍 '+entry.word;
+      await Otzaria.call('reader.addContextMenuItem',{id,title,label:title,contexts:['reader-selection','reader-page-shape-selection'],openPlugin:false,onClickEvent:'reader.context_menu_item_clicked',showWhen:{selectionContainsAny:[text]}});
+     }else await Otzaria.call('reader.removeContextMenuItem',{id});
+    }
    }
   });
  }
