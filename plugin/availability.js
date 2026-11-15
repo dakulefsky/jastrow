@@ -30,9 +30,15 @@
     await Otzaria.call(method,method==='reader.addContextMenuItem'?{...args,id:'jastrow-open',title:'Open dictionary',label:'Open dictionary',openPlugin:true,onClickEvent:'reader.context_menu_item_clicked'}:{id:'jastrow-open'});
     const contextReady=hasContextAnchor(contextSelection)&&(typeof window.DictionaryCommunity?.contextWindow!=='function'||window.DictionaryCommunity.contextWindow(contextSelection,text)?.length>0);
     if(window.DictionaryCommunity?.enabled&&contextReady){
-     const candidateResult=matched?JastrowSearch.lookup(index,text,3,'length',false):null;
-     const candidates=candidateResult?.ids||[];
-     const previews=candidateResult&&window.DictionaryQuick?.previewCandidates?await window.DictionaryQuick.previewCandidates(text,candidateResult):[];
+     const candidateResult=matched?JastrowSearch.lookup(index,text,40,'length',false):null;
+     let candidates=candidateResult?.ids||[];
+     if(candidates.length>1&&typeof window.DictionaryCommunity.rank==='function'){
+      const ranked=await window.DictionaryCommunity.rank(text,candidates.map(id=>index.entries[id]),contextSelection);
+      if(job.revision!==revision)continue;
+      if(ranked.preferredEntryId)candidates=ranked.entries.map(entry=>index.entries.indexOf(entry)).filter(id=>id>=0);
+     }
+     candidates=candidates.slice(0,3);
+     const previews=candidateResult&&window.DictionaryQuick?.previewCandidates?await window.DictionaryQuick.previewCandidates(text,{...candidateResult,ids:candidates}):[];
      if(job.revision!==revision||!window.DictionaryCommunity?.enabled)continue;
      for(let i=0;i<3;i++){
       const id='jastrow-community-vote-'+i;
@@ -40,7 +46,7 @@
       if(candidates[i]!==undefined){
        const entry=index.entries[candidates[i]],preview=previews.find(x=>x.id===candidates[i])?.meaning||'';
        const source=entry.source==='krupnik'?'Krupnik':'Jastrow',shortMeaning=String(preview||'').replace(/\s+/g,' ').trim(),title='Here · Vote '+(i+1)+' · '+entry.h+' ('+source+')'+(shortMeaning?' — '+shortMeaning.slice(0,36)+(shortMeaning.length>36?'…':''):'');
-       await Otzaria.call('reader.addContextMenuItem',{id,title,label:title,contexts:['reader-selection','reader-page-shape-selection'],openPlugin:false,onClickEvent:'reader.context_menu_item_clicked',showWhen:{selectionContainsAny:variants}});
+       await Otzaria.call('reader.addContextMenuItem',{id,title,label:title,param:window.DictionaryCommunity.idFor?.(entry)||'',contexts:['reader-selection','reader-page-shape-selection'],openPlugin:false,onClickEvent:'reader.context_menu_item_clicked',showWhen:{selectionContainsAny:variants}});
       }else await Otzaria.call('reader.removeContextMenuItem',{id});
      }
     }else{
