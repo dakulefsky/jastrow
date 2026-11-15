@@ -4,12 +4,12 @@
  try{const parsed=new URL(API);if(parsed.protocol!=='https:'||parsed.hostname!=='otzaria-dictionary-community.dakulefsky.workers.dev')API='';}catch{API='';}
  const voterKey='otzaria-dictionary-community-voter-v1';
  const queueKey='otzaria-dictionary-community-pending-v1';
- let permissionGranted=false,permissionKnown=false,networkAvailable=false,offlineMode=false,syncing=false,permissionRead=null;
+ let permissionGranted=false,permissionKnown=false,permissionEpoch=0,networkAvailable=false,offlineMode=false,syncing=false,permissionRead=null;
  const inflight=new Set();
  const timeoutMs={health:1800,rank:1800,vote:3000};
  function storageGet(key,fallback){try{const value=localStorage.getItem(key);return value===null||value===undefined?fallback:value;}catch{return fallback;}}
  function storageSet(key,value){try{localStorage.setItem(key,value);return true;}catch{return false;}}
- function randomId(){try{if(crypto?.randomUUID)return root.crypto.randomUUID();if(crypto?.getRandomValues){const bytes=new Uint8Array(16);root.crypto.getRandomValues(bytes);return [...bytes].map(x=>x.toString(16).padStart(2,'0')).join('');}}catch{}return '';}
+ function randomId(){try{if(crypto?.randomUUID)return crypto.randomUUID();if(crypto?.getRandomValues){const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);return [...bytes].map(x=>x.toString(16).padStart(2,'0')).join('');}}catch{}return '';}
  function voterId(){let id=storageGet(voterKey,'');if(id)return id;id=randomId();if(id&&storageSet(voterKey,id))return id;return '';}
  function normalize(word){return String(word||'').normalize('NFKD').replace(/[\u0591-\u05c7]/g,'').replace(/[^א-ת]/g,'').slice(0,100);}
  function idFor(entry){if(!entry||!(entry.r||entry.rid))return '';return (entry.source==='krupnik'||entry.rid?'krupnik:':'jastrow:')+(entry.r||entry.rid);}
@@ -41,6 +41,8 @@
   permissionRead=(async()=>{try{
    const result=await root.Otzaria?.call?.('app.getGrantedPermissions',{});
    if(result?.success!==true||!Array.isArray(result.data?.permissions))return false;
+   const epoch=permissionEpoch;
+   if(epoch!==permissionEpoch)return permissionGranted;
    setPermission(result.data.permissions.includes('network.access'));
    if(!permissionGranted)return false;
    if(await checkHealth())await flushQueue();
@@ -97,9 +99,9 @@
   catch{if(!permissionGranted)return {ok:false,reason:'permission'};markOffline();return enqueue(normalized,entryId,voter);}
  }
  function permissionsFrom(payload){if(Array.isArray(payload?.permissions))return payload.permissions;if(Array.isArray(payload?.data?.permissions))return payload.data.permissions;return null;}
- function permissionChanged(payload){const permissions=permissionsFrom(payload);if(permissions){setPermission(permissions.includes('network.access'));if(permissionGranted)checkHealth().then(ok=>ok&&flushQueue()).catch(()=>{});}else refreshPermissions();}
+ function permissionChanged(payload){const permissions=permissionsFrom(payload);if(permissions){permissionEpoch++;setPermission(permissions.includes('network.access'));if(permissionGranted)checkHealth().then(ok=>ok&&flushQueue()).catch(()=>{});}else refreshPermissions();}
  try{root.Otzaria?.on?.('plugin.permissions_changed',permissionChanged);}catch{}
- try{root.Otzaria?.on?.('plugin.boot',async payload=>{const permissions=permissionsFrom(payload);if(permissions){setPermission(permissions.includes('network.access'));if(permissionGranted&&await checkHealth())await flushQueue();}else await refreshPermissions();});}catch{}
+ try{root.Otzaria?.on?.('plugin.boot',async payload=>{const permissions=permissionsFrom(payload);if(permissions){permissionEpoch++;setPermission(permissions.includes('network.access'));if(permissionGranted&&await checkHealth())await flushQueue();}else await refreshPermissions();});}catch{}
  try{root.addEventListener?.('online',async()=>{if(!permissionKnown)await refreshPermissions();else if(permissionGranted&&await checkHealth())await flushQueue();});}catch{}
  try{root.addEventListener?.('focus',async()=>{if(!permissionKnown)await refreshPermissions();else if(permissionGranted&&await checkHealth())await flushQueue();});}catch{}
  try{root.document?.addEventListener?.('visibilitychange',async()=>{if(root.document.visibilityState==='visible'&&permissionGranted&&await checkHealth())await flushQueue();});}catch{}
