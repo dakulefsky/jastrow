@@ -64,7 +64,6 @@
  }
  root.addEventListener?.('online',async()=>{if(await checkHealth())await flushQueue();});
  root.addEventListener?.('focus',async()=>{if(root.navigator?.onLine!==false&&!networkAvailable&&await checkHealth())await flushQueue();});
- root.addEventListener?.('dictionary-community-enabled',()=>{flushQueue().catch(()=>{});});
  const api={ready,normalize,idFor,rank,vote,flushQueue};
  Object.defineProperties(api,{enabled:{enumerable:true,get:()=>permissionGranted&&(networkAvailable||root.navigator?.onLine===false)},online:{enumerable:true,get:()=>networkAvailable},pending:{enumerable:true,get:pendingCount}});
  root.DictionaryCommunity=api;
