@@ -20,7 +20,7 @@ async function english() {
       lookup:()=>({ids:[0,1,2],prefixMatches:[]}),matchingQuery:()=> 'נפקא'
     },
     JastrowReadingView:{records:async(_index,id)=>[{id,meanings:[{text:'English candidate meaning '+id}]}]},
-    DictionaryCommunity:{enabled:true,ready:Promise.resolve(true),vote:async(word,entry)=>{votes.push({word,entry});if(failVote){root.dispatchEvent(new Event('dictionary-community-disabled'));return {ok:false,duplicate:false};}return {ok:true,duplicate:false};}},
+    DictionaryCommunity:{enabled:true,ready:Promise.resolve(true),vote:async(word,entry)=>{votes.push({word,entry});if(failVote){root.dispatchEvent(new Event('dictionary-community-offline'));return {ok:true,queued:true,duplicate:false};}return {ok:true,duplicate:false};}},
     Otzaria:{
       on:(name,fn)=>{if(!events.has(name))events.set(name,[]);events.get(name).push(fn);},
       call:async(method,args)=>{calls.push({method,args});if(method==='reader.addContextMenuItem')items.set(args.id,args);if(method==='reader.removeContextMenuItem')items.delete(args.id);return {success:true};}
@@ -40,8 +40,11 @@ async function english() {
   assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,1,'successful vote may be acknowledged');
   failVote=true;
   for(const fn of events.get('reader.context_menu_item_clicked')||[])await fn({itemId:'jastrow-community-vote-0',selection:{renderedSelectedText:'נפקא'}});
-  assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,1,'network failure must not mention community voting');
-  assert.equal([...items.keys()].filter(id=>id.startsWith('jastrow-community-vote-')).length,0,'English vote menu items must disappear on service failure');
+  assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,2,'queued vote should be acknowledged accurately');
+  assert.match(calls.filter(x=>x.method==='ui.showMessage').at(-1).args.message,/Saved on this device/);
+  assert.equal([...items.keys()].filter(id=>id.startsWith('jastrow-community-vote-')).length,3,'temporary service failure must leave English vote choices available');
+  root.dispatchEvent(new Event('dictionary-community-disabled'));
+  assert.equal([...items.keys()].filter(id=>id.startsWith('jastrow-community-vote-')).length,0,'actual permission denial must remove English vote choices');
 }
 
 async function hebrew() {
@@ -69,8 +72,11 @@ async function hebrew() {
   assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,1,'successful vote may be acknowledged');
   failVote=true;
   for(const fn of events.get('reader.context_menu_item_clicked')||[])await fn({itemId:'aramaic-hebrew-community-vote-0',selection:{renderedSelectedText:'נפקא'}});
-  assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,1,'network failure must not mention community voting');
-  assert.equal([...items.keys()].filter(id=>id.startsWith('aramaic-hebrew-community-vote-')).length,0,'Hebrew vote menu items must disappear on service failure');
+  assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,2,'queued vote should be acknowledged accurately');
+  assert.match(calls.filter(x=>x.method==='ui.showMessage').at(-1).args.message,/ההצבעה נשמרה במכשיר/);
+  assert.equal([...items.keys()].filter(id=>id.startsWith('aramaic-hebrew-community-vote-')).length,3,'temporary service failure must leave Hebrew vote choices available');
+  root.dispatchEvent(new Event('dictionary-community-disabled'));
+  assert.equal([...items.keys()].filter(id=>id.startsWith('aramaic-hebrew-community-vote-')).length,0,'actual permission denial must remove Hebrew vote choices');
 }
 
 await english();
