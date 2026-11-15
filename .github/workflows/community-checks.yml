@@ -23,8 +23,14 @@ on:
       - 'hebrew/plugin/community.js'
       - 'plugin/app.js'
       - 'plugin/quick-lookup.js'
+      - 'plugin/availability.js'
       - 'hebrew/plugin/app.js'
       - 'hebrew/plugin/quick-lookup.js'
+      - 'hebrew/plugin/availability.js'
+      - 'plugin/index.html'
+      - 'hebrew/plugin/index.html'
+      - 'plugin/manifest.json'
+      - 'hebrew/plugin/manifest.json'
 permissions:
   contents: read
 jobs:
