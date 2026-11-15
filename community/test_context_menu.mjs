@@ -50,11 +50,11 @@ async function english() {
 }
 
 async function hebrew() {
-  const events=new Map(), domEvents=new Map(), calls=[], votes=[], items=new Map();let failVote=false;
+  const events=new Map(), domEvents=new Map(), calls=[], votes=[], items=new Map();let failVote=false,failSave=false;
   const entries=[{word:'נפקא',rid:'KRU0001',parts:[{meaning:'משמעות ראשונה'}]},{word:'נפקא',rid:'KRU0002',parts:[{meaning:'משמעות שנייה'}]},{word:'נפקא',rid:'KRU0003',parts:[{meaning:'משמעות שלישית'}]}];
   const root={
     HebrewLookup:{selectionText:p=>p?.selection?.renderedSelectedText||p?.selectedText||'',lookup:()=>entries},
-    DictionaryCommunity:{enabled:true,ready:Promise.resolve(true),vote:async(word,entry)=>{votes.push({word,entry});if(failVote){root.dispatchEvent(new Event('dictionary-community-offline'));return {ok:true,queued:true,duplicate:false};}return {ok:true,duplicate:false};}},
+    DictionaryCommunity:{enabled:true,ready:Promise.resolve(true),vote:async(word,entry)=>{votes.push({word,entry});if(failVote){root.dispatchEvent(new Event('dictionary-community-offline'));return {ok:true,queued:true,duplicate:false};}if(failSave)return {ok:false,reason:'storage'};return {ok:true,duplicate:false};}},
     Otzaria:{
       on:(name,fn)=>{if(!events.has(name))events.set(name,[]);events.get(name).push(fn);},
       call:async(method,args)=>{calls.push({method,args});if(method==='reader.addContextMenuItem')items.set(args.id,args);if(method==='reader.removeContextMenuItem')items.delete(args.id);return {success:true};}
