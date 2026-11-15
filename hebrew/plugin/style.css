@@ -75,7 +75,7 @@ button:disabled{opacity:.5;cursor:default;transform:none}
 .community-feedback-kicker{display:block;font:700 .58rem/1.4 var(--ui);letter-spacing:.1em;color:var(--gold);margin-bottom:.25rem}
 .community-feedback-label{font:600 .9rem/1.4 var(--ui);color:var(--ink);margin:0 0 .2rem}
 .community-feedback-description{font:.7rem/1.5 var(--ui);color:var(--muted);margin:0}
-.community-match-row{padding:.35rem 0;border-bottom:1px solid color-mix(in srgb,var(--line) 65%,transparent)}
+.community-match-row{display:flex;flex-wrap:wrap;align-items:center;padding:.35rem 0;border-bottom:1px solid color-mix(in srgb,var(--line) 65%,transparent)}
 .community-match-row:last-child{border-bottom:0}
 .community-match-row>.result{flex:1;min-width:0}
 .community-match-row .community-vote{display:inline-flex;flex:none;align-items:center;justify-content:center;min-width:65px;padding:.35rem .65rem;border-radius:var(--radius-pill);font:600 .68rem/1.3 var(--ui);background:transparent;color:var(--forest);border:1px solid var(--line)}
