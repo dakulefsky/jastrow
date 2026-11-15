@@ -1,12 +1,13 @@
 (function(root){
  'use strict';
- const API=String(root.DICTIONARY_COMMUNITY_API||'').replace(/\\/$/,'');
+ let API=String(root.DICTIONARY_COMMUNITY_API||'');
+ while(API.endsWith('/'))API=API.slice(0,-1);
  const key='otzaria-dictionary-community-voter-v1';
  // Fail closed: no community UI unless the host grants network access and the
  // configured service answers its health check. All failures are silent.
  let networkAvailable=false;
  function voterId(){try{let id=localStorage.getItem(key);if(!id){id=crypto.randomUUID();localStorage.setItem(key,id);}return id;}catch{return '';}}
- function normalize(word){return String(word||'').normalize('NFKD').replace(/[\\u0591-\\u05c7]/g,'').replace(/[^א-ת]/g,'').slice(0,100);}
+ function normalize(word){return String(word||'').normalize('NFKD').replace(/[\u0591-\u05c7]/g,'').replace(/[^א-ת]/g,'').slice(0,100);}
  function idFor(entry){if(!entry||!(entry.r||entry.rid))return '';return (entry.source==='krupnik'||entry.rid?'krupnik:':'jastrow:')+(entry.r||entry.rid);}
  function disable(){networkAvailable=false;}
  const ready=(async()=>{if(!API)return false;try{const response=await fetch(API+'/health',{headers:{Accept:'application/json'},signal:AbortSignal.timeout(1800)});if(!response.ok)return false;const data=await response.json();networkAvailable=data.ok===true;return networkAvailable;}catch{return false;}})();
