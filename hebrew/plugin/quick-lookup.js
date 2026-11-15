@@ -7,7 +7,7 @@
  if(root.Otzaria)root.Otzaria.on('reader.context_menu_item_clicked',async p=>{
   const word=root.HebrewLookup.selectionText(p);
   if(p.itemId==='aramaic-hebrew-lookup'){show(word);return;}
-  const match=/^aramaic-hebrew-community-vote-(\\d)$/.exec(p.itemId||'');
+  const match=/^aramaic-hebrew-community-vote-(\d)$/.exec(p.itemId||'');
   if(match&&root.DictionaryCommunity?.enabled){
    const entry=root.HebrewLookup.lookup(word)[Number(match[1])];
    if(entry){const result=await root.DictionaryCommunity.vote(word,{rid:entry.rid});await root.Otzaria.call('ui.showMessage',{message:result.ok?'תודה, הבחירה שותפה עם הקהילה.':result.duplicate?'כבר אישרת את ההתאמה הזאת.':'ההצבעה הקהילתית אינה זמינה כרגע.'});}
