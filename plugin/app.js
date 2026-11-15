@@ -116,18 +116,24 @@ async function searchWords(words,serial){
   await showTranslations(result,word,serial,target,3);
  }));
 }
-function renderCommunityVotes(result,word,target){
+function renderCommunityVotes(result,word,target,records=[]){
  if(!window.DictionaryCommunity?.enabled||!result.ids.length)return;
  const panel=el('section',undefined,'community-feedback');
  panel.append(el('p','Which dictionary entry fits this word?','community-feedback-label'));
  for(const id of result.ids.slice(0,12)){
-  const meta=index.entries[id],button=el('button','👍 '+meta.h,'community-vote');
-  button.type='button';button.dir='auto';
-  button.onclick=async()=>{button.disabled=true;const outcome=await DictionaryCommunity.vote(word,meta);const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);note.textContent=outcome.ok?'Thanks — your vote was counted.':outcome.duplicate?'You already confirmed this match.':'Community voting is unavailable right now.';button.disabled=false;};
+  const meta=index.entries[id],record=records.find(item=>item.id===id),preview=record?.meanings?.find(item=>item.text)?.text||'';
+  const source=meta.source==='krupnik'?'Krupnik':'Jastrow',label='👍 '+meta.h+' · '+source+(preview?' — '+preview.slice(0,55):'');
+  const button=el('button',label,'community-vote');
+  button.type='button';button.dir='auto';button.title=label;button.setAttribute('aria-label',label);
+  button.onclick=async()=>{button.disabled=true;const outcome=await DictionaryCommunity.vote(word,meta);if(!outcome.ok&&!outcome.duplicate){panel.remove();return;}const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);note.textContent=outcome.ok?'Thanks — your vote was counted.':'You already confirmed this match.';button.disabled=false;};
   panel.append(button);
  }
  target.append(panel);
 }
+if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',()=>{
+ document.querySelectorAll('.community-feedback,.community-vote').forEach(node=>node.remove());
+ if(window.Otzaria)for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i})).catch(()=>{});}catch{}}
+});
 async function showTranslations(result,word,serial,target=$('entry'),pageSize=12){
  const panelSerial=entrySerial;
  currentId=null;target.replaceChildren(el('h2',word,'entry-title'));
@@ -143,7 +149,7 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
  if(serial!==requestSerial||panelSerial!==entrySerial)return;
  const expanded=items.flat(),records=expanded.filter(x=>!x.error);
  target.append(DictionaryMeanings.render(records,word,result.kind==='phrase'?index.phraseNotes:{}));
- renderCommunityVotes(result,word,target);
+ renderCommunityVotes(result,word,target,records);
  for(const failed of expanded.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
  if(result.total>ids.length){const more=el('button','More matching entries');more.type='button';more.onclick=()=>{limit+=60;search(word,true);};target.append(more);}
 }
@@ -216,3 +222,4 @@ setStatus('Ready · Search with or without nekudos.');
 renderTrail();
 function readEntryLink(){try{const p=new URLSearchParams(location.hash.slice(1)),id=Number(p.get('entry'));if(p.get('word')&&JastrowSearch.splitWords(p.get('word')).length){search(p.get('word'));return;}if(p.has('entry')&&Number.isInteger(id)&&id>=0&&id<index.entries.length){requestSerial++;query=p.get('word')||'';$('query').value=query;showEntry(id);}}catch{}}
 window.addEventListener('hashchange',readEntryLink);readEntryLink();
+window.DictionaryCommunity?.ready?.then(()=>{if(window.DictionaryCommunity.enabled&&query)search(query,true);}).catch(()=>{});

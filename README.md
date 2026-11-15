@@ -96,7 +96,7 @@ Validation: `python3 package.py`, then `node test_search.cjs`, `node test_contex
 
 # Jastrow for Otzaria — offline dictionary
 
-## Version 1.2.0
+## Version 1.2.1
 
 The standalone preview runs the packaged application with all dictionary chunks embedded. Quick meanings remain verbatim source phrases; each has a “Read in context” control opening the complete scholarly entry. Academic detail stays in its dropdown. This extraction is a reading aid, not a new translation or a claim that an isolated phrase explains every sense.
 
@@ -128,7 +128,7 @@ Requires Otzaria 0.9.97 or newer with plugin support. If your browser renames th
 
 ## Validation
 
-The package passes Otzaria's official plugin validator against its live SDK specification. Search, loading, cross-reference navigation, mobile layout, and simulated Otzaria SDK events are tested locally. Actual installation in the native Otzaria application remains to be confirmed on your device. Version 1.2.0 is marked beta for that reason.
+The package passes Otzaria's official plugin validator against its live SDK specification. Search, loading, cross-reference navigation, mobile layout, and simulated Otzaria SDK events are tested locally. Actual installation in the native Otzaria application remains to be confirmed on your device. Version 1.2.1 is marked beta for that reason.
 
 ## Data and licensing
 

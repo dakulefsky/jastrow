@@ -7,17 +7,18 @@ This is an optional, privacy-minimal community ranking service for the English J
 - A vote is scoped to the normalized selected surface word and a canonical source entry.
 - Krupnik records use `krupnik:KRU…`; Jastrow records use `jastrow:<source rid>`.
 - `entry_links` maps only high-confidence Jastrow-to-Krupnik links to the Krupnik canonical ID.
-- No selected sentence, page text, account name, email, or device identifier is sent. The client creates a random per-install voter token; the service stores only its SHA-256 hash.
+- No selected sentence, page text, account name, email, hardware ID, or account identifier is sent. The client sends a random per-install voter token with each vote; the service stores only its SHA-256 hash. The token is a resettable anonymous installation key, not a hardware ID or account identity.
 - Each installation has one active vote per selected surface word and can change its choice. Votes are not transferable between different surface words.
-- A community result is promoted only after at least 3 votes and at least 65% of votes for that candidate. Alternatives remain available.
+- A community result is promoted only after at least 3 votes and at least 65% of **all** votes for that normalized word. Votes for candidates omitted from the current lookup still count in the denominator. Alternatives remain available.
 - Original dictionary records and definitions are never modified.
+- Votes are an anonymous community signal, not scholarly verification or an abuse-proof poll. There is no login or robust identity/rate-limit layer; a determined person can reset the per-install token and vote again.
 
 ## Deploy
 
 1. Add GitHub Actions repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
-2. Run **Actions → Deploy dictionary community API → Run workflow**. The workflow creates/reuses the D1 database, applies migrations, generates and imports exact unique Jastrow/Krupnik cross-links, and deploys the Worker.
-3. Copy the Worker URL from the workflow output. Set it in both plugins' `community-config.js` files, then add its exact host to each plugin manifest network allowlist and CSP `connect-src`.
-4. Run the plugin validation workflows. Community lookup remains disabled until the URL and network permissions are configured.
+2. The Worker deploys automatically when backend or cross-link source files change on `main`. You can also run **Actions → Deploy dictionary community API → Run workflow** manually. The workflow creates/reuses the D1 database, applies migrations, generates and imports exact unique Jastrow/Krupnik cross-links, deploys the Worker, and verifies its health endpoint.
+3. The current deployed endpoint is `https://otzaria-dictionary-community.dakulefsky.workers.dev`. The open integration PR configures this endpoint in both plugin builds, restricts the manifest allowlist, and narrows the browser CSP to this host.
+4. Merge only after the English and Hebrew validation workflows pass. Existing installed plugin versions do not begin using the API until users install the updated builds and grant the optional network permission.
 
 
-No Worker is deployed and no votes are collected until a Cloudflare database and Worker URL are configured. The API has no paid dependency, but Cloudflare account limits and pricing apply.
+The Worker and D1 database have been deployed. The current `main` plugin builds remain offline-only until the integration PR is merged and published. The API has no paid dependency, but Cloudflare account limits and pricing apply.

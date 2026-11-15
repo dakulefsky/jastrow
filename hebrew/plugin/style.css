@@ -67,4 +67,4 @@ button:disabled{opacity:.5;cursor:default;transform:none}
 .community-vote:disabled{opacity:.55;cursor:wait}
 .community-vote-status{font-size:.78rem;color:var(--color-muted,inherit)}
 .community-match-row{display:flex;align-items:center;gap:.35rem}
-.community-match-row>.result{flex:1;min-width:0}
+.community-match-row>.result{flex:1;min-width:0}.community-match-preview{flex:1;min-width:0;font-size:.76rem;color:var(--color-muted,inherit);overflow:hidden;text-overflow:ellipsis}

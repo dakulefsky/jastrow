@@ -35,6 +35,17 @@
   if(communityPreferred&&merged.length)merged[0].communityPreferred=true;
   return merged;
  }
+ async function previewCandidates(word,result){
+  const index=root.JASTROW_INDEX,S=root.JastrowSearch;
+  return Promise.all((result?.ids||[]).map(async id=>{
+   try{
+    const lookupWord=S.matchingQuery(index,result.prefixMatches,id,word);
+    const records=await root.JastrowReadingView.records(index,id,load,word,{lookupWord});
+    const meaning=records.flatMap(record=>record.meanings||[]).find(item=>item.text)?.text||'';
+    return {id,meaning};
+   }catch{return {id,meaning:''};}
+  }));
+ }
  async function meanings(word){
   return (await results(word)).map(item=>(item.selectedWord?item.selectedWord+': ':'')+item.text);
  }
@@ -77,7 +88,7 @@
    }
   }
  }
- root.DictionaryQuick={results,meanings,message,show};
+ root.DictionaryQuick={results,meanings,message,show,previewCandidates};
  if(root.Otzaria)root.Otzaria.on('reader.context_menu_item_clicked',async p=>{
   const word=root.JastrowContext.selectionText(p);
   if(p.itemId==='jastrow-lookup'){await show(word);return;}
@@ -85,7 +96,7 @@
   if(match&&root.DictionaryCommunity?.enabled){
    const candidates=root.JastrowSearch.lookup(root.JASTROW_INDEX,word,3,'length',false).ids;
    const id=candidates[Number(match[1])],entry=Number.isInteger(id)?root.JASTROW_INDEX.entries[id]:null;
-   if(entry){const result=await root.DictionaryCommunity.vote(word,entry);await root.Otzaria.call('ui.showMessage',{message:result.ok?'Thanks — your choice was shared with the community.':result.duplicate?'You already confirmed this choice.':'Community voting is unavailable right now.'});}
+   if(entry){const result=await root.DictionaryCommunity.vote(word,entry);if(result.ok||result.duplicate)await root.Otzaria.call('ui.showMessage',{message:result.ok?'Thanks — your choice was shared with the community.':'You already confirmed this choice.'});}
   }
  });
 })(typeof window==='undefined'?globalThis:window);

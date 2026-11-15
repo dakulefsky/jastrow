@@ -7,8 +7,14 @@ on:
       - 'hebrew/plugin/community.js'
       - 'plugin/app.js'
       - 'plugin/quick-lookup.js'
+      - 'plugin/availability.js'
       - 'hebrew/plugin/app.js'
       - 'hebrew/plugin/quick-lookup.js'
+      - 'hebrew/plugin/availability.js'
+      - 'plugin/index.html'
+      - 'hebrew/plugin/index.html'
+      - 'plugin/manifest.json'
+      - 'hebrew/plugin/manifest.json'
   push:
     branches: [community-dictionary-voting]
     paths:
@@ -17,8 +23,14 @@ on:
       - 'hebrew/plugin/community.js'
       - 'plugin/app.js'
       - 'plugin/quick-lookup.js'
+      - 'plugin/availability.js'
       - 'hebrew/plugin/app.js'
       - 'hebrew/plugin/quick-lookup.js'
+      - 'hebrew/plugin/availability.js'
+      - 'plugin/index.html'
+      - 'hebrew/plugin/index.html'
+      - 'plugin/manifest.json'
+      - 'hebrew/plugin/manifest.json'
 permissions:
   contents: read
 jobs:
@@ -40,10 +52,15 @@ jobs:
           node --check hebrew/plugin/quick-lookup.js
           node --check plugin/app.js
           node --check hebrew/plugin/app.js
+          node --check plugin/availability.js
+          node --check hebrew/plugin/availability.js
           node --input-type=module --check < community/worker/src/index.js
           node community/test_worker.mjs
+          node community/test_client.mjs
+          node community/test_context_menu.mjs
       - name: Check cross-link generator syntax
         run: |
           python -m py_compile community/build_entry_links.py
           python community/build_entry_links.py
           test -s community/entry-links.sql
+          grep -q '^DELETE FROM entry_links;' community/entry-links.sql

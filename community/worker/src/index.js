@@ -36,22 +36,29 @@ export default {
       const ids = (url.searchParams.get("ids") || "").split(",").filter(validId).slice(0, 40);
       if (!word || !ids.length) return json({ word, suggestions: [] });
       const canonical = await canonicalize(env.DB, ids);
-      const keys = [...new Set([...canonical.values()])];
-      const marks = keys.map(() => "?").join(",");
-      const rows = await env.DB.prepare(`SELECT canonical_id, COUNT(*) AS votes FROM votes WHERE surface_word = ? AND canonical_id IN (${marks}) GROUP BY canonical_id`).bind(word, ...keys).all();
+      // Count every vote for this surface word, not just the candidates in
+      // this particular lookup. Otherwise a truncated candidate list can
+      // manufacture a false 65% consensus.
+      const rows = await env.DB.prepare(`SELECT canonical_id, COUNT(*) AS votes FROM votes WHERE surface_word = ? GROUP BY canonical_id`).bind(word).all();
       const counts = new Map((rows.results || []).map(row => [row.canonical_id, Number(row.votes)]));
       const suggestions = ids.map(id => ({ entryId: id, canonicalId: canonical.get(id), votes: counts.get(canonical.get(id)) || 0 }))
         .sort((a,b) => b.votes - a.votes);
-      const total = keys.reduce((n,key) => n + (counts.get(key) || 0), 0);
+      const total = [...counts.values()].reduce((n,count) => n + count, 0);
       const winner = suggestions[0];
       const confident = !!winner && winner.votes >= 3 && winner.votes / Math.max(total, 1) >= 0.65;
       return json({ word, suggestions, preferredEntryId: confident ? winner.entryId : null, totalVotes: total });
     }
     if (url.pathname === "/v1/vote" && request.method === "POST") {
-      const length = Number(request.headers.get("Content-Length") || 0);
-      if (length > 2048) return json({ error: "payload_too_large" }, 413);
+      // Content-Length is optional for streamed/chunked requests; enforce the
+      // cap against the actual body bytes before parsing.
+      const declaredLength = Number(request.headers.get("Content-Length") || 0);
+      if (declaredLength > 2048) return json({ error: "payload_too_large" }, 413);
+      let raw;
+      try { raw = await request.text(); } catch { return json({ error: "invalid_json" }, 400); }
+      if (new TextEncoder().encode(raw).byteLength > 2048) return json({ error: "payload_too_large" }, 413);
       let body;
-      try { body = await request.json(); } catch { return json({ error: "invalid_json" }, 400); }
+      try { body = JSON.parse(raw); } catch { return json({ error: "invalid_json" }, 400); }
+      if (!body || typeof body !== "object" || Array.isArray(body)) return json({ error: "invalid_vote" }, 400);
       const word = normalizeWord(body.word), entryId = body.entryId, voterId = body.voterId;
       if (!word || !validId(entryId) || typeof voterId !== "string" || !/^[A-Za-z0-9-]{20,80}$/.test(voterId))
         return json({ error: "invalid_vote" }, 400);

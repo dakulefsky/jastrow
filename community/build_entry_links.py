@@ -47,7 +47,9 @@ def main():
         elif matches:
             ambiguous += 1
     output = ROOT/"community"/"entry-links.sql"
-    statements = ["-- Exact, unique Jastrow/Krupnik headword links only."]
+    # Replace the generated mapping set on every deployment so links that
+    # become ambiguous or disappear from source data cannot remain stale.
+    statements = ["DELETE FROM entry_links;", "-- Exact, unique Jastrow/Krupnik headword links only."]
     for link in links:
         alias = link["alias_id"].replace("'", "''")
         canonical = link["canonical_id"].replace("'", "''")
