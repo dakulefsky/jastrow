@@ -54,6 +54,9 @@
  }
  async function show(word){
   const current=++serial;
+  if(String(word).trim().toLowerCase()==='who created this?'){
+   await root.Otzaria.call('ui.showMessage',{message:'Daniel Avrahom'});return;
+  }
   try{
    const items=await results(word);if(current!==serial)return;
    if(!items.length){
