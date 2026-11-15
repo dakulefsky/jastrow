@@ -94,27 +94,28 @@ result=await (await call('/v1/suggestions?word=%D7%A0%D7%A4%D7%A7%D7%90&ids=jast
 assert.equal(result.preferredEntryId,'krupnik:KRU2','community consensus should move when voters change their choice');
 
 const feature = (char, weight) => ({hash:char.repeat(64),weight});
+const contextWord='הקשר';
 const contextA=[feature('a',1),feature('b',3),feature('c',4)];
 const contextB=[feature('d',1),feature('e',3),feature('f',4)];
 async function voteContext(entryId,voter,features,word='נפקא'){
   return call('/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({word,entryId,voterId:voter,scope:'contextual',contextFeatures:features})});
 }
-await voteContext('krupnik:KRU2','context-a-1-abcdefghijklmnop',contextA);
-let contextual=await (await call('/v1/suggestions?word=%D7%A0%D7%A4%D7%A7%D7%90&ids=jastrow%3AJAS1%2Ckrupnik%3AKRU2&context='+encodeURIComponent(JSON.stringify(contextA)))).json();
+await voteContext('krupnik:KRU2','context-a-1-abcdefghijklmnop',contextA,contextWord);
+let contextual=await (await call('/v1/suggestions?word=%D7%94%D7%A7%D7%A9%D7%A8&ids=jastrow%3AJAS1%2Ckrupnik%3AKRU2&context='+encodeURIComponent(JSON.stringify(contextA)))).json();
 assert.equal(contextual.contextualPreferredEntryId,null,'one contextual vote must not reorder entries');
-await voteContext('krupnik:KRU2','context-a-2-abcdefghijklmnop',contextA);
+await voteContext('krupnik:KRU2','context-a-2-abcdefghijklmnop',contextA,contextWord);
 contextual=await (await call('/v1/suggestions?word=%D7%A0%D7%A4%D7%A7%D7%90&ids=jastrow%3AJAS1%2Ckrupnik%3AKRU2&context='+encodeURIComponent(JSON.stringify(contextA)))).json();
 assert.equal(contextual.contextualPreferredEntryId,'krupnik:KRU2','two installations agreeing in this usage should promote the contextual match');
 assert.equal(contextual.preferenceScope,'contextual');
 assert.equal(contextual.totalVotes,0,'contextual votes must never inflate the general vote pool');
-await voteContext('jastrow:JAS1','context-b-1-abcdefghijklmnop',contextB);
-await voteContext('jastrow:JAS1','context-b-2-abcdefghijklmnop',contextB);
-const contextualB=await (await call('/v1/suggestions?word=%D7%A0%D7%A4%D7%A7%D7%90&ids=jastrow%3AJAS1%2Ckrupnik%3AKRU2&context='+encodeURIComponent(JSON.stringify(contextB)))).json();
+await voteContext('jastrow:JAS1','context-b-1-abcdefghijklmnop',contextB,contextWord);
+await voteContext('jastrow:JAS1','context-b-2-abcdefghijklmnop',contextB,contextWord);
+const contextualB=await (await call('/v1/suggestions?word=%D7%94%D7%A7%D7%A9%D7%A8&ids=jastrow%3AJAS1%2Ckrupnik%3AKRU2&context='+encodeURIComponent(JSON.stringify(contextB)))).json();
 assert.equal(contextualB.contextualPreferredEntryId,'jastrow:JAS1','the same word can favor a different meaning in a different context');
-const contextualNone=await (await call('/v1/suggestions?word=%D7%A0%D7%A4%D7%A7%D7%90&ids=jastrow%3AJAS1%2Ckrupnik%3AKRU2&context='+encodeURIComponent(JSON.stringify([feature('9',1),feature('8',3),feature('7',4)])))).json();
+const contextualNone=await (await call('/v1/suggestions?word=%D7%94%D7%A7%D7%A9%D7%A8&ids=jastrow%3AJAS1%2Ckrupnik%3AKRU2&context='+encodeURIComponent(JSON.stringify([feature('9',1),feature('8',3),feature('7',4)])))).json();
 assert.equal(contextualNone.contextualPreferredEntryId,null,'unrelated surrounding words must not inherit a vote');
-const contextDuplicate=await (await voteContext('krupnik:KRU2','context-a-1-abcdefghijklmnop',contextA)).json();
+const contextDuplicate=await (await voteContext('krupnik:KRU2','context-a-1-abcdefghijklmnop',contextA,contextWord)).json();
 assert.equal(contextDuplicate.duplicate,true,'one installation can only vote once for the same contextual use');
 const invalidContext=await call('/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:'נפקא',entryId:'krupnik:KRU1',voterId:'context-invalid-abcdefghijklmnop',scope:'contextual',contextFeatures:[{hash:'not-a-hash',weight:1}]})});
 assert.equal(invalidContext.status,400,'context hashes must be validated before storage');
