@@ -128,7 +128,7 @@ function renderCommunityVotes(result,word,target){
  }
  target.append(panel);
 }
-window.addEventListener('dictionary-community-disabled',()=>{
+if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',()=>{
  document.querySelectorAll('.community-feedback,.community-vote').forEach(node=>node.remove());
  if(window.Otzaria)for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i})).catch(()=>{});}catch{}}
 });
