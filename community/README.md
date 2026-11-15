@@ -17,8 +17,8 @@ This is an optional, privacy-minimal community ranking service for the English J
 
 1. Add GitHub Actions repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
 2. The Worker deploys automatically when backend or cross-link source files change on `main`. You can also run **Actions → Deploy dictionary community API → Run workflow** manually. The workflow creates/reuses the D1 database, applies migrations, generates and imports exact unique Jastrow/Krupnik cross-links, deploys the Worker, and verifies its health endpoint.
-3. The current deployed endpoint is `https://otzaria-dictionary-community.dakulefsky.workers.dev`. The open integration PR configures this endpoint in both plugin builds, restricts the manifest allowlist, and narrows the browser CSP to this host.
-4. Merge only after the English and Hebrew validation workflows pass. Existing installed plugin versions do not begin using the API until users install the updated builds and grant the optional network permission.
+3. The current deployed endpoint is `https://otzaria-dictionary-community.dakulefsky.workers.dev`. The merged integration configures this endpoint in both plugin builds, uses the full HTTPS URL in each manifest network allowlist, and restricts the browser CSP to this host.
+4. The store release workflow validates, builds, and publishes both plugin packages when the changes reach `main`. Users must install the updated packages and grant the optional network permission before community features become available.
 
 
-The Worker and D1 database have been deployed. The current `main` plugin builds remain offline-only until the integration PR is merged and published. The API has no paid dependency, but Cloudflare account limits and pricing apply.
+The Worker and D1 database are deployed, and the Worker health check passes. The plugin integration is merged; the manifest URL-format hotfix is being validated before the updated packages can publish. Existing installed plugin versions remain offline-only until users install the updated builds and grant the optional network permission. The API has no paid dependency, but Cloudflare account limits and pricing apply.
