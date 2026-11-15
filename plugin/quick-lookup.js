@@ -80,7 +80,7 @@
  root.DictionaryQuick={results,meanings,message,show};
  if(root.Otzaria)root.Otzaria.on('reader.context_menu_item_clicked',async p=>{
   const word=root.JastrowContext.selectionText(p);
-  if(p.itemId==='jastrow-lookup'){show(word);return;}
+  if(p.itemId==='jastrow-lookup'){await show(word);return;}
   const match=/^jastrow-community-vote-(\d)$/.exec(p.itemId||'');
   if(match&&root.DictionaryCommunity?.enabled){
    const candidates=root.JastrowSearch.lookup(root.JASTROW_INDEX,word,3,'length',false).ids;
