@@ -142,7 +142,8 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
  }catch{return [{id,error:true}];}}));
  if(serial!==requestSerial||panelSerial!==entrySerial)return;
  const expanded=items.flat(),records=expanded.filter(x=>!x.error);
- target.append(DictionaryMeanings.render(records,word,result.kind==='phrase'?index.phraseNotes:{}));\n renderCommunityVotes(result,word,target);
+ target.append(DictionaryMeanings.render(records,word,result.kind==='phrase'?index.phraseNotes:{}));
+ renderCommunityVotes(result,word,target);
  for(const failed of expanded.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
  if(result.total>ids.length){const more=el('button','More matching entries');more.type='button';more.onclick=()=>{limit+=60;search(word,true);};target.append(more);}
 }
