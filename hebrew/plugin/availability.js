@@ -21,14 +21,20 @@
     await Otzaria.call(found?'reader.addContextMenuItem':'reader.removeContextMenuItem',found?{id,title,label:title,icon:'book_24_regular',contexts:['reader-selection','reader-page-shape-selection'],openPlugin,showWhen:{selectionContainsAny:[text]}}:{id});
    }
    if(window.DictionaryCommunity?.enabled&&contextReady&&rev===revision){
-    const candidates=found?records.slice(0,3):[];
+    let candidates=found?records.slice(0,40):[];
+    if(candidates.length>1&&typeof window.DictionaryCommunity.rank==='function'){
+     const ranked=await window.DictionaryCommunity.rank(text,candidates.map(entry=>({rid:entry.rid})),contextSelection);
+     if(rev!==revision)return;
+     if(ranked.preferredEntryId){const order=new Map(ranked.entries.map((entry,i)=>[entry.rid,i]));candidates=[...candidates].sort((a,b)=>(order.get(a.rid)??999)-(order.get(b.rid)??999));}
+    }
+    candidates=candidates.slice(0,3);
     for(let i=0;i<3;i++){
      if(rev!==revision||!window.DictionaryCommunity?.enabled)return;
      const id='aramaic-hebrew-community-vote-'+i,entry=candidates[i];
      if(entry){
       const preview=entry.parts?.map(part=>part.meaning||part.text).find(Boolean)||'';
      const shortMeaning=String(preview||'').replace(/\s+/g,' ').trim(),title='כאן · הצבעה '+(i+1)+' · '+entry.word+(shortMeaning?' — '+shortMeaning.slice(0,36)+(shortMeaning.length>36?'…':''):'');
-      await Otzaria.call('reader.addContextMenuItem',{id,title,label:title,contexts:['reader-selection','reader-page-shape-selection'],openPlugin:false,onClickEvent:'reader.context_menu_item_clicked',showWhen:{selectionContainsAny:[text]}});
+      await Otzaria.call('reader.addContextMenuItem',{id,title,label:title,param:'krupnik:'+entry.rid,contexts:['reader-selection','reader-page-shape-selection'],openPlugin:false,onClickEvent:'reader.context_menu_item_clicked',showWhen:{selectionContainsAny:[text]}});
      }else await Otzaria.call('reader.removeContextMenuItem',{id});
     }
    }else{
