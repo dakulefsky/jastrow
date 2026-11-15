@@ -139,7 +139,7 @@ function renderCommunityVotes(result,word,target,records=[]){
   options.append(button);
  }
  panel.append(options);
- target.append(panel);
+ const meanings=target.querySelector('.unified-meanings');if(meanings)target.insertBefore(panel,meanings);else target.append(panel);
 }
 if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-synced',()=>{document.querySelectorAll('.community-vote-status').forEach(node=>{if(node.textContent.includes('Saved on this device'))node.textContent='Your offline vote has now been sent to the community.';});});
 if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',()=>{
