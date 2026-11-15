@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {chromium,executablePath}=require('./browser_support.cjs');
 (async()=>{
  const manifest=JSON.parse(fs.readFileSync(__dirname+'/plugin/manifest.json'));
- const server=http.createServer((req,res)=>{try{const f=path.join(__dirname,'plugin',new URL(req.url,'http://localhost').pathname==='/'?'index.html':new URL(req.url,'http://localhost').pathname);res.setHeader('Content-Type',f.endsWith('.js')?'text/javascript':f.endsWith('.css')?'text/css':f.endsWith('.png')?'image/png':'text/html');res.end(fs.readFileSync(f));}catch{res.statusCode=404;res.end();}});
+ const server=http.createServer((req,res)=>{try{const pathname=new URL(req.url,'http://localhost').pathname;if(pathname==='/community-config.js'){res.setHeader('Content-Type','text/javascript');res.end("window.DICTIONARY_COMMUNITY_API='';");return;}const f=path.join(__dirname,'plugin',pathname==='/'?'index.html':pathname);res.setHeader('Content-Type',f.endsWith('.js')?'text/javascript':f.endsWith('.css')?'text/css':f.endsWith('.png')?'image/png':'text/html');res.end(fs.readFileSync(f));}catch{res.statusCode=404;res.end();}});
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));let browser;
  try{
   browser=await chromium.launch({executablePath,args:['--no-sandbox']});const context=await browser.newContext(),base='http://127.0.0.1:'+server.address().port;
