@@ -10,8 +10,8 @@ class MockDB {
       all:async()=>{
         if(sql.includes('FROM entry_links'))return {results:args.filter(x=>this.links.has(x)).map(alias_id=>({alias_id,canonical_id:this.links.get(alias_id)}))};
         if(sql.includes('GROUP BY canonical_id')){
-          const [word,...ids]=args,counts=new Map();
-          for(const vote of this.votes.values())if(vote.word===word&&ids.includes(vote.id))counts.set(vote.id,(counts.get(vote.id)||0)+1);
+          const [word]=args,counts=new Map();
+          for(const vote of this.votes.values())if(vote.word===word)counts.set(vote.id,(counts.get(vote.id)||0)+1);
           return {results:[...counts].map(([canonical_id,votes])=>({canonical_id,votes}))};
         }
         throw new Error('Unexpected all SQL: '+sql);
@@ -44,6 +44,15 @@ assert.equal(result.preferredEntryId,null,'two votes must not establish consensu
 await call('/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:'נפקא',entryId:'krupnik:KRU1',voterId:'voter-token-3-abcdefghijklmnop'})});
 result=await (await call('/v1/suggestions?word=%D7%A0%D7%A4%D7%A7%D7%90&ids=jastrow%3AJAS1%2Ckrupnik%3AKRU2')).json();
 assert.equal(result.preferredEntryId,'jastrow:JAS1','Jastrow alias must share Krupnik vote pool');
+// Votes for entries outside the current candidate list still count against
+// the consensus denominator; a partial candidate list must not fake a win.
+for(const i of [4,5]) await call('/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:'בדיקה',entryId:'krupnik:KRU1',voterId:'outside-a-'+i+'-abcdefghijklmnop'})});
+for(const i of [6,7]) await call('/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:'בדיקה',entryId:'krupnik:KRU2',voterId:'outside-b-'+i+'-abcdefghijklmnop'})});
+await call('/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:'בדיקה',entryId:'krupnik:KRU1',voterId:'outside-c-8-abcdefghijklmnop'})});
+const partial=await (await call('/v1/suggestions?word=%D7%91%D7%93%D7%99%D7%A7%D7%94&ids=krupnik%3AKRU1')).json();
+assert.equal(partial.preferredEntryId,null,'votes for omitted candidates must count against consensus');
+const oversized=await call('/v1/vote',{method:'POST',body:JSON.stringify({word:'נפקא',entryId:'krupnik:KRU1',voterId:'voter-token-9-abcdefghijklmnop',padding:'x'.repeat(3000)})});
+assert.equal(oversized.status,413,'request body limit must apply even without Content-Length');
 const duplicate=await (await call('/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:'נפקא',entryId:'krupnik:KRU1',voterId:'voter-token-1-abcdefghijklmnop'})})).json();
 assert.equal(duplicate.duplicate,true,'same installation cannot vote twice for the same word');
 await call('/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:'נפקא',entryId:'krupnik:KRU2',voterId:'voter-token-1-abcdefghijklmnop'})});
