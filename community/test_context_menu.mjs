@@ -41,7 +41,7 @@ async function english() {
   failVote=true;
   for(const fn of events.get('reader.context_menu_item_clicked')||[])await fn({itemId:'jastrow-community-vote-0',selection:{renderedSelectedText:'נפקא'}});
   assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,2,'queued vote should be acknowledged accurately');
-  assert.match(calls.filter(x=>x.method==='ui.showMessage').at(-1).args.message,/Saved on this device/);
+  assert.match(calls.filter(x=>x.method==='ui.showMessage').at(-1).args.message,/Saved on this device/);failSave=true;for(const fn of events.get('reader.context_menu_item_clicked')||[])await fn({itemId:'jastrow-community-vote-2',selection:{renderedSelectedText:'נפקא'}});assert.match(calls.filter(x=>x.method==='ui.showMessage').at(-1).args.message,/Could not save your vote/,'English right-click vote failure must be explained');
   assert.equal([...items.keys()].filter(id=>id.startsWith('jastrow-community-vote-')).length,3,'temporary service failure must leave English vote choices available');
   root.dispatchEvent(new Event('dictionary-community-disabled'));await settle();
   assert.equal([...items.keys()].filter(id=>id.startsWith('jastrow-community-vote-')).length,0,'actual permission denial must remove English vote choices');
@@ -75,7 +75,7 @@ async function hebrew() {
   failVote=true;
   for(const fn of events.get('reader.context_menu_item_clicked')||[])await fn({itemId:'aramaic-hebrew-community-vote-0',selection:{renderedSelectedText:'נפקא'}});
   assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,2,'queued vote should be acknowledged accurately');
-  assert.match(calls.filter(x=>x.method==='ui.showMessage').at(-1).args.message,/ההצבעה נשמרה במכשיר/);
+  assert.match(calls.filter(x=>x.method==='ui.showMessage').at(-1).args.message,/ההצבעה נשמרה במכשיר/);failSave=true;for(const fn of events.get('reader.context_menu_item_clicked')||[])await fn({itemId:'aramaic-hebrew-community-vote-2',selection:{renderedSelectedText:'נפקא'}});assert.match(calls.filter(x=>x.method==='ui.showMessage').at(-1).args.message,/לא ניתן לשמור את ההצבעה/,'Hebrew right-click vote failure must be explained');
   assert.equal([...items.keys()].filter(id=>id.startsWith('aramaic-hebrew-community-vote-')).length,3,'temporary service failure must leave Hebrew vote choices available');
   root.dispatchEvent(new Event('dictionary-community-disabled'));await settle();
   assert.equal([...items.keys()].filter(id=>id.startsWith('aramaic-hebrew-community-vote-')).length,0,'actual permission denial must remove Hebrew vote choices');
