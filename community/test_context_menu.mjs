@@ -45,6 +45,8 @@ async function english() {
   assert.equal([...items.keys()].filter(id=>id.startsWith('jastrow-community-vote-')).length,3,'temporary service failure must leave English vote choices available');
   root.dispatchEvent(new Event('dictionary-community-disabled'));
   assert.equal([...items.keys()].filter(id=>id.startsWith('jastrow-community-vote-')).length,0,'actual permission denial must remove English vote choices');
+  root.dispatchEvent(new Event('dictionary-community-permission-granted'));await settle();
+  assert.equal([...items.keys()].filter(id=>id.startsWith('jastrow-community-vote-')).length,3,'restoring permission must restore English vote choices');
 }
 
 async function hebrew() {
@@ -77,6 +79,8 @@ async function hebrew() {
   assert.equal([...items.keys()].filter(id=>id.startsWith('aramaic-hebrew-community-vote-')).length,3,'temporary service failure must leave Hebrew vote choices available');
   root.dispatchEvent(new Event('dictionary-community-disabled'));
   assert.equal([...items.keys()].filter(id=>id.startsWith('aramaic-hebrew-community-vote-')).length,0,'actual permission denial must remove Hebrew vote choices');
+  root.dispatchEvent(new Event('dictionary-community-permission-granted'));await settle();
+  assert.equal([...items.keys()].filter(id=>id.startsWith('aramaic-hebrew-community-vote-')).length,3,'restoring permission must restore Hebrew vote choices');
 }
 
 await english();
