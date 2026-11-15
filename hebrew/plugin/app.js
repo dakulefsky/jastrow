@@ -23,7 +23,8 @@ function renderMatches(records,word){
   list.append(row);
  }
 }
-if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-synced',()=>{document.querySelectorAll('.community-vote-status').forEach(node=>{if(node.textContent.includes('נשמרה במכשיר'))node.textContent='ההצבעה נשלחה כעת לקהילה.';});});\nif(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',()=>{
+if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-synced',()=>{document.querySelectorAll('.community-vote-status').forEach(node=>{if(node.textContent.includes('נשמרה במכשיר'))node.textContent='ההצבעה נשלחה כעת לקהילה.';});});
+if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',()=>{
  document.querySelectorAll('.community-vote,.community-vote-status,.community-match-preview').forEach(node=>node.remove());
  if(window.Otzaria)for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'aramaic-hebrew-community-vote-'+i})).catch(()=>{});}catch{}}
 });
