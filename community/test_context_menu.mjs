@@ -19,8 +19,7 @@ async function english() {
       splitWords:w=>[w],normalize:w=>w,hasSelectionTranslations:()=>true,
       lookup:()=>({ids:[0,1,2],prefixMatches:[]}),matchingQuery:()=> 'נפקא'
     },
-    JastrowReadingView:{records:async(_index,id)=>[{id,meanings:[{text:'English candidate meaning '+id}]}]}
-    },
+    JastrowReadingView:{records:async(_index,id)=>[{id,meanings:[{text:'English candidate meaning '+id}]}]},
     DictionaryCommunity:{enabled:true,ready:Promise.resolve(true),vote:async(word,entry)=>{votes.push({word,entry});return failVote?{ok:false,duplicate:false}:{ok:true,duplicate:false};}},
     Otzaria:{
       on:(name,fn)=>{if(!events.has(name))events.set(name,[]);events.get(name).push(fn);},
