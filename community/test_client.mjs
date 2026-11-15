@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
+import { webcrypto } from 'node:crypto';
 
 const source = await readFile(new URL('../plugin/community.js', import.meta.url), 'utf8');
 
 async function load({ health = true, voteStatus = 200, permission = true, online = true } = {}) {
-  const events = [], calls = [], values = new Map();
+  const events = [], calls = [], sent = [], values = new Map();
   const root = {
     DICTIONARY_COMMUNITY_API: 'https://otzaria-dictionary-community.dakulefsky.workers.dev',
     navigator: { onLine: online },
@@ -26,21 +27,43 @@ async function load({ health = true, voteStatus = 200, permission = true, online
       getItem: key => values.get(key) || null,
       setItem: (key, value) => values.set(key, value)
     },
-    crypto: { randomUUID: () => '12345678-1234-1234-1234-123456789012' },
+    crypto: { randomUUID: () => '12345678-1234-1234-1234-123456789012', subtle: webcrypto.subtle },
     fetch: async (input, init = {}) => {
       const url = String(input); calls.push({ url, method: init.method || 'GET' });
       if (url.endsWith('/health')) return new Response(JSON.stringify({ ok: health }), { status: 200 });
-      if (url.endsWith('/v1/vote')) return new Response(
+      if (url.endsWith('/v1/vote')) { if (init.body) sent.push(JSON.parse(init.body)); return new Response(
         JSON.stringify(voteStatus === 200 ? { accepted: true, votes: 1 } : { error: 'unavailable' }),
         { status: voteStatus }
-      );
+      ); }
+      if (url.includes('/v1/suggestions')) return new Response(JSON.stringify({ preferredEntryId: null, totalVotes: 0, suggestions: [] }), { status: 200 });
       throw new Error('Unexpected community request: ' + url);
     }
   };
   vm.runInNewContext(source, context);
   await root.DictionaryCommunity.ready;
-  return { api: root.DictionaryCommunity, events, calls, root };
+  return { api: root.DictionaryCommunity, events, calls, sent, root };
 }
+
+
+const scoped = await load();
+const readerSelection = { renderedSelectedText: 'נפקא', sourceRange: {
+  beforeText: { raw: 'תניא רבי', normalized: 'תניא רבי' },
+  afterText: { raw: 'הוא אמר', normalized: 'הוא אמר' }
+} };
+await scoped.api.vote('נפקא', 'krupnik:KRU02095', { scope: 'general' });
+assert.equal(scoped.sent[0].scope, 'general', 'in-dictionary endorsements must be explicitly general');
+const ranked = await scoped.api.rank('נפקא', [{ rid: 'KRU02095' }, { rid: 'KRU02096' }], readerSelection);
+assert.equal(ranked.scope, 'context', 'reader lookups must request contextual ranking');
+const rankRequest = scoped.calls.find(x => x.url.includes('/v1/suggestions'));
+assert(rankRequest.url.includes('scope=context'));
+assert(!rankRequest.url.includes('תניא') && !rankRequest.url.includes('הוא'), 'raw neighboring words must never leave the device');
+const contextualVote = await scoped.api.vote('נפקא', 'krupnik:KRU02095', { scope: 'context', selection: readerSelection });
+assert.equal(contextualVote.ok, true);
+assert.equal(scoped.sent[1].scope, 'context');
+assert.match(scoped.sent[1].contextKey, /^[a-f0-9]{64}$/);
+assert(scoped.sent[1].features.length >= 4);
+assert(scoped.sent[1].features.every(x => /^[a-f0-9]{64}$/.test(x.hash)), 'only SHA-256 context feature fingerprints may be sent');
+assert(!JSON.stringify(scoped.sent[1]).includes('תניא') && !JSON.stringify(scoped.sent[1]).includes('הוא'), 'context vote payload must not include raw context words');
 
 const denied = await load({ permission: false });
 assert.equal(denied.api.enabled, false);
@@ -82,7 +105,7 @@ async function bootPermissionSnapshot(){
    on:(name,fn)=>{if(!listeners.has(name))listeners.set(name,[]);listeners.get(name).push(fn);}
   }
  };
- const context={window:root,globalThis:root,URL,Event,AbortSignal,TextEncoder,localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)},crypto:{randomUUID:()=> '12345678-1234-1234-1234-123456789012'},fetch:async input=>{calls.push(String(input));return new Response(JSON.stringify({ok:true}),{status:200});}};
+ const context={window:root,globalThis:root,URL,Event,AbortSignal,TextEncoder,localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)},crypto:{randomUUID:()=> '12345678-1234-1234-1234-123456789012',subtle:webcrypto.subtle},fetch:async input=>{calls.push(String(input));return new Response(JSON.stringify({ok:true}),{status:200});}};
  vm.runInNewContext(source,context);await root.DictionaryCommunity.ready;
  assert.equal(root.DictionaryCommunity.enabled,false,'pre-boot empty permission response must not be treated as granted');
  for(const fn of listeners.get('plugin.boot')||[])await fn({permissions:['network.access']});
@@ -122,15 +145,20 @@ async function offlineQueueRoundTrip(){
  vm.runInNewContext(source,context);
  await root.DictionaryCommunity.ready;
  assert.equal(root.DictionaryCommunity.enabled,true,'users who granted network access can vote offline');
- const queued=await root.DictionaryCommunity.vote('נפקא','krupnik:KRU02095');
+ const readerSelection={renderedSelectedText:'נפקא',sourceRange:{beforeText:{raw:'תניא רבי',normalized:'תניא רבי'},afterText:{raw:'הוא אמר',normalized:'הוא אמר'}}};
+ const queued=await root.DictionaryCommunity.vote('נפקא','krupnik:KRU02095',{scope:'context',selection:readerSelection});
  assert.equal(queued.queued,true);
  assert.equal(root.DictionaryCommunity.pending,1);
+ const pending=JSON.parse(values.get('otzaria-dictionary-community-pending-v1'))[0];
+ assert.equal(pending.scope,'context');assert.match(pending.contextKey,/^[a-f0-9]{64}$/);assert(pending.features.length>=4);
+ assert(!JSON.stringify(pending).includes('תניא')&&!JSON.stringify(pending).includes('הוא'),'offline queue must store fingerprints, not raw context words');
  assert.equal(calls.some(x=>x.url.endsWith('/v1/vote')),false,'offline vote must not attempt network');
  root.navigator.onLine=true;
  for(const fn of events.get('online')||[])await fn();
  assert.equal(root.DictionaryCommunity.pending,0,'confirmed submission must be removed from queue');
  assert.equal(sent.length,1);
  assert.equal(sent[0].entryId,'krupnik:KRU02095');
+ assert.equal(sent[0].scope,'context');assert.equal(sent[0].contextKey,pending.contextKey);assert.equal(sent[0].features.length,pending.features.length);
  const again=await root.DictionaryCommunity.flushQueue();
  assert.equal(again.pending,0,'retries must not re-submit an acknowledged vote');
 }
