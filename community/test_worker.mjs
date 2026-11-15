@@ -119,4 +119,5 @@ const contextDuplicate=await (await voteContext('krupnik:KRU2','context-a-1-abcd
 assert.equal(contextDuplicate.duplicate,true,'one installation can only vote once for the same contextual use');
 const invalidContext=await call('/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:'נפקא',entryId:'krupnik:KRU1',voterId:'context-invalid-abcdefghijklmnop',scope:'contextual',contextFeatures:[{hash:'not-a-hash',weight:1}]})});
 assert.equal(invalidContext.status,400,'context hashes must be validated before storage');
-\nconsole.log('PASS: Worker health, three-vote threshold, Jastrow/Krupnik shared IDs, duplicate prevention, and vote changes.');
+
+console.log('PASS: Worker health, three-vote threshold, Jastrow/Krupnik shared IDs, duplicate prevention, and vote changes.');
