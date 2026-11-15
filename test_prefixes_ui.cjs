@@ -1,12 +1,12 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http');
 const {chromium,executablePath}=require('./browser_support.cjs');
 (async()=>{
- const server=http.createServer((req,res)=>{try{const file=path.join(__dirname,'plugin',new URL(req.url,'http://localhost').pathname);res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(fs.readFileSync(file));}catch{res.statusCode=404;res.end();}});
+ const server=http.createServer((req,res)=>{try{const pathname=new URL(req.url,'http://localhost').pathname;if(pathname==='/community-config.js'){res.setHeader('Content-Type','text/javascript');res.end("window.DICTIONARY_COMMUNITY_API='';");return;}const file=path.join(__dirname,'plugin',pathname);res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html');res.end(fs.readFileSync(file));}catch{res.statusCode=404;res.end();}});
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));let browser;
  try{
   browser=await chromium.launch({executablePath,args:['--no-sandbox']});const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(String(e)));
   await page.goto('http://127.0.0.1:'+server.address().port+'/index.html');
-  const lookup=async q=>{await page.fill('#query',q);await page.click('.lookup-button');await page.locator('.unified-meanings').first().waitFor();};
+  const lookup=async q=>{const before=await page.locator('#entry').innerHTML();await page.fill('#query',q);await page.click('.lookup-button');await page.waitForFunction(before=>document.querySelector('#entry')?.innerHTML!==before,before);await page.locator('.unified-meanings').first().waitFor();};
   await lookup('לצפרא');assert.match(await page.locator('.prefix-analysis').innerText(),/ל \+ צפרא/);
   const texts=await page.locator('.meaning-text').allTextContents();assert(texts.some(t=>/morning/.test(t)));assert(texts.some(t=>/bird/.test(t)));
   await page.reload();await page.locator('.unified-meanings').waitFor();assert.match(await page.locator('.prefix-analysis').innerText(),/ל \+ צפרא/);assert.deepEqual(await page.locator('.meaning-text').allTextContents(),texts);
