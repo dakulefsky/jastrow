@@ -1,0 +1,1 @@
+window.DICTIONARY_COMMUNITY_API = '';
