@@ -26,12 +26,16 @@
     if(job.revision!==revision)continue;
     await Otzaria.call(method,method==='reader.addContextMenuItem'?{...args,id:'jastrow-open',title:'Open dictionary',label:'Open dictionary',openPlugin:true,onClickEvent:'reader.context_menu_item_clicked'}:{id:'jastrow-open'});
     if(window.DictionaryCommunity?.enabled){
-     const candidates=matched?JastrowSearch.lookup(index,text,3,'length',false).ids:[];
+     const candidateResult=matched?JastrowSearch.lookup(index,text,3,'length',false):null;
+     const candidates=candidateResult?.ids||[];
+     const previews=candidateResult&&window.DictionaryQuick?.previewCandidates?await window.DictionaryQuick.previewCandidates(text,candidateResult):[];
+     if(job.revision!==revision)continue;
      for(let i=0;i<3;i++){
       const id='jastrow-community-vote-'+i;
       if(job.revision!==revision)continue;
       if(candidates[i]!==undefined){
-       const entry=index.entries[candidates[i]],title='👍 '+entry.h;
+       const entry=index.entries[candidates[i]],preview=previews.find(x=>x.id===candidates[i])?.meaning||'';
+       const title='👍 '+entry.h+(preview?' — '+preview.slice(0,55):'');
        await Otzaria.call('reader.addContextMenuItem',{id,title,label:title,contexts:['reader-selection','reader-page-shape-selection'],openPlugin:false,onClickEvent:'reader.context_menu_item_clicked',showWhen:{selectionContainsAny:variants}});
       }else await Otzaria.call('reader.removeContextMenuItem',{id});
      }
