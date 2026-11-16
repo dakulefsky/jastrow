@@ -63,8 +63,9 @@ if(typeof window.addEventListener==='function')window.addEventListener('dictiona
 let lastSearched='',searchSerial=0;
 async function search(q,record=true){const serial=++searchSerial;lastSearched=String(q);if(activeReaderContext&&HebrewLookup.normalize(String(q))!==HebrewLookup.normalize(activeReaderContext.word))activeReaderContext=null;activeMesoratContext=null;$('query').value=q;const out=$('results');out.replaceChildren();$('clear').hidden=!q;if(!q.trim()){renderMatches([],'');$('status').textContent='';return;}if(String(q).trim().toLowerCase()==='who created this?'){renderMatches([],'');out.append(el('p','Daniel Avrahom','creator-easter-egg'));$('status').textContent='';return;}const activeSelection=activeReaderContext&&HebrewLookup.normalize(String(q))===HebrewLookup.normalize(activeReaderContext.word)?activeReaderContext.selection:null;
  if(window.DictionaryCommunity?.enabled&&activeSelection&&window.MesoratHashasContext?.findParallelContext){
-  activeMesoratContext=await MesoratHashasContext.findParallelContext(q,activeSelection);
+  const parallelContext=await MesoratHashasContext.findParallelContext(q,activeSelection);
   if(serial!==searchSerial)return;
+  activeMesoratContext=parallelContext;
  }
  let records=HebrewLookup.lookup(q);
  if(window.DictionaryCommunity?.enabled&&records.length>1){
