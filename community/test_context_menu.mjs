@@ -23,7 +23,7 @@ async function english() {
     DictionaryCommunity:{enabled:true,ready:Promise.resolve(true),vote:async(word,entry,options)=>{votes.push({word,entry,options});if(failVote){root.dispatchEvent(new Event('dictionary-community-offline'));return {ok:true,queued:true,duplicate:false};}if(failSave)return {ok:false,reason:'storage'};return {ok:true,duplicate:false};}},
     Otzaria:{
       on:(name,fn)=>{if(!events.has(name))events.set(name,[]);events.get(name).push(fn);},
-      call:async(method,args)=>{calls.push({method,args});if(method==='reader.addContextMenuItem')items.set(args.id,args);if(method==='reader.removeContextMenuItem')items.delete(args.id);return {success:true};}
+      call:async(method,args)=>{calls.push({method,args});if(method==='reader.addContextMenuItem'){items.set(args.id,args);for(const child of args.children||[])items.set(child.id,child);}if(method==='reader.removeContextMenuItem'){items.delete(args.id);}return {success:true};}
     },
     addEventListener:(name,fn)=>{if(!domEvents.has(name))domEvents.set(name,[]);domEvents.get(name).push(fn);},
     dispatchEvent:event=>{for(const fn of domEvents.get(event.type)||[])fn(event);return true;}
@@ -57,7 +57,7 @@ async function hebrew() {
     DictionaryCommunity:{enabled:true,ready:Promise.resolve(true),vote:async(word,entry,options)=>{votes.push({word,entry,options});if(failVote){root.dispatchEvent(new Event('dictionary-community-offline'));return {ok:true,queued:true,duplicate:false};}if(failSave)return {ok:false,reason:'storage'};return {ok:true,duplicate:false};}},
     Otzaria:{
       on:(name,fn)=>{if(!events.has(name))events.set(name,[]);events.get(name).push(fn);},
-      call:async(method,args)=>{calls.push({method,args});if(method==='reader.addContextMenuItem')items.set(args.id,args);if(method==='reader.removeContextMenuItem')items.delete(args.id);return {success:true};}
+      call:async(method,args)=>{calls.push({method,args});if(method==='reader.addContextMenuItem'){items.set(args.id,args);for(const child of args.children||[])items.set(child.id,child);}if(method==='reader.removeContextMenuItem'){items.delete(args.id);}return {success:true};}
     },
     addEventListener:(name,fn)=>{if(!domEvents.has(name))domEvents.set(name,[]);domEvents.get(name).push(fn);},
     dispatchEvent:event=>{for(const fn of domEvents.get(event.type)||[])fn(event);return true;}
