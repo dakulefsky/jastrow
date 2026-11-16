@@ -3,7 +3,7 @@
  if(!window.Otzaria)return;
  const index=window.JASTROW_INDEX;
  let pending=null,running=false,revision=0,latestPayload=null,removalRequested=false;
- async function drainCommunityRemovals(){if(running)return;running=true;removalRequested=false;try{for(let i=0;i<3;i++)await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i});}catch{}finally{running=false;if(pending)update().catch(()=>{});else if(removalRequested)drainCommunityRemovals().catch(()=>{});}}
+ async function drainCommunityRemovals(){if(running)return;running=true;removalRequested=false;try{await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-votes'});for(let i=0;i<3;i++)await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i});}catch{}finally{running=false;if(pending)update().catch(()=>{});else if(removalRequested)drainCommunityRemovals().catch(()=>{});}}
  function removeCommunityItems(){revision++;pending=null;removalRequested=true;if(!running)drainCommunityRemovals().catch(()=>{});}
  if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',removeCommunityItems);
  if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-permission-granted',()=>{if(latestPayload)offer(latestPayload);});
