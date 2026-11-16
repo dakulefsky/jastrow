@@ -233,7 +233,6 @@ $('selection').hidden=true;
 if(window.Otzaria){
  Otzaria.on('ui.messageClicked',p=>{const word=p?.payload?.dictionaryWord;if(typeof word==='string')search(word);});
   Otzaria.on('theme.changed',theme);
-  Otzaria.on('reader.context_menu_item_clicked',p=>{if(p.itemId==='jastrow-open'){const word=JastrowContext.selectionText(p);activeReaderContext={word,selection:p.selection||null};search(word);}});
   Otzaria.on('plugin.boot',p=>{
     theme(p.theme);$('selection').hidden=false;
     Otzaria.call('app.getGrantedPermissions').then(res=>{
