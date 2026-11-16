@@ -12,6 +12,10 @@ Context features represent one adjacent word, a two-word phrase on either side, 
 
 Contextual votes can help other passages with similar local language patterns; they are not tied to a daf. A different context keeps its own evidence and can favor a different dictionary meaning. When contextual evidence is insufficient, the general dictionary preference remains the fallback. The system does not claim to understand the whole sugya or determine halachic meaning.
 
+## Mesores HaShas cross-references
+
+The two plugins can inspect the active line's `MESORAT_HASHAS` links through Otzaria's local library API. They load linked passage text on-device and surface only passages where the exact selected word or phrase appears as a complete token sequence. Niqqud and punctuation are ignored for this comparison. The feature does not crawl incoming links, follow chains of references, or infer that two appearances have the same translation. A Mesores link and a repeated spelling are supporting research clues only; the learner still compares the local wording and chooses the contextual meaning. No linked passage text, book title, daf, reference, or link metadata is sent to the community Worker.
+
 ## Shared identity and privacy
 
 - Krupnik records use `krupnik:KRU…`; Jastrow records use `jastrow:<source rid>`.
