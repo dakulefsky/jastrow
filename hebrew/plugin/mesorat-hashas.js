@@ -19,7 +19,9 @@
    .replace(/&lt;/gi,'<')
    .replace(/&gt;/gi,'>')
    .replace(/&quot;/gi,'"')
-   .replace(/&#39;|&apos;/gi,"'");
+   .replace(/&#39;|&apos;/gi,"'")
+   .replace(/&rlm;|&lrm;|&thinsp;/gi,' ')
+   .replace(/&#(x[0-9a-f]+|[0-9]+);/gi,(_,code)=>{try{return String.fromCodePoint(code[0].toLowerCase()==='x'?parseInt(code.slice(1),16):parseInt(code,10));}catch{return ' ';}});
  }
  function selectionParts(word,selection){
   if(!selection||typeof selection!=='object')return null;
@@ -27,8 +29,10 @@
   const section=Array.isArray(selection.sections)?selection.sections[0]:selection;
   const selected=singleWord(word);
   if(!selected)return null;
-  const range=section?.sourceRange||section?.renderedRange||selection.sourceRange||selection.renderedRange;
+  const range=section?.sourceRange||selection.sourceRange;
   if(!range||!range.beforeText||!range.afterText)return null;
+  const exactText=typeof range.exactText==='string'?range.exactText:(selection.sourceSelectedText||selection.renderedSelectedText||selection.selectedText||selection.text);
+  if(typeof exactText==='string'&&exactText.trim()&&singleWord(exactText)!==selected)return null;
   const left=words(range.beforeText.raw),right=words(range.afterText.raw);
   if(!left.length||!right.length)return null;
   const currentBookId=selection.currentBookId||section?.currentBookId||selection.bookId||section?.bookId||selection.currentBook;
@@ -64,7 +68,7 @@
  }
  function targetDescriptor(link){
   if(!link||typeof link.targetTitle!=='string'||!link.targetTitle.trim()||!Number.isInteger(link.targetLine)||link.targetLine<0)return null;
-  if(link.targetIsUserBook===true)return null;
+  if(link.targetIsUserBook!==false)return null;
   if(link.targetSource&&link.targetSource!=='o')return null;
   const out={targetTitle:link.targetTitle,targetLine:link.targetLine};
   for(const key of ['targetLineEnd','targetIsUserBook','targetCategoryId'])if(Object.prototype.hasOwnProperty.call(link,key))out[key]=link[key];
