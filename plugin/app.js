@@ -2,7 +2,16 @@
 window.JASTROW_CHUNKS=window.JASTROW_CHUNKS||{};
 const index=window.JASTROW_INDEX, $=id=>document.getElementById(id);
 let resultIds=[], currentId=null, query='',limit=60, requestSerial=0, entrySerial=0;
-let includeJastrow=false,activeReaderContext=null;
+let includeJastrow=false,activeReaderContext=null,activeMesoratContext=null;
+function mesoratSelection(selection,event){
+ const s=selection&&typeof selection==='object'?selection:{},p=event&&typeof event==='object'?event:{};
+ return {...s,
+  currentBookId:s.currentBookId||s.bookId||s.currentBook||p.currentBookId||p.bookId||p.currentBook,
+  currentIndex:Number.isInteger(s.currentIndex)?s.currentIndex:Number.isInteger(s.sectionIndex)?s.sectionIndex:Number.isInteger(p.currentIndex)?p.currentIndex:p.sectionIndex,
+  type:s.type||p.type,source:s.source||p.source
+ };
+}
+
 const chunkPromises=new Map();
 function loadChunk(n){
   if(window.JASTROW_CHUNKS[n])return Promise.resolve(window.JASTROW_CHUNKS[n]);
@@ -79,7 +88,7 @@ function paintMatches(r,word,serial){
  fillMatchPreviews(r.ids,serial);
 }
 async function search(word, more=false){
-  query=String(word).trim();$('query').value=query;if(activeReaderContext&&JastrowSearch.normalize(query)!==JastrowSearch.normalize(activeReaderContext.word))activeReaderContext=null;if(!more){limit=60;includeJastrow=false;}
+  query=String(word).trim();$('query').value=query;if(activeReaderContext&&JastrowSearch.normalize(query)!==JastrowSearch.normalize(activeReaderContext.word))activeReaderContext=null;activeMesoratContext=null;if(!more){limit=60;includeJastrow=false;}
   const serial=++requestSerial;++entrySerial;$('entry').removeAttribute('aria-busy');
   if(query.toLowerCase()==='who created this?'){
     document.body.classList.add('single-lookup');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';setStatus('');
@@ -91,7 +100,18 @@ async function search(word, more=false){
   if(words.length>1){await searchWords(words,serial);return;}
   const normalized=JastrowSearch.normalize(query);
   if(query&&!JastrowSearch.validWord(query)){setStatus('Enter a Hebrew or Aramaic word, or up to 12 words, without English letters or numbers.');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a single Aramaic or Hebrew word to see its dictionary matches.'));currentId=null;return;}
-  let r=JastrowSearch.lookup(index,query,limit,'length',includeJastrow);if(window.DictionaryCommunity?.enabled&&r.ids.length>1&&r.kind!=='suggestions'){const ranked=await DictionaryCommunity.rank(query,r.ids.map(id=>index.entries[id]),activeReaderContext?.selection);if(serial!==requestSerial)return;if(ranked.preferredEntryId)r={...r,ids:ranked.entries.map(entry=>index.entries.indexOf(entry))};}paintMatches(r,query,serial);
+  const activeSelection=activeReaderContext&&JastrowSearch.normalize(query)===JastrowSearch.normalize(activeReaderContext.word)?activeReaderContext.selection:null;
+  if(window.DictionaryCommunity?.enabled&&activeSelection&&window.MesoratHashasContext?.findParallelContext){
+    activeMesoratContext=await MesoratHashasContext.findParallelContext(query,activeSelection);
+    if(serial!==requestSerial)return;
+  }
+  let r=JastrowSearch.lookup(index,query,limit,'length',includeJastrow);
+  if(window.DictionaryCommunity?.enabled&&r.ids.length>1&&r.kind!=='suggestions'){
+    const ranked=await DictionaryCommunity.rank(query,r.ids.map(id=>index.entries[id]),activeSelection,activeMesoratContext?[activeMesoratContext]:[]);
+    if(serial!==requestSerial)return;
+    if(ranked.preferredEntryId)r={...r,ids:ranked.entries.map(entry=>index.entries.indexOf(entry))};
+  }
+  paintMatches(r,query,serial);
   try{history.replaceState(null,'','#'+new URLSearchParams({word:query}));}catch{}
   if(!normalized){setStatus('Enter an Aramaic or Hebrew word in Hebrew letters.');$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a word in Hebrew letters to begin.'));currentId=null;return;}
   if(!r.ids.length){currentId=null;$('match-count').textContent='0 matches';$('entry').replaceChildren(el('h2','No matching entry'),el('p','Try a different spelling or the dictionary headword. Not every inflected form is indexed.'));setStatus('No entry found for '+query+'.');return;}
@@ -120,6 +140,7 @@ function renderCommunityVotes(result,word,target,records=[]){
  if(!window.DictionaryCommunity?.enabled||!result.ids.length)return;
  const active=activeReaderContext&&JastrowSearch.normalize(activeReaderContext.word)===JastrowSearch.normalize(word)?activeReaderContext.selection:null;
  const contextual=!!(active&&window.DictionaryCommunity.hasContext?.(active));
+ const parallelContexts=active&&activeMesoratContext?[activeMesoratContext]:[];
  const panel=el('section',undefined,'community-feedback');
  const heading=el('div',undefined,'community-feedback-heading');
  heading.append(el('span','COMMUNITY CONTRIBUTION','community-feedback-kicker'));
@@ -141,7 +162,7 @@ function renderCommunityVotes(result,word,target,records=[]){
   const submit=async(scope,control,actionNode)=>{
    control.disabled=true;const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);
    try{
-    const outcome=await DictionaryCommunity.vote(word,meta,{scope,selection:active});
+    const outcome=await DictionaryCommunity.vote(word,meta,{scope,selection:active,parallelContexts});
     if(!outcome.ok&&!outcome.duplicate){note.textContent=outcome.reason==='context_unavailable'?'Nearby text could not be read, so no contextual vote was sent.':outcome.reason==='queue_full'?'Your offline vote queue is full. Reconnect and try again.':outcome.reason==='storage'?'This choice could not be saved on this device.':'This choice could not be recorded. Please try again.';control.disabled=false;return;}
     note.textContent=outcome.queued?'Saved on this device — it will sync when you’re online.':outcome.ok?(scope==='contextual'?'Thanks — your contextual vote was recorded.':'Thanks — your general preference was recorded.'):'You have already voted for this word in this scope.';
     control.classList.add('is-selected');if(actionNode)actionNode.textContent='Selected';control.disabled=true;
@@ -229,7 +250,7 @@ $('selection').hidden=true;
 if(window.Otzaria){
  Otzaria.on('ui.messageClicked',p=>{const word=p?.payload?.dictionaryWord;if(typeof word==='string')search(word);});
   Otzaria.on('theme.changed',theme);
-  Otzaria.on('reader.context_menu_item_clicked',p=>{if(p.itemId==='jastrow-open'){const word=JastrowContext.selectionText(p);activeReaderContext={word,selection:p.selection||null};search(word);}});
+  Otzaria.on('reader.context_menu_item_clicked',p=>{if(p.itemId==='jastrow-open'){const word=JastrowContext.selectionText(p);activeReaderContext={word,selection:mesoratSelection(p.selection,p)};search(word);}});
   Otzaria.on('plugin.boot',p=>{
     theme(p.theme);$('selection').hidden=false;
     Otzaria.call('app.getGrantedPermissions').then(res=>{
@@ -240,7 +261,7 @@ if(window.Otzaria){
     }).catch(()=>{});
     $('selection').onclick=async()=>{
       try{const res=await Otzaria.call('reader.getSelection');
-      const text=JastrowContext.selectionText(res?.data);if(res?.success&&text){activeReaderContext={word:text,selection:res.data||null};search(text);}else setStatus('Select a word in an Otzaria text first, then choose Aramaic → Eng. — Quick result from the context menu.');}
+      const text=JastrowContext.selectionText(res?.data);if(res?.success&&text){activeReaderContext={word:text,selection:mesoratSelection(res.data,res.data)};search(text);}else setStatus('Select a word in an Otzaria text first, then choose Aramaic → Eng. — Quick result from the context menu.');}
       catch{setStatus('Could not read the selected word. You can type it in the search field.');}
     };
   });
