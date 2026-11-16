@@ -4,6 +4,9 @@ on:
     paths:
       - 'community/**'
       - 'plugin/community.js'
+      - 'plugin/mesores.js'
+      - 'hebrew/plugin/mesores.js'
+      - 'community/test_mesores.mjs'
       - 'hebrew/plugin/community.js'
       - 'plugin/app.js'
       - 'plugin/quick-lookup.js'
@@ -22,6 +25,9 @@ on:
     paths:
       - 'community/**'
       - 'plugin/community.js'
+      - 'plugin/mesores.js'
+      - 'hebrew/plugin/mesores.js'
+      - 'community/test_mesores.mjs'
       - 'hebrew/plugin/community.js'
       - 'plugin/app.js'
       - 'plugin/quick-lookup.js'
@@ -49,6 +55,9 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check plugin/community.js
+          node --check plugin/mesores.js
+          node --check hebrew/plugin/mesores.js
+          node community/test_mesores.mjs
           node --check hebrew/plugin/community.js
           node --check plugin/quick-lookup.js
           node --check hebrew/plugin/quick-lookup.js
