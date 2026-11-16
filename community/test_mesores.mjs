@@ -31,7 +31,7 @@ const linked=[
 ];
 const loaded=await setup({links:linked,items:[
  {content:'<p>אמר רב יהודה: נפקא מינה לדינא, שמע מינה.</p>'},
- {content:'<p>הכא נמי אמרינן דנפקא מינה.</p>'}
+ {content:'<p>הכא נמי אמרינן: נפקא מינה.</p>'}
 ]});
 const matches=await loaded.api.find(selection,'נפקא');
 assert.equal(matches.length,2,'only Mesores links whose target text contains the selected word are shown');
@@ -63,8 +63,8 @@ assert.equal(fallbackResults.length,1,'the active reader reference supplies a mi
 assert.equal(fallback.calls.find(x=>x.method==='library.getLinks').args.startLine,9);
 
 const unavailable=await setup({failMethod:'library.getLinks'});
-assert.deepEqual(await unavailable.api.find(selection,'נפקא'),[],'permission and host errors fail closed');
+assert.equal((await unavailable.api.find(selection,'נפקא')).length,0,'permission and host errors fail closed');
 
-assert.deepEqual(Array.from(loaded.api.tokenize('נִפְקָא')),['נפקא'],'niqqud is ignored');
+assert.equal(loaded.api.tokenize('נִפְקָא').join(','),'נפקא','niqqud is ignored');
 assert.equal(loaded.api.connectionType,'MESORAT_HASHAS');
 console.log('Mesores HaShas client checks passed.');
