@@ -10,24 +10,22 @@
   queue=queue.catch(()=>{}).then(async()=>{
    if(rev!==revision)return;
    const records=HebrewLookup.lookup(text),found=records.length>0;
-   for(const [id,title,openPlugin] of [['aramaic-hebrew-lookup','ארמית לעברית',false],['aramaic-hebrew-open','פתיחת המילון',true]]){
-    if(rev!==revision)return;
-    await Otzaria.call(found?'reader.addContextMenuItem':'reader.removeContextMenuItem',found?{id,title,label:title,icon:'book_24_regular',contexts:['reader-selection','reader-page-shape-selection'],openPlugin,showWhen:{selectionContainsAny:[text]}}:{id});
-   }
+   if(rev!==revision)return;
+   await Otzaria.call(found?'reader.addContextMenuItem':'reader.removeContextMenuItem',found?{id:'aramaic-hebrew-lookup',title:'ארמית לעברית',label:'ארמית לעברית',icon:'book_24_regular',contexts:['reader-selection','reader-page-shape-selection'],showWhen:{selectionContainsAny:[text]}}:{id:'aramaic-hebrew-lookup'});
    if(window.DictionaryCommunity?.enabled&&rev===revision){
-    const candidates=found?records.slice(0,3):[];
+    const children=[];
     for(let i=0;i<3;i++){
      if(rev!==revision||!window.DictionaryCommunity?.enabled)return;
-     const id='aramaic-hebrew-community-vote-'+i,entry=candidates[i];
+     const entry=found?records[i]:null;
      if(entry){
       const preview=entry.parts?.map(part=>part.meaning||part.text).find(Boolean)||'';
-     const shortMeaning=String(preview||'').replace(/\s+/g,' ').trim(),title='כאן '+(i+1)+' · '+entry.word+(shortMeaning?' — '+shortMeaning.slice(0,36)+(shortMeaning.length>36?'…':''):'');
-      await Otzaria.call('reader.addContextMenuItem',{id,title,label:title,contexts:['reader-selection','reader-page-shape-selection'],openPlugin:false,onClickEvent:'reader.context_menu_item_clicked',showWhen:{selectionContainsAny:[text]}});
-     }else await Otzaria.call('reader.removeContextMenuItem',{id});
+      const shortMeaning=String(preview||'').replace(/\s+/g,' ').trim(),title='כאן '+(i+1)+' · '+entry.word+(shortMeaning?' — '+shortMeaning.slice(0,36)+(shortMeaning.length>36?'…':''):'');
+      children.push({id:'aramaic-hebrew-community-vote-'+i,title,label:title,onClickEvent:'reader.context_menu_item_clicked'});
+     }
     }
-   }else{
-    for(let i=0;i<3;i++)await Otzaria.call('reader.removeContextMenuItem',{id:'aramaic-hebrew-community-vote-'+i});
-   }
+    if(children.length)await Otzaria.call('reader.addContextMenuItem',{id:'aramaic-hebrew-community-votes',type:'submenu',title:'הצבעה על משמעות',label:'הצבעה על משמעות',icon:'thumb_like_24_regular',contexts:['reader-selection','reader-page-shape-selection'],children,showWhen:{selectionContainsAny:[text]}});
+    else await Otzaria.call('reader.removeContextMenuItem',{id:'aramaic-hebrew-community-votes'});
+   }else await Otzaria.call('reader.removeContextMenuItem',{id:'aramaic-hebrew-community-votes'});
   });
  }
  Otzaria.on('reader.selection_changed',offer);
