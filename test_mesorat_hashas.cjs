@@ -128,8 +128,8 @@ async function testCommunityClient(communityPath){
     link({targetLine:80}),link({targetLine:82})
    ]);
    if(method==='library.getLinkContent')return okContent([
-    {content:'<p>כאן כי אמר דאמר לימא הכי</p>'},
-    {content:'<p>שם פלוני כי אמר דאמר לימא אחרת</p>'}
+    {content:'<p>כאן כי אמר דאמר לימא אחרת</p>'},
+    {content:'<p>שם פלוני אמר דאמר לימא הכי</p>'}
    ]);
   });
   assert.equal(await loaded.api.findParallelContext('דאמר',selection),null,'equally strong but conflicting matches must be rejected');
