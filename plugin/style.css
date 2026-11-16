@@ -138,3 +138,15 @@ footer{max-width:1320px;margin:24px auto 0;padding-top:14px;border-top:1px solid
 @media(max-width:760px){main{padding-top:16px}.masthead{gap:12px;padding-bottom:15px}.brand{gap:11px}.brand-mark{width:46px;height:46px;flex-basis:46px}.search-panel{border-radius:var(--radius-md)}.entry-panel{border-radius:var(--radius-md)}#results{max-height:none}.community-vote{min-height:68px}}
 @media(max-width:460px){h1{font-size:1.45rem}.brand-mark{width:40px;height:40px;flex-basis:40px}#help-toggle{padding:8px 10px;font-size:.72rem}.search-heading{align-items:flex-start}.offline-mark{font-size:.62rem}.lookup-button{min-width:0}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Local Mesores HaShas cross-reference evidence */
+.mesores-parallels{margin:1.35rem 0 0;padding:1rem 1.1rem;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-raised,var(--page));}
+.mesores-kicker{display:block;margin-bottom:.3rem;color:var(--gold);font:700 .58rem/1.4 var(--ui);letter-spacing:.12em;}
+.mesores-title{margin:0 0 .25rem;color:var(--ink);font:600 .98rem/1.45 var(--ui);}
+.mesores-description{margin:0 0 .75rem;color:var(--muted);font:.72rem/1.6 var(--ui);}
+.mesores-list{display:grid;gap:.55rem;}
+.mesores-card{min-width:0;padding:.7rem .8rem;border:1px solid var(--border-soft,var(--line));border-radius:var(--radius-md);background:var(--page);}
+.mesores-reference{display:block;direction:rtl;text-align:start;color:var(--forest);font:600 .9rem/1.55 var(--body);overflow-wrap:anywhere;}
+.mesores-book-title{display:block;margin-top:.1rem;color:var(--muted);font:.65rem/1.45 var(--ui);}
+.mesores-excerpt{margin:.35rem 0 0;color:var(--ink);direction:rtl;unicode-bidi:plaintext;text-align:start;font:1rem/1.8 var(--body);}
+@media(max-width:520px){.mesores-parallels{padding:.85rem}.mesores-card{padding:.6rem .7rem}}
