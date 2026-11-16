@@ -115,8 +115,6 @@ async function searchWords(words,serial){
   if(!result.ids.length||result.kind==='suggestions'){target.append(el('h2',word),el('p','No indexed translation for this word.'));const b=el('button','Look up this word');b.type='button';b.onclick=()=>search(word);target.append(b);return;}
   await showTranslations(result,word,serial,target,3);
  }));
- const mesoresSelection=activeReaderContext&&JastrowSearch.normalize(activeReaderContext.word)===JastrowSearch.normalize(phrase)?activeReaderContext.selection:null;
- if(window.MesoresHaShas&&mesoresSelection)await window.MesoresHaShas.attach($('entry'),phrase,mesoresSelection,'en',{isCurrent:()=>serial===requestSerial});
 }
 function renderCommunityVotes(result,word,target,records=[]){
  if(!window.DictionaryCommunity?.enabled||!result.ids.length)return;
@@ -181,9 +179,7 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
  const expanded=items.flat(),records=expanded.filter(x=>!x.error);
  target.append(DictionaryMeanings.render(records,word,result.kind==='phrase'?index.phraseNotes:{}));
  renderCommunityVotes(result,word,target,records);
- const mesoresSelection=activeReaderContext&&JastrowSearch.normalize(activeReaderContext.word)===JastrowSearch.normalize(word)?activeReaderContext.selection:null;
- if(window.MesoresHaShas&&mesoresSelection)await window.MesoresHaShas.attach(target,word,mesoresSelection,'en',{isCurrent:()=>serial===requestSerial&&panelSerial===entrySerial});
- for(const failed of expanded.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
+for(const failed of expanded.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
  if(result.total>ids.length){const more=el('button','More matching entries');more.type='button';more.onclick=()=>{limit+=60;search(word,true);};target.append(more);}
 }
 
