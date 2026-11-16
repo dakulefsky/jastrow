@@ -3,10 +3,15 @@
  if(!window.Otzaria)return;
  const index=window.JASTROW_INDEX;
  let pending=null,running=false,revision=0,latestPayload=null,removalRequested=false;
- async function drainCommunityRemovals(){if(running)return;running=true;removalRequested=false;try{await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-votes'});for(let i=0;i<3;i++)await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i});}catch{}finally{running=false;if(pending)update().catch(()=>{});else if(removalRequested)drainCommunityRemovals().catch(()=>{});}}
+ async function drainCommunityRemovals(){
+  if(running)return;running=true;removalRequested=false;
+  try{await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-votes'});for(let i=0;i<3;i++)await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i});}
+  catch{}finally{running=false;if(pending)update().catch(()=>{});else if(removalRequested)drainCommunityRemovals().catch(()=>{});}
+ }
  function removeCommunityItems(){revision++;pending=null;removalRequested=true;if(!running)drainCommunityRemovals().catch(()=>{});}
  if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',removeCommunityItems);
  if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-permission-granted',()=>{if(latestPayload)offer(latestPayload);});
+ const entryId=entry=>(entry?.source==='krupnik'||entry?.rid?'krupnik:':'jastrow:')+(entry?.r||entry?.rid||'');
  async function update(){
   if(running)return;running=true;
   try{
@@ -29,16 +34,24 @@
     if(window.DictionaryCommunity?.enabled){
      const candidateResult=matched?JastrowSearch.lookup(index,text,3,'length',false):null;
      const candidates=candidateResult?.ids||[];
+     const entries=candidates.map(id=>index.entries[id]);
      const previews=candidateResult&&window.DictionaryQuick?.previewCandidates?await window.DictionaryQuick.previewCandidates(text,candidateResult):[];
+     let preferredId=null;
+     if(entries.length&&job.payload.selection&&window.DictionaryCommunity.hasContext?.(job.payload.selection)){
+      const ranked=await window.DictionaryCommunity.rank(text,entries,job.payload.selection);
+      if(ranked.preferenceScope==='contextual'&&ranked.preferredEntryId)preferredId=ranked.preferredEntryId;
+     }
      if(job.revision!==revision||!window.DictionaryCommunity?.enabled)continue;
      const children=[];
-     for(let i=0;i<3;i++){
-      if(candidates[i]===undefined)continue;
-      const entry=index.entries[candidates[i]],preview=previews.find(x=>x.id===candidates[i])?.meaning||'';
-      const source=entry.source==='krupnik'?'Krupnik':'Jastrow',shortMeaning=String(preview||'').replace(/\s+/g,' ').trim(),title='Here '+(i+1)+' · '+entry.h+' ('+source+')'+(shortMeaning?' — '+shortMeaning.slice(0,36)+(shortMeaning.length>36?'…':''):'');
+     for(let i=0;i<Math.min(3,candidates.length);i++){
+      const id=candidates[i],entry=index.entries[id],preview=previews.find(x=>x.id===id)?.meaning||'';
+      const source=entry.source==='krupnik'?'Krupnik & Silbermann':'Jastrow';
+      const shortMeaning=String(preview||'').replace(/\s+/g,' ').trim();
+      const recommended=!!preferredId&&entryId(entry)===preferredId;
+      const title=(recommended?'• ':'')+entry.h+' ('+source+')'+(shortMeaning?' — '+shortMeaning.slice(0,48)+(shortMeaning.length>48?'…':''):'')+(recommended?' · Likely in this context':'');
       children.push({id:'jastrow-community-vote-'+i,title,label:title,onClickEvent:'reader.context_menu_item_clicked'});
      }
-     if(children.length)await Otzaria.call('reader.addContextMenuItem',{id:'jastrow-community-votes',type:'submenu',title:'Vote for a meaning',label:'Vote for a meaning',icon:'thumb_like_24_regular',contexts:['reader-selection','reader-page-shape-selection'],children,showWhen:{selectionContainsAny:variants}});
+     if(children.length)await Otzaria.call('reader.addContextMenuItem',{id:'jastrow-community-votes',type:'submenu',title:'Choose a meaning',label:'Choose a meaning',contexts:['reader-selection','reader-page-shape-selection'],children,showWhen:{selectionContainsAny:variants}});
      else await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-votes'});
     }else await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-votes'});
     if(res?.success===false&&res.error?.code!=='error.not_found')console.warn('Dictionary filtered lookup registration failed',res.error?.code);
@@ -48,8 +61,5 @@
  function offer(payload){latestPayload=payload||{};removalRequested=false;pending={payload:latestPayload,revision:++revision};update().catch(()=>console.warn('Dictionary filtered lookup unavailable'));}
  Otzaria.on('reader.selection_changed',offer);
  window.DictionaryCommunity?.ready?.then(()=>{if(window.DictionaryCommunity.enabled&&latestPayload)offer(latestPayload);}).catch(()=>{});
- Otzaria.on('plugin.boot',async()=>{
-  const before=revision;
-  try{const res=await Otzaria.call('reader.getSelection');if(before===revision&&res?.success)offer(res.data||{});}catch{}
- });
+ Otzaria.on('plugin.boot',async()=>{const before=revision;try{const res=await Otzaria.call('reader.getSelection');if(before===revision&&res?.success)offer(res.data||{});}catch{}});
 })();
