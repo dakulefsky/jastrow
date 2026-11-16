@@ -1,3 +1,11 @@
+# 1.11.13 / 1.3.1 — scholarly contextual recommendations and Mesores HaShas
+
+The right-click voting submenu in both dictionaries now uses restrained scholarly language and a simple typographic marker. It offers at most three candidate meanings, with no thumbs-up icon, vote counts, or artificial ordering labels. A candidate is marked only when the community service returns a qualified **contextual** preference for the current surrounding words; a general word preference is never presented as the likely meaning in a particular passage. Selecting any candidate still records a contextual vote.
+
+Contextual consensus now excludes an installation when its votes from similarly matching but different passages support competing meanings with nearly equal strength. This prevents ambiguous cross-context evidence from being resolved by arbitrary database row order. Added Worker regression coverage for that case.
+
+The offline reader test now reflects the two-slot menu contract and the actual no-network fallback: without community access, only Quick result is offered; its message opens the full dictionary. English and Hebrew help text now matches the real menu. Existing Mesores HaShas cross-references remain local research aids and do not influence community ranking.
+
 # 1.11.9 — design-token polish and race-safe community sync
 
 Both dictionaries receive a coordinated visual refinement: clearer reading hierarchy, quieter surfaces, more consistent spacing, improved focus states, reduced-motion support and better narrow-screen behavior. The optional shared community client now keeps the offline vote queue race-safe when a newer choice is made during synchronization, caps the queue without silently discarding saved votes, aborts active requests on permission revocation, and preserves a granted permission after a temporary host permission-read failure. Without the host-granted `network.access` permission, both dictionaries retain their ordinary offline lookup and hide all community controls. With permission granted, votes can be queued locally while offline or during a service outage, then synchronized after connectivity returns. Revoking permission removes community controls; granting it again restores them without requiring a plugin restart.
