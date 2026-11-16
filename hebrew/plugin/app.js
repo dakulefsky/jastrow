@@ -62,7 +62,7 @@ document.addEventListener('keydown',e=>{if(e.key==='/'&&!e.target.closest('input
 window.DictionaryCommunity?.ready?.then(()=>{if(window.DictionaryCommunity.enabled&&lastSearched)search(lastSearched,false);}).catch(()=>{});
 if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-permission-granted',()=>{if(lastSearched)search(lastSearched,false);});
 if(window.Otzaria){
- Otzaria.on('ui.messageClicked',p=>{const word=p?.payload?.dictionaryWord;if(typeof word==='string')search(word);});Otzaria.on('reader.context_menu_item_clicked',p=>{if(p.itemId==='aramaic-hebrew-open'){const word=HebrewLookup.selectionText(p);activeReaderContext={word,selection:p.selection||null};search(word);}});Otzaria.on('theme.changed',theme);Otzaria.on('plugin.boot',p=>{theme(p.theme);$('selected').hidden=false;});}
+ Otzaria.on('ui.messageClicked',p=>{const word=p?.payload?.dictionaryWord;if(typeof word==='string')search(word);});Otzaria.on('theme.changed',theme);Otzaria.on('plugin.boot',p=>{theme(p.theme);$('selected').hidden=false;});}
 function theme(t){const c=t?.colorScheme;if(c){for(const [k,v] of Object.entries({'color-surface':c.surface,'color-on-surface':c.onSurface,'color-surface-container':c.surfaceContainerHigh||c.surface,'color-muted':c.onSurfaceVariant,'color-outline':c.outline,'color-primary':c.primary,'color-on-primary':c.onPrimary}))if(v)document.documentElement.style.setProperty('--'+k,v);}if(t?.typography?.uiFontFamily)document.body.style.fontFamily=t.typography.uiFontFamily+',system-ui,sans-serif';}
 
 $('help-toggle').onclick=()=>{const open=$('help').hidden;$('help').hidden=!open;$('help-toggle').setAttribute('aria-expanded',String(open));};
