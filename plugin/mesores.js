@@ -183,7 +183,8 @@
   const winner=preferences[0];
   return preferences.every(id=>id===winner)?{preferredEntryId:winner,occurrences:preferences.length}:null;
  }
-\n const api={connectionType:CONNECTION_TYPE,tokenize,containsPhrase,find,attach,clear,propagatedPreference};
+
+ const api={connectionType:CONNECTION_TYPE,tokenize,containsPhrase,find,attach,clear,propagatedPreference};
  root.MesoresHaShas=api;
  if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window==='undefined'?globalThis:window);
