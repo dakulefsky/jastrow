@@ -39,17 +39,17 @@ const {chromium,executablePath}=require('./browser_support.cjs');
    selection={text:source,renderedSelectedText:display};
    await reader.evaluate(word=>{const n=document.querySelector('#word');n.textContent=word;const range=document.createRange();range.selectNodeContents(n);getSelection().removeAllRanges();getSelection().addRange(range);document.querySelector('#message').replaceChildren();},display);
    await bg.evaluate(text=>events['reader.selection_changed'].forEach(f=>f({selection:{text}})),source);
-   await reader.waitForFunction(({word,count})=>window.registeredWord===word&&window.menuItems.length===count,{word:display,count:known?2:0});
+   await reader.waitForFunction(({word,count})=>window.registeredWord===word&&window.menuItems.length===count,{word:display,count:known?1:0});
    await reader.locator('#word').click({button:'right'});
   }
-  await choose('לצפרא');assert.equal(await reader.locator('#menu button').count(),2);
+  await choose('לצפרא');assert.equal(await reader.locator('#menu button').count(),1,'without network permission, only the offline quick-lookup item remains');
   for(const item of items.values())assert.deepEqual(item.contexts,['reader-selection','reader-page-shape-selection']);
   await reader.getByRole('button',{name:'Aramaic → Eng. — Quick result',exact:true}).click();await reader.locator('#message button').waitFor();
   assert.match(messages.at(-1).message,/possible prefixed form/);assert.equal(messages.at(-1).tapPayload.dictionaryWord,'לצפרא');
   await reader.locator('#message button').click();await reader.waitForFunction(()=>document.body.dataset.openedWord==='לצפרא');await foreground.locator('.unified-meanings').waitFor();assert.equal(await foreground.locator('#query').inputValue(),'לצפרא');assert.match(await foreground.locator('#entry').innerText(),/morning/);
   for(const [display,source] of [['דמילתייכו','דמילתייכו'],['בֵּיתֵיהוֹן','ביתיהון'],['כתבינן','כתבינן']]){
    await choose(display,source);await reader.getByRole('button',{name:'Aramaic → Eng. — Quick result',exact:true}).click();await reader.locator('#message button').waitFor();assert.match(messages.at(-1).message,/possible inflected form/);assert.equal(messages.at(-1).tapPayload.dictionaryWord,display);
-   await reader.getByRole('button',{name:'Open dictionary',exact:true}).click();await reader.waitForFunction(word=>document.body.dataset.openedWord===word,display);await foreground.locator('.unified-meanings').waitFor();assert.equal(await foreground.locator('#query').inputValue(),display);assert.match(await foreground.locator('.prefix-analysis').innerText(),/Possible base forms/);
+   await reader.locator('#message button').click();await reader.waitForFunction(word=>document.body.dataset.openedWord===word,display);await foreground.locator('.unified-meanings').waitFor();assert.equal(await foreground.locator('#query').inputValue(),display);assert.match(await foreground.locator('.prefix-analysis').innerText(),/Possible base forms/);
   }
   // Real redirect-only entry: אבדתא → אברתא (hyssop). Previously the
   // registered quick action returned without showing anything.
