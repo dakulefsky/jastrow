@@ -24,18 +24,39 @@
   if(left.length&&right.length)specs.push({label:'AROUND',value:left[left.length-1]+'|'+right[0],weight:4});
   return specs;
  }
- async function contextFeatures(selection){
-  const specs=contextFeatureSpecs(selection),subtle=root.crypto?.subtle;
-  if(specs.length<2||!subtle?.digest||typeof TextEncoder!=='function')return [];
+ async function hashSpecs(specs,group){
+  const subtle=root.crypto?.subtle;
+  if(!Array.isArray(specs)||specs.length<2||!subtle?.digest||typeof TextEncoder!=='function')return [];
   const output=[];
   for(const item of specs){
-   try{const digest=await subtle.digest('SHA-256',new TextEncoder().encode('otzaria-context-v1|'+item.label+'|'+item.value));const hash=[...new Uint8Array(digest)].map(value=>value.toString(16).padStart(2,'0')).join('');output.push({hash,weight:item.weight});}
-   catch{return [];}
+   try{
+    const digest=await subtle.digest('SHA-256',new TextEncoder().encode('otzaria-context-v1|'+item.label+'|'+item.value));
+    const hash=[...new Uint8Array(digest)].map(value=>value.toString(16).padStart(2,'0')).join('');
+    output.push({hash,weight:item.weight,group});
+   }catch{return [];}
   }
   return output;
  }
+ async function contextFeatures(selection,word){
+  const specs=contextFeatureSpecs(selection);
+  if(specs.length<2)return [];
+  const local=await hashSpecs(specs,'local');
+  if(local.length<2)return [];
+  const output=[...local];
+  if(word&&root.DictionaryMesorat?.getParallelProfiles){
+   try{
+    const profiles=await root.DictionaryMesorat.getParallelProfiles(selection,word,specs);
+    for(let i=0;i<Math.min(4,profiles.length);i++){
+     const group=/^[A-Za-z0-9_-]{1,32}$/.test(profiles[i]?.group||'')?profiles[i].group:'mesora-'+i;
+     const parallel=await hashSpecs(profiles[i]?.specs,group);
+     if(parallel.length>=2)output.push(...parallel);
+    }
+   }catch{}
+  }
+  return output.slice(0,25);
+ }
  function hasContext(selection){return contextFeatureSpecs(selection).length>=2;}
- function contextKey(features){return features.map(item=>item.hash+':'+item.weight).sort().join('.');}
+ function contextKey(features){return features.map(item=>(item.group||'default')+':'+item.hash+':'+item.weight).sort().join('.');}
 
  function idFor(entry){if(!entry||!(entry.r||entry.rid))return '';return (entry.source==='krupnik'||entry.rid?'krupnik:':'jastrow:')+(entry.r||entry.rid);}
  function validQueueItem(item){return item&&typeof item.word==='string'&&typeof item.entryId==='string'&&typeof item.voterId==='string'&&typeof item.id==='string'&&typeof item.token==='string'&&(!item.scope||item.scope==='general'||item.scope==='contextual')&&(item.scope!=='contextual'||Array.isArray(item.contextFeatures));}
@@ -79,7 +100,7 @@
   if(!permissionGranted||!networkAvailable||!Array.isArray(entries)||!entries.length)return {preferredEntryId:null,entries,preferenceScope:null};
   const ids=entries.map(x=>typeof x==='string'?x:idFor(x)).filter(Boolean).slice(0,40);if(!ids.length)return {preferredEntryId:null,entries,preferenceScope:null};
   try{
-   const features=selection?await contextFeatures(selection):[];
+   const features=selection?await contextFeatures(selection,word):[];
    const url=new URL(API+'/v1/suggestions');url.searchParams.set('word',normalize(word));url.searchParams.set('ids',ids.join(','));
    if(features.length)url.searchParams.set('context',JSON.stringify(features));
    const response=await request(url,{headers:{Accept:'application/json'}},timeoutMs.rank);if(!response.ok)throw Error('rank');
@@ -126,7 +147,7 @@
   if(!permissionGranted)return {ok:false,reason:'permission'};
   const normalized=normalize(word),entryId=typeof entry==='string'?entry:idFor(entry),voter=voterId(),scope=options.scope==='contextual'?'contextual':'general';
   if(!normalized||!entryId||!voter)return {ok:false,reason:'unavailable'};
-  const features=scope==='contextual'?await contextFeatures(options.selection):[];
+  const features=scope==='contextual'?await contextFeatures(options.selection,normalized):[];
   if(scope==='contextual'&&features.length<2)return {ok:false,reason:'context_unavailable'};
   const payload={word:normalized,entryId,voterId:voter,scope,...(scope==='contextual'?{contextFeatures:features}:{})};
   if(!networkAvailable&&!await checkHealth())return permissionGranted?enqueue(normalized,entryId,voter,scope,features):{ok:false,reason:'permission'};
