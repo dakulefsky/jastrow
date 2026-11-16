@@ -157,7 +157,33 @@
   if(matches.length)render(target,matches,language);
   return matches;
  }
- const api={connectionType:CONNECTION_TYPE,tokenize,containsPhrase,find,attach,clear};
+
+ // Use an established contextual consensus from a Mesores-linked occurrence
+ // only when every exact occurrence agrees. This never creates a vote.
+ async function propagatedPreference(selection,word,entries,rank){
+  if(!selection||!word||!Array.isArray(entries)||!entries.length||typeof rank!=='function')return null;
+  const query=tokenize(word);if(!query.length)return null;
+  const passages=await passagesFor(selection),preferences=[];
+  for(const passage of passages){
+   const tokens=tokenize(passage.text);
+   for(let i=0;i<=tokens.length-query.length;i++){
+    let exact=true;for(let j=0;j<query.length;j++)if(tokens[i+j]!==query[j]){exact=false;break;}
+    if(!exact)continue;
+    const before=tokens.slice(Math.max(0,i-8),i).join(' ');
+    const after=tokens.slice(i+query.length,i+query.length+8).join(' ');
+    if(!before||!after)continue;
+    const linkedSelection={sourceRange:{beforeText:{raw:before},afterText:{raw:after}}};
+    let ranked;
+    try{ranked=await rank(word,entries,linkedSelection);}catch{continue;}
+    if(ranked?.preferenceScope!=='contextual'||!ranked.preferredEntryId)continue;
+    preferences.push(ranked.preferredEntryId);
+   }
+  }
+  if(!preferences.length)return null;
+  const winner=preferences[0];
+  return preferences.every(id=>id===winner)?{preferredEntryId:winner,occurrences:preferences.length}:null;
+ }
+\n const api={connectionType:CONNECTION_TYPE,tokenize,containsPhrase,find,attach,clear,propagatedPreference};
  root.MesoresHaShas=api;
  if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window==='undefined'?globalThis:window);
