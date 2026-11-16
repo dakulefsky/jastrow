@@ -8,7 +8,7 @@ function mesoratSelection(selection,event){
  return {...s,
   currentBookId:s.currentBookId||s.bookId||s.currentBook||p.currentBookId||p.bookId||p.currentBook,
   currentIndex:Number.isInteger(s.currentIndex)?s.currentIndex:Number.isInteger(s.sectionIndex)?s.sectionIndex:Number.isInteger(p.currentIndex)?p.currentIndex:p.sectionIndex,
-  type:s.type||p.type,source:s.source||p.source
+  type:s.type||s.currentType||p.type||p.currentType,source:s.source||s.currentSource||p.source||p.currentSource
  };
 }
 
