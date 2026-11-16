@@ -73,4 +73,19 @@ assert.equal((await unavailable.api.find(selection,'נפקא')).length,1,'a fail
 
 assert.equal(loaded.api.tokenize('נִפְקָא').join(','),'נפקא','niqqud is ignored');
 assert.equal(loaded.api.connectionType,'MESORAT_HASHAS');
+
+const rankedPropagation=await loaded.api.propagatedPreference(selection,'נפקא',[{rid:'KRU1'},{rid:'KRU2'}],async(_word,_entries,context)=>{
+ assert(context.sourceRange.beforeText.raw&&context.sourceRange.afterText.raw,'linked occurrence must be ranked using its own surrounding words');
+ return {preferredEntryId:'krupnik:KRU1',preferenceScope:'contextual'};
+});
+assert.equal(rankedPropagation.preferredEntryId,'krupnik:KRU1','an established contextual meaning propagates from linked exact occurrences');
+assert.equal(rankedPropagation.occurrences,2,'each exact occurrence in the linked passages is checked');
+const conflictingPropagation=await loaded.api.propagatedPreference(selection,'נפקא',[{rid:'KRU1'},{rid:'KRU2'}],async(_word,_entries,context)=>({
+ preferredEntryId:context.sourceRange.beforeText.raw.includes('הכא')?'krupnik:KRU2':'krupnik:KRU1',
+ preferenceScope:'contextual'
+}));
+assert.equal(conflictingPropagation,null,'conflicting linked occurrences must not produce a propagated recommendation');
+const generalOnly=await loaded.api.propagatedPreference(selection,'נפקא',[{rid:'KRU1'}],async()=>({preferredEntryId:'krupnik:KRU1',preferenceScope:'general'}));
+assert.equal(generalOnly,null,'general word preference must never propagate as a contextual meaning');
+
 console.log('Mesores HaShas client checks passed.');
