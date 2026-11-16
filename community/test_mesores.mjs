@@ -5,12 +5,12 @@ import vm from 'node:vm';
 const source = await readFile(new URL('../plugin/mesores.js', import.meta.url), 'utf8');
 
 async function setup({links=[],items=[],currentRef=null,failMethod=null}={}){
- const calls=[];
+ const calls=[];let activeFailure=failMethod;
  const root={
   Otzaria:{
    call:async(method,args)=>{
     calls.push({method,args});
-    if(method===failMethod)return {success:false,error:{code:'permission_denied'}};
+    if(method===activeFailure)return {success:false,error:{code:'permission_denied'}};
     if(method==='reader.getCurrentRef')return {success:!!currentRef,data:currentRef};
     if(method==='library.getLinks')return {success:true,data:{truncated:false,links}};
     if(method==='library.getLinkContent')return {success:true,data:{items}};
@@ -20,7 +20,7 @@ async function setup({links=[],items=[],currentRef=null,failMethod=null}={}){
  };
  const context={window:root,globalThis:root};
  vm.runInNewContext(source,context);
- return {api:root.MesoresHaShas,calls};
+ return {api:root.MesoresHaShas,calls,setFailMethod(value){activeFailure=value;}};
 }
 
 const selection={bookId:'ברכות',sectionIndex:42};
@@ -62,8 +62,14 @@ const fallbackResults=await fallback.api.find({},'נפקא');
 assert.equal(fallbackResults.length,1,'the active reader reference supplies a missing book and line');
 assert.equal(fallback.calls.find(x=>x.method==='library.getLinks').args.startLine,9);
 
-const unavailable=await setup({failMethod:'library.getLinks'});
+const unavailable=await setup({
+ failMethod:'library.getLinks',
+ links:[{connectionType:'MESORAT_HASHAS',targetTitle:'פסחים',targetLine:5,targetHeRef:'פסחים דף ה'}],
+ items:[{content:'<p>הדין נפקא מינה הכא</p>'}]
+});
 assert.equal((await unavailable.api.find(selection,'נפקא')).length,0,'permission and host errors fail closed');
+unavailable.setFailMethod(null);
+assert.equal((await unavailable.api.find(selection,'נפקא')).length,1,'a failed lookup is not cached; retry works after access is restored');
 
 assert.equal(loaded.api.tokenize('נִפְקָא').join(','),'נפקא','niqqud is ignored');
 assert.equal(loaded.api.connectionType,'MESORAT_HASHAS');
