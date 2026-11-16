@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { webcrypto } from 'node:crypto';
 
+const mesoratSource = await readFile(new URL('../plugin/mesorat.js', import.meta.url), 'utf8');
 const source = await readFile(new URL('../plugin/community.js', import.meta.url), 'utf8');
 
 async function load({ health = true, voteStatus = 200, permission = true, online = true } = {}) {
@@ -40,6 +41,7 @@ async function load({ health = true, voteStatus = 200, permission = true, online
     }
   };
   root.crypto = context.crypto;
+  vm.runInNewContext(mesoratSource, context);
   vm.runInNewContext(source, context);
   await root.DictionaryCommunity.ready;
   return { api: root.DictionaryCommunity, events, calls, root };
@@ -72,6 +74,74 @@ assert(!JSON.stringify(sentContextVote.body).includes('אמר ליה רב יוס
 await contextProbe.api.rank('נפקא', [{rid:'KRU1'}], contextSelection);
 const rankedRequest = contextProbe.calls.find(call => new URL(call.url).pathname === '/v1/suggestions');
 assert(new URL(rankedRequest.url).searchParams.has('context'), 'context fingerprint is supplied when ranking similar usage');
+
+
+async function mesoratParallelContextIsLocalAndConservative(){
+ const calls=[],requests=[],values=new Map();
+ const targetPassage='רב אמר נפקא ממנו';
+ const weakPassage='דאמר רב נפקא מינה';
+ const links=[
+  {sourceLine:41,targetTitle:'מסכת יבמות',targetLine:12,targetLineEnd:null,targetIsUserBook:false,targetCategoryId:7,connectionType:'MESORAT_HASHAS'},
+  {sourceLine:41,targetTitle:'פירוש רש״י',targetLine:3,targetLineEnd:null,targetIsUserBook:false,targetCategoryId:8,connectionType:'COMMENTARY'},
+  {sourceLine:41,targetTitle:'מסכת כתובות',targetLine:22,targetLineEnd:null,targetIsUserBook:false,targetCategoryId:7,connectionType:'MESORAT_HASHAS'}
+ ];
+ const root={
+  DICTIONARY_COMMUNITY_API:'https://otzaria-dictionary-community.dakulefsky.workers.dev',
+  navigator:{onLine:true},
+  dispatchEvent:()=>{},addEventListener:()=>{},
+  Otzaria:{
+   call:async(method,args)=>{
+    calls.push({method,args});
+    if(method==='app.getGrantedPermissions')return {success:true,data:{permissions:['network.access']}};
+    if(method==='app.getConnectivity')return {success:true,data:{isOfflineMode:false,isOnline:true}};
+    if(method==='reader.getCurrentRef')return {success:true,data:{currentBookId:'Yevamos',currentIndex:41,currentType:'text',currentSource:'library'}};
+    if(method==='library.getLinks')return {success:true,data:{truncated:false,links}};
+    if(method==='library.getLinkContent')return {success:true,data:{items:args.links.map(link=>({content:link.targetTitle==='מסכת יבמות'?targetPassage:weakPassage}))}};
+    throw new Error('Unexpected host API '+method);
+   },
+   on:()=>{}
+  }
+ };
+ const context={
+  window:root,globalThis:root,URL,Event,AbortSignal,TextEncoder,
+  localStorage:{getItem:key=>values.get(key)||null,setItem:(key,value)=>values.set(key,value)},
+  crypto:{randomUUID:()=> 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',subtle:webcrypto.subtle},
+  fetch:async(input,init={})=>{
+   const url=String(input);
+   if(url.endsWith('/health'))return new Response(JSON.stringify({ok:true}),{status:200});
+   if(url.endsWith('/v1/vote')){requests.push(JSON.parse(init.body));return new Response(JSON.stringify({accepted:true,votes:1}),{status:200});}
+   if(new URL(url).pathname==='/v1/suggestions')return new Response(JSON.stringify({preferredEntryId:null,suggestions:[],totalVotes:0}),{status:200});
+   throw new Error('Unexpected request '+url);
+  }
+ };
+ root.crypto=context.crypto;
+ vm.runInNewContext(mesoratSource,context);
+ vm.runInNewContext(source,context);
+ const api=root.DictionaryCommunity;await api.ready;
+ const selection={
+  currentBookId:'Yevamos',currentIndex:41,currentType:'text',currentSource:'library',
+  sourceRange:{beforeText:{raw:'רב אמר '},afterText:{raw:' ממנו אמר'}}
+ };
+ const features=await api.contextFeatures(selection,'נפקא');
+ assert(features.some(item=>item.group==='local'),'the original local context must always remain available');
+ assert(features.some(item=>item.group==='mesora-0'),'a strong exact-word Mesorat passage should add a parallel context profile');
+ assert(!features.some(item=>item.group==='mesora-1'),'a weakly related linked passage must be ignored');
+ const linkCall=calls.find(item=>item.method==='library.getLinks');
+ assert.equal(linkCall.args.bookId,'Yevamos');
+ assert.equal(linkCall.args.startLine,41);
+ assert.equal(linkCall.args.endLine,41);
+ assert.deepEqual(linkCall.args.connectionTypes,['MESORAT_HASHAS'],'only Mesorat HaShas links may be queried');
+ const contentCall=calls.find(item=>item.method==='library.getLinkContent');
+ assert.equal(contentCall.args.links.length,2,'commentary links must not be fetched');
+ assert(contentCall.args.links.every(item=>item.targetTitle!=='פירוש רש״י'),'only destinations returned as Mesorat HaShas may be fetched');
+ const vote=await api.vote('נפקא','krupnik:KRU1',{scope:'contextual',selection});
+ assert.equal(vote.ok,true);
+ assert.equal(requests.length,1);
+ assert(requests[0].contextFeatures.some(item=>item.group==='mesora-0'),'a contextual vote should retain the matched parallel profile');
+ assert(!JSON.stringify(requests[0]).includes(targetPassage),'linked Gemara text must never leave the device');
+ assert(!JSON.stringify(requests[0]).includes('מסכת יבמות'),'linked book title must never leave the device');
+}
+await mesoratParallelContextIsLocalAndConservative();
 
 const denied = await load({ permission: false });
 assert.equal(denied.api.enabled, false);
