@@ -75,18 +75,33 @@
   return permissionRead;
  }
  function markOffline(){setNetwork(false);}
- async function rank(word,entries,selection){
+ async function rank(word,entries,selection,parallelContexts=[]){
   if(!permissionGranted||!networkAvailable||!Array.isArray(entries)||!entries.length)return {preferredEntryId:null,entries,preferenceScope:null};
   const ids=entries.map(x=>typeof x==='string'?x:idFor(x)).filter(Boolean).slice(0,40);if(!ids.length)return {preferredEntryId:null,entries,preferenceScope:null};
   try{
-   const features=selection?await contextFeatures(selection):[];
-   const url=new URL(API+'/v1/suggestions');url.searchParams.set('word',normalize(word));url.searchParams.set('ids',ids.join(','));
-   if(features.length)url.searchParams.set('context',JSON.stringify(features));
-   const response=await request(url,{headers:{Accept:'application/json'}},timeoutMs.rank);if(!response.ok)throw Error('rank');
-   const data=await response.json();if(!permissionGranted)return {preferredEntryId:null,entries,preferenceScope:null};
-   const preferred=data.preferredEntryId;if(!preferred)return {preferredEntryId:null,entries,preferenceScope:null,votes:Number(data.totalVotes)||0,contextualVotes:Number(data.contextualVotes)||0};
-   const reordered=[...entries].sort((a,b)=>{const aid=typeof a==='string'?a:idFor(a),bid=typeof b==='string'?b:idFor(b);return aid===preferred?-1:bid===preferred?1:0;});
-   return {preferredEntryId:preferred,entries:reordered,votes:Number(data.totalVotes)||0,contextualVotes:Number(data.contextualVotes)||0,preferenceScope:data.preferenceScope||null};
+   const groups=[],seen=new Set(),selections=[selection,...(Array.isArray(parallelContexts)?parallelContexts.slice(0,1):[])];
+   for(const candidate of selections){
+    if(!candidate)continue;
+    const features=await contextFeatures(candidate);
+    if(features.length<2)continue;
+    const key=contextKey(features);if(seen.has(key))continue;
+    seen.add(key);groups.push(features);
+   }
+   if(!groups.length)groups.push([]);
+   let generalFallback=null;
+   for(const features of groups){
+    const url=new URL(API+'/v1/suggestions');url.searchParams.set('word',normalize(word));url.searchParams.set('ids',ids.join(','));
+    if(features.length)url.searchParams.set('context',JSON.stringify(features));
+    const response=await request(url,{headers:{Accept:'application/json'}},timeoutMs.rank);if(!response.ok)throw Error('rank');
+    const data=await response.json();if(!permissionGranted)return {preferredEntryId:null,entries,preferenceScope:null};
+    const preferred=data.preferredEntryId;if(!preferred)continue;
+    const reordered=[...entries].sort((a,b)=>{const aid=typeof a==='string'?a:idFor(a),bid=typeof b==='string'?b:idFor(b);return aid===preferred?-1:bid===preferred?1:0;});
+    const result={preferredEntryId:preferred,entries:reordered,votes:Number(data.totalVotes)||0,contextualVotes:Number(data.contextualVotes)||0,preferenceScope:data.preferenceScope||null};
+    if(data.preferenceScope==='contextual')return result;
+    if(data.preferenceScope==='general'){if(!generalFallback)generalFallback=result;continue;}
+    return result;
+   }
+   return generalFallback||{preferredEntryId:null,entries,preferenceScope:null};
   }catch{markOffline();return {preferredEntryId:null,entries,preferenceScope:null};}
  }
  function enqueue(word,entryId,voter,scope='general',features=[]){
@@ -126,15 +141,54 @@
   if(!permissionGranted)return {ok:false,reason:'permission'};
   const normalized=normalize(word),entryId=typeof entry==='string'?entry:idFor(entry),voter=voterId(),scope=options.scope==='contextual'?'contextual':'general';
   if(!normalized||!entryId||!voter)return {ok:false,reason:'unavailable'};
-  const features=scope==='contextual'?await contextFeatures(options.selection):[];
-  if(scope==='contextual'&&features.length<2)return {ok:false,reason:'context_unavailable'};
-  const payload={word:normalized,entryId,voterId:voter,scope,...(scope==='contextual'?{contextFeatures:features}:{})};
-  if(!networkAvailable&&!await checkHealth())return permissionGranted?enqueue(normalized,entryId,voter,scope,features):{ok:false,reason:'permission'};
+  const groups=[];
+  if(scope==='contextual'){
+   const primary=await contextFeatures(options.selection);
+   if(primary.length<2)return {ok:false,reason:'context_unavailable'};
+   groups.push(primary);
+   const parallelSelections=Array.isArray(options.parallelContexts)?options.parallelContexts.slice(0,1):[];
+   for(const selection of parallelSelections){
+    const features=await contextFeatures(selection);
+    if(features.length>=2&&!groups.some(group=>contextKey(group)===contextKey(features)))groups.push(features);
+   }
+  }else groups.push([]);
+  const queueRemaining=(start)=>{
+   let saved=0,reason=null;
+   for(let i=start;i<groups.length;i++){
+    const queued=enqueue(normalized,entryId,voter,scope,groups[i]);
+    if(queued.ok)saved++;else reason=queued.reason||'unavailable';
+   }
+   return {saved,reason};
+  };
+  if(!networkAvailable&&!await checkHealth()){
+   if(!permissionGranted)return {ok:false,reason:'permission'};
+   const queued=queueRemaining(0);
+   return queued.saved?{ok:true,queued:true,scope,partial:!!queued.reason}:{ok:false,reason:queued.reason||'unavailable'};
+  }
   if(!permissionGranted)return {ok:false,reason:'permission'};
-  if(!(await checkConnectivity()))return permissionGranted?enqueue(normalized,entryId,voter,scope,features):{ok:false,reason:'permission'};
-  if(!permissionGranted)return {ok:false,reason:'permission'};
-  try{const response=await request(API+'/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)},timeoutMs.vote);if(!permissionGranted)return {ok:false,reason:'permission'};if(!response.ok)throw Error('vote');const data=await response.json();if(typeof data.accepted!=='boolean')throw Error('vote response');return {ok:data.accepted===true,duplicate:data.duplicate===true,votes:Number(data.votes)||0,scope};}
-  catch{if(!permissionGranted)return {ok:false,reason:'permission'};markOffline();return enqueue(normalized,entryId,voter,scope,features);}
+  let accepted=false,duplicate=false,lastVotes=0,queuedCount=0;
+  for(let i=0;i<groups.length;i++){
+   if(!permissionGranted)return {ok:false,reason:'permission'};
+   if(!(await checkConnectivity())){
+    markOffline();
+    const queued=queueRemaining(i);queuedCount+=queued.saved;
+    return accepted||duplicate||queuedCount?{ok:accepted||duplicate||queuedCount>0,duplicate:!accepted&&duplicate,queued:queuedCount>0,scope,partial:!!queued.reason}:{ok:false,reason:queued.reason||'unavailable'};
+   }
+   const features=groups[i],payload={word:normalized,entryId,voterId:voter,scope,...(scope==='contextual'?{contextFeatures:features}:{})};
+   try{
+    const response=await request(API+'/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)},timeoutMs.vote);
+    if(!permissionGranted)return {ok:false,reason:'permission'};
+    if(!response.ok)throw Error('vote');
+    const data=await response.json();if(typeof data.accepted!=='boolean'||(!data.accepted&&!data.duplicate))throw Error('vote response');
+    if(data.accepted)accepted=true;if(data.duplicate)duplicate=true;lastVotes=Math.max(lastVotes,Number(data.votes)||0);
+   }catch{
+    if(!permissionGranted)return {ok:false,reason:'permission'};
+    markOffline();
+    const queued=queueRemaining(i);queuedCount+=queued.saved;
+    return accepted||duplicate||queuedCount?{ok:accepted||duplicate||queuedCount>0,duplicate:!accepted&&duplicate,queued:queuedCount>0,scope,partial:!!queued.reason}:{ok:false,reason:queued.reason||'unavailable'};
+   }
+  }
+  return {ok:accepted,duplicate,queued:false,votes:lastVotes,scope};
  }
  function permissionsFrom(payload){if(Array.isArray(payload?.permissions))return payload.permissions;if(Array.isArray(payload?.data?.permissions))return payload.data.permissions;return null;}
  function permissionChanged(payload){const permissions=permissionsFrom(payload);if(permissions){permissionEpoch++;setPermission(permissions.includes('network.access'));if(permissionGranted)checkHealth().then(ok=>ok&&flushQueue()).catch(()=>{});}else refreshPermissions();}
