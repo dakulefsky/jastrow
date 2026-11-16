@@ -20,7 +20,7 @@ async function english() {
       lookup:()=>({ids:[0,1,2],prefixMatches:[]}),matchingQuery:()=> 'נפקא'
     },
     JastrowReadingView:{records:async(_index,id)=>[{id,meanings:[{text:'English candidate meaning '+id}]}]},
-    DictionaryCommunity:{enabled:true,ready:Promise.resolve(true),vote:async(word,entry,options)=>{votes.push({word,entry,options});if(failVote){root.dispatchEvent(new Event('dictionary-community-offline'));return {ok:true,queued:true,duplicate:false};}if(failSave)return {ok:false,reason:'storage'};return {ok:true,duplicate:false};}},
+    DictionaryCommunity:{enabled:true,ready:Promise.resolve(true),hasContext:()=>true,rank:async(word,entries)=>({preferredEntryId:'jastrow:A00001',preferenceScope:'contextual',entries}),vote:async(word,entry,options)=>{votes.push({word,entry,options});if(failVote){root.dispatchEvent(new Event('dictionary-community-offline'));return {ok:true,queued:true,duplicate:false};}if(failSave)return {ok:false,reason:'storage'};return {ok:true,duplicate:false};}},
     Otzaria:{
       on:(name,fn)=>{if(!events.has(name))events.set(name,[]);events.get(name).push(fn);},
       call:async(method,args)=>{calls.push({method,args});if(method==='reader.addContextMenuItem'){items.set(args.id,args);for(const child of args.children||[])items.set(child.id,child);}if(method==='reader.removeContextMenuItem'){items.delete(args.id);}return {success:true};}
@@ -35,7 +35,7 @@ async function english() {
   await settle();
   assert(items.has('jastrow-community-vote-0')&&items.has('jastrow-community-vote-1')&&items.has('jastrow-community-vote-2'),'English right-click menu must expose candidate votes');
   assert.equal(calls.filter(x=>x.method==='reader.addContextMenuItem').length,2,'English menu must use only two top-level slots: lookup and one voting submenu');
-  assert.equal(items.get('jastrow-community-votes').type,'submenu','English vote choices must be grouped under one submenu');
+  assert.equal(items.get('jastrow-community-votes').type,'submenu','English vote choices must be grouped under one submenu');assert.equal(items.get('jastrow-community-votes').title,'Choose a meaning');assert.equal(items.get('jastrow-community-votes').icon,undefined,'the scholarly submenu must not use a thumbs-up icon');
   assert.match(items.get('jastrow-community-vote-1').title,/Here 2 · נפקא \(Jastrow\)/,'English right-click choice should clearly identify the vote action, position, word, and source');assert.match(items.get('jastrow-community-vote-1').title,/English candidate meaning 1/,'English menu choices must retain a short distinguishing meaning');assert(items.get('jastrow-community-vote-1').title.length<=100,'English menu title should remain compact');
   for(const fn of events.get('reader.context_menu_item_clicked')||[])await fn({itemId:'jastrow-community-vote-1',selection:{renderedSelectedText:'נפקא',sourceRange:{beforeText:{raw:'תא שמע '},afterText:{raw:' תנן'}}}});
   assert.equal(votes[0].word,'נפקא');assert.equal(votes[0].entry,entries[1],'English menu item must vote for its exact candidate');assert.equal(votes[0].options.scope,'contextual','English right-click votes must default to contextual scope');assert(votes[0].options.selection.sourceRange,'English right-click vote must carry its local text anchor');
@@ -56,7 +56,7 @@ async function hebrew() {
   const entries=[{word:'נפקא',rid:'KRU0001',parts:[{meaning:'משמעות ראשונה'}]},{word:'נפקא',rid:'KRU0002',parts:[{meaning:'משמעות שנייה'}]},{word:'נפקא',rid:'KRU0003',parts:[{meaning:'משמעות שלישית'}]}];
   const root={
     HebrewLookup:{selectionText:p=>p?.selection?.renderedSelectedText||p?.selectedText||'',lookup:()=>entries},
-    DictionaryCommunity:{enabled:true,ready:Promise.resolve(true),vote:async(word,entry,options)=>{votes.push({word,entry,options});if(failVote){root.dispatchEvent(new Event('dictionary-community-offline'));return {ok:true,queued:true,duplicate:false};}if(failSave)return {ok:false,reason:'storage'};return {ok:true,duplicate:false};}},
+    DictionaryCommunity:{enabled:true,ready:Promise.resolve(true),hasContext:()=>true,rank:async(word,entries)=>({preferredEntryId:'krupnik:KRU0002',preferenceScope:'contextual',entries}),vote:async(word,entry,options)=>{votes.push({word,entry,options});if(failVote){root.dispatchEvent(new Event('dictionary-community-offline'));return {ok:true,queued:true,duplicate:false};}if(failSave)return {ok:false,reason:'storage'};return {ok:true,duplicate:false};}},
     Otzaria:{
       on:(name,fn)=>{if(!events.has(name))events.set(name,[]);events.get(name).push(fn);},
       call:async(method,args)=>{calls.push({method,args});if(method==='reader.addContextMenuItem'){items.set(args.id,args);for(const child of args.children||[])items.set(child.id,child);}if(method==='reader.removeContextMenuItem'){items.delete(args.id);}return {success:true};}
@@ -71,8 +71,8 @@ async function hebrew() {
   await settle();
   assert(items.has('aramaic-hebrew-community-vote-0')&&items.has('aramaic-hebrew-community-vote-1')&&items.has('aramaic-hebrew-community-vote-2'),'Hebrew right-click menu must expose candidate votes');
   assert.equal(calls.filter(x=>x.method==='reader.addContextMenuItem').length,2,'Hebrew menu must use only two top-level slots: lookup and one voting submenu');
-  assert.equal(items.get('aramaic-hebrew-community-votes').type,'submenu','Hebrew vote choices must be grouped under one submenu');
-  assert.match(items.get('aramaic-hebrew-community-vote-1').title,/כאן 2 · נפקא/,'Hebrew right-click choice should clearly identify the vote action and position');assert.match(items.get('aramaic-hebrew-community-vote-1').title,/משמעות שנייה/,'Hebrew menu choices must retain a short distinguishing meaning');assert(items.get('aramaic-hebrew-community-vote-1').title.length<=100,'Hebrew menu title should remain compact');
+  assert.equal(items.get('aramaic-hebrew-community-votes').type,'submenu','Hebrew vote choices must be grouped under one submenu');assert.equal(items.get('aramaic-hebrew-community-votes').title,'בחירת משמעות');assert.equal(items.get('aramaic-hebrew-community-votes').icon,undefined,'the scholarly submenu must not use a thumbs-up icon');
+  assert.match(items.get('aramaic-hebrew-community-vote-1').title,/^• נפקא/,'Hebrew contextual recommendation should use a restrained scholarly marker');assert.match(items.get('aramaic-hebrew-community-vote-1').title,/מסתבר בהקשר זה/,'Hebrew recommendation must be explicitly context-scoped');assert.match(items.get('aramaic-hebrew-community-vote-1').title,/משמעות שנייה/,'Hebrew menu choices must retain a short distinguishing meaning');assert(items.get('aramaic-hebrew-community-vote-1').title.length<=100,'Hebrew menu title should remain compact');
   for(const fn of events.get('reader.context_menu_item_clicked')||[])await fn({itemId:'aramaic-hebrew-community-vote-1',selection:{renderedSelectedText:'נפקא',sourceRange:{beforeText:{raw:'תא שמע '},afterText:{raw:' תנן'}}}});
   assert.equal(votes[0].word,'נפקא');assert.deepEqual({...votes[0].entry},{rid:'KRU0002'},'Hebrew menu item must vote for its exact Krupnik ID');assert.equal(votes[0].options.scope,'contextual','Hebrew right-click votes must default to contextual scope');assert(votes[0].options.selection.sourceRange,'Hebrew right-click vote must carry its local text anchor');
   assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,1,'successful vote may be acknowledged');
