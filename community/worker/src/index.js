@@ -11,17 +11,18 @@ const json = (data, status = 200) => new Response(JSON.stringify(data), {
 const normalizeWord = value => String(value || "").normalize("NFKD")
   .replace(/\p{M}/gu, "").replace(/[^א-ת]/g, "").slice(0, 100);
 const validId = value => typeof value === "string" && /^(?:krupnik|jastrow):[A-Za-z0-9._-]{1,80}$/.test(value);
-const validFeatures = value => Array.isArray(value) && value.length > 0 && value.length <= 6 &&
+const validFeatures = value => Array.isArray(value) && value.length > 0 && value.length <= 25 &&
   value.every(item => item && typeof item.hash === "string" && /^[a-f0-9]{64}$/.test(item.hash) &&
-    [1, 3, 4].includes(item.weight)) &&
-  new Set(value.map(item => item.hash)).size === value.length;
+    [1, 3, 4].includes(item.weight) &&
+    (item.group === undefined || (typeof item.group === "string" && /^[A-Za-z0-9_-]{1,32}$/.test(item.group)))) &&
+  new Set(value.map(item => (item.group || "default") + "|" + item.hash)).size === value.length;
 function parseFeatures(value) {
   if (!value) return [];
   try { const parsed = JSON.parse(value); return validFeatures(parsed) ? parsed : []; }
   catch { return []; }
 }
 function contextKey(features) {
-  return features.map(item => item.hash + ":" + item.weight).sort().join(".");
+  return features.map(item => (item.group || "default") + ":" + item.hash + ":" + item.weight).sort().join(".");
 }
 async function hashVoter(value) {
   const bytes = new TextEncoder().encode(value);
@@ -38,30 +39,46 @@ async function canonicalize(db, ids) {
 }
 async function contextualPreference(db, word, ids, canonical, features) {
   if (!features.length || !ids.length) return { entryId: null, votes: 0 };
-  const weights = new Map(features.map(item => [item.hash, item.weight]));
-  const totalWeight = features.reduce((sum, item) => sum + item.weight, 0);
-  const placeholders = features.map(() => "?").join(",");
+  // Query profiles are independent: a local passage and each Mesorat-linked
+  // passage get their own denominator, so adding references cannot dilute a match.
+  const profiles = new Map();
+  for (const item of features) {
+    const group = item.group || "default";
+    if (!profiles.has(group)) profiles.set(group, new Map());
+    profiles.get(group).set(item.hash, item.weight);
+  }
+  const allHashes = [...new Set([...profiles.values()].flatMap(profile => [...profile.keys()]))];
+  if (!allHashes.length) return { entryId: null, votes: 0 };
+  const placeholders = allHashes.map(() => "?").join(",");
   const rows = await db.prepare(`SELECT cv.vote_id, cv.canonical_id, cv.voter_hash,
       GROUP_CONCAT(cvf.feature_hash) AS matched_features
     FROM context_votes cv
     JOIN context_vote_features cvf ON cvf.vote_id = cv.vote_id
     WHERE cv.surface_word = ? AND cvf.feature_hash IN (${placeholders})
     GROUP BY cv.vote_id
-    LIMIT 1000`).bind(word, ...features.map(item => item.hash)).all();
+    LIMIT 1000`).bind(word, ...allHashes).all();
   const candidateCanonical = new Set([...canonical.values()]);
   const bestByVoter = new Map();
   for (const row of rows.results || []) {
     if (!candidateCanonical.has(row.canonical_id)) continue;
-    const matched = String(row.matched_features || "").split(",").filter(Boolean);
-    const matchedWeight = [...new Set(matched)].reduce((sum, feature) => sum + (weights.get(feature) || 0), 0);
-    const similarity = matchedWeight / Math.max(totalWeight, 1);
-    // One weak neighboring word is not enough to alter a dictionary result.
-    if (matched.length < 2 || similarity < 0.35) continue;
+    const matched = new Set(String(row.matched_features || "").split(",").filter(Boolean));
+    let bestSimilarity = 0;
+    for (const weights of profiles.values()) {
+      const matchedHashes = [...weights.keys()].filter(hash => matched.has(hash));
+      // Each individual profile needs multiple overlapping clues; one word alone
+      // can never transfer a preference into a different usage.
+      if (matchedHashes.length < 2) continue;
+      const totalWeight = [...weights.values()].reduce((sum, weight) => sum + weight, 0);
+      const matchedWeight = matchedHashes.reduce((sum, hash) => sum + (weights.get(hash) || 0), 0);
+      const similarity = matchedWeight / Math.max(totalWeight, 1);
+      if (similarity >= 0.35 && similarity > bestSimilarity) bestSimilarity = similarity;
+    }
+    if (!bestSimilarity) continue;
     const existing = bestByVoter.get(row.voter_hash);
-    // One installation may vote in several related passages, but it contributes
-    // only its strongest match to any one lookup.
-    if (!existing || similarity > existing.similarity)
-      bestByVoter.set(row.voter_hash, { canonicalId: row.canonical_id, similarity });
+    // One installation may have voted in several parallel passages, but it
+    // contributes only its strongest match to any one lookup.
+    if (!existing || bestSimilarity > existing.similarity)
+      bestByVoter.set(row.voter_hash, { canonicalId: row.canonical_id, similarity: bestSimilarity });
   }
   const grouped = new Map();
   for (const [voterHash, vote] of bestByVoter) {
