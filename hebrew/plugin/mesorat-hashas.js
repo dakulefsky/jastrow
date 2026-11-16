@@ -36,8 +36,8 @@
    Number.isInteger(selection.sectionIndex)?selection.sectionIndex:
    Number.isInteger(section?.currentIndex)?section.currentIndex:section?.sectionIndex;
   if(typeof currentBookId!=='string'||!currentBookId.trim()||!Number.isInteger(currentIndex)||currentIndex<0)return null;
-  const type=selection.type||section?.type;
-  const source=selection.source||section?.source;
+  const type=selection.type||selection.currentType||section?.type||section?.currentType;
+  const source=selection.source||selection.currentSource||section?.source||section?.currentSource;
   if(type&&type!=='text')return null;
   if(source&&source!=='library')return null;
   return {selected,left:left.slice(-2),right:right.slice(0,2),bookId:currentBookId.trim(),line:currentIndex};
