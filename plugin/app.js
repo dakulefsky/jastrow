@@ -102,8 +102,9 @@ async function search(word, more=false){
   if(query&&!JastrowSearch.validWord(query)){setStatus('Enter a Hebrew or Aramaic word, or up to 12 words, without English letters or numbers.');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a single Aramaic or Hebrew word to see its dictionary matches.'));currentId=null;return;}
   const activeSelection=activeReaderContext&&JastrowSearch.normalize(query)===JastrowSearch.normalize(activeReaderContext.word)?activeReaderContext.selection:null;
   if(window.DictionaryCommunity?.enabled&&activeSelection&&window.MesoratHashasContext?.findParallelContext){
-    activeMesoratContext=await MesoratHashasContext.findParallelContext(query,activeSelection);
+    const parallelContext=await MesoratHashasContext.findParallelContext(query,activeSelection);
     if(serial!==requestSerial)return;
+    activeMesoratContext=parallelContext;
   }
   let r=JastrowSearch.lookup(index,query,limit,'length',includeJastrow);
   if(window.DictionaryCommunity?.enabled&&r.ids.length>1&&r.kind!=='suggestions'){
