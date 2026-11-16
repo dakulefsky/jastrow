@@ -25,7 +25,7 @@
   const result=phrase.ids.length?phrase:S.lookup(index,word,100,'length',false);
   if(['suggestions','invalid','empty'].includes(result.kind))return [];
   let ids=result.ids,communityPreferred=false;
-  if(root.DictionaryCommunity?.enabled&&ids.length>1){const ranked=await root.DictionaryCommunity.rank(word,ids.map(id=>index.entries[id]),selection);if(ranked.preferredEntryId){ids=ranked.entries.map(entry=>index.entries.indexOf(entry));communityPreferred=true;}}
+  if(root.DictionaryCommunity?.enabled&&ids.length>1){const ranked=await root.DictionaryCommunity.rank(word,ids.map(id=>index.entries[id]),selection);if(ranked.preferredEntryId){ids=ranked.entries.map(entry=>index.entries.indexOf(entry));communityPreferred=ranked.preferenceScope==='contextual';}}
   const records=(await Promise.all(ids.map(id=>root.JastrowReadingView.records(index,id,load,word,{phrase:phrase.ids.length>0,lookupWord:S.matchingQuery(index,result.prefixMatches,id,word)})))).flat();
   const merged=root.DictionaryMeanings.merge(records,word).map(group=>({
    text:group.text,spelling:group.spelling,
@@ -56,7 +56,7 @@
    const heading=[item.selectedWord,item.spelling,item.label].filter((s,n,a)=>s&&a.indexOf(s)===n).join(' · ');
    return (i+1)+'. **'+short(item.text).replace(/\*/g,'')+'**'+(heading?'\n'+heading.replace(/\*/g,''):'');
   });
-  return [word+(items[0]?.communityPreferred?' — community-preferred match':'')+(prefixed?' — possible '+(typeof prefixed==='string'?prefixed:'prefixed form'):''),...lines,
+  return [word+(items[0]?.communityPreferred?' — likely in this context':'')+(prefixed?' — possible '+(typeof prefixed==='string'?prefixed:'prefixed form'):''),...lines,
    ...(prefixed?['Base-word meanings; check the grammatical form in context.']:[]),
    items.length>2?'More meanings — click to open dictionary':'Click for full entry and sources'].join('\n');
  }
