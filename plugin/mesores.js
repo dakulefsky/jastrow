@@ -68,7 +68,7 @@
    const request={startLine:source.line,endLine:source.line,connectionTypes:[CONNECTION_TYPE]};
    if(source.bookUid)request.bookUid=source.bookUid;else request.bookId=source.bookId;
    const response=await root.Otzaria.call('library.getLinks',request);
-   if(!response?.success||!Array.isArray(response.data?.links))return [];
+   if(!response?.success||!Array.isArray(response.data?.links))return null;
    const seen=new Set();
    const links=response.data.links.filter(link=>{
     if(String(link?.connectionType||'').toUpperCase()!==CONNECTION_TYPE)return false;
@@ -78,7 +78,7 @@
    }).slice(0,MAX_LINKS);
    if(!links.length)return [];
    const loaded=await root.Otzaria.call('library.getLinkContent',{links:links.map(contentRequest)});
-   if(!loaded?.success||!Array.isArray(loaded.data?.items))return [];
+   if(!loaded?.success||!Array.isArray(loaded.data?.items))return null;
    return links.map((link,index)=>{
     const item=loaded.data.items[index]||{};
     if(item.error||typeof item.content!=='string')return null;
@@ -94,7 +94,7 @@
   })();
   cache.set(key,promise);
   while(cache.size>32)cache.delete(cache.keys().next().value);
-  try{return await promise;}catch{cache.delete(key);return [];}
+  try{const result=await promise;if(result===null){cache.delete(key);return [];}return result;}catch{cache.delete(key);return [];}
  }
  function makeExcerpt(tokens,index,length){
   const start=Math.max(0,index-12),end=Math.min(tokens.length,index+length+18);
