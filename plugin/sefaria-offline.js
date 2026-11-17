@@ -96,7 +96,8 @@
   const data=await loadTractate(meta);
   const indices=parsed.side?[parsed.dafIndex]:[parsed.dafIndex,parsed.dafIndex+1];
   if(parsed.side&&parsed.line!==null){
-   const paragraphs=collectSide(data,parsed.dafIndex),paragraph=paragraphs[parsed.line-1];
+   const side=data.text[parsed.dafIndex];
+   const paragraph=Array.isArray(side)?side[parsed.line-1]:(parsed.line===1?side:null);
    if(typeof paragraph==='string'&&paragraph.trim())return {
     text:paragraph,scope:'paragraph',reference:parsed.ref,
     dafReference:meta.title+' '+parsed.daf+parsed.side,tractate:meta.title,
