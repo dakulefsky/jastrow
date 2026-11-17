@@ -7,6 +7,7 @@ on:
       - 'plugin/sefaria-evidence.js'
       - 'hebrew/plugin/sefaria-evidence.js'
       - 'plugin/test_sefaria_evidence.cjs'
+      - 'plugin/test_translation_evidence.cjs'
       - 'plugin/mesores.js'
       - 'hebrew/plugin/mesores.js'
       - 'community/test_mesores.mjs'
@@ -61,6 +62,7 @@ jobs:
           node --check plugin/sefaria-evidence.js
           node --check hebrew/plugin/sefaria-evidence.js
           node plugin/test_sefaria_evidence.cjs
+          node plugin/test_translation_evidence.cjs
           node --check plugin/mesores.js
           node --check hebrew/plugin/mesores.js
           node community/test_mesores.mjs
