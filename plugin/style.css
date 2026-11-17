@@ -309,3 +309,9 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:0;box-sha
 /* Subtle marker for exact Sefaria Jastrow word-form associations in the active passage. */
 .sefaria-evidence-note{display:block;margin-top:4px;font-size:.72rem;font-weight:500;line-height:1.4;color:var(--color-muted,#777970)}
 .result.sefaria-associated{border-color:#cfc5af}
+
+.word-passages{margin-top:12px;padding-top:10px;border-top:1px solid var(--line,#e5dfd4)}
+.word-passages>summary{cursor:pointer;color:var(--forest,#29483d);font-size:.82rem;font-weight:600}
+.word-passages>p{margin:8px 0;color:var(--muted,#777970);font-size:.78rem}
+.word-passages blockquote{margin:7px 0;padding:8px 11px;border-inline-start:2px solid #b49a6b;background:#f8f6f0;border-radius:4px;line-height:1.8}
+.word-passages mark{background:#eee2c7;color:inherit;border-radius:2px;padding:0 2px}
