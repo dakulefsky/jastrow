@@ -2,7 +2,7 @@
  'use strict';
  const DATA_ROOT='data/sefaria-bavli/';
  const MAX_CACHED_TRACTATES=3,MAX_CACHED_DAFS=12;
- let manifestPromise=null;
+ let manifestPromise=null,manifestData=null;
  const tractateCache=new Map(),tractatePromises=new Map(),preparedDafCache=new Map();
 
  function normalizeName(value){
@@ -48,6 +48,7 @@
    manifestPromise=loadScript('manifest.js').then(()=>{
     const data=root.SefariaOfflineTranslationManifest;
     if(data?.formatVersion!==1||!Array.isArray(data.tractates))throw Error('Unsupported offline translation manifest');
+    manifestData=data;
     return data;
    }).catch(error=>{manifestPromise=null;throw error;});
   }
@@ -96,6 +97,14 @@
   while(preparedDafCache.size>MAX_CACHED_DAFS)preparedDafCache.delete(preparedDafCache.keys().next().value);
   return value;
  }
+ function isDafPrepared(reference,selection){
+  const parsed=parseReference(reference||selection?.currentRef,selection?.currentBook);
+  if(!parsed||!manifestData)return false;
+  const meta=findTractate(manifestData,parsed,selection);
+  if(!meta)return false;
+  const key=(meta.slug||meta.title)+'|'+parsed.daf;
+  return tractateCache.has(meta.slug||meta.title)&&preparedDafCache.has(key);
+ }
  async function getPassage(reference,selection){
   const parsed=parseReference(reference||selection?.sourceRange?.ref||selection?.currentRef,selection?.currentBook);
   if(!parsed)return {text:'',reason:'unsupported_reference'};
@@ -136,9 +145,9 @@
    tractate:meta.title,versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'};
  }
  function clearCache(){
-  manifestPromise=null;tractateCache.clear();tractatePromises.clear();preparedDafCache.clear();
+  manifestPromise=null;manifestData=null;tractateCache.clear();tractatePromises.clear();preparedDafCache.clear();
   delete root.SefariaOfflineTranslationManifest;delete root.SefariaOfflineTranslationData;
  }
- root.SefariaOfflineTranslation={prepareDaf,getPassage,parseReference,clearCache};
+ root.SefariaOfflineTranslation={prepareDaf,getPassage,isDafPrepared,parseReference,clearCache};
  if(typeof module!=='undefined'&&module.exports)module.exports=root.SefariaOfflineTranslation;
 })(typeof window==='undefined'?globalThis:window);
