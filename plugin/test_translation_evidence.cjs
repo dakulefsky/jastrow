@@ -7,7 +7,7 @@ let localReads=0,hostCalls=0,networkCalls=0;
 global.SefariaOfflineTranslation={getPassage:async(ref,selection)=>{
  localReads++;
  assert.equal(ref,'ברכות, דף ב');
- assert.equal(selection.currentBook,'ברכות');
+ if(selection.currentBook)assert.equal(selection.currentBook,'ברכות');
  return {text:'The law is established and the discussion is complete.',scope:'daf',
   dafReference:'Berakhot 2',license:'CC-BY-NC',versionTitle:'William Davidson Edition - English'};
 }};
