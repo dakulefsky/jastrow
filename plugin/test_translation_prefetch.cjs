@@ -22,6 +22,9 @@ async function run(path){
  const fire=async(id)=>{const timer=timers.get(id);assert(timer,'expected timer');timers.delete(id);assert.equal(timer.delay,2000);await timer.fn();};
  const onlyTimer=()=>{assert.equal(timers.size,1);return [...timers.keys()][0];};
 
+ // The background worker waits until Otzaria is actually on the reading screen.
+ await emit('navigation.changed',{screen:'reading'});
+ calls.length=0;
  // Non-Bavli locations do not schedule any preparation.
  await emit('reader.current_ref_changed',current);
  assert.equal(timers.size,0);
@@ -66,6 +69,9 @@ async function run(path){
  await emit('navigation.changed',{screen:'library'});
  assert.equal(timers.has(pending),false);
  assert.equal(prepared.length,1);
+ current={currentRef:'ברכות, דף ז',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:15};
+ await emit('reader.current_ref_changed',current);
+ assert.equal(timers.size,0,'reader location changes outside the reading screen must be ignored');
 }
 
 (async()=>{
