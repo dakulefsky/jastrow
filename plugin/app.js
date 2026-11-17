@@ -2,7 +2,7 @@
 window.JASTROW_CHUNKS=window.JASTROW_CHUNKS||{};
 const index=window.JASTROW_INDEX, $=id=>document.getElementById(id);
 let resultIds=[], currentId=null, query='',limit=60, requestSerial=0, entrySerial=0;
-let includeJastrow=false,activeReaderContext=null,activeSefariaEntryIds=new Set();
+let includeJastrow=false,activeReaderContext=null;
 const chunkPromises=new Map();
 function loadChunk(n){
   if(window.JASTROW_CHUNKS[n])return Promise.resolve(window.JASTROW_CHUNKS[n]);
@@ -74,7 +74,7 @@ function paintMatches(r,word,serial){
  document.body.classList.toggle('single-lookup',r.kind!=='suggestions');
  resultIds=r.ids;$('results').replaceChildren();$('more').hidden=r.total<=limit;
  $('match-count').textContent=r.total?r.total.toLocaleString()+(r.total===1?' match':' matches'):'';
- for(const id of r.ids){const b=el('button',JastrowSearch.displayHeadword(index.entries[id],word),'result');b.dir='rtl';b.dataset.id=id;b.setAttribute('aria-pressed','false');b.onclick=()=>showEntry(id,true,null,word);if(activeSefariaEntryIds.has('jastrow:'+index.entries[id].r)){b.classList.add('sefaria-associated');b.append(el('small','Sefaria passage-specific word-form match','sefaria-evidence-note'));}$('results').append(b);}
+ for(const id of r.ids){const b=el('button',JastrowSearch.displayHeadword(index.entries[id],word),'result');b.dir='rtl';b.dataset.id=id;b.setAttribute('aria-pressed','false');b.onclick=()=>showEntry(id,true,null,word);$('results').append(b);}
  $('ranking-note').hidden=r.total<2||r.kind==='suggestions'||$('match-order').value!=='length';
  fillMatchPreviews(r.ids,serial);
 }
@@ -91,7 +91,7 @@ async function search(word, more=false){
   if(words.length>1){await searchWords(words,serial);return;}
   const normalized=JastrowSearch.normalize(query);
   if(query&&!JastrowSearch.validWord(query)){setStatus('Enter a Hebrew or Aramaic word, or up to 12 words, without English letters or numbers.');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a single Aramaic or Hebrew word to see its dictionary matches.'));currentId=null;return;}
-  let r=JastrowSearch.lookup(index,query,limit,'length',includeJastrow);activeSefariaEntryIds=new Set();if(activeReaderContext?.selection&&r.ids.length&&r.kind!=='suggestions'&&window.SefariaEvidence){const ordered=await SefariaEvidence.reorder(query,r.ids.map(id=>index.entries[id]).filter(entry=>entry&&!entry.rid&&entry.source!=='krupnik'),activeReaderContext.selection);if(serial!==requestSerial)return;activeSefariaEntryIds=new Set(ordered.entryIds);if(ordered.entryIds.length){const preferred=new Set(ordered.entryIds),byId=new Map(r.ids.map(id=>[index.entries[id].r,id]));const matching=r.ids.filter(id=>preferred.has('jastrow:'+index.entries[id].r));r={...r,ids:[...matching,...r.ids.filter(id=>!matching.includes(id))]};}}paintMatches(r,query,serial);
+  let r=JastrowSearch.lookup(index,query,limit,'length',includeJastrow);paintMatches(r,query,serial);
   try{history.replaceState(null,'','#'+new URLSearchParams({word:query}));}catch{}
   if(!normalized){setStatus('Enter an Aramaic or Hebrew word in Hebrew letters.');$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a word in Hebrew letters to begin.'));currentId=null;return;}
   if(!r.ids.length){currentId=null;$('match-count').textContent='0 matches';$('entry').replaceChildren(el('h2','No matching entry'),el('p','Try a different spelling or the dictionary headword. Not every inflected form is indexed.'));setStatus('No entry found for '+query+'.');return;}
