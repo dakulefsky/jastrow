@@ -30,6 +30,10 @@ global.fetch=async url=>{
  const cached=await evidence.lookup('אָמַר',entries,{currentRef:'ברכות דף ב'});
  assert.deepEqual(cached.entryIds,['jastrow:J001']);
  assert.equal(calls.length,2,'repeated lookup should use the cache');
+ const alternate=await evidence.lookup('אָמַר',[{r:'J003',h:'אָמַר III',alt:['אָמַר I']}],{currentRef:'ברכות דף ב'});
+ assert.deepEqual(alternate.entryIds,['jastrow:J003'],'alternate Jastrow headwords should resolve to their entry');
+ const krupnik=await evidence.lookup('אָמַר',[{rid:'K001',word:'אָמַר I'}],{currentRef:'ברכות דף ב'});
+ assert.deepEqual(krupnik.entryIds,['krupnik:K001'],'exact shared headwords can be surfaced as a Krupnik cross-check');
  delete require.cache[require.resolve(file)];
  let deniedFetches=0;
  global.Otzaria={call:async method=>method==='app.getConnectivity'?{success:true,data:{isOnline:true}}:{success:true,data:{permissions:[]}}};
