@@ -59,7 +59,6 @@
  }
  host.on('reader.current_ref_changed',schedule);
  host.on('plugin.boot',refresh);
- host.on('plugin.resumed',refresh);
  host.on('navigation.changed',payload=>{
   if(payload?.screen==='reading'){active=true;refresh();}
   else{active=false;cancel();preparedKey='';}
