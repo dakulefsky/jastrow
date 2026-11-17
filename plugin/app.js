@@ -74,7 +74,7 @@ function paintMatches(r,word,serial){
  document.body.classList.toggle('single-lookup',r.kind!=='suggestions');
  resultIds=r.ids;$('results').replaceChildren();$('more').hidden=r.total<=limit;
  $('match-count').textContent=r.total?r.total.toLocaleString()+(r.total===1?' match':' matches'):'';
- for(const id of r.ids){const b=el('button',JastrowSearch.displayHeadword(index.entries[id],word),'result');b.dir='rtl';b.dataset.id=id;b.setAttribute('aria-pressed','false');b.onclick=()=>showEntry(id,true,null,word);if(activeSefariaEntryIds.has(DictionaryCommunity?.idFor?.(index.entries[id])||'')){b.classList.add('sefaria-associated');b.append(el('small','Sefaria passage-specific word-form match','sefaria-evidence-note'));}$('results').append(b);}
+ for(const id of r.ids){const b=el('button',JastrowSearch.displayHeadword(index.entries[id],word),'result');b.dir='rtl';b.dataset.id=id;b.setAttribute('aria-pressed','false');b.onclick=()=>showEntry(id,true,null,word);if(activeSefariaEntryIds.has('jastrow:'+index.entries[id].r)){b.classList.add('sefaria-associated');b.append(el('small','Sefaria passage-specific word-form match','sefaria-evidence-note'));}$('results').append(b);}
  $('ranking-note').hidden=r.total<2||r.kind==='suggestions'||$('match-order').value!=='length';
  fillMatchPreviews(r.ids,serial);
 }
@@ -147,7 +147,6 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
    target.append(panel);
   }
  }
- renderCommunityVotes(result,word,target,records);
 for(const failed of expanded.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
  if(result.total>ids.length){const more=el('button','More matching entries');more.type='button';more.onclick=()=>{limit+=60;search(word,true);};target.append(more);}
 }
