@@ -41,19 +41,27 @@ async function search(q,record=true,preserveReaderContext=false){const serial=++
  if(active&&window.SefariaEvidence?.compareTranslation){
   const candidates=groupList.map((g,i)=>({id:String(i),text:[...new Set(g.items.map(({p})=>p.english||'').filter(Boolean))].join('; ')})).filter(candidate=>candidate.text);
   if(candidates.length){
-   SefariaEvidence.compareTranslation(q,candidates,active).then(evidence=>{
+   (async()=>{
+    const evidence=await SefariaEvidence.compareTranslation(q,candidates,active);
     if(serial!==searchSerial)return;
-    const match=(evidence.matches||[])[0];
-    if(match){
-     const card=cardsByGroup.get(match.id);
+    const sourceMatch=(evidence.matches||[])[0]||null;
+    let parallelMatch=null;
+    if(window.MesoresHaShas?.propagatedPreference){
+     parallelMatch=await MesoresHaShas.propagatedPreference(active,q,candidates);
+     if(serial!==searchSerial)return;
+    }
+    const preferredId=parallelMatch?.preferredEntryId&&(!sourceMatch||parallelMatch.preferredEntryId===sourceMatch.id)
+     ?parallelMatch.preferredEntryId:sourceMatch?.id;
+    if(preferredId){
+     const card=cardsByGroup.get(preferredId);
      if(card){
-      card.append(el('small','מומלץ','recommended-label'));
+      if(!card.querySelector('.recommended-label'))card.append(el('small','מומלץ','recommended-label'));
       card.classList.add('recommended-meaning');
       out.insertBefore(card,out.querySelector('.meaning-card'));
       out.querySelectorAll('.meaning-card .number').forEach((node,index)=>node.textContent=String(index+1));
      }
     }
-   }).catch(()=>{});
+   })().catch(()=>{});
   }
  }
 }
