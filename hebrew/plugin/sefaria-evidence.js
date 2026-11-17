@@ -135,10 +135,18 @@
   }
   return variants.some(needle=>haystack.some((_,i)=>needle.every((w,j)=>haystack[i+j]===w)));
  }
+
+ function translationReference(selection){
+  const s=selection||{},ranges=[s.sourceRange,s.renderedRange,s.sections?.[0]?.sourceRange,s.sections?.[0]?.renderedRange];
+  for(const range of ranges)for(const value of [range?.ref,range?.currentRef,range?.reference]){
+   if(typeof value==='string'&&value.trim())return value.trim();
+  }
+  return currentReference(selection);
+ }
  async function compareTranslation(word,candidates,selection){
   if(!Array.isArray(candidates)||!candidates.length)return {matches:[],reason:'no_candidates'};
   if(!(await permitted()))return {matches:[],reason:'permission'};
-  const ref=await currentReference(selection);if(!ref)return {matches:[],reason:'no_reference'};
+  const ref=await translationReference(selection);if(!ref)return {matches:[],reason:'no_reference'};
   const candidateKey=candidates.map(c=>String(c?.id||'')+'='+String(c?.text||'')).join('|');
   const key=normalizeRef(ref)+'|'+stripMarks(word)+'|'+candidateKey;
   const cached=translationCache.get(key);
@@ -151,7 +159,7 @@
    const version=versions.find(v=>String(v?.versionTitle||'').trim()===TRANSLATION_VERSION);
    if(!version)return {matches:[],reason:'translation_unavailable'};
    const license=String(version.license||'').toUpperCase().replace(/_/g,'-');
-   if(license&&!['CC-BY-NC','CC BY-NC','CC-BY-NC-SA','CC BY-NC-SA'].includes(license))
+   if(!['CC-BY-NC','CC BY-NC'].includes(license))
     return {matches:[],reason:'license_unrecognized',license};
    const paragraphs=[];
    const collect=value=>{if(typeof value==='string')paragraphs.push(normalizeEnglish(value));else if(Array.isArray(value))value.forEach(collect);};
@@ -164,7 +172,7 @@
     if(matched)matches.push({id:String(candidate.id),matchedPhrase:matched,matchType:matched.includes(' ')?'phrase':'word'});
    }
    const value={matches,reason:matches.length?'candidate_wording_found':'no_candidate_wording_found',
-    reference:ref,canonicalReference:canonical,versionTitle:TRANSLATION_VERSION,license};
+    reference:ref,canonicalReference:canonical,versionTitle:TRANSLATION_VERSION,license,scope:/[:.]\\d+$/.test(ref)?'paragraph':'daf'};
    translationCache.set(key,{value,expires:Date.now()+CACHE_TTL});
    while(translationCache.size>MAX_CACHE)translationCache.delete(translationCache.keys().next().value);
    return value;
