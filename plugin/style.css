@@ -305,3 +305,7 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:0;box-sha
  html{scroll-behavior:auto}
  *,*::before,*::after{transition:none!important;animation:none!important}
 }
+
+/* Subtle marker for exact Sefaria Jastrow word-form associations in the active passage. */
+.sefaria-evidence-note{display:block;margin-top:4px;font-size:.72rem;font-weight:500;line-height:1.4;color:var(--color-muted,#777970)}
+.result.sefaria-associated{border-color:#cfc5af}
