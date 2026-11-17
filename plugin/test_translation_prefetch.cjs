@@ -15,14 +15,23 @@ async function run(path){
   console,
   setTimeout(fn,delay){const id=++nextTimer;timers.set(id,{fn,delay});return id;},
   clearTimeout(id){timers.delete(id);},
-  SefariaOfflineTranslation:{async prepareDaf(location){prepared.push({...location});}}
+  SefariaOfflineTranslation:{
+   parseReference(ref,book){const m=String(ref||'').match(/^(.*?)\\s+(\\d+)([ab])(?::(\\d+))?$/i);return m?{book:m[1]||book,daf:Number(m[2]),side:m[3],line:m[4]?Number(m[4]):null}:null;},
+   async prepareDaf(location){prepared.push({...location});}
+  }
  };
  vm.runInNewContext(fs.readFileSync(path,'utf8'),{window:root,globalThis:root,console});
  const emit=async(name,payload)=>{for(const fn of listeners.get(name)||[])await fn(payload);};
  const fire=async(id)=>{const timer=timers.get(id);assert(timer,'expected timer');timers.delete(id);assert.equal(timer.delay,2000);await timer.fn();};
  const onlyTimer=()=>{assert.equal(timers.size,1);return [...timers.keys()][0];};
 
+ // Non-Bavli books are ignored without scheduling any work.
+ current={currentRef:'Genesis 1:1',currentBook:'Genesis',currentBookId:'genesis',currentIndex:0};
+ await emit('reader.current_ref_changed',current);
+ assert.equal(timers.size,0);
+
  // A location event only arms a timer. It does not begin preparation.
+ current={currentRef:'Berakhot 2a:1',currentBook:'Berakhot',currentBookId:'berakhot',currentIndex:0};
  await emit('reader.current_ref_changed',current);
  const first=onlyTimer();
  current={currentRef:'Berakhot 2a:2',currentBook:'Berakhot',currentBookId:'berakhot',currentIndex:1};
