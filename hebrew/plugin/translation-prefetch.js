@@ -64,7 +64,7 @@
    else cancel();
   }catch{cancel();}
  }
- host.on('plugin.boot',()=>{active=true;isReading=true;refresh();});
+ host.on('plugin.boot',async()=>{active=true;isReading=true;await refresh();});
  host.on('reader.current_ref_changed',schedule);
  host.on('navigation.changed',payload=>{
   if(payload?.screen==='reading'){isReading=true;active=true;refresh();}
