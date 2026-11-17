@@ -60,6 +60,7 @@
  async function show(word,context){
   const serial=++requestSerial;
   if(String(word).trim().toLowerCase()==='who created this?'){try{await root.Otzaria.call('ui.showMessage',{message:'Daniel Avrahom'});}catch{console.warn('Quick dictionary lookup unavailable');}return;}
+  if(!root.HebrewLookup.valid(String(word||'')))return;
   const selection=context?.selection&&typeof context.selection==='object'?context.selection:context;
   const readerContext=await captureReaderContext(context);
   const items=await meanings(word,readerContext||selection);
