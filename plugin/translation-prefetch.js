@@ -29,7 +29,6 @@
    currentRef:dafReference(location.currentRef),
    currentBook:String(location.currentBook||''),
    currentBookId:String(location.currentBookId||''),
-   currentIndex:Number.isInteger(location.currentIndex)?location.currentIndex:null
   };
   scheduledKey=key;
   timer=root.setTimeout(async()=>{
