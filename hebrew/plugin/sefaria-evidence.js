@@ -73,10 +73,12 @@
   }catch{}
   return '';
  }
- async function compareTranslation(word,candidates,selection){
+ async function compareTranslation(word,candidates,selection,options){
   if(!Array.isArray(candidates)||!candidates.length)return {matches:[],reason:'no_candidates'};
   const ref=await translationReference(selection);
   if(!ref)return {matches:[],reason:'no_reference'};
+  if(options?.preparedOnly&&!root.SefariaOfflineTranslation?.isDafPrepared?.(ref,selection))
+   return {matches:[],reason:'not_prepared',reference:ref,source:'offline'};
   const candidateKey=candidates.map(candidate=>String(candidate?.id||'')+'='+String(candidate?.text||'')).join('|');
   const key=[ref.toLowerCase().replace(/\s+/g,' ').trim(),selection?.currentBookId||'',selection?.currentBook||'',stripMarks(word),candidateKey].join('|');
   const cached=translationCache.get(key);
