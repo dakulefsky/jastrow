@@ -10,7 +10,7 @@
   if(selection&&root.SefariaEvidence?.compareTranslation){
    const candidates=items.map((item,index)=>({id:String(index),text:item.englishGloss||''})).filter(item=>item.text);
    if(candidates.length){
-    const evidence=await root.SefariaEvidence.compareTranslation(word,candidates,selection);
+    const evidence=await root.SefariaEvidence.compareTranslation(word,candidates,selection,{preparedOnly:true});
     const matched=new Map((evidence.matches||[]).map(item=>[item.id,item]));
     items.forEach((item,index)=>{const match=matched.get(String(index));if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
    }
