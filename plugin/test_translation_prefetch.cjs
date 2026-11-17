@@ -34,20 +34,20 @@ async function run(path){
  current={currentRef:'Berakhot 2a:1',currentBook:'Berakhot',currentBookId:'berakhot',currentIndex:0};
  await emit('reader.current_ref_changed',current);
  const first=onlyTimer();
- current={currentRef:'Berakhot 2a:2',currentBook:'Berakhot',currentBookId:'berakhot',currentIndex:1};
+ current={currentRef:'Berakhot 2b:1',currentBook:'Berakhot',currentBookId:'berakhot',currentIndex:1};
  await emit('reader.current_ref_changed',current);
  assert.equal(onlyTimer(),first,'moving between paragraphs on the same daf must not restart the two-second wait');
  assert.equal(prepared.length,0);
  assert.equal(calls.length,0);
 
  // Leaving the daf before two seconds cancels its preparation.
- current={currentRef:'Berakhot 2b',currentBook:'Berakhot',currentBookId:'berakhot',currentIndex:1};
+ current={currentRef:'Berakhot 3a',currentBook:'Berakhot',currentBookId:'berakhot',currentIndex:1};
  await emit('reader.current_ref_changed',current);
  assert.equal(timers.has(first),false);
  assert.equal(prepared.length,0);
  await fire(onlyTimer());
  assert.equal(prepared.length,1);
- assert.equal(prepared[0].currentRef,'Berakhot 2b');
+ assert.equal(prepared[0].currentRef,'Berakhot 3a');
 
  // Returning to an already prepared daf does not redo work in this session.
  await emit('reader.current_ref_changed',current);
@@ -55,13 +55,13 @@ async function run(path){
  assert.equal(prepared.length,1);
 
  // A mismatched live reader state fails closed.
- current={currentRef:'Berakhot 3a',currentBook:'Berakhot',currentBookId:'berakhot',currentIndex:2};
- await emit('reader.current_ref_changed',{...current,currentRef:'Berakhot 3b',currentIndex:3});
+ current={currentRef:'Berakhot 4a',currentBook:'Berakhot',currentBookId:'berakhot',currentIndex:2};
+ await emit('reader.current_ref_changed',{...current,currentRef:'Berakhot 5b',currentIndex:3});
  await fire(onlyTimer());
  assert.equal(prepared.length,1);
 
  // Navigating away cancels any pending work.
- current={currentRef:'Berakhot 4a',currentBook:'Berakhot',currentBookId:'berakhot',currentIndex:4};
+ current={currentRef:'Berakhot 6a',currentBook:'Berakhot',currentBookId:'berakhot',currentIndex:4};
  await emit('reader.current_ref_changed',current);
  const pending=onlyTimer();
  await emit('navigation.changed',{screen:'library'});
