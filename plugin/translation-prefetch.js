@@ -7,7 +7,7 @@
 
  function dafReference(value){
   const ref=String(value||'').trim();
-  const match=ref.match(/^(.*?\\b\\d+[ab])(?::.*)?$/i);
+  const match=ref.match(/^(.*?\b\d+[ab])(?::.*)?$/i);
   return match?match[1].trim():ref;
  }
  function keyOf(location){
