@@ -7,6 +7,9 @@ on:
       - 'scripts/test_build_sefaria_bavli_corpus.py'
       - 'plugin/community.js'
       - 'plugin/sefaria-evidence.js'
+      - 'plugin/sefaria-offline.js'
+      - 'plugin/test_sefaria_offline.cjs'
+      - 'hebrew/plugin/sefaria-offline.js'
       - 'hebrew/plugin/sefaria-evidence.js'
       - 'plugin/test_sefaria_evidence.cjs'
       - 'plugin/test_translation_evidence.cjs'
@@ -65,6 +68,9 @@ jobs:
         run: |
           node --check plugin/community.js
           node --check plugin/sefaria-evidence.js
+          node --check plugin/sefaria-offline.js
+          node --check hebrew/plugin/sefaria-offline.js
+          node plugin/test_sefaria_offline.cjs
           node --check hebrew/plugin/sefaria-evidence.js
           node plugin/test_sefaria_evidence.cjs
           node plugin/test_translation_evidence.cjs
