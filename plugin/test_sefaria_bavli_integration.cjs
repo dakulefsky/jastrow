@@ -6,6 +6,7 @@ const vm=require('node:vm');
 
 (async()=>{
  for(const pluginRoot of ['plugin','hebrew/plugin']){
+  const pluginPath=pluginRoot==='plugin'?__dirname:path.join(__dirname,'..','hebrew','plugin');
   const fetched=[];
   const root={console,Otzaria:{on(){},call:async method=>{throw new Error('Offline comparison unexpectedly called host API: '+method);}}};
   root.document={
@@ -13,15 +14,15 @@ const vm=require('node:vm');
    head:{appendChild(script){
     const asset=String(script.src);fetched.push(asset);
     try{
-     const file=path.join(__dirname,pluginRoot,asset);
+     const file=path.join(pluginPath,asset);
      vm.runInNewContext(fs.readFileSync(file,'utf8'),context);
      script.onload?.();
     }catch(error){script.onerror?.(error);}
    }}
   };
   const context={window:root,globalThis:root,console};
-  vm.runInNewContext(fs.readFileSync(path.join(__dirname,pluginRoot,'sefaria-offline.js'),'utf8'),context);
-  vm.runInNewContext(fs.readFileSync(path.join(__dirname,pluginRoot,'sefaria-evidence.js'),'utf8'),context);
+  vm.runInNewContext(fs.readFileSync(path.join(pluginPath,'sefaria-offline.js'),'utf8'),context);
+  vm.runInNewContext(fs.readFileSync(path.join(pluginPath,'sefaria-evidence.js'),'utf8'),context);
   const result=await root.SefariaEvidence.compareTranslation('שמע',[{id:'candidate-1',text:'beginning of tractate'}],
    {sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'});
   assert.equal(result.source,'offline',pluginRoot);
