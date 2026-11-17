@@ -172,7 +172,7 @@
     if(matched)matches.push({id:String(candidate.id),matchedPhrase:matched,matchType:matched.includes(' ')?'phrase':'word'});
    }
    const value={matches,reason:matches.length?'candidate_wording_found':'no_candidate_wording_found',
-    reference:ref,canonicalReference:canonical,versionTitle:TRANSLATION_VERSION,license,scope:/[:.]\\d+$/.test(ref)?'paragraph':'daf'};
+    reference:ref,canonicalReference:canonical,versionTitle:TRANSLATION_VERSION,license,scope:/[:.]\\d+$/.test(canonical)?'paragraph':'daf'};
    translationCache.set(key,{value,expires:Date.now()+CACHE_TTL});
    while(translationCache.size>MAX_CACHE)translationCache.delete(translationCache.keys().next().value);
    return value;
