@@ -34,9 +34,15 @@ async function search(q,record=true){const serial=++searchSerial;lastSearched=St
   if(candidates.length){
    SefariaEvidence.compareTranslation(q,candidates,active).then(evidence=>{
     if(serial!==searchSerial)return;
-    for(const match of evidence.matches||[]){
-     const card=cardsByGroup.get(match.id);if(!card)continue;
-     const marker=el('small','מומלץ','recommended-label');card.append(marker);card.classList.add('recommended-meaning');out.insertBefore(card,out.querySelector('.meaning-card'));out.querySelectorAll('.meaning-card .number').forEach((node,index)=>node.textContent=String(index+1));
+    const match=(evidence.matches||[])[0];
+    if(match){
+     const card=cardsByGroup.get(match.id);
+     if(card){
+      card.append(el('small','מומלץ','recommended-label'));
+      card.classList.add('recommended-meaning');
+      out.insertBefore(card,out.querySelector('.meaning-card'));
+      out.querySelectorAll('.meaning-card .number').forEach((node,index)=>node.textContent=String(index+1));
+     }
     }
    }).catch(()=>{});
   }
