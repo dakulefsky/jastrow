@@ -19,6 +19,7 @@ from typing import Any
 INDEX_URL = "https://raw.githubusercontent.com/Sefaria/Sefaria-Export/master/books.json"
 EDITION = "William Davidson Edition - English"
 ALLOWED_LICENSES = {"CC-BY-NC", "CC BY-NC"}
+NON_TRACTATE_TITLES = {"Introductions to the Babylonian Talmud"}
 ATTRIBUTION = (
     "William Davidson Edition - English, translated by Rabbi Adin Even-Israel "
     "Steinsaltz; Koren Publishers; digital text accessed through Sefaria. "
@@ -36,6 +37,7 @@ def selected_bavli_entries(entries: list[dict[str, Any]]) -> list[dict[str, Any]
             and str(item.get("versionTitle", "")).strip() == EDITION
             and "talmud" in categories
             and "bavli" in categories
+            and str(item.get("title", "")).strip() not in NON_TRACTATE_TITLES
             and item.get("json_url")
         ):
             selected.append(item)
