@@ -97,7 +97,7 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
                 continue
             slug = safe_slug(title)
             json_text = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
-            json_text = json_text.replace("\\u2028", "\\\\u2028").replace("\\u2029", "\\\\u2029")
+            json_text = json_text.replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
             payload = (
                 "(function(root){root.SefariaOfflineTranslationData=root.SefariaOfflineTranslationData||{};"
                 + "root.SefariaOfflineTranslationData[" + json.dumps(slug) + "]=" + json_text + ";"
