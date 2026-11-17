@@ -145,13 +145,34 @@
  }
  async function compareTranslation(word,candidates,selection){
   if(!Array.isArray(candidates)||!candidates.length)return {matches:[],reason:'no_candidates'};
-  if(!(await permitted()))return {matches:[],reason:'permission'};
   const ref=await translationReference(selection);if(!ref)return {matches:[],reason:'no_reference'};
   const candidateKey=candidates.map(c=>String(c?.id||'')+'='+String(c?.text||'')).join('|');
   const key=normalizeRef(ref)+'|'+stripMarks(word)+'|'+candidateKey;
   const cached=translationCache.get(key);
   if(cached&&cached.expires>Date.now())return cached.value;
   try{
+   // Prefer the complete bundled Bavli. This path is local and works even
+   // when network permission is denied or the device is offline.
+   let local=null;
+   try{local=await root.SefariaOfflineTranslation?.getPassage?.(ref,selection);}catch{}
+   if(local?.text){
+    const passage=normalizeEnglish(local.text),matches=[];
+    for(const candidate of candidates){
+     const matched=candidatePhrases(candidate.text).map(phrase=>({candidatePhrase:phrase,passagePhrase:findPhraseMatch(phrase,passage)})).find(item=>item.passagePhrase);
+     if(matched)matches.push({id:String(candidate.id),matchedPhrase:matched.passagePhrase,candidatePhrase:matched.candidatePhrase,
+      matchType:matched.candidatePhrase===matched.passagePhrase?'exact':matched.candidatePhrase.includes(' ')?'inflected_phrase':'inflected_word'});
+    }
+    const value={matches,reason:matches.length?'candidate_wording_found':'no_candidate_wording_found',
+     reference:ref,canonicalReference:local.dafReference||ref,versionTitle:local.versionTitle||TRANSLATION_VERSION,
+     license:local.license||'CC-BY-NC',scope:local.scope||'daf',source:'offline'};
+    translationCache.set(key,{value,expires:Date.now()+CACHE_TTL});
+    while(translationCache.size>MAX_CACHE)translationCache.delete(translationCache.keys().next().value);
+    return value;
+   }
+
+   // Retain the existing live fallback for references outside the bundled
+   // Bavli or for older installations without the offline corpus.
+   if(!(await permitted()))return {matches:[],reason:'permission'};
    const canonical=await resolveReference(ref);if(!canonical)return {matches:[],reason:'invalid_reference'};
    const params=new URLSearchParams({version:'en|'+TRANSLATION_VERSION,return_format:'text_only'});
    const data=await request(BASE+'/api/v3/texts/'+encodeURIComponent(canonical)+'?'+params.toString());
@@ -168,11 +189,12 @@
    if(!passage)return {matches:[],reason:'empty_translation',license};
    const matches=[];
    for(const candidate of candidates){
-    const matched=candidatePhrases(candidate.text).find(phrase=>phraseInText(phrase,passage));
-    if(matched)matches.push({id:String(candidate.id),matchedPhrase:matched,matchType:matched.includes(' ')?'phrase':'word'});
+    const matched=candidatePhrases(candidate.text).map(phrase=>({candidatePhrase:phrase,passagePhrase:findPhraseMatch(phrase,passage)})).find(item=>item.passagePhrase);
+    if(matched)matches.push({id:String(candidate.id),matchedPhrase:matched.passagePhrase,candidatePhrase:matched.candidatePhrase,
+     matchType:matched.candidatePhrase===matched.passagePhrase?'exact':matched.candidatePhrase.includes(' ')?'inflected_phrase':'inflected_word'});
    }
    const value={matches,reason:matches.length?'candidate_wording_found':'no_candidate_wording_found',
-    reference:ref,canonicalReference:canonical,versionTitle:TRANSLATION_VERSION,license,scope:/[:.]\d+$/.test(canonical)?'paragraph':'daf'};
+    reference:ref,canonicalReference:canonical,versionTitle:TRANSLATION_VERSION,license,scope:/[:.](\\d+)$/.test(canonical)?'paragraph':'daf',source:'online'};
    translationCache.set(key,{value,expires:Date.now()+CACHE_TTL});
    while(translationCache.size>MAX_CACHE)translationCache.delete(translationCache.keys().next().value);
    return value;
