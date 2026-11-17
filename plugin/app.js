@@ -227,7 +227,7 @@ document.addEventListener('click',e=>{
 });
 $('selection').hidden=true;
 if(window.Otzaria){
- Otzaria.on('ui.messageClicked',async p=>{const word=p?.payload?.dictionaryWord;if(typeof word!=='string')return;try{const selected=await Otzaria.call('reader.getSelection');const selectedWord=JastrowContext.selectionText(selected?.data);activeReaderContext=selected?.success&&JastrowSearch.normalize(selectedWord)===JastrowSearch.normalize(word)?{word,selection:selected.data}:null;}catch{activeReaderContext=null;}search(word);});
+ Otzaria.on('ui.messageClicked',p=>{const word=p?.payload?.dictionaryWord;if(typeof word!=='string')return;activeReaderContext=null;search(word);(async()=>{try{const selected=await Otzaria.call('reader.getSelection');const selectedWord=JastrowContext.selectionText(selected?.data);if(JastrowSearch.normalize(query)!==JastrowSearch.normalize(word))return;activeReaderContext=selected?.success&&JastrowSearch.normalize(selectedWord)===JastrowSearch.normalize(word)?{word,selection:selected.data}:null;if(activeReaderContext)search(word,true);}catch{}})();});
   Otzaria.on('theme.changed',theme);
   Otzaria.on('plugin.boot',p=>{
     theme(p.theme);$('selection').hidden=false;
