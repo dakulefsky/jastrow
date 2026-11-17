@@ -1,6 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict');
 const path=require('node:path');
+const fs=require('node:fs');
 const file=path.join(__dirname,'sefaria-evidence.js');
 delete require.cache[require.resolve(file)];
 global.Otzaria={call:async method=>method==='app.getConnectivity'?{success:true,data:{isOnline:true}}:method==='app.getGrantedPermissions'?{success:true,data:{permissions:['network.access']}}:{success:true,data:{}}};
@@ -25,6 +26,13 @@ global.fetch=async url=>{
  const again=await evidence.compareTranslation('אָמַר',candidates,{sourceRange:{ref:'ברכות ב ע״א:א'}});
  assert.deepEqual(again.matches,result.matches);
  assert.equal(calls.length,2,'reference and translation should be cached');
+ const noMatch=await evidence.compareTranslation('אָמַר',[{id:'unrelated',text:'a completely unrelated meaning'}],{sourceRange:{ref:'ברכות ב ע״א:א'}});
+ assert.equal(noMatch.matches.length,0,'a missing wording match must remain neutral');
+ assert.equal(noMatch.reason,'no_candidate_wording_found');
+ const englishApp=fs.readFileSync(path.join(__dirname,'app.js'),'utf8');
+ const hebrewApp=fs.readFileSync(path.join(__dirname,'../hebrew/plugin/app.js'),'utf8');
+ assert(englishApp.includes('DictionaryMeanings.merge(records,word)')&&englishApp.includes('Steinsaltz translation cross-check'),'full English dictionary view must show candidate-level translation evidence');
+ assert(hebrewApp.includes("g.items.map(({p})=>p.english||'')")&&hebrewApp.includes('translationMatches.get(String(groupIndex))'),'full Hebrew dictionary view must compare each Krupnik meaning using its original English gloss');
  delete require.cache[require.resolve(file)];
  let deniedFetches=0;
  global.Otzaria={call:async method=>method==='app.getConnectivity'?{success:true,data:{isOnline:true}}:{success:true,data:{permissions:[]}}};
