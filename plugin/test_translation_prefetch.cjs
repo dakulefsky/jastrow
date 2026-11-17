@@ -16,7 +16,7 @@ async function run(path){
   setTimeout(fn,delay){const id=++nextTimer;timers.set(id,{fn,delay});return id;},
   clearTimeout(id){timers.delete(id);},
   SefariaOfflineTranslation:{
-   parseReference(ref,book){const m=String(ref||'').match(/^(.*?)\\s+(\\d+)([ab])(?::(\\d+))?$/i);return m?{book:m[1]||book,daf:Number(m[2]),side:m[3],line:m[4]?Number(m[4]):null}:null;},
+   parseReference(ref,book){const m=String(ref||'').match(/^(.*?)\s+(\d+)([ab])(?::(\d+))?$/i);return m?{book:m[1]||book,daf:Number(m[2]),side:m[3],line:m[4]?Number(m[4]):null}:null;},
    async prepareDaf(location){prepared.push({...location});}
   }
  };
