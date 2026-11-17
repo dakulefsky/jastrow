@@ -25,7 +25,6 @@
   "network": {
     "enabled": true,
     "allowlist": [
-      "https://otzaria-dictionary-community.dakulefsky.workers.dev",
       "https://www.sefaria.org"
     ]
   },
