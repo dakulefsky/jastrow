@@ -10,13 +10,26 @@
    .replace(/[’'״״׳]/g,'').replace(/[^\u05d0-\u05eaA-Za-z0-9]+/g,' ')
    .replace(/\s+/g,' ').trim().toLowerCase();
  }
- function parseReference(value){
+ function hebrewNumber(value){
+  const values={א:1,ב:2,ג:3,ד:4,ה:5,ו:6,ז:7,ח:8,ט:9,י:10,כ:20,ך:20,ל:30,מ:40,ם:40,נ:50,ן:50,ס:60,ע:70,פ:80,ף:80,צ:90,ץ:90,ק:100,ר:200,ש:300,ת:400};
+  return [...String(value||'')].reduce((sum,char)=>sum+(values[char]||0),0);
+ }
+ function parseReference(value,fallbackBook){
   const ref=String(value||'').trim();
-  const match=ref.match(/^(.*?)\s+(\d+)([ab])(?::(\d+)(?::.*)?)?$/i);
+  let match=ref.match(/^(.*?)\\s+(\\d+)([ab])(?::(\\d+)(?::.*)?)?$/i);
+  if(match){
+   const daf=Number(match[2]),side=match[3].toLowerCase();
+   if(Number.isInteger(daf)&&daf>0)return {ref,book:match[1].trim()||String(fallbackBook||''),daf,side,line:match[4]?Number(match[4]):null,
+    dafIndex:2*daf-2+(side==='b'?1:0)};
+  }
+  match=ref.match(/(?:^|[,;\\s])(?:דף\\s*)?([א-ת]{1,3})\\s*(?:עמוד\\s*([אב])|ע[״"׳']?\\s*([אב])|([.:]))(?::(\\d+)(?::.*)?)?$/);
   if(!match)return null;
-  const daf=Number(match[2]),side=match[3].toLowerCase();
-  if(!Number.isInteger(daf)||daf<1)return null;
-  return {ref,book:match[1].trim(),daf,side,line:match[4]?Number(match[4]):null,
+  const daf=hebrewNumber(match[1]),sideToken=match[2]||match[3]||match[4];
+  if(!Number.isInteger(daf)||daf<1||!sideToken)return null;
+  const prefix=ref.slice(0,match.index).replace(/[,;\\s]+$/,'').trim();
+  const book=prefix||String(fallbackBook||'');
+  const side=sideToken==='ב'||sideToken===':'?'b':'a';
+  return {ref,book,daf,side,line:match[5]?Number(match[5]):null,
    dafIndex:2*daf-2+(side==='b'?1:0)};
  }
  async function fetchJson(path){
@@ -45,7 +58,7 @@
   return data;
  }
  async function getPassage(reference,selection){
-  const parsed=parseReference(reference||selection?.sourceRange?.ref||selection?.currentRef);
+  const parsed=parseReference(reference||selection?.sourceRange?.ref||selection?.currentRef,selection?.currentBook);
   if(!parsed)return {text:'',reason:'unsupported_reference'};
   const manifest=await getManifest();
   const bookKey=normalizeName(parsed.book),currentBookKey=normalizeName(selection?.currentBook);
