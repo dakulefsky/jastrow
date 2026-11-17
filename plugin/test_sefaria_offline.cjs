@@ -10,7 +10,7 @@ const manifest={
 const tractate={
  title:'Berakhot',heTitle:'ברכות',versionTitle:'William Davidson Edition - English',
  license:'CC-BY-NC',sectionNames:['Daf','Line'],
- text:[[],[],['The first paragraph discusses the law.','The second paragraph discusses a different subject.'],['The next daf contains another discussion.']]
+ text:[[],[],['','The first paragraph discusses the law.','The second paragraph discusses a different subject.'],['The next daf contains another discussion.']]
 };
 const calls=[];
 const root={
@@ -45,7 +45,7 @@ vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),{window:r
  const first=await offline.getPassage('דף ב עמוד א:1',{currentBook:'תלמוד בבלי - מסכת ברכות'});
  assert.equal(first.scope,'paragraph');
  assert.match(first.text,/first paragraph/);
- const second=await offline.getPassage('ברכות, דף ב ע״א:2',{currentBook:'ברכות'});
+ const second=await offline.getPassage('ברכות, דף ב ע״א:3',{currentBook:'ברכות'});
  assert.equal(second.scope,'paragraph');
  assert.match(second.text,/second paragraph/);
  const wholeDaf=await offline.getPassage('ברכות, דף ב',{currentBook:'ברכות'});
