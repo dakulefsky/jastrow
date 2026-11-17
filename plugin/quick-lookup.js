@@ -46,6 +46,11 @@
    // Numeric sense numbers are not grammatical qualifications.
    label:group.form?group.sources[0].meaning.label:'',
   }));
+  if(selection&&root.SefariaEvidence?.compareTranslation){
+   const evidence=await root.SefariaEvidence.compareTranslation(word,merged.map((item,i)=>({id:String(i),text:item.text})),selection);
+   const matched=new Set((evidence.matches||[]).map(item=>item.id));
+   merged.forEach((item,i)=>{if(matched.has(String(i)))item.translationMatch=true;});
+  }
   if(communityPreferred&&merged.length)merged[0].communityPreferred=true;
   return merged;
  }
