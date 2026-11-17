@@ -49,13 +49,14 @@ class BavliCorpusBuilderTests(unittest.TestCase):
             self.assertEqual(manifest["tractateCount"], 1)
             self.assertEqual(manifest["tractates"][0]["license"], "CC-BY-NC")
             self.assertEqual(manifest["tractates"][0]["slug"], "shabbat")
-            self.assertEqual(manifest["tractates"][0]["file"], "texts/shabbat.json")
+            self.assertEqual(manifest["tractates"][0]["file"], "texts/shabbat.js")
             with zipfile.ZipFile(output) as archive:
                 self.assertIn("ATTRIBUTION.txt", archive.namelist())
-                self.assertIn("manifest.json", archive.namelist())
-                self.assertIn("texts/shabbat.json", archive.namelist())
-                stored = json.loads(archive.read("texts/shabbat.json"))
-                self.assertEqual(stored["text"], data["text"])
+                self.assertIn("manifest.js", archive.namelist())
+                self.assertIn("texts/shabbat.js", archive.namelist())
+                stored = archive.read("texts/shabbat.js").decode("utf-8")
+                self.assertIn('SefariaOfflineTranslationData["shabbat"]', stored)
+                self.assertIn('"The discussion continues."', stored)
 
     def test_refuses_unknown_license_or_incomplete_corpus(self):
         data = {
