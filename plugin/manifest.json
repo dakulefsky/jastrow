@@ -3,7 +3,7 @@
   "id": "com.kulefsky.jastrow",
   "name": "Aramaic → Eng.",
   "version": "1.11.17",
-  "description": "Offline Aramaic and rabbinic Hebrew to English translation, with concise meanings and optional examples.",
+  "description": "Offline Aramaic and rabbinic Hebrew to English dictionary, with contextual clues from the bundled English Babylonian Talmud.",
   "author": "DanTheMan",
   "stability": "beta",
   "entrypoint": "index.html",
