@@ -56,6 +56,7 @@ jobs:
           mkdir -p plugin/data/sefaria-bavli hebrew/plugin/data
           unzip -q /tmp/sefaria-bavli-english.zip -d plugin/data/sefaria-bavli
           cp -a plugin/data/sefaria-bavli hebrew/plugin/data/
+          node plugin/test_sefaria_bavli_data.cjs
       - name: Check dictionary and selection lookup
         run: |
           python3 build_phrases.py
