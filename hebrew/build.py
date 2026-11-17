@@ -23,6 +23,7 @@ class Hebrew(HTMLParser):
      self.english_depth+=1
     if 'englishWithinHebrew' in classes:
      self.seen=True
+     self.english.append('\u0000')
   if not self.skip and t in ('br','p'):
    self.parts.append('\n')
 
@@ -75,7 +76,7 @@ def build():
    p.feed(raw)
    full=clean(''.join(p.parts))
    lead=clean(''.join(p.lead))
-   english=clean(''.join(p.english))
+   english=' '.join(clean(chunk.split('|',1)[0]) for chunk in ''.join(p.english).split('\u0000') if clean(chunk.split('|',1)[0]))
    if full:
     part={'label':label,'meaning':lead if p.seen else '', 'text':full}
     if english:
