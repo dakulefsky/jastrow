@@ -24,10 +24,14 @@ vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),{window:r
 (async()=>{
  const offline=root.SefariaOfflineTranslation;
  assert.deepEqual({...offline.parseReference('Berakhot 2a:1')},{ref:'Berakhot 2a:1',book:'Berakhot',daf:2,side:'a',line:1,dafIndex:2});
- const first=await offline.getPassage('Berakhot 2a:1',{currentBook:'Berakhot'});
+ const hebrewRef=offline.parseReference('ברכות, דף ב עמוד א','ברכות');
+ assert.equal(hebrewRef.book,'ברכות');
+ assert.equal(hebrewRef.daf,2);
+ assert.equal(hebrewRef.side,'a');
+ const first=await offline.getPassage('ברכות, דף ב עמוד א:1',{currentBook:'ברכות'});
  assert.equal(first.scope,'paragraph');
  assert.match(first.text,/first paragraph/);
- const second=await offline.getPassage('ברכות 2a:2',{currentBook:'ברכות'});
+ const second=await offline.getPassage('ברכות, דף ב ע״א:2',{currentBook:'ברכות'});
  assert.equal(second.scope,'paragraph');
  assert.match(second.text,/second paragraph/);
  const wholeDaf=await offline.getPassage('Berakhot 2a',{currentBook:'Berakhot'});
