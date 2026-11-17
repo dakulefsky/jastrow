@@ -1,8 +1,23 @@
 (function(root){
  'use strict';
  let requestSerial=0;
- async function meanings(word,selection){let records=root.HebrewLookup.lookup(word),sefariaMatches=new Set();if(selection&&root.SefariaEvidence){const evidence=await root.SefariaEvidence.lookup(word,records,selection);sefariaMatches=new Set(evidence.entryIds);}const seen=new Set(),items=[];for(const e of records)for(const p of e.parts){const text=p.meaning||p.text,key=[root.HebrewLookup.normalize(e.word),p.label.replace(/\\b\\d+\\b/g,''),text].join('|');if(!seen.has(key)){seen.add(key);items.push({text,entry:e,englishGloss:p.english||'',sefariaHeadwordMatch:sefariaMatches.has('krupnik:'+e.rid)});}}if(selection&&root.SefariaEvidence?.compareTranslation){const candidates=items.map((item,i)=>({id:String(i),text:item.englishGloss||''})).filter(x=>x.text);if(candidates.length){const evidence=await root.SefariaEvidence.compareTranslation(word,candidates,selection),matched=new Map((evidence.matches||[]).map(x=>[x.id,x]));items.forEach((item,i)=>{const match=matched.get(String(i));if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});}}return items;}
- function message(word,items){const short=s=>s.length>180?s.slice(0,177)+'…':s;const first=items[0],form=first?.entry?.matchedForm?'\nצורת המילה במילון: '+first.entry.word+' (זוהתה תחילית או סיומת)':'',sefaria=items.some(item=>item.sefariaHeadwordMatch)?'\nספריא: אותו ראש ערך מופיע גם בהתאמת Jastrow לדף זה.':'';return [word+form,...items.slice(0,2).map((x,i)=>(i+1)+'. '+short(x.text)+(x.translationMatch?'\nהניסוח בתרגום סטיינזלץ: “'+x.translationPhrase+'”'+(x.translationScope==='paragraph'?' של פסקה זו.':' של הדף.'):'')),sefaria,items.length>2?'למשמעויות נוספות — לחצו לפתיחת המילון':'לחצו לערך המלא ולמקורות'].filter(Boolean).join('\n');}
+ async function meanings(word,selection){
+  const records=root.HebrewLookup.lookup(word),seen=new Set(),items=[];
+  for(const entry of records)for(const part of entry.parts){
+   const text=part.meaning||part.text,key=[root.HebrewLookup.normalize(entry.word),part.label.replace(/\b\d+\b/g,''),text].join('|');
+   if(!seen.has(key)){seen.add(key);items.push({text,entry,englishGloss:part.english||''});}
+  }
+  if(selection&&root.SefariaEvidence?.compareTranslation){
+   const candidates=items.map((item,index)=>({id:String(index),text:item.englishGloss||''})).filter(item=>item.text);
+   if(candidates.length){
+    const evidence=await root.SefariaEvidence.compareTranslation(word,candidates,selection);
+    const matched=new Map((evidence.matches||[]).map(item=>[item.id,item]));
+    items.forEach((item,index)=>{const match=matched.get(String(index));if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
+   }
+  }
+  return items;
+ }
+ function message(word,items){const short=s=>s.length>180?s.slice(0,177)+'…':s;const first=items[0],form=first?.entry?.matchedForm?'\nצורת המילה במילון: '+first.entry.word+' (זוהתה תחילית או סיומת)':'';return [word+form,...items.slice(0,2).map((x,i)=>(i+1)+'. '+short(x.text)+(x.translationMatch?'\nהניסוח בתרגום סטיינזלץ: “'+x.translationPhrase+'”'+(x.translationScope==='paragraph'?' של פסקה זו.':' של הדף.'):'')),items.length>2?'למשמעויות נוספות — לחצו לפתיחת המילון':'לחצו לערך המלא ולמקורות'].filter(Boolean).join('\n');}
  async function show(word,selection){const serial=++requestSerial;if(String(word).trim().toLowerCase()==='who created this?'){try{await root.Otzaria.call('ui.showMessage',{message:'Daniel Avrahom'});}catch{console.warn('Quick dictionary lookup unavailable');}return;}const items=await meanings(word,selection);if(serial!==requestSerial||!items.length)return;try{const res=await root.Otzaria.call('ui.showMessage',{message:message(word,items),tapPayload:{dictionaryWord:word},tapOpenPlugin:true});if(res?.success===false)console.warn('Quick dictionary lookup unavailable');}catch{console.warn('Quick dictionary lookup unavailable');}}
  root.DictionaryQuick={meanings,message,show};
  if(root.Otzaria)root.Otzaria.on('reader.context_menu_item_clicked',async p=>{
