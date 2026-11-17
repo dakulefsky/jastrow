@@ -72,7 +72,7 @@
    const seen=new Set();
    const links=response.data.links.filter(link=>{
     if(String(link?.connectionType||'').toUpperCase()!==CONNECTION_TYPE)return false;
-    if(link.targetIsUserBook===true||(link.targetSource&&link.targetSource!=='o'))return false;
+    if(link.targetIsUserBook===true||(link.targetSource&&link.targetSource!=='o')||(link.targetIsUserBook!==false&&link.targetSource!=='o'))return false;
     if(!link.targetTitle||!Number.isInteger(link.targetLine))return false;
     const id=[link.targetTitle,link.targetLine,link.targetLineEnd??''].join('|');
     if(seen.has(id))return false;seen.add(id);return true;
