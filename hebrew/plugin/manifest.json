@@ -18,16 +18,9 @@
     "events.subscribe:reader.current_ref_changed",
     "events.subscribe:navigation.changed",
     "reader.open",
-    "network.access",
     "library.links.read",
     "library.content.read"
   ],
-  "network": {
-    "enabled": true,
-    "allowlist": [
-      "https://www.sefaria.org"
-    ]
-  },
   "contributes": {
     "toolTab": {
       "title": "ארמית לעברית",
