@@ -10,7 +10,7 @@
  }
  function dafReference(value,book){
   const parsed=parsedReference(value,book);
-  if(parsed)return (parsed.book||String(book||'')).trim()+' '+parsed.daf+parsed.side;
+  if(parsed)return (parsed.book||String(book||'')).trim()+' '+parsed.daf;
   const ref=String(value||'').trim();
   const match=ref.match(/^(.*?\b\d+[ab])(?::.*)?$/i);
   return match?match[1].trim():ref;
@@ -18,7 +18,7 @@
  function keyOf(location){
   const parsed=parsedReference(location?.currentRef,location?.currentBook);
   if(!parsed)return '';
-  return [parsed.book||String(location?.currentBook||''),parsed.daf,parsed.side,String(location?.currentBookId||'')].join('|');
+  return [parsed.book||String(location?.currentBook||''),parsed.daf,String(location?.currentBookId||'')].join('|');
  }
  function cancel(){
   generation++;
