@@ -11,21 +11,23 @@ global.fetch=async url=>{
  if(String(url).includes('/api/ref/'))return {ok:true,json:async()=>({is_ref:true,normalized:'Berakhot 2a:1'})};
  if(String(url).includes('/api/v3/texts/'))return {ok:true,json:async()=>({versions:[{
   versionTitle:'William Davidson Edition - English',license:'CC-BY-NC',
-  text:['The completion of the discussion was completed after studying the law; he said it was finished. The forest is mentioned elsewhere. A man was hopping nearby.']
+  text:['The completion of the discussion was completed after studying the law; he said it was finished. The forest is mentioned elsewhere. A poor person entered the hall. A man was hopping nearby.']
  }]})};
  throw Error('Unexpected URL '+url);
 };
 (async()=>{
  const evidence=require(file);
- const candidates=[{id:'completion',text:'completion'},{id:'forest',text:'forest'},{id:'complete',text:'complete'},{id:'study',text:'study'},{id:'say',text:'say'},{id:'law',text:'law'},{id:'hope',text:'hope'},{id:'hop',text:'hop'},{id:'stopword',text:'the'},{id:'short',text:'a'}];
+ const candidates=[{id:'completion',text:'completion'},{id:'forest',text:'forest'},{id:'complete',text:'complete'},{id:'study',text:'study'},{id:'say',text:'say'},{id:'law',text:'law'},{id:'poor-person',text:'poor person'},{id:'person-poor',text:'person poor'},{id:'hope',text:'hope'},{id:'hop',text:'hop'},{id:'stopword',text:'the'},{id:'short',text:'a'}];
  const result=await evidence.compareTranslation('אָמַר',candidates,{sourceRange:{ref:'ברכות ב ע״א:א'}});
- assert.deepEqual(result.matches.map(x=>x.id),['completion','forest','complete','study','say','law','hop']);
+ assert.deepEqual(result.matches.map(x=>x.id),['completion','forest','complete','study','say','law','poor-person','hop']);
  assert(result.matches.find(x=>x.id==='complete'),'silent-e inflection should match complete/completed');
  assert(result.matches.find(x=>x.id==='study'),'continuous inflection should match study/studying');
  assert(result.matches.find(x=>x.id==='say'),'irregular verb should match say/said');
  assert(!result.matches.some(x=>x.id==='hope'),'doubled-consonant forms must not create a false silent-e match');
+ assert(!result.matches.some(x=>x.id==='person-poor'),'multiword candidates must match in the same word order');
  assert.equal(result.matches.find(x=>x.id==='complete').matchedPhrase,'completed','UI evidence must show the wording actually present in the translation');
  assert.equal(result.matches.find(x=>x.id==='complete').matchType,'inflected_word');
+ assert.equal(result.matches.find(x=>x.id==='poor-person').matchedPhrase,'poor person','multiword candidate should match as a contiguous phrase');
  assert(!result.matches.some(x=>x.id==='stopword'),'function words must not create matches');
  assert.equal(result.versionTitle,'William Davidson Edition - English');
  assert.equal(result.license,'CC-BY-NC');
@@ -36,6 +38,13 @@ global.fetch=async url=>{
  const noMatch=await evidence.compareTranslation('אָמַר',[{id:'unrelated',text:'a completely unrelated meaning'}],{sourceRange:{ref:'ברכות ב ע״א:א'}});
  assert.equal(noMatch.matches.length,0,'a missing wording match must remain neutral');
  assert.equal(noMatch.reason,'no_candidate_wording_found');
+ evidence.clearCache();
+ global.fetch=async url=>String(url).includes('/api/ref/')
+  ?{ok:true,json:async()=>({is_ref:true,normalized:'Berakhot 2a:1'})}
+  :{ok:true,json:async()=>({versions:[{versionTitle:'William Davidson Edition - English',license:'CC-BY-SA',text:['The discussion continues.']}]})};
+ const unlicensed=await evidence.compareTranslation('אָמַר',[{id:'x',text:'discussion'}],{sourceRange:{ref:'ברכות ב ע״א:א'}});
+ assert.equal(unlicensed.reason,'license_unrecognized','unrecognized or changed licensing must disable the comparison');
+ assert.equal(unlicensed.matches.length,0);
  const englishApp=fs.readFileSync(path.join(__dirname,'app.js'),'utf8');
  const hebrewApp=fs.readFileSync(path.join(__dirname,'../hebrew/plugin/app.js'),'utf8');
  const englishQuick=fs.readFileSync(path.join(__dirname,'quick-lookup.js'),'utf8');
