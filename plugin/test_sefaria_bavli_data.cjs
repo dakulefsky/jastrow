@@ -29,7 +29,8 @@ function verify(root){
   assert.equal(data.license,'CC-BY-NC',meta.title);
   assert(Array.isArray(data.text)&&data.text.some(daf=>Array.isArray(daf)&&daf.some(line=>typeof line==='string'&&line.trim())),meta.title+' has no readable daf text');
  }
- for(const title of ['Berakhot','Shabbat','Yevamot','Bava Kamma','Sanhedrin'])assert(titles.has(title),'missing '+title);
+ const expectedTitles=['Arakhin','Avodah Zarah','Bava Batra','Bava Kamma','Bava Metzia','Beitzah','Bekhorot','Berakhot','Chagigah','Chullin','Eruvin','Gittin','Horayot','Keritot','Ketubot','Kiddushin','Makkot','Megillah','Meilah','Menachot','Moed Katan','Nazir','Nedarim','Niddah','Pesachim','Rosh Hashanah','Sanhedrin','Shabbat','Shevuot','Sotah','Sukkah','Taanit','Tamid','Temurah','Yevamot','Yoma','Zevachim'];
+ assert.deepEqual([...titles].sort(),expectedTitles.sort(),'the bundled data must contain the exact 37 Bavli tractates');
  return manifest.tractateCount;
 }
 const english=verify('plugin');
