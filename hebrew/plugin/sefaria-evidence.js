@@ -112,8 +112,66 @@
   const preferred=new Set(evidence.entryIds);
   return {...evidence,entries:[...entries.filter(entry=>preferred.has(localId(entry))),...entries.filter(entry=>!preferred.has(localId(entry)))]};
  }
- function clearCache(){cache.clear();refCache.clear();}
+
+ const TRANSLATION_VERSION='William Davidson Edition - English';
+ const translationCache=new Map();
+ function normalizeEnglish(value){
+  return String(value||'').normalize('NFKD').replace(/\\p{M}/gu,'').toLowerCase()
+   .replace(/&amp;/g,' and ').replace(/[^a-z0-9]+/g,' ').replace(/\\s+/g,' ').trim();
+ }
+ function candidatePhrases(value){
+  return String(value||'').split(/[;,/|]+/).map(normalizeEnglish).filter(Boolean)
+   .flatMap(part=>part.split(/\\s+(?:or|and)\\s+/).map(x=>x.trim()).filter(Boolean));
+ }
+ function phraseInText(phrase,text){
+  if(!phrase||!text)return false;
+  const words=phrase.split(' '),haystack=text.split(' ');
+  if(words.length===1&&words[0].length<5)return false;
+  const variants=[words];
+  if(words.length===1&&words[0].length>=5){
+   const stem=words[0];
+   if(stem.endsWith('y')&&stem.length>5)variants.push([stem.slice(0,-1)+'ies']);
+   else if(!stem.endsWith('s'))variants.push([stem+'s']);
+  }
+  return variants.some(needle=>haystack.some((_,i)=>needle.every((w,j)=>haystack[i+j]===w)));
+ }
+ async function compareTranslation(word,candidates,selection){
+  if(!Array.isArray(candidates)||!candidates.length)return {matches:[],reason:'no_candidates'};
+  if(!(await permitted()))return {matches:[],reason:'permission'};
+  const ref=await currentReference(selection);if(!ref)return {matches:[],reason:'no_reference'};
+  const candidateKey=candidates.map(c=>String(c?.id||'')+'='+String(c?.text||'')).join('|');
+  const key=normalizeRef(ref)+'|'+stripMarks(word)+'|'+candidateKey;
+  const cached=translationCache.get(key);
+  if(cached&&cached.expires>Date.now())return cached.value;
+  try{
+   const canonical=await resolveReference(ref);if(!canonical)return {matches:[],reason:'invalid_reference'};
+   const params=new URLSearchParams({version:'en|'+TRANSLATION_VERSION,return_format:'text_only'});
+   const data=await request(BASE+'/api/v3/texts/'+encodeURIComponent(canonical)+'?'+params.toString());
+   const versions=Array.isArray(data?.versions)?data.versions:[];
+   const version=versions.find(v=>String(v?.versionTitle||'').trim()===TRANSLATION_VERSION);
+   if(!version)return {matches:[],reason:'translation_unavailable'};
+   const license=String(version.license||'').toUpperCase().replace(/_/g,'-');
+   if(license&&!['CC-BY-NC','CC BY-NC','CC-BY-NC-SA','CC BY-NC-SA'].includes(license))
+    return {matches:[],reason:'license_unrecognized',license};
+   const paragraphs=[];
+   const collect=value=>{if(typeof value==='string')paragraphs.push(normalizeEnglish(value));else if(Array.isArray(value))value.forEach(collect);};
+   collect(version.text);
+   const passage=paragraphs.filter(Boolean).join(' ');
+   if(!passage)return {matches:[],reason:'empty_translation',license};
+   const matches=[];
+   for(const candidate of candidates){
+    const matched=candidatePhrases(candidate.text).find(phrase=>phraseInText(phrase,passage));
+    if(matched)matches.push({id:String(candidate.id),matchedPhrase:matched,matchType:matched.includes(' ')?'phrase':'word'});
+   }
+   const value={matches,reason:matches.length?'candidate_wording_found':'no_candidate_wording_found',
+    reference:ref,canonicalReference:canonical,versionTitle:TRANSLATION_VERSION,license};
+   translationCache.set(key,{value,expires:Date.now()+CACHE_TTL});
+   while(translationCache.size>MAX_CACHE)translationCache.delete(translationCache.keys().next().value);
+   return value;
+  }catch{return {matches:[],reason:'request_failed'};}
+ }
+\n function clearCache(){cache.clear();refCache.clear();translationCache.clear();}
  try{root.Otzaria?.on?.('plugin.permissions_changed',()=>{permissionState=null;permissionCheckedAt=0;});}catch{}
- root.SefariaEvidence={lookup,reorder,normalizeHeadword,normalizeRef,clearCache};
+ root.SefariaEvidence={lookup,reorder,compareTranslation,normalizeHeadword,normalizeRef,clearCache};
  if(typeof module!=='undefined'&&module.exports)module.exports=root.SefariaEvidence;
 })(typeof window==='undefined'?globalThis:window);
