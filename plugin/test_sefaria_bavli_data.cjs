@@ -13,7 +13,7 @@ function verify(root){
  assert.equal(manifest.formatVersion,1);
  assert.equal(manifest.edition,'William Davidson Edition - English');
  assert.equal(manifest.tractateCount,manifest.tractates.length);
- assert(manifest.tractates.length>=35,'the complete Bavli collection should contain all major tractates');
+ assert.equal(manifest.tractates.length,37,'the Bavli package should contain 37 tractates, excluding Sefaria introductory material');
  assert.match(fs.readFileSync(path.join(base,'ATTRIBUTION.txt'),'utf8'),/CC BY-NC/);
  const titles=new Set();
  for(const meta of manifest.tractates){
