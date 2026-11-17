@@ -17,6 +17,7 @@
     "app.background_keep_alive",
     "events.subscribe:reader.selection_changed",
     "events.subscribe:reader.current_ref_changed",
+    "events.subscribe:navigation.changed",
     "network.access",
     "library.links.read",
     "library.content.read"
