@@ -7,7 +7,7 @@ global.Otzaria={call:async method=>method==='app.getGrantedPermissions'?{success
 const calls=[];
 global.fetch=async url=>{
  calls.push(String(url));
- if(String(url).includes('/api/ref/'))return {ok:true,json:async()=>({is_ref:true,ref:'Berakhot 2a'})};
+ if(String(url).includes('/api/ref/'))return {ok:true,json:async()=>({is_ref:true,normalized:'Berakhot 2a',url_ref:'Berakhot_2a'})};
  if(String(url).includes('/api/words/')){
   return {ok:true,json:async()=>[
    {parent_lexicon:'Jastrow Dictionary',headword:'אָמַר I',refs:['Berakhot 2a']},
