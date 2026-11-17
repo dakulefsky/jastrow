@@ -117,10 +117,9 @@
   const manifest=await getManifest(),meta=findTractate(manifest,parsed,location);
   if(!meta)return {text:'',reason:'tractate_not_in_offline_corpus',reference:parsed.ref};
   const data=await loadTractate(meta);
-  const paragraphs=[...collectSide(data,2*parsed.daf-2),...collectSide(data,2*parsed.daf-1)];
-  return {text:paragraphs.join(' '),scope:'daf',reference:parsed.ref,
-   dafReference:meta.title+' '+parsed.daf,tractate:meta.title,
-   versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'};
+  const ready=collectSide(data,2*parsed.daf-2).length>0||collectSide(data,2*parsed.daf-1).length>0;
+  return {ready,scope:'daf',reference:parsed.ref,dafReference:meta.title+' '+parsed.daf,
+   tractate:meta.title,versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'};
  }
  function clearCache(){
   manifestPromise=null;tractateCache.clear();tractatePromises.clear();
