@@ -22,7 +22,18 @@ async function run(path){
  const fire=async(id)=>{const timer=timers.get(id);assert(timer,'expected timer');timers.delete(id);assert.equal(timer.delay,2000);await timer.fn();};
  const onlyTimer=()=>{assert.equal(timers.size,1);return [...timers.keys()][0];};
 
+ // A background worker can start while a daf is already open. plugin.boot
+ // must query the active reader and arm the same two-second delay.
+ current={currentRef:'ברכות, דף א',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:1};
+ await emit('plugin.boot',{app:{runMode:'background'}});
+ const bootTimer=onlyTimer();
+ assert.equal(prepared.length,0);
+ assert(calls.includes('reader.getCurrentRef'));
+ await emit('navigation.changed',{screen:'library'});
+ assert.equal(timers.has(bootTimer),false);
+
  // The background worker waits until Otzaria is actually on the reading screen.
+ current={currentRef:'בראשית פרק א',currentBook:'בראשית',currentBookId:'genesis',currentIndex:0};
  await emit('navigation.changed',{screen:'reading'});
  calls.length=0;
  // Non-Bavli locations do not schedule any preparation.
