@@ -98,6 +98,9 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
             payload = json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
             metadata = {
                 "title": title,
+                "heTitle": str(data.get("heTitle", "")),
+                "slug": safe_slug(title),
+                "file": f"texts/{safe_slug(title)}.json",
                 "categories": item.get("categories", []),
                 "versionTitle": EDITION,
                 "language": "English",
