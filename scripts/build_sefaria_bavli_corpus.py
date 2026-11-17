@@ -89,7 +89,7 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
             if license_name not in ALLOWED_LICENSES:
                 failures.append(f"{title}: unsupported or missing license {data.get('license')!r}")
                 continue
-            if str(data.get("versionTitle", EDITION)).strip() != EDITION:
+            if str(data.get("versionTitle", "")).strip() != EDITION:
                 failures.append(f"{title}: downloaded version title does not match the requested edition")
                 continue
             if not has_text(data.get("text")):
