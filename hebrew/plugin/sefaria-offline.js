@@ -3,7 +3,7 @@
  const DATA_ROOT='data/sefaria-bavli/';
  const MAX_CACHED_TRACTATES=3;
  let manifestPromise=null;
- const tractateCache=new Map();
+ const tractateCache=new Map(),tractatePromises=new Map();
 
  function normalizeName(value){
   return String(value||'').normalize('NFKD').replace(/\p{M}/gu,'')
@@ -32,14 +32,22 @@
   return {ref,book,daf,side,line:match[6]?Number(match[6]):null,
    dafIndex:2*daf-2+(side==='b'?1:0)};
  }
- async function fetchJson(path){
-  const response=await root.fetch(DATA_ROOT+path,{headers:{Accept:'application/json'}});
-  if(!response?.ok)throw Error('Offline translation file unavailable: '+path);
-  return response.json();
+ function loadScript(path){
+  return new Promise((resolve,reject)=>{
+   const doc=root.document;
+   if(!doc?.createElement||!doc.head){reject(Error('Local plugin asset loader is unavailable'));return;}
+   const script=doc.createElement('script');
+   script.async=true;
+   script.src=DATA_ROOT+path;
+   script.onload=()=>{script.remove?.();resolve();};
+   script.onerror=()=>{script.remove?.();reject(Error('Offline translation asset unavailable: '+path));};
+   doc.head.appendChild(script);
+  });
  }
  async function getManifest(){
   if(!manifestPromise){
-   manifestPromise=fetchJson('manifest.json').then(data=>{
+   manifestPromise=loadScript('manifest.js').then(()=>{
+    const data=root.SefariaOfflineTranslationManifest;
     if(data?.formatVersion!==1||!Array.isArray(data.tractates))throw Error('Unsupported offline translation manifest');
     return data;
    }).catch(error=>{manifestPromise=null;throw error;});
@@ -60,11 +68,20 @@
   if(tractateCache.has(key)){
    const value=tractateCache.get(key);tractateCache.delete(key);tractateCache.set(key,value);return value;
   }
-  const data=await fetchJson(meta.file||('texts/'+key+'.json'));
-  if(!Array.isArray(data?.text))throw Error('Offline translation has no daf structure: '+meta.title);
-  tractateCache.set(key,data);
-  while(tractateCache.size>MAX_CACHED_TRACTATES)tractateCache.delete(tractateCache.keys().next().value);
-  return data;
+  if(tractatePromises.has(key))return tractatePromises.get(key);
+  const promise=loadScript(meta.file||('texts/'+key+'.js')).then(()=>{
+   const data=root.SefariaOfflineTranslationData?.[key];
+   if(!Array.isArray(data?.text))throw Error('Offline translation has no daf structure: '+meta.title);
+   tractateCache.set(key,data);
+   while(tractateCache.size>MAX_CACHED_TRACTATES){
+    const oldest=tractateCache.keys().next().value;
+    tractateCache.delete(oldest);
+    if(root.SefariaOfflineTranslationData)delete root.SefariaOfflineTranslationData[oldest];
+   }
+   return data;
+  }).finally(()=>tractatePromises.delete(key));
+  tractatePromises.set(key,promise);
+  return promise;
  }
  function collectSide(data,index){
   const side=data.text[index];
@@ -100,12 +117,15 @@
   const manifest=await getManifest(),meta=findTractate(manifest,parsed,location);
   if(!meta)return {text:'',reason:'tractate_not_in_offline_corpus',reference:parsed.ref};
   const data=await loadTractate(meta);
-  const paragraphs=[...collectSide(data,parsed.dafIndex),...collectSide(data,parsed.dafIndex+1)];
+  const paragraphs=[...collectSide(data,2*parsed.daf-2),...collectSide(data,2*parsed.daf-1)];
   return {text:paragraphs.join(' '),scope:'daf',reference:parsed.ref,
    dafReference:meta.title+' '+parsed.daf,tractate:meta.title,
    versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'};
  }
- function clearCache(){manifestPromise=null;tractateCache.clear();}
+ function clearCache(){
+  manifestPromise=null;tractateCache.clear();tractatePromises.clear();
+  delete root.SefariaOfflineTranslationManifest;delete root.SefariaOfflineTranslationData;
+ }
  root.SefariaOfflineTranslation={prepareDaf,getPassage,parseReference,clearCache};
  if(typeof module!=='undefined'&&module.exports)module.exports=root.SefariaOfflineTranslation;
 })(typeof window==='undefined'?globalThis:window);
