@@ -53,6 +53,9 @@ vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),{window:r
  assert.match(wholeDaf.text,/first paragraph/);
  assert.match(wholeDaf.text,/next daf/);
  offline.clearCache();
+ let guardChecks=0;
+ const stale=await offline.prepareDaf({currentRef:'ברכות, דף ב',currentBook:'ברכות'},()=>++guardChecks<3);
+ assert.equal(stale.reason,'stale','navigation during asset loading must prevent stale daf warming');
  const next=await offline.prepareDaf({currentRef:'ברכות, דף ב',currentBook:'ברכות'});
  assert.equal(next.scope,'daf');
  assert.equal(next.ready,true);
