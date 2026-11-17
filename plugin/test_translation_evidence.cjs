@@ -11,18 +11,21 @@ global.fetch=async url=>{
  if(String(url).includes('/api/ref/'))return {ok:true,json:async()=>({is_ref:true,normalized:'Berakhot 2a:1'})};
  if(String(url).includes('/api/v3/texts/'))return {ok:true,json:async()=>({versions:[{
   versionTitle:'William Davidson Edition - English',license:'CC-BY-NC',
-  text:['The completion of the discussion was completed after studying the law; he said it was finished. The forest is mentioned elsewhere.']
+  text:['The completion of the discussion was completed after studying the law; he said it was finished. The forest is mentioned elsewhere. A man was hopping nearby.']
  }]})};
  throw Error('Unexpected URL '+url);
 };
 (async()=>{
  const evidence=require(file);
- const candidates=[{id:'completion',text:'completion'},{id:'forest',text:'forest'},{id:'complete',text:'complete'},{id:'study',text:'study'},{id:'say',text:'say'},{id:'law',text:'law'},{id:'stopword',text:'the'},{id:'short',text:'a'}];
+ const candidates=[{id:'completion',text:'completion'},{id:'forest',text:'forest'},{id:'complete',text:'complete'},{id:'study',text:'study'},{id:'say',text:'say'},{id:'law',text:'law'},{id:'hope',text:'hope'},{id:'hop',text:'hop'},{id:'stopword',text:'the'},{id:'short',text:'a'}];
  const result=await evidence.compareTranslation('אָמַר',candidates,{sourceRange:{ref:'ברכות ב ע״א:א'}});
- assert.deepEqual(result.matches.map(x=>x.id),['completion','forest','complete','study','say','law']);
+ assert.deepEqual(result.matches.map(x=>x.id),['completion','forest','complete','study','say','law','hop']);
  assert(result.matches.find(x=>x.id==='complete'),'silent-e inflection should match complete/completed');
  assert(result.matches.find(x=>x.id==='study'),'continuous inflection should match study/studying');
  assert(result.matches.find(x=>x.id==='say'),'irregular verb should match say/said');
+ assert(!result.matches.some(x=>x.id==='hope'),'doubled-consonant forms must not create a false silent-e match');
+ assert.equal(result.matches.find(x=>x.id==='complete').matchedPhrase,'completed','UI evidence must show the wording actually present in the translation');
+ assert.equal(result.matches.find(x=>x.id==='complete').matchType,'inflected_word');
  assert(!result.matches.some(x=>x.id==='stopword'),'function words must not create matches');
  assert.equal(result.versionTitle,'William Davidson Edition - English');
  assert.equal(result.license,'CC-BY-NC');
