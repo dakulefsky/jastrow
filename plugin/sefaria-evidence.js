@@ -162,8 +162,16 @@
   return word;
  }
  const STOP_WORDS=new Set(('a an the and or of to in on at by for from with without as is are was were be been being do does did have has had it its this that these those he she they we you I his her their our your who which what when where how very more most some any all each every other same such into onto over under up down out off not no yes can could may might must shall should will would').toLowerCase().split(/\s+/));
+ function tokenForms(word){
+  const stem=stemEnglish(word),forms=new Set([word,stem]);
+  // English past/continuous forms often drop a final silent e (make/making,
+  // complete/completed). Accept that single predictable restoration only.
+  if(stem.length>=3&&!stem.endsWith('e'))forms.add(stem+'e');
+  return forms;
+ }
  function tokenMatch(a,b){
-  return a===b||stemEnglish(a)===stemEnglish(b);
+  const left=tokenForms(a),right=tokenForms(b);
+  return [...left].some(value=>right.has(value));
  }
  function phraseInText(phrase,text){
   if(!phrase||!text)return false;
