@@ -74,6 +74,7 @@ jobs:
           node --check hebrew/plugin/sefaria-offline.js
           node --check plugin/sefaria-evidence.js
           node plugin/test_sefaria_offline.cjs
+          node plugin/test_translation_prefetch.cjs
           node plugin/test_sefaria_evidence.cjs
           node plugin/test_translation_evidence.cjs
       - name: Test consistent student lookup in Chromium
