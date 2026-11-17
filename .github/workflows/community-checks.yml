@@ -105,7 +105,7 @@ jobs:
         run: |
           python - <<'PY'
           import json
-          expected = ["https://otzaria-dictionary-community.dakulefsky.workers.dev", "https://www.sefaria.org"]
+          expected = ["https://www.sefaria.org"]
           for path in ("plugin/manifest.json", "hebrew/plugin/manifest.json"):
               with open(path, encoding="utf-8") as f:
                   manifest = json.load(f)
