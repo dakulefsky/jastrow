@@ -1,6 +1,6 @@
 'use strict';
 const $=id=>document.getElementById(id),el=(tag,text,cls)=>{const n=document.createElement(tag);n.textContent=text;if(cls)n.className=cls;return n;};
-let recentLookups=[],trail=[],trailPosition=-1,activeReaderContext=null,activeSefariaEntryIds=new Set();
+let recentLookups=[],trail=[],trailPosition=-1,activeReaderContext=null;
 try{const saved=JSON.parse(localStorage.getItem('aramaic-hebrew-student-v1')||'{}');if(Array.isArray(saved.recent))recentLookups=saved.recent.filter(x=>typeof x==='string'&&x.length<=300).slice(0,10);}catch{}
 function renderRecent(){const nav=$('recent-lookups');if(!nav)return;nav.replaceChildren();nav.hidden=!recentLookups.length;if(nav.hidden)return;nav.append(el('span','חיפושים אחרונים','recent-label'));for(const word of recentLookups){const b=el('button',word);b.type='button';b.onclick=()=>search(word);nav.append(b);}const clear=el('button','ניקוי','clear-recent');clear.type='button';clear.onclick=()=>{recentLookups=[];saveRecent();renderRecent();};nav.append(clear);}
 function saveRecent(){try{localStorage.setItem('aramaic-hebrew-student-v1',JSON.stringify({recent:recentLookups}));}catch{}}
@@ -14,12 +14,12 @@ function renderMatches(records,word){
  for(const entry of entries){
   const row=el('div','','match-row');
   const open=el('button',entry.word,'result');open.type='button';open.dir='rtl';open.onclick=()=>search(entry.word);row.append(open);
-  if(activeSefariaEntryIds.has('krupnik:'+entry.rid))row.append(el('small','התאמה בכותרת מול מיפוי Jastrow של ספריא','sefaria-evidence-note'));
+  
   list.append(row);
  }
 }
 let lastSearched='',searchSerial=0;
-async function search(q,record=true){const serial=++searchSerial;lastSearched=String(q);if(activeReaderContext&&HebrewLookup.normalize(String(q))!==HebrewLookup.normalize(activeReaderContext.word))activeReaderContext=null;$('query').value=q;const out=$('results');out.replaceChildren();$('clear').hidden=!q;if(!q.trim()){renderMatches([],'');$('status').textContent='';return;}if(String(q).trim().toLowerCase()==='who created this?'){renderMatches([],'');out.append(el('p','Daniel Avrahom','creator-easter-egg'));$('status').textContent='';return;}let records=HebrewLookup.lookup(q);activeSefariaEntryIds=new Set();if(activeReaderContext?.selection&&records.length&&window.SefariaEvidence){const evidence=await SefariaEvidence.lookup(q,records,activeReaderContext.selection);if(serial!==searchSerial)return;activeSefariaEntryIds=new Set(evidence.entryIds);}renderMatches(records,q);$('status').textContent=records.length?'':!HebrewLookup.valid(q)?'יש להזין מילה או ביטוי באותיות עבריות.':'לא נמצא ערך למילה או לביטוי זה.';if(!records.length)return;if(record){recordTrail(q);rememberLookup(q);}
+async function search(q,record=true){const serial=++searchSerial;lastSearched=String(q);if(activeReaderContext&&HebrewLookup.normalize(String(q))!==HebrewLookup.normalize(activeReaderContext.word))activeReaderContext=null;$('query').value=q;const out=$('results');out.replaceChildren();$('clear').hidden=!q;if(!q.trim()){renderMatches([],'');$('status').textContent='';return;}if(String(q).trim().toLowerCase()==='who created this?'){renderMatches([],'');out.append(el('p','Daniel Avrahom','creator-easter-egg'));$('status').textContent='';return;}let records=HebrewLookup.lookup(q);renderMatches(records,q);$('status').textContent=records.length?'':!HebrewLookup.valid(q)?'יש להזין מילה או ביטוי באותיות עבריות.':'לא נמצא ערך למילה או לביטוי זה.';if(!records.length)return;if(record){recordTrail(q);rememberLookup(q);}
  out.append(el('h2',q,'query-title'));const formMatch=records.find(e=>e.matchedForm);if(formMatch){const note=el('p','זוהתה צורה נטויה; הערך הבסיסי במילון: '+formMatch.word,'form-attestation');out.append(note);}const groups=new Map();
  for(const e of records)for(const p of e.parts){const text=p.meaning||p.text,key=[HebrewLookup.normalize(e.word),p.label.replace(/\b\d+\b/g,''),text].join('|');if(!groups.has(key))groups.set(key,{word:e.word,text,items:[]});groups.get(key).items.push({e,p});}
  const groupList=[...groups.values()];
