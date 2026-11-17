@@ -52,7 +52,7 @@
   const short=s=>s.length>180?s.slice(0,177)+'…':s,first=items[0];
   const form=first?.entry?.matchedForm?'\nצורת המילה במילון: '+first.entry.word+' (זוהתה תחילית או סיומת)':'';
   const lines=[word+form];const origin=sourceLabel(context);if(origin)lines.push(origin);
-  lines.push(...items.slice(0,2).map((x,i)=>(i+1)+'. '+(x.translationMatch?'**'+short(x.text)+'** — מומלץ':short(x.text))));
+  lines.push(...items.slice(0,2).map((x,i)=>(i+1)+'. '+'**'+short(x.text)+'**'+(x.translationMatch?' — מומלץ':'')));
   if(items.length>2)lines.push('למשמעויות נוספות — לחצו לפתיחת המילון');
   else lines.push('לחצו לערך המלא ולמקורות');
   return lines.filter(Boolean).join('\n');
