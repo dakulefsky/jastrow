@@ -5,6 +5,7 @@ const vm=require('node:vm');
 
 async function run(path){
  const listeners=new Map(),timers=new Map(),calls=[],prepared=[];
+ let prepareReady=true;
  let nextTimer=0,current={currentRef:'בראשית פרק א',currentBook:'בראשית',currentBookId:'genesis',currentIndex:0};
  const host={
   on(name,fn){if(!listeners.has(name))listeners.set(name,[]);listeners.get(name).push(fn);},
@@ -16,7 +17,7 @@ async function run(path){
   clearTimeout(id){timers.delete(id);}
  };
  vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),{window:root,globalThis:root,console});
- root.SefariaOfflineTranslation.prepareDaf=async location=>{prepared.push({...location});};
+ root.SefariaOfflineTranslation.prepareDaf=async location=>{prepared.push({...location});return {ready:prepareReady};};
  vm.runInNewContext(fs.readFileSync(path,'utf8'),{window:root,globalThis:root,console});
  const emit=async(name,payload)=>{for(const fn of listeners.get(name)||[])await fn(payload);};
  const fire=async(id)=>{const timer=timers.get(id);assert(timer,'expected timer');timers.delete(id);assert.equal(timer.delay,2000);await timer.fn();};
@@ -93,6 +94,21 @@ async function run(path){
  current={currentRef:'ברכות, דף ז',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:15};
  await emit('reader.current_ref_changed',current);
  assert.equal(timers.size,0,'reader location changes outside the reading screen must be ignored');
+
+ // An empty/unsupported daf must not be permanently marked prepared.
+ await emit('navigation.changed',{screen:'reading'});
+ current={currentRef:'ברכות, דף ח',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:16};
+ prepareReady=false;
+ await emit('reader.current_ref_changed',current);
+ await fire(onlyTimer());
+ assert.equal(prepared.length,2);
+ await emit('reader.current_ref_changed',current);
+ assert.equal(timers.size,1,'a daf that failed preparation must be eligible for retry');
+ prepareReady=true;
+ await fire(onlyTimer());
+ assert.equal(prepared.length,3);
+ await emit('reader.current_ref_changed',current);
+ assert.equal(timers.size,0,'a successfully prepared retry should be remembered');
 }
 
 (async()=>{
