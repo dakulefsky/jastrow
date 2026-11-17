@@ -101,16 +101,15 @@ jobs:
               assert "var(--color-outline, #888)" not in css, name
               assert "border-radius:999px" not in css, name
           PY
-      - name: Validate exact HTTPS network allowlists
+      - name: Verify both plugins have no runtime network permission
         run: |
           python - <<'PY'
           import json
-          expected = ["https://www.sefaria.org"]
           for path in ("plugin/manifest.json", "hebrew/plugin/manifest.json"):
               with open(path, encoding="utf-8") as f:
                   manifest = json.load(f)
-              assert manifest["network"]["enabled"] is True, path
-              assert manifest["network"]["allowlist"] == expected, path
+              assert "network.access" not in manifest["permissions"], path
+              assert "network" not in manifest, path
           PY
       - name: Check cross-link generator syntax
         run: |
