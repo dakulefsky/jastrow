@@ -73,7 +73,8 @@
   return prefix&&ending?'prefixed form; possible inflected form':ending?'inflected form':prefix?'prefixed form':false;
  }
  async function captureReaderContext(selection){
-  const outer=selection&&typeof selection==='object'?selection:{};
+  if(!selection||typeof selection!=='object')return null;
+  const outer=selection;
   const nested=outer.selection&&typeof outer.selection==='object'?outer.selection:outer;
   const context={...nested};
   for(const key of ['currentRef','currentTitle','currentBook','currentBookId','sourceRange','renderedRange','sections']){
