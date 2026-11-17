@@ -6,6 +6,8 @@ const {chromium,executablePath}=require('./browser_support.cjs');
  try{
   browser=await chromium.launch({executablePath,args:['--no-sandbox']});const page=await browser.newPage(),base='http://127.0.0.1:'+server.address().port,errors=[],external=[];
   page.on('pageerror',e=>errors.push(String(e)));page.on('request',r=>{if(!r.url().startsWith(base))external.push(r.url());});await page.goto(base);
+  const offlineEvidence=await page.evaluate(async()=>window.SefariaEvidence.compareTranslation('בדיקה',[{id:'offline',text:'beginning of tractate'}],{sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'}));
+  assert.equal(offlineEvidence.source,'offline');assert.equal(offlineEvidence.scope,'paragraph');assert.equal(offlineEvidence.matches[0].matchedPhrase,'beginning of tractate');
   const lookup=async word=>{const before=await page.locator('#entry').innerHTML();await page.fill('#query',word);await page.locator('.lookup-button').click();await page.waitForFunction(before=>document.querySelector('#entry')?.innerHTML!==before,before);await page.locator('.unified-meanings').first().waitFor();assert.equal(await page.locator('.community-feedback').count(),0,'offline mode must not show community UI');};
   await lookup('אַרְעָא');let main=page.locator('.unified-meanings>ol>.meaning-card');assert.equal(await main.count(),1);assert.match(await main.first().innerText(),/land/);assert(!/accident|Jastrow|Krupnik/.test(await page.locator('#entry').innerText()));
   const land=main.first();assert.equal(await land.locator('.meaning-number').innerText(),'1');assert.equal(await land.locator('.meaning-references a').count(),2);
