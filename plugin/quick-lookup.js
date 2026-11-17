@@ -48,8 +48,8 @@
   }));
   if(selection&&root.SefariaEvidence?.compareTranslation){
    const evidence=await root.SefariaEvidence.compareTranslation(word,merged.map((item,i)=>({id:String(i),text:item.text})),selection);
-   const matched=new Set((evidence.matches||[]).map(item=>item.id));
-   merged.forEach((item,i)=>{if(matched.has(String(i))){item.translationMatch=true;item.translationScope=evidence.scope;}});
+   const matched=new Map((evidence.matches||[]).map(item=>[item.id,item]));
+   merged.forEach((item,i)=>{const match=matched.get(String(i));if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
   }
   if(communityPreferred&&merged.length)merged[0].communityPreferred=true;
   return merged;
