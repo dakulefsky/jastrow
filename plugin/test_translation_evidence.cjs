@@ -61,5 +61,20 @@ global.fetch=async url=>{
  const deniedResult=await denied.compareTranslation('אָמַר',candidates,{currentRef:'Berakhot 2a'});
  assert.equal(deniedResult.reason,'permission');
  assert.equal(deniedFetches,0);
+
+ // The bundled English Bavli must work with network permission denied.
+ global.SefariaOfflineTranslation={getPassage:async(ref,selection)=>{
+  assert.equal(ref,'Berakhot 2a:1');
+  assert.equal(selection.currentBook,'Berakhot');
+  return {text:'The discussion was completed after the law was explained.',scope:'paragraph',
+   dafReference:'Berakhot 2a',license:'CC-BY-NC',versionTitle:'William Davidson Edition - English'};
+ }};
+ const offline=await denied.compareTranslation('מילתא',[{id:'complete',text:'complete'},{id:'law',text:'law'}],
+  {sourceRange:{ref:'Berakhot 2a:1'},currentBook:'Berakhot'});
+ assert.equal(offline.source,'offline');
+ assert.deepEqual(offline.matches.map(x=>x.id),['complete','law']);
+ assert.equal(offline.matches[0].matchedPhrase,'completed');
+ assert.equal(offline.scope,'paragraph');
+ assert.equal(deniedFetches,0,'offline comparison must not make any network request');
  console.log('Sefaria translation evidence tests passed');
 })().catch(error=>{console.error(error);process.exitCode=1;});
