@@ -97,6 +97,7 @@ async function run(path){
 
  // An empty/unsupported daf must not be permanently marked prepared.
  await emit('navigation.changed',{screen:'reading'});
+ await new Promise(resolve=>setImmediate(resolve)); // Let the background refresh finish before changing the simulated reader ref.
  current={currentRef:'ברכות, דף ח',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:16};
  prepareReady=false;
  await emit('reader.current_ref_changed',current);
