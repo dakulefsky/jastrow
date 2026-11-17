@@ -178,6 +178,22 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
  if(serial!==requestSerial||panelSerial!==entrySerial)return;
  const expanded=items.flat(),records=expanded.filter(x=>!x.error);
  target.append(DictionaryMeanings.render(records,word,result.kind==='phrase'?index.phraseNotes:{}));
+ const active=activeReaderContext&&JastrowSearch.normalize(activeReaderContext.word)===JastrowSearch.normalize(word)?activeReaderContext.selection:null;
+ if(active&&window.SefariaEvidence?.compareTranslation){
+  const candidates=DictionaryMeanings.merge(records,word).map((group,i)=>({id:String(i),text:group.text}));
+  const evidence=await SefariaEvidence.compareTranslation(word,candidates,active);
+  if(serial!==requestSerial||panelSerial!==entrySerial)return;
+  const matches=new Map((evidence.matches||[]).map(item=>[item.id,item]));
+  if(matches.size){
+   const panel=el('section',undefined,'translation-evidence');
+   panel.append(el('h3','Steinsaltz translation cross-check','translation-evidence-title'));
+   panel.append(el('p','This candidate wording also appears in the selected passage’s translation. It is supporting evidence, not proof of the meaning.','translation-evidence-note'));
+   const list=el('ul');
+   candidates.forEach((candidate,i)=>{const match=matches.get(String(i));if(match){const line=el('li');line.append(el('strong',candidate.text),el('small','Wording found: “'+match.matchedPhrase+'”'));list.append(line);}});
+   panel.append(list,el('small',evidence.scope==='paragraph'?'William Davidson Edition — English · selected paragraph':'William Davidson Edition — English · daf'));
+   target.append(panel);
+  }
+ }
  renderCommunityVotes(result,word,target,records);
 for(const failed of expanded.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
  if(result.total>ids.length){const more=el('button','More matching entries');more.type='button';more.onclick=()=>{limit+=60;search(word,true);};target.append(more);}
