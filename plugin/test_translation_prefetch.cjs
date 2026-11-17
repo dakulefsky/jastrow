@@ -36,8 +36,12 @@ async function run(path){
  assert.equal(prepared.length,0);
  assert.equal(calls.length,0);
 
- // Moving from amud aleph to amud bet is still the same daf; do not restart.
- current={currentRef:'ברכות, דף ב עמוד ב',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:11};
+ // Moving to another paragraph on the same amud is still the same daf.
+ current={currentRef:'ברכות, דף ב עמוד א:2',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:11};
+ await emit('reader.current_ref_changed',current);
+ assert.equal(onlyTimer(),first,'moving between paragraphs on the same daf must not restart the wait');
+ // Moving from amud aleph to amud bet is also still the same daf.
+ current={currentRef:'ברכות, דף ב עמוד ב',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:12};
  await emit('reader.current_ref_changed',current);
  assert.equal(onlyTimer(),first,'switching amudim on the same daf must not restart the two-second wait');
  assert.equal(prepared.length,0);
