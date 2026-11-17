@@ -121,6 +121,14 @@ const text='סוגיה אחרת כי אמר דאמר לימא הכי ועוד';
   assert.equal(await truncated.api.propagatedPreference(selection,'דאמר',entries),null,'truncated link results must not produce a partial recommendation');
   assert.equal(truncated.calls.filter(x=>x.method==='library.getLinkContent').length,0);
 
+  const unknownSource=load(pluginPath,{
+   links:[link(refs[0],81,{targetIsUserBook:undefined,targetSource:undefined})],
+   passages:[text],
+   preferredByReference:{[refs[0]]:'1'}
+  });
+  assert.equal(await unknownSource.api.propagatedPreference(selection,'דאמר',entries),null,'unknown link provenance must fail closed');
+  assert.equal(unknownSource.calls.filter(x=>x.method==='library.getLinkContent').length,0);
+
   const userBook=load(pluginPath,{
    links:[link(refs[0],81,{targetIsUserBook:true})],
    passages:[text],
