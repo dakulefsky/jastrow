@@ -64,7 +64,7 @@
    const heading=[item.selectedWord,item.spelling,item.label].filter((s,n,a)=>s&&a.indexOf(s)===n).join(' · ');
    return (i+1)+'. **'+short(item.text).replace(/\*/g,'')+'**'+(heading?'\n'+heading.replace(/\*/g,''):'')+(item.translationMatch?'\nSteinsaltz wording: “'+item.translationPhrase+'”'+(item.translationScope==='paragraph'?' (this paragraph).':' (this daf).'):'');
   });
-  return [word++(prefixed?' — possible '+(typeof prefixed==='string'?prefixed:'prefixed form'):''),...lines,
+  return [word+(prefixed?' — possible '+(typeof prefixed==='string'?prefixed:'prefixed form'):''),...lines,
    ...(prefixed?['Base-word meanings; check the grammatical form in context.']:[]),
    items.length>2?'More meanings — click to open dictionary':'Click for full entry and sources'].join('\n');
  }
