@@ -19,7 +19,7 @@
   const index=root.JASTROW_INDEX,S=root.JastrowSearch,phrase=S.phraseLookup(index,word);
   if(!phrase.ids.length&&S.splitWords(word).length>1){
    if(!S.hasSelectionTranslations(index,word))return [];
-   const lists=await Promise.all(S.segmentWords(index,word).map(async part=>(await results(part.word)).map(item=>({...item,selectedWord:part.word}))));
+   const lists=await Promise.all(S.segmentWords(index,word).map(async part=>(await results(part.word,selection)).map(item=>({...item,selectedWord:part.word}))));
    return lists.flat();
   }
   const result=phrase.ids.length?phrase:S.lookup(index,word,100,'length',false);
@@ -95,12 +95,12 @@
     if(!root.JastrowSearch.hasSelectionTranslations(root.JASTROW_INDEX,word))return;
     await root.Otzaria.call('ui.showMessage',{message:word+'\nNo short meaning is available. Click to open the dictionary entry and references.',tapPayload:{dictionaryWord:word,readerContext:context},tapOpenPlugin:true});return;
    }
-   const res=await root.Otzaria.call('ui.showMessage',{message:message(word,items,formKind(word)),tapPayload:{dictionaryWord:word},tapOpenPlugin:true});
+   const res=await root.Otzaria.call('ui.showMessage',{message:message(word,items,formKind(word)),tapPayload:{dictionaryWord:word,readerContext:context},tapOpenPlugin:true});
    if(res?.success===false)console.warn('Quick dictionary lookup unavailable; use Open dictionary.');
   }catch{
    if(current===serial){
     console.warn('Quick dictionary lookup failed; use Open dictionary.');
-    await root.Otzaria.call('ui.showMessage',{message:word+'\nThe quick result could not load. Click to open the dictionary.',tapPayload:{dictionaryWord:word},tapOpenPlugin:true});
+    await root.Otzaria.call('ui.showMessage',{message:word+'\nThe quick result could not load. Click to open the dictionary.',tapPayload:{dictionaryWord:word,readerContext:context},tapOpenPlugin:true});
    }
   }
  }
