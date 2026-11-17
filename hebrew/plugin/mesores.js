@@ -68,15 +68,17 @@
    const request={startLine:source.line,endLine:source.line,connectionTypes:[CONNECTION_TYPE]};
    if(source.bookUid)request.bookUid=source.bookUid;else request.bookId=source.bookId;
    const response=await root.Otzaria.call('library.getLinks',request);
-   if(!response?.success||!Array.isArray(response.data?.links))return null;
+   if(!response?.success||response.data?.truncated===true||!Array.isArray(response.data?.links))return null;
    const seen=new Set();
    const links=response.data.links.filter(link=>{
     if(String(link?.connectionType||'').toUpperCase()!==CONNECTION_TYPE)return false;
+    if(link.targetIsUserBook===true||(link.targetSource&&link.targetSource!=='o'))return false;
     if(!link.targetTitle||!Number.isInteger(link.targetLine))return false;
     const id=[link.targetTitle,link.targetLine,link.targetLineEnd??''].join('|');
     if(seen.has(id))return false;seen.add(id);return true;
-   }).slice(0,MAX_LINKS);
+   });
    if(!links.length)return [];
+   if(links.length>MAX_LINKS)return null;
    const loaded=await root.Otzaria.call('library.getLinkContent',{links:links.map(contentRequest)});
    if(!loaded?.success||!Array.isArray(loaded.data?.items))return null;
    return links.map((link,index)=>{
@@ -158,30 +160,48 @@
   return matches;
  }
 
- // Use an established contextual consensus from a Mesores-linked occurrence
- // only when every exact occurrence agrees. This never creates a vote.
- async function propagatedPreference(selection,word,entries,rank){
+  // Use only local translation evidence from a Mesores-linked passage.
+ // A parallel clue is accepted only when the selected word occurs once there,
+ // one candidate is uniquely supported, and every relevant linked passage agrees.
+ async function translationRank(word,entries,selection){
+  if(!root.SefariaEvidence?.compareTranslation)return null;
+  const evidence=await root.SefariaEvidence.compareTranslation(word,entries,selection);
+  const matches=Array.isArray(evidence?.matches)?evidence.matches:[];
+  if(!matches.length)return null;
+  const score=match=>match.matchType==='exact'?3:match.matchType==='inflected_phrase'?2:1;
+  const highest=Math.max(...matches.map(score));
+  const winners=[...new Set(matches.filter(match=>score(match)===highest).map(match=>String(match.id)))];
+  if(winners.length!==1)return null;
+  return {preferredEntryId:winners[0],preferenceScope:'contextual'};
+ }
+ async function propagatedPreference(selection,word,entries,rank=translationRank){
   if(!selection||!word||!Array.isArray(entries)||!entries.length||typeof rank!=='function')return null;
   const query=tokenize(word);if(!query.length)return null;
   const passages=await passagesFor(selection),preferences=[];
+  let relevantPassages=0;
   for(const passage of passages){
-   const tokens=tokenize(passage.text);
+   const tokens=tokenize(passage.text),positions=[];
    for(let i=0;i<=tokens.length-query.length;i++){
     let exact=true;for(let j=0;j<query.length;j++)if(tokens[i+j]!==query[j]){exact=false;break;}
-    if(!exact)continue;
-    const before=tokens.slice(Math.max(0,i-8),i).join(' ');
-    const after=tokens.slice(i+query.length,i+query.length+8).join(' ');
-    if(!before||!after)continue;
-    const linkedSelection={sourceRange:{beforeText:{raw:before},afterText:{raw:after}}};
-    let ranked;
-    try{ranked=await rank(word,entries,linkedSelection);}catch{continue;}
-    if(ranked?.preferenceScope!=='contextual'||!ranked.preferredEntryId)continue;
-    preferences.push(ranked.preferredEntryId);
+    if(exact)positions.push(i);
    }
+   if(!positions.length)continue;
+   relevantPassages++;
+   if(positions.length!==1)return null;
+   const at=positions[0],before=tokens.slice(Math.max(0,at-8),at).join(' '),after=tokens.slice(at+query.length,at+query.length+8).join(' ');
+   if(!before||!after)return null;
+   const linkedSelection={
+    currentBook:passage.title,
+    sourceRange:{ref:passage.reference||passage.title,beforeText:{raw:before},afterText:{raw:after}}
+   };
+   let ranked;
+   try{ranked=await rank(word,entries,linkedSelection);}catch{return null;}
+   if(ranked?.preferenceScope!=='contextual'||!ranked.preferredEntryId)return null;
+   preferences.push(String(ranked.preferredEntryId));
   }
-  if(!preferences.length)return null;
+  if(!relevantPassages||preferences.length!==relevantPassages)return null;
   const winner=preferences[0];
-  return preferences.every(id=>id===winner)?{preferredEntryId:winner,occurrences:preferences.length}:null;
+  return preferences.every(id=>id===winner)?{preferredEntryId:winner,occurrences:relevantPassages}:null;
  }
 
  const api={connectionType:CONNECTION_TYPE,tokenize,containsPhrase,find,attach,clear,propagatedPreference};
