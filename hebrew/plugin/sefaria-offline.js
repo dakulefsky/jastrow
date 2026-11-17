@@ -1,9 +1,9 @@
 (function(root){
  'use strict';
  const DATA_ROOT='data/sefaria-bavli/';
- const MAX_CACHED_TRACTATES=3;
+ const MAX_CACHED_TRACTATES=3,MAX_CACHED_DAFS=12;
  let manifestPromise=null;
- const tractateCache=new Map(),tractatePromises=new Map();
+ const tractateCache=new Map(),tractatePromises=new Map(),preparedDafCache=new Map();
 
  function normalizeName(value){
   return String(value||'').normalize('NFKD').replace(/\p{M}/gu,'')
@@ -37,8 +37,7 @@
    const doc=root.document;
    if(!doc?.createElement||!doc.head){reject(Error('Local plugin asset loader is unavailable'));return;}
    const script=doc.createElement('script');
-   script.async=true;
-   script.src=DATA_ROOT+path;
+   script.async=true;script.src=DATA_ROOT+path;
    script.onload=()=>{script.remove?.();resolve();};
    script.onerror=()=>{script.remove?.();reject(Error('Offline translation asset unavailable: '+path));};
    doc.head.appendChild(script);
@@ -76,6 +75,7 @@
    while(tractateCache.size>MAX_CACHED_TRACTATES){
     const oldest=tractateCache.keys().next().value;
     tractateCache.delete(oldest);
+    for(const dafKey of preparedDafCache.keys())if(dafKey.startsWith(oldest+'|'))preparedDafCache.delete(dafKey);
     if(root.SefariaOfflineTranslationData)delete root.SefariaOfflineTranslationData[oldest];
    }
    return data;
@@ -88,13 +88,23 @@
   if(Array.isArray(side))return side.filter(value=>typeof value==='string'&&value.trim());
   return typeof side==='string'&&side.trim()?[side]:[];
  }
+ function cacheDaf(meta,daf,data){
+  const key=(meta.slug||meta.title)+'|'+daf;
+  const sideA=collectSide(data,2*daf-2).join(' '),sideB=collectSide(data,2*daf-1).join(' ');
+  const value={sideA,sideB,all:[sideA,sideB].filter(Boolean).join(' ')};
+  preparedDafCache.delete(key);preparedDafCache.set(key,value);
+  while(preparedDafCache.size>MAX_CACHED_DAFS)preparedDafCache.delete(preparedDafCache.keys().next().value);
+  return value;
+ }
  async function getPassage(reference,selection){
   const parsed=parseReference(reference||selection?.sourceRange?.ref||selection?.currentRef,selection?.currentBook);
   if(!parsed)return {text:'',reason:'unsupported_reference'};
   const manifest=await getManifest(),meta=findTractate(manifest,parsed,selection);
   if(!meta)return {text:'',reason:'tractate_not_in_offline_corpus',reference:parsed.ref};
-  const data=await loadTractate(meta);
-  const indices=parsed.side?[parsed.dafIndex]:[parsed.dafIndex,parsed.dafIndex+1];
+  const data=await loadTractate(meta),cacheKey=(meta.slug||meta.title)+'|'+parsed.daf;
+  let cached=preparedDafCache.get(cacheKey);
+  if(cached){preparedDafCache.delete(cacheKey);preparedDafCache.set(cacheKey,cached);}
+  else cached=cacheDaf(meta,parsed.daf,data);
   if(parsed.side&&parsed.line!==null){
    const side=data.text[parsed.dafIndex];
    const paragraph=Array.isArray(side)?side[parsed.line-1]:(parsed.line===1?side:null);
@@ -104,26 +114,23 @@
     versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'
    };
   }
-  const paragraphs=indices.flatMap(index=>collectSide(data,index));
-  if(!paragraphs.length)return {text:'',reason:'empty_daf',reference:parsed.ref};
-  return {
-   text:paragraphs.join(' '),scope:'daf',reference:parsed.ref,
+  const text=parsed.side==='a'?cached.sideA:parsed.side==='b'?cached.sideB:cached.all;
+  if(!text)return {text:'',reason:'empty_daf',reference:parsed.ref};
+  return {text,scope:'daf',reference:parsed.ref,
    dafReference:meta.title+' '+parsed.daf+(parsed.side||''),tractate:meta.title,
-   versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'
-  };
+   versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'};
  }
  async function prepareDaf(location){
   const parsed=parseReference(location?.currentRef,location?.currentBook);
   if(!parsed)return {text:'',reason:'unsupported_reference'};
   const manifest=await getManifest(),meta=findTractate(manifest,parsed,location);
   if(!meta)return {text:'',reason:'tractate_not_in_offline_corpus',reference:parsed.ref};
-  const data=await loadTractate(meta);
-  const ready=collectSide(data,2*parsed.daf-2).length>0||collectSide(data,2*parsed.daf-1).length>0;
-  return {ready,scope:'daf',reference:parsed.ref,dafReference:meta.title+' '+parsed.daf,
+  const data=await loadTractate(meta),cached=cacheDaf(meta,parsed.daf,data);
+  return {ready:!!cached.all,scope:'daf',reference:parsed.ref,dafReference:meta.title+' '+parsed.daf,
    tractate:meta.title,versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'};
  }
  function clearCache(){
-  manifestPromise=null;tractateCache.clear();tractatePromises.clear();
+  manifestPromise=null;tractateCache.clear();tractatePromises.clear();preparedDafCache.clear();
   delete root.SefariaOfflineTranslationManifest;delete root.SefariaOfflineTranslationData;
  }
  root.SefariaOfflineTranslation={prepareDaf,getPassage,parseReference,clearCache};
