@@ -2,10 +2,14 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
+const vm=require('node:vm');
 
 function verify(root){
  const base=path.join(root,'data','sefaria-bavli');
- const manifest=JSON.parse(fs.readFileSync(path.join(base,'manifest.json'),'utf8'));
+ const context={window:{},console};
+ context.globalThis=context.window;
+ vm.runInNewContext(fs.readFileSync(path.join(base,'manifest.js'),'utf8'),context);
+ const manifest=context.window.SefariaOfflineTranslationManifest;
  assert.equal(manifest.formatVersion,1);
  assert.equal(manifest.edition,'William Davidson Edition - English');
  assert.equal(manifest.tractateCount,manifest.tractates.length);
@@ -19,7 +23,8 @@ function verify(root){
   assert(meta.file.startsWith('texts/'));
   assert(!titles.has(meta.title),'duplicate tractate '+meta.title);
   titles.add(meta.title);
-  const data=JSON.parse(fs.readFileSync(path.join(base,meta.file),'utf8'));
+  vm.runInNewContext(fs.readFileSync(path.join(base,meta.file),'utf8'),context);
+  const data=context.window.SefariaOfflineTranslationData?.[meta.slug];
   assert.equal(data.versionTitle,manifest.edition,meta.title);
   assert.equal(data.license,'CC-BY-NC',meta.title);
   assert(Array.isArray(data.text)&&data.text.some(daf=>Array.isArray(daf)&&daf.some(line=>typeof line==='string'&&line.trim())),meta.title+' has no readable daf text');
