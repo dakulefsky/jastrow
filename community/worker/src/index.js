@@ -49,7 +49,7 @@ async function contextualPreference(db, word, ids, canonical, features) {
     GROUP BY cv.vote_id
     LIMIT 1000`).bind(word, ...features.map(item => item.hash)).all();
   const candidateCanonical = new Set([...canonical.values()]);
-  const bestByVoter = new Map();
+  const matchesByVoter = new Map();
   for (const row of rows.results || []) {
     if (!candidateCanonical.has(row.canonical_id)) continue;
     const matched = String(row.matched_features || "").split(",").filter(Boolean);
@@ -57,17 +57,24 @@ async function contextualPreference(db, word, ids, canonical, features) {
     const similarity = matchedWeight / Math.max(totalWeight, 1);
     // One weak neighboring word is not enough to alter a dictionary result.
     if (matched.length < 2 || similarity < 0.35) continue;
-    const existing = bestByVoter.get(row.voter_hash);
-    // One installation may vote in several related passages, but it contributes
-    // only its strongest match to any one lookup.
-    if (!existing || similarity > existing.similarity)
-      bestByVoter.set(row.voter_hash, { canonicalId: row.canonical_id, similarity });
+    if (!matchesByVoter.has(row.voter_hash)) matchesByVoter.set(row.voter_hash, new Map());
+    const byMeaning = matchesByVoter.get(row.voter_hash);
+    byMeaning.set(row.canonical_id, Math.max(byMeaning.get(row.canonical_id) || 0, similarity));
   }
   const grouped = new Map();
-  for (const [voterHash, vote] of bestByVoter) {
-    if (!grouped.has(vote.canonicalId)) grouped.set(vote.canonicalId, { score: 0, voters: new Set() });
-    const group = grouped.get(vote.canonicalId);
-    group.score += vote.similarity;
+  for (const [voterHash, byMeaning] of matchesByVoter) {
+    const rankedMatches = [...byMeaning.entries()].sort((a, b) => b[1] - a[1]);
+    if (!rankedMatches.length) continue;
+    const strongest = rankedMatches[0][1];
+    // If one installation's nearby passages support two different meanings
+    // almost equally, that installation is ambiguous for this lookup. Do not
+    // let row order or an arbitrary tie-break turn it into a vote for either.
+    const plausible = rankedMatches.filter(([, similarity]) => strongest - similarity <= 0.05);
+    if (plausible.length !== 1) continue;
+    const [canonicalId, similarity] = plausible[0];
+    if (!grouped.has(canonicalId)) grouped.set(canonicalId, { score: 0, voters: new Set() });
+    const group = grouped.get(canonicalId);
+    group.score += similarity;
     group.voters.add(voterHash);
   }
   const totalScore = [...grouped.values()].reduce((sum, group) => sum + group.score, 0);

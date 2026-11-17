@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "com.kulefsky.aramaic-hebrew",
   "name": "ארמית לעברית",
-  "version": "1.2.9",
-  "description": "מילון ארמי־עברי על פי הנוסח העברי המקורי של קרופניק וזילברמן, לשימוש ללא חיבור לרשת.",
+  "version": "1.3.5",
+  "description": "מילון ארמי־עברי על פי הנוסח העברי המקורי של קרופניק וזילברמן, עם רמזים הקשריים מתוך התרגום האנגלי של הבבלי, לשימוש ללא חיבור לרשת.",
   "author": "DanTheMan",
   "stability": "beta",
   "entrypoint": "index.html",
@@ -15,16 +15,12 @@
     "app.run_on_startup",
     "app.background_keep_alive",
     "events.subscribe:reader.selection_changed",
+    "events.subscribe:reader.current_ref_changed",
+    "events.subscribe:navigation.changed",
     "reader.open",
-    "network.access",
-    "events.subscribe:plugin.permissions_changed"
+    "library.links.read",
+    "library.content.read"
   ],
-  "network": {
-    "enabled": true,
-    "allowlist": [
-      "https://otzaria-dictionary-community.dakulefsky.workers.dev"
-    ]
-  },
   "contributes": {
     "toolTab": {
       "title": "ארמית לעברית",

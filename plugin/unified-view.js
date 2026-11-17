@@ -48,7 +48,8 @@
   section.append(element('blockquote',source.meaning.text,'source-gloss'));
   const body=element('div',undefined,'definition');body.dir=source.entry.source==='krupnik'?'auto':'ltr';body.innerHTML=source.entry.html;
   if(source.entry.source==='krupnik')body.style.whiteSpace='pre-line';
-  section.append(body);return section;
+  const citedWordExamples=source.entry.source==='krupnik'?null:root.JastrowReadingView?.renderPassages?.(body,source.lookupWord||source.spelling);
+  section.append(body);if(citedWordExamples)section.append(citedWordExamples);return section;
  }
  function card(group,number,notes){
   const li=element('li',undefined,'meaning-card');li.dataset.vowelRank=group.rank;

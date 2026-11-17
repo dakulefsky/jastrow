@@ -1,16 +1,59 @@
-const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const ctx={};ctx.window=ctx;vm.createContext(ctx);for(const f of ['data.js','lookup.js'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/'+f,'utf8'),ctx);
-const d=ctx.HEBREW_DICTIONARY;assert.equal(d.entries.length,20177);assert(d.entries.every(e=>/^KRU\d+$/.test(e.rid)));assert(!JSON.stringify(d).includes('englishWithinHebrew'));
-const r=ctx.HebrewLookup.lookup('נפקא מינה');assert.equal(r.length,1);assert.equal(r[0].parts[0].meaning,'היוצא לנו מזה למעשה');assert(!r[0].parts[0].text.includes('the practical difference'));assert(r[0].parts[0].text.includes('אפיקו ליה ריפתא'));assert.equal(ctx.HebrewLookup.lookup('נַפְקָא מִינָהּ')[0].rid,r[0].rid);assert.equal(ctx.HebrewLookup.lookup('zzzzz').length,0);
-assert.equal(ctx.HebrewLookup.lookup('abc נפקא').length,0);assert.equal(ctx.HebrewLookup.rank('נַפְקָא','נַפקא'),0);assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);(async()=>{const {chromium,executablePath}=require('./browser_support.cjs');const browser=await chromium.launch({headless:true,executablePath,args:['--no-sandbox']});try{const page=await browser.newPage();await page.addInitScript(()=>{window.fetch=async()=>{throw new Error('offline browser test');};});await page.goto('file://'+__dirname+'/plugin/index.html');await page.locator('#query').fill('נפקא מינה');await page.locator('button[type=submit]').click();assert.equal(await page.locator('#results .meaning-card').count(),1);assert.equal(await page.locator('#results .meaning-card>p').textContent(),'היוצא לנו מזה למעשה');assert.equal(await page.locator('.community-vote').count(),0,'offline mode must not show community controls');assert.equal(await page.locator('html').getAttribute('dir'),'rtl');assert.equal(await page.locator('#results .meaning-card details').getAttribute('open'),null);await page.locator('#results .meaning-card summary').click();assert(await page.locator('#results .meaning-card details p').isVisible());await page.locator('#query').fill('מילהשאינהקיימת');await page.locator('button[type=submit]').click();assert.equal(await page.locator('#results .meaning-card').count(),0);await page.locator('#query').fill('נפקא מינה');await page.locator('button[type=submit]').click();if(process.env.HEBREW_STORE_SCREENSHOT)await page.screenshot({path:process.env.HEBREW_STORE_SCREENSHOT,fullPage:true});// Verify that the Hebrew plugin offers usable in-dictionary choices only
-// when the optional service is healthy, and silently removes them on failure.
-const communityPage=await browser.newPage();
-await communityPage.addInitScript(()=>{window.Otzaria={call:async method=>method==='app.getGrantedPermissions'?{success:true,data:{permissions:['network.access']}}:method==='app.getConnectivity'?{success:true,data:{isOfflineMode:false,isOnline:true}}:{success:false},on:()=>{}};window.__failVote=false;window.__slowSuggestionWord=null;window.__releaseSlowSuggestions=null;window.fetch=async(input)=>{const url=String(input);if(url.endsWith('/health'))return new Response(JSON.stringify({ok:true}),{status:200});if(new URL(url).pathname==='/v1/suggestions'){if(new URL(url).searchParams.get('word')===window.__slowSuggestionWord)return await new Promise(resolve=>{window.__releaseSlowSuggestions=()=>resolve(new Response(JSON.stringify({preferredEntryId:null,totalVotes:0,suggestions:[]}),{status:200}));});return new Response(JSON.stringify({preferredEntryId:null,totalVotes:0,suggestions:[]}),{status:200});}if(url.endsWith('/v1/vote'))return window.__failVote?new Response(JSON.stringify({error:'offline'}),{status:503}):new Response(JSON.stringify({accepted:true,votes:1}),{status:200});throw new Error('Unexpected network request '+url);};});
-await communityPage.goto('file://'+__dirname+'/plugin/index.html');await communityPage.waitForFunction(()=>window.DictionaryCommunity?.enabled===true&&window.DictionaryCommunity?.online===true);
-await communityPage.evaluate(()=>{window.__originalHebrewLookup=HebrewLookup.lookup.bind(HebrewLookup);HebrewLookup.lookup=word=>{const n=HebrewLookup.normalize(word);if(n==='מבחןאיטי')return [{word:'מבחןאיטי',rid:'KRU9001',parts:[{meaning:'slow translation',text:'slow translation',label:''}]},{word:'מבחןאיטי',rid:'KRU9002',parts:[{meaning:'second slow translation',text:'second slow translation',label:''}]}];if(n==='מבחןמהיר')return [{word:'מבחןמהיר',rid:'KRU9003',parts:[{meaning:'fast translation',text:'fast translation',label:''}]},{word:'מבחןמהיר',rid:'KRU9004',parts:[{meaning:'second fast translation',text:'second fast translation',label:''}]}];return window.__originalHebrewLookup(word);};window.__slowSuggestionWord='מבחןאיטי';});await communityPage.locator('#query').fill('מבחןאיטי');await communityPage.locator('button[type=submit]').click();await communityPage.waitForFunction(()=>typeof window.__releaseSlowSuggestions==='function');await communityPage.locator('#query').fill('מבחןמהיר');await communityPage.locator('button[type=submit]').click();assert.equal(await communityPage.locator('#results h2').innerText(),'מבחןמהיר','the latest Hebrew search should render immediately');await communityPage.evaluate(()=>window.__releaseSlowSuggestions());await new Promise(resolve=>setTimeout(resolve,40));assert.equal(await communityPage.locator('#results h2').innerText(),'מבחןמהיר','a late community response must not overwrite the latest Hebrew search');await communityPage.evaluate(()=>{HebrewLookup.lookup=window.__originalHebrewLookup;window.__slowSuggestionWord=null;});
-await communityPage.locator('#query').fill('נפקא');await communityPage.locator('button[type=submit]').click();await communityPage.locator('.community-vote').first().waitFor();assert.match(await communityPage.locator('.community-feedback-he .community-feedback-label').innerText(),/איזו משמעות מתאימה בדרך כלל/);assert.match(await communityPage.locator('.community-feedback-he .community-feedback-description').innerText(),/אין טקסט סמוך זמין/);await communityPage.evaluate(()=>window.dispatchEvent(new Event('dictionary-community-disabled')));assert.equal(await communityPage.locator('.community-vote').count(),0,'revoked permission must hide Hebrew community controls');await communityPage.evaluate(()=>window.dispatchEvent(new Event('dictionary-community-permission-granted')));await communityPage.locator('.community-vote').first().waitFor();
-assert(await communityPage.locator('.community-vote').count()>=1);assert(await communityPage.locator('.community-match-preview').count()>=1);
-await communityPage.locator('.community-vote').first().click();await communityPage.waitForFunction(()=>Array.from(document.querySelectorAll('.community-vote-status')).some(node=>/תודה/.test(node.innerText)));assert.match(await communityPage.locator('.community-vote-status').first().innerText(),/תודה/);
-await communityPage.reload();await communityPage.locator('#query').fill('נפקא');await communityPage.locator('button[type=submit]').click();await communityPage.locator('.community-vote').first().waitFor();
-await communityPage.evaluate(()=>window.__failVote=true);await communityPage.locator('.community-vote').first().click();await communityPage.waitForFunction(()=>Array.from(document.querySelectorAll('.community-vote-status')).some(node=>/הבחירה נשמרה במכשיר ותישלח כשיהיה חיבור לרשת/.test(node.innerText)));assert(await communityPage.locator('.community-vote').count()>=1,'temporary server failure must not remove the remaining vote choice');assert.match(await communityPage.locator('.community-vote-status').last().innerText(),/הבחירה נשמרה במכשיר ותישלח כשיהיה חיבור לרשת/);await communityPage.close();
-console.log('PASS: 20,177 source records, RTL search, source details, and silent community-vote fallback.');}finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1)});
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const vm=require('node:vm');
+
+const ctx={};ctx.window=ctx;vm.createContext(ctx);
+for(const file of ['data.js','lookup.js'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/'+file,'utf8'),ctx);
+const dictionary=ctx.HEBREW_DICTIONARY;
+assert.equal(dictionary.entries.length,20177);
+assert(dictionary.entries.every(entry=>/^KRU\d+$/.test(entry.rid)));
+assert(!JSON.stringify(dictionary).includes('englishWithinHebrew'));
+const results=ctx.HebrewLookup.lookup('נפקא מינה');
+assert.equal(results.length,1);
+assert.equal(results[0].parts[0].meaning,'היוצא לנו מזה למעשה');
+assert(!results[0].parts[0].text.includes('the practical difference'));
+assert(results[0].parts[0].text.includes('אפיקו ליה ריפתא'));
+assert.equal(ctx.HebrewLookup.lookup('נַפְקָא מִינָהּ')[0].rid,results[0].rid);
+assert.equal(ctx.HebrewLookup.lookup('zzzzz').length,0);
+assert.equal(ctx.HebrewLookup.lookup('abc נפקא').length,0);
+assert.equal(ctx.HebrewLookup.rank('נַפְקָא','נַפקא'),0);
+assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);
+
+(async()=>{
+ const {chromium,executablePath}=require('./browser_support.cjs');
+ const browser=await chromium.launch({headless:true,executablePath,args:['--no-sandbox']});
+ try{
+  const page=await browser.newPage();
+  await page.addInitScript(()=>{
+   window.__fetchCalls=0;
+   window.fetch=async()=>{window.__fetchCalls++;throw new Error('offline browser test: runtime fetch is forbidden');};
+  });
+  await page.goto('file://'+__dirname+'/plugin/index.html');
+  await page.locator('#query').fill('נפקא מינה');
+  await page.locator('button[type=submit]').click();
+  assert.equal(await page.locator('#results .meaning-card').count(),1);
+  assert.equal(await page.locator('#results .meaning-card>p').textContent(),'היוצא לנו מזה למעשה');
+  assert.equal(await page.locator('.community-vote').count(),0,'community voting stays disabled');
+  assert.equal(await page.locator('html').getAttribute('dir'),'rtl');
+  assert.equal(await page.locator('#results .meaning-card details').getAttribute('open'),null);
+  await page.locator('#results .meaning-card summary').click();
+  assert(await page.locator('#results .meaning-card details p').isVisible());
+  await page.locator('#query').fill('מילהשאינהקיימת');
+  await page.locator('button[type=submit]').click();
+  assert.equal(await page.locator('#results .meaning-card').count(),0);
+  await page.locator('#query').fill('נפקא מינה');
+  await page.locator('button[type=submit]').click();
+
+  const evidence=await page.evaluate(async()=>window.SefariaEvidence.compareTranslation('בדיקה',
+   [{id:'offline',text:'beginning of tractate'}],
+   {sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'}));
+  assert.equal(evidence.source,'offline');
+  assert.equal(evidence.scope,'paragraph');
+  assert.equal(evidence.matches[0].matchedPhrase,'beginning of tractate');
+  assert.equal(await page.evaluate(()=>window.__fetchCalls),0,'the full Hebrew browser test must run without fetch/network access');
+  assert.equal(await page.locator('.community-vote').count(),0);
+  if(process.env.HEBREW_STORE_SCREENSHOT)await page.screenshot({path:process.env.HEBREW_STORE_SCREENSHOT,fullPage:true});
+  console.log('PASS: 20,177 Hebrew source records, RTL lookup, source details, offline English-Shas clue, and no community voting.');
+ }finally{await browser.close();}
+})().catch(error=>{console.error(error);process.exit(1);});

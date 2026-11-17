@@ -91,7 +91,7 @@ async function search(word, more=false){
   if(words.length>1){await searchWords(words,serial);return;}
   const normalized=JastrowSearch.normalize(query);
   if(query&&!JastrowSearch.validWord(query)){setStatus('Enter a Hebrew or Aramaic word, or up to 12 words, without English letters or numbers.');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a single Aramaic or Hebrew word to see its dictionary matches.'));currentId=null;return;}
-  let r=JastrowSearch.lookup(index,query,limit,'length',includeJastrow);if(window.DictionaryCommunity?.enabled&&r.ids.length>1&&r.kind!=='suggestions'){const ranked=await DictionaryCommunity.rank(query,r.ids.map(id=>index.entries[id]),activeReaderContext?.selection);if(serial!==requestSerial)return;if(ranked.preferredEntryId)r={...r,ids:ranked.entries.map(entry=>index.entries.indexOf(entry))};}paintMatches(r,query,serial);
+  let r=JastrowSearch.lookup(index,query,limit,'length',includeJastrow);paintMatches(r,query,serial);
   try{history.replaceState(null,'','#'+new URLSearchParams({word:query}));}catch{}
   if(!normalized){setStatus('Enter an Aramaic or Hebrew word in Hebrew letters.');$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a word in Hebrew letters to begin.'));currentId=null;return;}
   if(!r.ids.length){currentId=null;$('match-count').textContent='0 matches';$('entry').replaceChildren(el('h2','No matching entry'),el('p','Try a different spelling or the dictionary headword. Not every inflected form is indexed.'));setStatus('No entry found for '+query+'.');return;}
@@ -116,53 +116,6 @@ async function searchWords(words,serial){
   await showTranslations(result,word,serial,target,3);
  }));
 }
-function renderCommunityVotes(result,word,target,records=[]){
- if(!window.DictionaryCommunity?.enabled||!result.ids.length)return;
- const active=activeReaderContext&&JastrowSearch.normalize(activeReaderContext.word)===JastrowSearch.normalize(word)?activeReaderContext.selection:null;
- const contextual=!!(active&&window.DictionaryCommunity.hasContext?.(active));
- const panel=el('section',undefined,'community-feedback');
- const heading=el('div',undefined,'community-feedback-heading');
- heading.append(el('span','COMMUNITY CONTRIBUTION','community-feedback-kicker'));
- heading.append(el('h3',contextual?'Which entry fits this use?':'Which meaning is generally best?','community-feedback-label'));
- heading.append(el('p',contextual?'“Fits here” helps learners in similar contexts. “Prefer generally” changes the broad dictionary preference.':'This lookup has no available surrounding text. A general vote affects the broad dictionary preference.','community-feedback-description'));
- panel.append(heading);
- const options=el('div',undefined,'community-vote-options');
- for(const id of result.ids.slice(0,12)){
-  const meta=index.entries[id],record=records.find(item=>item.id===id),preview=record?.meanings?.find(item=>item.text)?.text||'';
-  const source=meta.source==='krupnik'?'Krupnik & Silbermann':'Jastrow';
-  const card=el('div',undefined,'community-vote-card');
-  const button=el('button',undefined,'community-vote');
-  button.type='button';button.dir='auto';button.title='Choose '+meta.h+' ('+source+')';button.setAttribute('aria-label','Choose '+meta.h+' from '+source);
-  const main=el('span',undefined,'community-vote-main');
-  main.append(el('strong',meta.h,'community-vote-headword'),el('span',source,'community-vote-source'));
-  button.append(main);
-  if(preview)button.append(el('span',preview.slice(0,90),'community-vote-gloss'));
-  const action=el('span',contextual?'Fits here':'Prefer generally','community-vote-action');button.append(action);
-  const submit=async(scope,control,actionNode)=>{
-   control.disabled=true;const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);
-   try{
-    const outcome=await DictionaryCommunity.vote(word,meta,{scope,selection:active});
-    if(!outcome.ok&&!outcome.duplicate){note.textContent=outcome.reason==='context_unavailable'?'Nearby text could not be read, so no contextual vote was sent.':outcome.reason==='queue_full'?'Your offline vote queue is full. Reconnect and try again.':outcome.reason==='storage'?'This choice could not be saved on this device.':'This choice could not be recorded. Please try again.';control.disabled=false;return;}
-    note.textContent=outcome.queued?'Saved on this device — it will sync when you’re online.':outcome.ok?(scope==='contextual'?'Thanks — your contextual vote was recorded.':'Thanks — your general preference was recorded.'):'You have already voted for this word in this scope.';
-    control.classList.add('is-selected');if(actionNode)actionNode.textContent='Selected';control.disabled=true;
-   }catch{note.textContent='Something went wrong. Please try again.';control.disabled=false;}
-  };
-  button.onclick=()=>submit(contextual?'contextual':'general',button,action);
-  card.append(button);
-  if(contextual){
-   const general=el('button','Prefer generally','community-vote-general');general.type='button';general.title='Prefer this meaning as the general dictionary meaning';
-   general.onclick=()=>submit('general',general,null);card.append(general);
-  }
-  options.append(card);
- }
- panel.append(options);
- const meanings=target.querySelector('.unified-meanings');if(meanings)target.insertBefore(panel,meanings);else target.append(panel);
-}
-if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-synced',()=>{document.querySelectorAll('.community-vote-status').forEach(node=>{if(node.textContent.includes('Saved on this device'))node.textContent='Your offline vote has now been sent to the community.';});});
-if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',()=>{
- document.querySelectorAll('.community-feedback,.community-vote').forEach(node=>node.remove());
- if(window.Otzaria)for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i})).catch(()=>{});}catch{}}
-});
 async function showTranslations(result,word,serial,target=$('entry'),pageSize=12){
  const panelSerial=entrySerial;
  currentId=null;target.replaceChildren(el('h2',word,'entry-title'));
@@ -178,8 +131,23 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
  if(serial!==requestSerial||panelSerial!==entrySerial)return;
  const expanded=items.flat(),records=expanded.filter(x=>!x.error);
  target.append(DictionaryMeanings.render(records,word,result.kind==='phrase'?index.phraseNotes:{}));
- renderCommunityVotes(result,word,target,records);
- for(const failed of expanded.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
+ const active=activeReaderContext&&JastrowSearch.normalize(activeReaderContext.word)===JastrowSearch.normalize(word)?activeReaderContext.selection:null;
+ if(active&&window.SefariaEvidence?.compareTranslation){
+  const candidates=DictionaryMeanings.merge(records,word).map((group,i)=>({id:String(i),text:group.text}));
+  const evidence=await SefariaEvidence.compareTranslation(word,candidates,active,{preparedOnly:true});
+  if(serial!==requestSerial||panelSerial!==entrySerial)return;
+  const matches=new Map((evidence.matches||[]).map(item=>[item.id,item]));
+  if(matches.size){
+   const panel=el('section',undefined,'translation-evidence');
+   panel.append(el('h3','Steinsaltz translation cross-check','translation-evidence-title'));
+   panel.append(el('p','This candidate wording also appears in the selected passage’s translation. It is supporting evidence, not proof of the meaning.','translation-evidence-note'));
+   const list=el('ul');
+   candidates.forEach((candidate,i)=>{const match=matches.get(String(i));if(match){const line=el('li');line.append(el('strong',candidate.text),el('small','Wording found: “'+match.matchedPhrase+'”'));list.append(line);}});
+   panel.append(list,el('small',evidence.scope==='paragraph'?'William Davidson Edition — English · selected paragraph':'William Davidson Edition — English · daf'));
+   target.append(panel);
+  }
+ }
+for(const failed of expanded.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
  if(result.total>ids.length){const more=el('button','More matching entries');more.type='button';more.onclick=()=>{limit+=60;search(word,true);};target.append(more);}
 }
 
@@ -227,16 +195,15 @@ document.addEventListener('click',e=>{
 });
 $('selection').hidden=true;
 if(window.Otzaria){
- Otzaria.on('ui.messageClicked',p=>{const word=p?.payload?.dictionaryWord;if(typeof word==='string')search(word);});
+ Otzaria.on('ui.messageClicked',p=>{const word=p?.payload?.dictionaryWord;if(typeof word!=='string')return;activeReaderContext=null;search(word);(async()=>{try{const selected=await Otzaria.call('reader.getSelection');const selectedWord=JastrowContext.selectionText(selected?.data);if(JastrowSearch.normalize(query)!==JastrowSearch.normalize(word))return;activeReaderContext=selected?.success&&JastrowSearch.normalize(selectedWord)===JastrowSearch.normalize(word)?{word,selection:selected.data}:null;if(activeReaderContext)search(word,true);}catch{}})();});
   Otzaria.on('theme.changed',theme);
-  Otzaria.on('reader.context_menu_item_clicked',p=>{if(p.itemId==='jastrow-open'){const word=JastrowContext.selectionText(p);activeReaderContext={word,selection:p.selection||null};search(word);}});
   Otzaria.on('plugin.boot',p=>{
     theme(p.theme);$('selection').hidden=false;
     Otzaria.call('app.getGrantedPermissions').then(res=>{
       const permissions=res?.data?.permissions;if(!res?.success||!Array.isArray(permissions))return;
-      const required=['app.run_on_startup','app.background_keep_alive','events.subscribe:reader.selection_changed','reader.context_menu'];
+      const required=['app.run_on_startup','app.background_keep_alive','events.subscribe:reader.selection_changed','events.subscribe:reader.current_ref_changed','events.subscribe:navigation.changed','reader.context_menu'];
       const missing=required.some(x=>!permissions.includes(x));$('right-click-state').hidden=!missing;
-      if(missing)$('right-click-state').textContent='For indexed-word-only right-click lookup, enable background execution, keep-alive, text-selection access in Otzaria’s permissions for Aramaic to English Dictionary.';
+      if(missing)$('right-click-state').textContent='For delayed daf preparation and right-click lookup, enable background execution, keep-alive, reading-location/navigation events, and text-selection/context-menu access in Otzaria’s permissions for Aramaic to English Dictionary.';
     }).catch(()=>{});
     $('selection').onclick=async()=>{
       try{const res=await Otzaria.call('reader.getSelection');
@@ -251,5 +218,3 @@ setStatus('Ready · Search with or without nekudos.');
 renderTrail();
 function readEntryLink(){try{const p=new URLSearchParams(location.hash.slice(1)),id=Number(p.get('entry'));if(p.get('word')&&JastrowSearch.splitWords(p.get('word')).length){search(p.get('word'));return;}if(p.has('entry')&&Number.isInteger(id)&&id>=0&&id<index.entries.length){requestSerial++;query=p.get('word')||'';$('query').value=query;showEntry(id);}}catch{}}
 window.addEventListener('hashchange',readEntryLink);readEntryLink();
-window.addEventListener('dictionary-community-permission-granted',()=>{if(query)search(query,true);});
-window.DictionaryCommunity?.ready?.then(()=>{if(window.DictionaryCommunity.enabled&&query)search(query,true);}).catch(()=>{});

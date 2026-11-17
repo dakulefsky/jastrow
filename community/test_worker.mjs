@@ -115,6 +115,19 @@ const contextualB=await (await call('/v1/suggestions?word=%D7%94%D7%A7%D7%A9%D7%
 assert.equal(contextualB.contextualPreferredEntryId,'jastrow:JAS1','the same word can favor a different meaning in a different context');
 const contextualNone=await (await call('/v1/suggestions?word=%D7%94%D7%A7%D7%A9%D7%A8&ids=jastrow%3AJAS1%2Ckrupnik%3AKRU2&context='+encodeURIComponent(JSON.stringify([feature('9',1),feature('8',3),feature('7',4)])))).json();
 assert.equal(contextualNone.contextualPreferredEntryId,null,'unrelated surrounding words must not inherit a vote');
+// An installation may have voted for different meanings in two nearby
+// but non-identical passages. If both passages match the current context
+// equally well, that installation is ambiguous and must contribute nothing.
+const ambiguousWord='הקשרעמום';
+const queryContext=[feature('a',1),feature('b',3),feature('c',4),feature('d',1)];
+const ambiguousA=[feature('a',1),feature('b',3),feature('e',4)];
+const ambiguousB=[feature('a',1),feature('b',3),feature('f',4)];
+for(const voter of ['ambiguous-a-1-abcdefghijklmnop','ambiguous-a-2-abcdefghijklmnop']){
+ await voteContext('krupnik:KRU2',voter,ambiguousA,ambiguousWord);
+ await voteContext('jastrow:JAS1',voter,ambiguousB,ambiguousWord);
+}
+const ambiguousResult=await (await call('/v1/suggestions?word='+encodeURIComponent(ambiguousWord)+'&ids=jastrow%3AJAS1%2Ckrupnik%3AKRU2&context='+encodeURIComponent(JSON.stringify(queryContext)))).json();
+assert.equal(ambiguousResult.contextualPreferredEntryId,null,'equally plausible conflicting meanings from the same installations must not create a recommendation');
 const contextDuplicate=await (await voteContext('krupnik:KRU2','context-a-1-abcdefghijklmnop',contextA,contextWord)).json();
 assert.equal(contextDuplicate.duplicate,true,'one installation can only vote once for the same contextual use');
 const invalidContext=await call('/v1/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:'נפקא',entryId:'krupnik:KRU1',voterId:'context-invalid-abcdefghijklmnop',scope:'contextual',contextFeatures:[{hash:'not-a-hash',weight:1}]})});

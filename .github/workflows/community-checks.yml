@@ -3,14 +3,29 @@ on:
   pull_request:
     paths:
       - 'community/**'
+      - 'scripts/build_sefaria_bavli_corpus.py'
+      - 'scripts/test_build_sefaria_bavli_corpus.py'
       - 'plugin/community.js'
+      - 'plugin/sefaria-evidence.js'
+      - 'plugin/sefaria-offline.js'
+      - 'plugin/test_sefaria_offline.cjs'
+      - 'hebrew/plugin/sefaria-offline.js'
+      - 'hebrew/plugin/sefaria-evidence.js'
+      - 'plugin/test_sefaria_evidence.cjs'
+      - 'plugin/test_translation_evidence.cjs'
+      - 'plugin/mesores.js'
+      - 'hebrew/plugin/mesores.js'
+      - 'community/test_mesores.mjs'
       - 'hebrew/plugin/community.js'
       - 'plugin/app.js'
       - 'plugin/quick-lookup.js'
       - 'plugin/availability.js'
+      - 'plugin/translation-prefetch.js'
+      - 'plugin/test_translation_prefetch.cjs'
       - 'hebrew/plugin/app.js'
       - 'hebrew/plugin/quick-lookup.js'
       - 'hebrew/plugin/availability.js'
+      - 'hebrew/plugin/translation-prefetch.js'
       - 'plugin/index.html'
       - 'plugin/style.css'
       - 'hebrew/plugin/index.html'
@@ -22,6 +37,9 @@ on:
     paths:
       - 'community/**'
       - 'plugin/community.js'
+      - 'plugin/mesores.js'
+      - 'hebrew/plugin/mesores.js'
+      - 'community/test_mesores.mjs'
       - 'hebrew/plugin/community.js'
       - 'plugin/app.js'
       - 'plugin/quick-lookup.js'
@@ -49,12 +67,26 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check plugin/community.js
+          node --check plugin/sefaria-evidence.js
+          node --check plugin/sefaria-offline.js
+          node --check hebrew/plugin/sefaria-offline.js
+          node plugin/test_sefaria_offline.cjs
+          node --check hebrew/plugin/sefaria-evidence.js
+          node plugin/test_sefaria_evidence.cjs
+          node plugin/test_translation_evidence.cjs
+          node --check plugin/mesores.js
+          node --check hebrew/plugin/mesores.js
+          node community/test_mesores.mjs
           node --check hebrew/plugin/community.js
           node --check plugin/quick-lookup.js
           node --check hebrew/plugin/quick-lookup.js
           node --check plugin/app.js
           node --check hebrew/plugin/app.js
           node --check plugin/availability.js
+          node --check plugin/translation-prefetch.js
+          node --check hebrew/plugin/translation-prefetch.js
+          node plugin/test_translation_prefetch.cjs
+          python -m unittest discover -s scripts -p 'test_*.py'
           node --check hebrew/plugin/availability.js
           node --input-type=module --check < community/worker/src/index.js
           node community/test_worker.mjs
@@ -69,16 +101,15 @@ jobs:
               assert "var(--color-outline, #888)" not in css, name
               assert "border-radius:999px" not in css, name
           PY
-      - name: Validate exact HTTPS network allowlists
+      - name: Verify both plugins have no runtime network permission
         run: |
           python - <<'PY'
           import json
-          expected = ["https://otzaria-dictionary-community.dakulefsky.workers.dev"]
           for path in ("plugin/manifest.json", "hebrew/plugin/manifest.json"):
               with open(path, encoding="utf-8") as f:
                   manifest = json.load(f)
-              assert manifest["network"]["enabled"] is True, path
-              assert manifest["network"]["allowlist"] == expected, path
+              assert "network.access" not in manifest["permissions"], path
+              assert "network" not in manifest, path
           PY
       - name: Check cross-link generator syntax
         run: |

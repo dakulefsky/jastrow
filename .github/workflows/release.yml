@@ -47,6 +47,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Build and stage the complete offline English Bavli
+        run: |
+          python scripts/build_sefaria_bavli_corpus.py --output /tmp/sefaria-bavli-english.zip
+          mkdir -p plugin/data/sefaria-bavli hebrew/plugin/data
+          unzip -q /tmp/sefaria-bavli-english.zip -d plugin/data/sefaria-bavli
+          cp -a plugin/data/sefaria-bavli hebrew/plugin/data/
+          node plugin/test_sefaria_bavli_data.cjs
+          node plugin/test_sefaria_bavli_integration.cjs
       - name: Check dictionary and selection lookup
         run: |
           python3 build_phrases.py
@@ -61,6 +72,13 @@ jobs:
           node test_phrases.cjs
           node test_unified.cjs
           node test_quick.cjs
+          node --check plugin/sefaria-offline.js
+          node --check hebrew/plugin/sefaria-offline.js
+          node --check plugin/sefaria-evidence.js
+          node plugin/test_sefaria_offline.cjs
+          node plugin/test_translation_prefetch.cjs
+          node plugin/test_sefaria_evidence.cjs
+          node plugin/test_translation_evidence.cjs
       - name: Test consistent student lookup in Chromium
         run: |
           npm install --no-save playwright
@@ -104,6 +122,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Build and stage the complete offline English Bavli
+        run: |
+          python scripts/build_sefaria_bavli_corpus.py --output /tmp/sefaria-bavli-english.zip
+          mkdir -p hebrew/plugin/data/sefaria-bavli
+          unzip -q /tmp/sefaria-bavli-english.zip -d hebrew/plugin/data/sefaria-bavli
       - name: Build Hebrew source data
         run: |
           python3 -c "import gzip,pathlib; p=pathlib.Path('hebrew/source.json.gz'); p.with_suffix('').write_bytes(gzip.decompress(p.read_bytes()))"
@@ -111,6 +137,8 @@ jobs:
           node hebrew/test.cjs
           node hebrew/test_host.cjs
           node hebrew/test_quick.cjs
+          node --check hebrew/plugin/sefaria-offline.js
+          node --check hebrew/plugin/sefaria-evidence.js
       - name: Check Hebrew interface in Chromium
         env:
           HEBREW_STORE_SCREENSHOT: hebrew-store.png

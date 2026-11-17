@@ -1,0 +1,31 @@
+name: Build offline William Davidson Bavli corpus
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Test corpus selection and license checks
+        run: python -m unittest discover -s scripts -p 'test_*.py'
+      - name: Build the complete licensed Bavli corpus
+        run: python scripts/build_sefaria_bavli_corpus.py --output sefaria-bavli-english.zip
+      - name: Report package size
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          size = Path("sefaria-bavli-english.zip").stat().st_size
+          print(f"Offline English Bavli package: {size:,} bytes ({size / 1024 / 1024:.2f} MiB)")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sefaria-bavli-english
+          path: sefaria-bavli-english.zip
+          if-no-files-found: error
+          retention-days: 7

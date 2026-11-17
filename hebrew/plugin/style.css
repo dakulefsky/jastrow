@@ -131,3 +131,177 @@ footer{max-width:1320px;margin:24px auto 0;padding-top:14px;border-top:1px solid
 @media(max-width:760px){main{padding-top:16px}.masthead{gap:12px;padding-bottom:15px}.brand{gap:11px}.brand-mark{width:46px;height:46px;flex-basis:46px}.search-panel{border-radius:var(--radius-md)}.entry-panel{border-radius:var(--radius-md)}#matches{max-height:360px!important;overflow:auto;display:flex!important;flex-direction:column!important}.community-match-row{width:100%}.meaning-card{padding:15px 52px 15px 14px}}
 @media(max-width:460px){h1{font-size:1.45rem}.brand-mark{width:40px;height:40px;flex-basis:40px}#help-toggle{padding:8px 10px;font-size:.72rem}.search-heading{align-items:flex-start}.offline-mark{font-size:.62rem}.lookup-button{min-width:0}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Local Mesores HaShas cross-reference evidence */
+.mesores-parallels{margin:1.35rem 0 0;padding:1rem 1.1rem;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-raised,var(--page));}
+.mesores-kicker{display:block;margin-bottom:.3rem;color:var(--gold);font:700 .58rem/1.4 var(--ui);letter-spacing:.12em;}
+.mesores-title{margin:0 0 .25rem;color:var(--ink);font:600 .98rem/1.45 var(--ui);}
+.mesores-description{margin:0 0 .75rem;color:var(--muted);font:.72rem/1.6 var(--ui);}
+.mesores-list{display:grid;gap:.55rem;}
+.mesores-card{min-width:0;padding:.7rem .8rem;border:1px solid var(--border-soft,var(--line));border-radius:var(--radius-md);background:var(--page);}
+.mesores-reference{display:block;direction:rtl;text-align:start;color:var(--forest);font:600 .9rem/1.55 var(--body);overflow-wrap:anywhere;}
+.mesores-book-title{display:block;margin-top:.1rem;color:var(--muted);font:.65rem/1.45 var(--ui);}
+.mesores-excerpt{margin:.35rem 0 0;color:var(--ink);direction:rtl;unicode-bidi:plaintext;text-align:start;font:1rem/1.8 var(--body);}
+@media(max-width:520px){.mesores-parallels{padding:.85rem}.mesores-card{padding:.6rem .7rem}}
+
+
+/* Scholarly reading-desk facelift — shared visual language across both editions. */
+:root{
+ --page:#f5f3ed;
+ --paper:#fbfaf6;
+ --ink:#252e29;
+ --muted:#73766f;
+ --line:#ddd9ce;
+ --forest:#29483d;
+ --gold:#9b7942;
+ --color-primary:#29483d;
+ --color-on-primary:#fbfaf6;
+ --color-surface:#f5f3ed;
+ --color-on-surface:#252e29;
+ --color-surface-container:#eeece4;
+ --color-outline:#ddd9ce;
+ --color-muted:#73766f;
+ --color-accent:#9b7942;
+ --color-shadow-soft:rgba(39,48,41,.055);
+ --color-focus-halo:rgba(41,72,61,.14);
+ --radius-sm:5px;
+ --radius-md:9px;
+ --radius-lg:13px;
+ --border-soft:#e3dfd5;
+ --surface-raised:#fbfaf6;
+ --surface-hover:#f0eee7;
+ --focus-ring:0 0 0 3px rgba(41,72,61,.16);
+}
+html{background:var(--page);scroll-behavior:smooth}
+body{min-height:100vh;background:var(--page);color:var(--ink);font-feature-settings:"kern" 1,"liga" 1}
+main{width:min(100%,1360px);max-width:1360px;padding:clamp(18px,3vw,42px) clamp(14px,3vw,40px) 30px}
+.masthead{align-items:center;padding:4px 0 21px;border-bottom:1px solid var(--line)}
+.brand{gap:15px;min-width:0}
+.brand-mark{width:52px;height:52px;flex-basis:52px;border:1px solid #d8d1c2;border-radius:10px;box-shadow:0 2px 8px rgba(36,43,37,.07);background:#fff}
+h1{font-size:clamp(1.55rem,2.8vw,2.12rem);line-height:1.18;letter-spacing:-.035em;color:var(--forest)}
+#help-toggle{border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--muted);padding:9px 13px}
+#help-toggle:hover{background:var(--paper);border-color:#c9c2b4;color:var(--forest)}
+#help{max-width:980px;margin:15px 0 0 auto;padding:16px 19px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:#62675f;line-height:1.8}
+#search-form,.search-panel{margin-top:22px}
+.search-panel{padding:clamp(16px,2.2vw,23px);border:1px solid var(--line);border-radius:12px;background:var(--paper);box-shadow:0 5px 18px rgba(37,46,41,.035)}
+.search-heading{margin-bottom:13px}
+.search-heading label{font-size:.9rem;font-weight:650;letter-spacing:.005em;color:var(--forest)}
+.search-heading div>span{font-size:.76rem;color:var(--muted)}
+.offline-mark{font-size:.7rem;color:#667568}
+.offline-mark i{background:#6d806f;box-shadow:0 0 0 3px rgba(109,128,111,.12)}
+.search-row{gap:8px}
+.input-wrap{height:52px;border:1px solid #d8d4c9;border-radius:8px;background:#fff;transition:border-color .16s,box-shadow .16s}
+.input-wrap:focus-within{border-color:#829487;box-shadow:var(--focus-ring)}
+.input-wrap input{font-size:1.5rem;color:#202923}
+button{border-radius:8px;transition:background .16s,border-color .16s,color .16s,box-shadow .16s}
+.lookup-button{min-width:118px;border-color:var(--forest);background:var(--forest);box-shadow:none;font-weight:650}
+.lookup-button:hover{background:#35594b;border-color:#35594b;filter:none}
+#selection,#selected{background:transparent;border-color:var(--line);color:var(--forest);font-size:.78rem}
+#selection:hover,#selected:hover{background:var(--surface-hover);border-color:#c8c2b5}
+.context-hint{font-size:.72rem;line-height:1.6;color:var(--muted)}
+#status{min-height:1.35em;margin:12px 3px 9px;color:var(--muted);font-size:.76rem}
+#recent-lookups,.recent-lookups,.definition-history,.lookup-history{gap:7px;margin:10px 0 14px}
+#recent-lookups button,.recent-lookups button,.definition-history button,.lookup-history button{padding:6px 11px;border:1px solid var(--line);border-radius:7px;background:transparent;color:var(--forest);font-size:.8rem}
+#recent-lookups button:hover,.recent-lookups button:hover,.definition-history button:hover,.lookup-history button:hover{background:var(--paper);border-color:#c7c0b2}
+.reading-toolbar{gap:8px;margin:12px 2px 13px;padding:0 0 5px;color:var(--muted);font-size:.72rem}
+.reading-toolbar button{min-width:34px;padding:5px 8px;border:1px solid var(--line);background:transparent;color:var(--forest)}
+.reading-toolbar button:hover{background:var(--paper)}
+.reading-toolbar output{font-variant-numeric:tabular-nums}
+#layout{grid-template-columns:minmax(245px,300px) minmax(0,1fr);gap:15px;min-height:460px}
+.matches-panel,.entry-panel,aside,.entry-panel{border:1px solid var(--line);border-radius:11px;background:var(--paper);box-shadow:0 4px 18px rgba(37,46,41,.035)}
+.matches-panel{padding:15px}
+.entry-panel{padding:clamp(20px,3vw,34px)}
+.panel-heading{padding:0 2px 11px;margin-bottom:11px;border-bottom:1px solid #e8e4da}
+.panel-heading h2{font-size:.82rem;font-weight:700;letter-spacing:.015em;color:var(--forest)}
+#match-count{font-variant-numeric:tabular-nums;color:#85857d}
+#results{gap:7px}
+.result{border:1px solid transparent;border-radius:7px;background:transparent;color:#2d3932;padding:9px 11px;font-size:1.18rem;line-height:1.45}
+.result:hover,.result.active{border-color:#ded8ca;background:#f2f0e9;color:var(--forest)}
+.result.active{box-shadow:inset 2px 0 0 var(--gold)}
+#more{border:1px solid var(--line);background:transparent;color:var(--forest)}
+#more:hover{background:var(--surface-hover)}
+#entry h2.entry-title,.query-title{color:var(--forest);font-size:clamp(2rem,4vw,2.55rem);letter-spacing:-.025em}
+.entry-meta{padding-bottom:13px;border-bottom:1px solid #e8e4da;color:#777970;line-height:1.65}
+.definition{color:#303a33;line-height:1.9}
+.definition .sense{margin:12px 0}
+.welcome{max-width:680px;margin:16px auto}
+.welcome h2{color:var(--forest);font-size:clamp(2rem,4vw,2.8rem)}
+.welcome p{max-width:54ch;line-height:1.75;color:var(--muted)}
+.examples button{border:1px solid var(--line);background:transparent}
+.examples button:hover{background:var(--surface-hover)}
+.quick-meanings,.unified-meanings{border:0;padding:0}
+.quick-meanings ol,.unified-meanings{gap:10px}
+.quick-meanings li.meaning-card,.unified-meanings .meaning-card,.meaning-card{
+ border:1px solid #e4dfd4;border-radius:9px;background:#fffefa;box-shadow:none;padding:15px 17px
+}
+.quick-meanings li.meaning-card:hover,.unified-meanings .meaning-card:hover,.meaning-card:hover{border-color:#d2c5a9;background:#fff}
+.meaning-number,.number{background:#e9e5d9;color:#665331;box-shadow:none;font-weight:700}
+.meaning-text{color:#27332c;line-height:1.65}
+.meaning-form,.meaning-usage summary,.reading-note{color:var(--muted)}
+.meaning-usage summary,.scholarly-entry summary{color:var(--forest);text-decoration:none}
+.meaning-usage summary:hover,.scholarly-entry summary:hover{text-decoration:underline;text-underline-offset:3px}
+.usage-source{border-inline-start:2px solid #b49a6a;border-radius:5px;background:#f5f2ea}
+.form-attestation{border-inline-start:2px solid #ad956a;border-radius:5px;background:#f1eee5}
+.community-feedback,.community-feedback-he{border:1px solid #e0d8c8;border-radius:9px;background:#f7f4ec;box-shadow:none;padding:13px 15px}
+.community-feedback-kicker,.community-feedback .community-feedback-kicker{color:#8a7045}
+.community-vote,.community-vote-controls .community-vote{border:1px solid #ded8cc;border-radius:7px;background:#fffefa;color:var(--forest);box-shadow:none}
+.community-vote:hover,.community-vote-controls .community-vote:hover{border-color:#b9a47e;background:#fff}
+.community-vote.is-selected,.community-vote-controls .community-vote.is-selected{border-color:#7e9585;background:#eef2ec}
+.community-vote-general,.community-vote-controls .community-vote-general{color:#777970}
+.community-vote-status,.community-match-row>.community-vote-status{color:#4f6d58}
+.community-match-row{border-color:#ebe7de}
+.mesores-parallels{border:1px solid #e0dacc;border-radius:10px;background:#f8f6f0;padding:15px 17px}
+.mesores-kicker{color:#8c7249;letter-spacing:.1em}
+.mesores-title{font-size:.96rem;color:var(--forest)}
+.mesores-card{border:1px solid #e7e2d8;border-radius:7px;background:#fffefa}
+.mesores-reference{color:var(--forest)}
+.mesores-excerpt{line-height:1.85;color:#303a33}
+footer{margin-top:22px;padding-top:14px;border-top:1px solid var(--line);color:#777970;font-size:.68rem}
+footer details>summary{cursor:pointer;color:var(--forest)}
+a{color:#315d4a;text-underline-offset:3px}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:0;box-shadow:var(--focus-ring)}
+.skip-link{position:absolute;inset-inline-start:-9999px;top:8px;padding:8px 12px;background:var(--forest);color:#fff;border-radius:6px;z-index:10}
+.skip-link:focus{inset-inline-start:8px}
+[hidden]{display:none!important}
+@media(min-width:1050px){
+ #layout{grid-template-columns:minmax(250px,295px) minmax(0,1fr)}
+ .matches-panel{position:sticky;top:14px;align-self:start;max-height:calc(100dvh - 28px);overflow:auto}
+}
+@media(max-width:760px){
+ main{padding:15px 13px 24px}
+ .masthead{gap:10px;padding-bottom:15px}
+ .brand{gap:10px}
+ .brand-mark{width:43px;height:43px;flex-basis:43px}
+ #layout{grid-template-columns:1fr;gap:10px}
+ .matches-panel{position:static;max-height:300px;overflow:auto}
+ .entry-panel{min-height:260px;padding:18px}
+ #results{max-height:280px;overflow:auto;display:flex;flex-direction:column}
+ .result{text-align:start}
+ .search-panel{margin-top:16px}
+ .reading-toolbar{flex-wrap:wrap}
+ .keyboard-hint{display:none}
+}
+@media(max-width:480px){
+ main{padding-inline:11px}
+ h1{font-size:1.4rem}
+ .brand-mark{width:38px;height:38px;flex-basis:38px}
+ #help-toggle{padding:7px 9px;font-size:.68rem}
+ .search-heading{align-items:flex-start}
+ .search-row{flex-wrap:wrap}
+ .input-wrap{flex-basis:100%}
+ .lookup-button{flex:1;min-width:0}
+ #selection,#selected{flex:1}
+ .entry-panel{padding:15px}
+ .quick-meanings li.meaning-card,.meaning-card{padding:13px}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ *,*::before,*::after{transition:none!important;animation:none!important}
+}
+
+/* Subtle marker for exact Sefaria Jastrow word-form associations in the active passage. */
+.sefaria-evidence-note{display:block;margin-top:4px;font-size:.72rem;font-weight:500;line-height:1.4;color:var(--color-muted,#777970)}
+.result.sefaria-associated{border-color:#cfc5af}
+
+/* Passage-level translation cross-check */
+.translation-evidence-note{display:block;margin:.45rem 0;padding:.45rem .65rem;border-inline-start:3px solid var(--color-primary,#49685c);background:var(--color-surface-container,#f2f0e9);color:var(--color-muted,#555);font-size:.88em;line-height:1.5;border-radius:0 .35rem .35rem 0}

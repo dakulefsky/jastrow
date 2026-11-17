@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "com.kulefsky.jastrow",
   "name": "Aramaic → Eng.",
-  "version": "1.11.11",
-  "description": "Offline Aramaic and rabbinic Hebrew to English translation, with concise meanings and optional examples.",
+  "version": "1.11.17",
+  "description": "Offline Aramaic and rabbinic Hebrew to English dictionary, with contextual clues from the bundled English Babylonian Talmud.",
   "author": "DanTheMan",
   "stability": "beta",
   "entrypoint": "index.html",
@@ -16,15 +16,11 @@
     "app.run_on_startup",
     "app.background_keep_alive",
     "events.subscribe:reader.selection_changed",
-    "network.access",
-    "events.subscribe:plugin.permissions_changed"
+    "events.subscribe:reader.current_ref_changed",
+    "events.subscribe:navigation.changed",
+    "library.links.read",
+    "library.content.read"
   ],
-  "network": {
-    "enabled": true,
-    "allowlist": [
-      "https://otzaria-dictionary-community.dakulefsky.workers.dev"
-    ]
-  },
   "contributes": {
     "toolTab": {
       "title": "Aramaic → Eng.",
