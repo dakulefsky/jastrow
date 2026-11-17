@@ -16,17 +16,17 @@
  }
  function parseReference(value,fallbackBook){
   const ref=String(value||'').trim();
-  let match=ref.match(/^(.*?)\\s+(\\d+)([ab])(?::(\\d+)(?::.*)?)?$/i);
+  let match=ref.match(/^(.*?)\s+(\d+)([ab])(?::(\d+)(?::.*)?)?$/i);
   if(match){
    const daf=Number(match[2]),side=match[3].toLowerCase();
    if(Number.isInteger(daf)&&daf>0)return {ref,book:match[1].trim()||String(fallbackBook||''),daf,side,line:match[4]?Number(match[4]):null,
     dafIndex:2*daf-2+(side==='b'?1:0)};
   }
-  match=ref.match(/(?:^|[,;\\s])(?:דף\\s*)?([א-ת]{1,3})\\s*(?:עמוד\\s*([אב])|ע[״"׳']?\\s*([אב])|([.:]))(?::(\\d+)(?::.*)?)?$/);
+  match=ref.match(/(?:^|[,;\s])(?:דף\s*)?([א-ת]{1,3})\s*(?:עמוד\s*([אב])|ע[״"׳']?\s*([אב])|([.:]))(?::(\d+)(?::.*)?)?$/);
   if(!match)return null;
   const daf=hebrewNumber(match[1]),sideToken=match[2]||match[3]||match[4];
   if(!Number.isInteger(daf)||daf<1||!sideToken)return null;
-  const prefix=ref.slice(0,match.index).replace(/[,;\\s]+$/,'').trim();
+  const prefix=ref.slice(0,match.index).replace(/[,;\s]+$/,'').trim();
   const book=prefix||String(fallbackBook||'');
   const side=sideToken==='ב'||sideToken===':'?'b':'a';
   return {ref,book,daf,side,line:match[5]?Number(match[5]):null,
