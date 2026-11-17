@@ -5,10 +5,15 @@
  if(!host||typeof host.on!=='function'||typeof host.call!=='function')return;
  let timer=null,generation=0,scheduledKey='',preparedKey='',active=true;
 
+ function dafReference(value){
+  const ref=String(value||'').trim();
+  const match=ref.match(/^(.*?\\b\\d+[ab])(?::.*)?$/i);
+  return match?match[1].trim():ref;
+ }
  function keyOf(location){
-  const ref=String(location?.currentRef||'').trim();
+  const ref=dafReference(location?.currentRef);
   if(!ref)return '';
-  return [ref,String(location?.currentBookId||''),String(location?.currentIndex??'')].join('|');
+  return [ref,String(location?.currentBookId||'')].join('|');
  }
  function cancel(){
   generation++;
@@ -21,7 +26,7 @@
   if(key===scheduledKey||key===preparedKey)return;
   cancel();
   const token=generation,snapshot={
-   currentRef:String(location.currentRef).trim(),
+   currentRef:dafReference(location.currentRef),
    currentBook:String(location.currentBook||''),
    currentBookId:String(location.currentBookId||''),
    currentIndex:Number.isInteger(location.currentIndex)?location.currentIndex:null
@@ -35,10 +40,8 @@
     if(token!==generation||!active)return;
     const currentRef=String(current?.data?.currentRef||'').trim();
     const currentBookId=String(current?.data?.currentBookId||'');
-    const currentIndex=current?.data?.currentIndex;
-    if(!currentRef||currentRef!==snapshot.currentRef)return;
+    if(!currentRef||dafReference(currentRef)!==snapshot.currentRef)return;
     if(snapshot.currentBookId&&currentBookId&&snapshot.currentBookId!==currentBookId)return;
-    if(Number.isInteger(snapshot.currentIndex)&&Number.isInteger(currentIndex)&&snapshot.currentIndex!==currentIndex)return;
     const corpus=root.SefariaOfflineTranslation;
     if(typeof corpus?.prepareDaf!=='function')return;
     await corpus.prepareDaf(snapshot);
