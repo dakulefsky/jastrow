@@ -42,7 +42,7 @@ vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),{window:r
  assert.equal(pageOnly.daf,4);
  assert.equal(pageOnly.side,null);
  assert.equal(pageOnly.dafIndex,6);
- const first=await offline.getPassage('דף ב עמוד א:1',{currentBook:'תלמוד בבלי - מסכת ברכות'});
+ const first=await offline.getPassage('דף ב עמוד א:2',{currentBook:'תלמוד בבלי - מסכת ברכות'});
  assert.equal(first.scope,'paragraph');
  assert.match(first.text,/first paragraph/);
  const second=await offline.getPassage('ברכות, דף ב ע״א:3',{currentBook:'ברכות'});
