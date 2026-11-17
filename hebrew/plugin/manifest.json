@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "com.kulefsky.aramaic-hebrew",
   "name": "ארמית לעברית",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "מילון ארמי־עברי על פי הנוסח העברי המקורי של קרופניק וזילברמן, לשימוש ללא חיבור לרשת.",
   "author": "DanTheMan",
   "stability": "beta",
@@ -24,7 +24,8 @@
   "network": {
     "enabled": true,
     "allowlist": [
-      "https://otzaria-dictionary-community.dakulefsky.workers.dev"
+      "https://otzaria-dictionary-community.dakulefsky.workers.dev",
+      "https://www.sefaria.org"
     ]
   },
   "contributes": {
