@@ -40,7 +40,7 @@ function load(pluginPath,{links,passages,preferredByReference={},matchesByRefere
   call:async(method,args)=>{
    calls.push({method,args});
    if(method==='library.getLinks')return {success:true,data:{truncated,links:links||[]}};
-   if(method==='library.getLinkContent')return {success:true,data:{items:(passages||[]).map(content=>({content}))}};
+   if(method==='library.getLinkContent')return {success:true,data:{items:(passages||[]).map(value=>typeof value==='string'?{content:value}:value)}};
    throw Error('Unexpected Otzaria call '+method);
   }
  };
@@ -95,6 +95,22 @@ const text='סוגיה אחרת כי אמר דאמר לימא הכי ועוד';
    preferredByReference:{[refs[0]]:'1'}
   });
   assert.equal(await noOccurrence.api.propagatedPreference(selection,'דאמר',entries),null);
+
+  const partialContent=load(pluginPath,{
+   links:[link(refs[0],81),link(refs[1],22)],
+   passages:[text],
+   preferredByReference:{[refs[0]]:'1',[refs[1]]:'1'}
+  });
+  assert.equal(await partialContent.api.propagatedPreference(selection,'דאמר',entries),null,'missing linked content must not allow a partial recommendation');
+  assert.equal(partialContent.comparisons.length,0);
+
+  const restrictedContent=load(pluginPath,{
+   links:[link(refs[0],81),link(refs[1],22)],
+   passages:[text,{error:'forbidden'}],
+   preferredByReference:{[refs[0]]:'1',[refs[1]]:'1'}
+  });
+  assert.equal(await restrictedContent.api.propagatedPreference(selection,'דאמר',entries),null,'restricted linked content must not allow a partial recommendation');
+  assert.equal(restrictedContent.comparisons.length,0);
 
   const truncated=load(pluginPath,{
    links:[link(refs[0],81)],
