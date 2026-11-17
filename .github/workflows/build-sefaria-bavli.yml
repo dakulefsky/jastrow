@@ -1,17 +1,6 @@
 name: Build offline William Davidson Bavli corpus
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - '.github/workflows/build-sefaria-bavli.yml'
-      - 'scripts/build_sefaria_bavli_corpus.py'
-      - 'scripts/test_build_sefaria_bavli_corpus.py'
-  push:
-    branches: [mesores-hashas-parallel-context]
-    paths:
-      - '.github/workflows/build-sefaria-bavli.yml'
-      - 'scripts/build_sefaria_bavli_corpus.py'
-      - 'scripts/test_build_sefaria_bavli_corpus.py'
 permissions:
   contents: read
 jobs:
