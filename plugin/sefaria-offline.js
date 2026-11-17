@@ -22,14 +22,14 @@
    if(Number.isInteger(daf)&&daf>0)return {ref,book:match[1].trim()||String(fallbackBook||''),daf,side,line:match[4]?Number(match[4]):null,
     dafIndex:2*daf-2+(side==='b'?1:0)};
   }
-  match=ref.match(/(?:^|[,;\s])(?:דף\s*)?([א-ת״׳']{1,5})\s*(?:עמוד\s*([אב])|ע[״"׳']?\s*([אב])|([.:]))(?::(\d+)(?::.*)?)?$/);
+  match=ref.match(/(?:^|[,;\s])(?:(דף)\s*)?([א-ת״׳']{1,5})(?:\s*,?\s*(?:עמוד\s*([אב])|ע[״"׳']?\s*([אב])|([.:]))(?::(\d+)(?::.*)?)?)?$/);
   if(!match)return null;
-  const daf=hebrewNumber(match[1]),sideToken=match[2]||match[3]||match[4];
-  if(!Number.isInteger(daf)||daf<1||!sideToken)return null;
+  const daf=hebrewNumber(match[2]),sideToken=match[3]||match[4]||match[5],marker=match[1];
+  if(!Number.isInteger(daf)||daf<1||(!sideToken&&!marker))return null;
   const prefix=ref.slice(0,match.index).replace(/[,;\s]+$/,'').trim();
   const book=prefix||String(fallbackBook||'');
-  const side=sideToken==='ב'||sideToken===':'?'b':'a';
-  return {ref,book,daf,side,line:match[5]?Number(match[5]):null,
+  const side=sideToken?(sideToken==='ב'||sideToken===':'?'b':'a'):null;
+  return {ref,book,daf,side,line:match[6]?Number(match[6]):null,
    dafIndex:2*daf-2+(side==='b'?1:0)};
  }
  async function fetchJson(path){
@@ -46,6 +46,15 @@
   }
   return manifestPromise;
  }
+ function findTractate(manifest,parsed,selection){
+  const bookKey=normalizeName(parsed.book),currentBookKey=normalizeName(selection?.currentBook);
+  return manifest.tractates.find(item=>{
+   const names=[item.title,item.heTitle,item.slug].map(normalizeName).filter(Boolean);
+   const matches=name=>name===bookKey||name===currentBookKey||
+    (bookKey&&bookKey.endsWith(' '+name))||(currentBookKey&&currentBookKey.endsWith(' '+name));
+   return names.some(matches);
+  });
+ }
  async function loadTractate(meta){
   const key=meta.slug||meta.title;
   if(tractateCache.has(key)){
@@ -57,39 +66,44 @@
   while(tractateCache.size>MAX_CACHED_TRACTATES)tractateCache.delete(tractateCache.keys().next().value);
   return data;
  }
+ function collectSide(data,index){
+  const side=data.text[index];
+  if(Array.isArray(side))return side.filter(value=>typeof value==='string'&&value.trim());
+  return typeof side==='string'&&side.trim()?[side]:[];
+ }
  async function getPassage(reference,selection){
   const parsed=parseReference(reference||selection?.sourceRange?.ref||selection?.currentRef,selection?.currentBook);
   if(!parsed)return {text:'',reason:'unsupported_reference'};
-  const manifest=await getManifest();
-  const bookKey=normalizeName(parsed.book),currentBookKey=normalizeName(selection?.currentBook);
-  const meta=manifest.tractates.find(item=>{
-   const names=[item.title,item.heTitle,item.slug].map(normalizeName).filter(Boolean);
-   const matches=name=>name===bookKey||name===currentBookKey||
-    (bookKey&&bookKey.endsWith(' '+name))||(currentBookKey&&currentBookKey.endsWith(' '+name));
-   return names.some(matches);
-  });
+  const manifest=await getManifest(),meta=findTractate(manifest,parsed,selection);
   if(!meta)return {text:'',reason:'tractate_not_in_offline_corpus',reference:parsed.ref};
   const data=await loadTractate(meta);
-  const daf=data.text[parsed.dafIndex];
-  if(!Array.isArray(daf)&&typeof daf!=='string')return {text:'',reason:'daf_not_found',reference:parsed.ref};
-  if(parsed.line!==null&&Array.isArray(daf)){
-   const paragraph=daf[parsed.line-1];
+  const indices=parsed.side?[parsed.dafIndex]:[parsed.dafIndex,parsed.dafIndex+1];
+  if(parsed.side&&parsed.line!==null){
+   const paragraphs=collectSide(data,parsed.dafIndex),paragraph=paragraphs[parsed.line-1];
    if(typeof paragraph==='string'&&paragraph.trim())return {
     text:paragraph,scope:'paragraph',reference:parsed.ref,
     dafReference:meta.title+' '+parsed.daf+parsed.side,tractate:meta.title,
     versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'
    };
   }
-  const paragraphs=(Array.isArray(daf)?daf:[daf]).filter(value=>typeof value==='string'&&value.trim());
+  const paragraphs=indices.flatMap(index=>collectSide(data,index));
   if(!paragraphs.length)return {text:'',reason:'empty_daf',reference:parsed.ref};
   return {
    text:paragraphs.join(' '),scope:'daf',reference:parsed.ref,
-   dafReference:meta.title+' '+parsed.daf+parsed.side,tractate:meta.title,
+   dafReference:meta.title+' '+parsed.daf+(parsed.side||''),tractate:meta.title,
    versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'
   };
  }
  async function prepareDaf(location){
-  return getPassage(location?.currentRef,location);
+  const parsed=parseReference(location?.currentRef,location?.currentBook);
+  if(!parsed)return {text:'',reason:'unsupported_reference'};
+  const manifest=await getManifest(),meta=findTractate(manifest,parsed,location);
+  if(!meta)return {text:'',reason:'tractate_not_in_offline_corpus',reference:parsed.ref};
+  const data=await loadTractate(meta);
+  const paragraphs=[...collectSide(data,parsed.dafIndex),...collectSide(data,parsed.dafIndex+1)];
+  return {text:paragraphs.join(' '),scope:'daf',reference:parsed.ref,
+   dafReference:meta.title+' '+parsed.daf,tractate:meta.title,
+   versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'};
  }
  function clearCache(){manifestPromise=null;tractateCache.clear();}
  root.SefariaOfflineTranslation={prepareDaf,getPassage,parseReference,clearCache};
