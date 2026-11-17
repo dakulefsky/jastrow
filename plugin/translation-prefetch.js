@@ -5,15 +5,20 @@
  if(!host||typeof host.on!=='function'||typeof host.call!=='function')return;
  let timer=null,generation=0,scheduledKey='',preparedKey='',active=true;
 
- function dafReference(value){
+ function parsedReference(value,book){
+  try{return root.SefariaOfflineTranslation?.parseReference?.(value,book)||null;}catch{return null;}
+ }
+ function dafReference(value,book){
+  const parsed=parsedReference(value,book);
+  if(parsed)return (parsed.book||String(book||'')).trim()+' '+parsed.daf+parsed.side;
   const ref=String(value||'').trim();
-  const match=ref.match(/^(.*?\b\d+[ab])(?::.*)?$/i);
+  const match=ref.match(/^(.*?\\b\\d+[ab])(?::.*)?$/i);
   return match?match[1].trim():ref;
  }
  function keyOf(location){
-  const ref=dafReference(location?.currentRef);
-  if(!ref)return '';
-  return [ref,String(location?.currentBookId||'')].join('|');
+  const parsed=parsedReference(location?.currentRef,location?.currentBook);
+  if(!parsed)return '';
+  return [parsed.book||String(location?.currentBook||''),parsed.daf,parsed.side,String(location?.currentBookId||'')].join('|');
  }
  function cancel(){
   generation++;
@@ -26,7 +31,7 @@
   if(key===scheduledKey||key===preparedKey)return;
   cancel();
   const token=generation,snapshot={
-   currentRef:dafReference(location.currentRef),
+   currentRef:dafReference(location.currentRef,location.currentBook),
    currentBook:String(location.currentBook||''),
    currentBookId:String(location.currentBookId||''),
   };
@@ -39,7 +44,7 @@
     if(token!==generation||!active)return;
     const currentRef=String(current?.data?.currentRef||'').trim();
     const currentBookId=String(current?.data?.currentBookId||'');
-    if(!currentRef||dafReference(currentRef)!==snapshot.currentRef)return;
+    if(!currentRef||dafReference(currentRef,current?.data?.currentBook)!==snapshot.currentRef)return;
     if(snapshot.currentBookId&&currentBookId&&snapshot.currentBookId!==currentBookId)return;
     const corpus=root.SefariaOfflineTranslation;
     if(typeof corpus?.prepareDaf!=='function')return;
