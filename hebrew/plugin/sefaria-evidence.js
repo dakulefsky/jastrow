@@ -116,12 +116,12 @@
  const TRANSLATION_VERSION='William Davidson Edition - English';
  const translationCache=new Map();
  function normalizeEnglish(value){
-  return String(value||'').normalize('NFKD').replace(/\\p{M}/gu,'').toLowerCase()
-   .replace(/&amp;/g,' and ').replace(/[^a-z0-9]+/g,' ').replace(/\\s+/g,' ').trim();
+  return String(value||'').normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase()
+   .replace(/&amp;/g,' and ').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
  }
  function candidatePhrases(value){
   return String(value||'').split(/[;,/|]+/).map(normalizeEnglish).filter(Boolean)
-   .flatMap(part=>part.split(/\\s+(?:or|and)\\s+/).map(x=>x.trim()).filter(Boolean));
+   .flatMap(part=>part.split(/\s+(?:or|and)\s+/).map(x=>x.trim()).filter(Boolean));
  }
  function phraseInText(phrase,text){
   if(!phrase||!text)return false;
@@ -170,7 +170,8 @@
    return value;
   }catch{return {matches:[],reason:'request_failed'};}
  }
-\n function clearCache(){cache.clear();refCache.clear();translationCache.clear();}
+
+ function clearCache(){cache.clear();refCache.clear();translationCache.clear();}
  try{root.Otzaria?.on?.('plugin.permissions_changed',()=>{permissionState=null;permissionCheckedAt=0;});}catch{}
  root.SefariaEvidence={lookup,reorder,compareTranslation,normalizeHeadword,normalizeRef,clearCache};
  if(typeof module!=='undefined'&&module.exports)module.exports=root.SefariaEvidence;
