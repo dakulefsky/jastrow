@@ -24,21 +24,11 @@
   }
   const result=phrase.ids.length?phrase:S.lookup(index,word,100,'length',false);
   if(['suggestions','invalid','empty'].includes(result.kind))return [];
-  let ids=result.ids,communityPreferred=false,contextualPreferred=false,generalRanked=null;
-  if(root.DictionaryCommunity?.enabled&&ids.length>1){
-   generalRanked=await root.DictionaryCommunity.rank(word,ids.map(id=>index.entries[id]),selection);
-   if(generalRanked.preferredEntryId){ids=generalRanked.entries.map(entry=>index.entries.indexOf(entry));contextualPreferred=generalRanked.preferenceScope==='contextual';communityPreferred=contextualPreferred;}
-  }
-  if(!contextualPreferred&&selection&&root.MesoresHaShas?.propagatedPreference&&root.DictionaryCommunity?.rank){
-   const linked=await root.MesoresHaShas.propagatedPreference(selection,word,ids.map(id=>index.entries[id]),root.DictionaryCommunity.rank);
-   if(linked?.preferredEntryId){ids.sort((a,b)=>{const aid=root.DictionaryCommunity.idFor(index.entries[a]),bid=root.DictionaryCommunity.idFor(index.entries[b]);return aid===linked.preferredEntryId?-1:bid===linked.preferredEntryId?1:0;});contextualPreferred=true;communityPreferred=true;}
-  }
-  if(!contextualPreferred&&selection&&root.SefariaEvidence){
-   const evidence=await root.SefariaEvidence.lookup(word,ids.map(id=>index.entries[id]).filter(entry=>entry&&!entry.rid&&entry.source!=='krupnik'),selection);
-   if(evidence.entryIds.length){
-    const preferred=new Set(evidence.entryIds),idFor=root.DictionaryCommunity?.idFor;
-    ids=[...ids.filter(id=>preferred.has(idFor?.(index.entries[id])||'')),...ids.filter(id=>!preferred.has(idFor?.(index.entries[id])||''))];
-   }else if(generalRanked?.preferredEntryId)ids=generalRanked.entries.map(entry=>index.entries.indexOf(entry));
+  let ids=result.ids;
+  if(selection&&root.SefariaEvidence){
+   const entries=ids.map(id=>index.entries[id]).filter(entry=>entry&&!entry.rid&&entry.source!=='krupnik');
+   const evidence=await root.SefariaEvidence.lookup(word,entries,selection);
+   if(evidence.entryIds.length){const preferred=new Set(evidence.entryIds);ids=[...ids.filter(id=>preferred.has('jastrow:'+index.entries[id].r)),...ids.filter(id=>!preferred.has('jastrow:'+index.entries[id].r))];}
   }
   const records=(await Promise.all(ids.map(id=>root.JastrowReadingView.records(index,id,load,word,{phrase:phrase.ids.length>0,lookupWord:S.matchingQuery(index,result.prefixMatches,id,word)})))).flat();
   const merged=root.DictionaryMeanings.merge(records,word).map(group=>({
@@ -51,7 +41,6 @@
    const matched=new Map((evidence.matches||[]).map(item=>[item.id,item]));
    merged.forEach((item,i)=>{const match=matched.get(String(i));if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
   }
-  if(communityPreferred&&merged.length)merged[0].communityPreferred=true;
   return merged;
  }
  async function previewCandidates(word,result){
@@ -75,7 +64,7 @@
    const heading=[item.selectedWord,item.spelling,item.label].filter((s,n,a)=>s&&a.indexOf(s)===n).join(' · ');
    return (i+1)+'. **'+short(item.text).replace(/\*/g,'')+'**'+(heading?'\n'+heading.replace(/\*/g,''):'')+(item.translationMatch?'\nSteinsaltz wording: “'+item.translationPhrase+'”'+(item.translationScope==='paragraph'?' (this paragraph).':' (this daf).'):'');
   });
-  return [word+(items[0]?.communityPreferred?' — likely in this context':'')+(prefixed?' — possible '+(typeof prefixed==='string'?prefixed:'prefixed form'):''),...lines,
+  return [word++(prefixed?' — possible '+(typeof prefixed==='string'?prefixed:'prefixed form'):''),...lines,
    ...(prefixed?['Base-word meanings; check the grammatical form in context.']:[]),
    items.length>2?'More meanings — click to open dictionary':'Click for full entry and sources'].join('\n');
  }
@@ -111,11 +100,6 @@
  if(root.Otzaria)root.Otzaria.on('reader.context_menu_item_clicked',async p=>{
   const word=root.JastrowContext.selectionText(p);
   if(p.itemId==='jastrow-lookup'){await show(word,p.selection);return;}
-  const match=/^jastrow-community-vote-(\d)$/.exec(p.itemId||'');
-  if(match&&root.DictionaryCommunity?.enabled){
-   const candidates=root.JastrowSearch.lookup(root.JASTROW_INDEX,word,3,'length',false).ids;
-   const id=candidates[Number(match[1])],entry=Number.isInteger(id)?root.JASTROW_INDEX.entries[id]:null;
-   if(entry){const result=await root.DictionaryCommunity.vote(word,entry,{scope:'contextual',selection:p.selection});if(result.queued)await root.Otzaria.call('ui.showMessage',{message:'Saved on this device — it will sync when you’re online.'});else if(result.ok||result.duplicate)await root.Otzaria.call('ui.showMessage',{message:result.ok?'Thanks — your vote was recorded.':'You already voted for this word.'});else if(result.reason!=='permission')await root.Otzaria.call('ui.showMessage',{message:result.reason==='context_unavailable'?'Could not read the surrounding text, so no contextual vote was sent. Open the dictionary to make a general choice.':result.reason==='queue_full'?'Your offline vote queue is full. Reconnect and try again.':'Could not save your vote. Please try again.'});}
-  }
+
  });
 })(typeof window==='undefined'?globalThis:window);
