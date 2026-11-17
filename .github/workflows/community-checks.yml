@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'community/**'
+      - 'scripts/build_sefaria_bavli_corpus.py'
+      - 'scripts/test_build_sefaria_bavli_corpus.py'
       - 'plugin/community.js'
       - 'plugin/sefaria-evidence.js'
       - 'hebrew/plugin/sefaria-evidence.js'
@@ -78,6 +80,7 @@ jobs:
           node --check plugin/translation-prefetch.js
           node --check hebrew/plugin/translation-prefetch.js
           node plugin/test_translation_prefetch.cjs
+          python -m unittest discover -s scripts -p 'test_*.py'
           node --check hebrew/plugin/availability.js
           node --input-type=module --check < community/worker/src/index.js
           node community/test_worker.mjs
