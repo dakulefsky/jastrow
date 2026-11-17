@@ -24,7 +24,7 @@ class Hebrew(HTMLParser):
     if 'englishWithinHebrew' in classes:
      self.seen=True
   if not self.skip and t in ('br','p'):
-   self.parts.append('\\n')
+   self.parts.append('\n')
 
  def handle_endtag(self,t):
   if t=='span' and self.skip:
@@ -41,7 +41,7 @@ class Hebrew(HTMLParser):
     self.lead.append(s)
 
 def clean(s):
- return re.sub(r'\\s+',' ',s).strip()
+ return re.sub(r'\s+',' ',s).strip()
 
 def norm(s):
  return re.sub('[^א-ת]','',unicodedata.normalize('NFKD',s))
@@ -90,7 +90,7 @@ def build():
    key=' '.join(norm(w) for w in word.split())
    if key:
     index.setdefault(key,[]).append(i)
- (ROOT/'plugin/data.js').write_text('window.HEBREW_DICTIONARY='+json.dumps({'entries':entries,'index':index},ensure_ascii=False,separators=(',',':'))+';\\n')
+ (ROOT/'plugin/data.js').write_text('window.HEBREW_DICTIONARY='+json.dumps({'entries':entries,'index':index},ensure_ascii=False,separators=(',',':'))+';\n')
  provenance={'source':'Sefaria Krupnik Dictionary','edition':'London, 1927','authors':['Baruch Krupnik','A. M. Silbermann'],'license':'Public Domain','sourceRecords':len(docs),'includedRecords':len(entries),'sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'extraction':'Hebrew explanations are preserved verbatim outside explicitly marked englishWithinHebrew spans; the original English gloss inside each such span is retained separately as hidden lookup metadata. Concise Hebrew text is only the prefix preceding the first multilingual span; no translated or generated definitions.'}
  (ROOT/'plugin/provenance.json').write_text(json.dumps(provenance,ensure_ascii=False,indent=2))
  print(len(entries),'entries')
