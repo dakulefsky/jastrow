@@ -141,26 +141,6 @@
   children:'child',men:'man',women:'woman',people:'person',
   feet:'foot',teeth:'tooth',mice:'mouse'
  };
- function stemEnglish(word){
-  if(IRREGULAR[word])return IRREGULAR[word];
-  if(word.length<4)return word;
-  if(word.endsWith('ies')&&word.length>4)return word.slice(0,-3)+'y';
-  if(word.endsWith('ing')&&word.length>5){
-   let stem=word.slice(0,-3);
-   if(stem.length>2&&stem.at(-1)===stem.at(-2))stem=stem.slice(0,-1);
-   if(!stem.endsWith('e'))return stem;
-   return stem;
-  }
-  if(word.endsWith('ied')&&word.length>4)return word.slice(0,-3)+'y';
-  if(word.endsWith('ed')&&word.length>4){
-   let stem=word.slice(0,-2);
-   if(stem.length>2&&stem.at(-1)===stem.at(-2))stem=stem.slice(0,-1);
-   return stem;
-  }
-  if(word.endsWith('es')&&word.length>4&&/(s|x|z|ch|sh)es$/.test(word))return word.slice(0,-2);
-  if(word.endsWith('s')&&!/(ss|us|is)$/.test(word)&&word.length>3)return word.slice(0,-1);
-  return word;
- }
  const STOP_WORDS=new Set(('a an the and or of to in on at by for from with without as is are was were be been being do does did have has had it its this that these those he she they we you I his her their our your who which what when where how very more most some any all each every other same such into onto over under up down out off not no yes can could may might must shall should will would').toLowerCase().split(/\s+/));
  function tokenForms(word){
   const forms=new Set([word]);
