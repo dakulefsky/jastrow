@@ -52,9 +52,15 @@ vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),{window:r
  assert.equal(wholeDaf.scope,'daf');
  assert.match(wholeDaf.text,/first paragraph/);
  assert.match(wholeDaf.text,/next daf/);
+ offline.clearCache();
  const next=await offline.prepareDaf({currentRef:'ברכות, דף ב',currentBook:'ברכות'});
  assert.equal(next.scope,'daf');
  assert.equal(next.ready,true);
+ const afterPrepare=calls.length;
+ const warmed=await offline.getPassage('ברכות, דף ב',{currentBook:'ברכות'});
+ assert.match(warmed.text,/The first paragraph discusses the law/);
+ assert.match(warmed.text,/The next daf contains another discussion/);
+ assert.equal(calls.length,afterPrepare,'right-click passage should use the daf warmed by background preparation');
  assert.equal(calls.filter(x=>x.endsWith('texts/berakhot.js')).length,1,'tractate script should stay cached after first load');
  assert.equal(calls.filter(x=>x.endsWith('manifest.js')).length,1,'manifest should stay cached');
  console.log('Offline Bavli passage tests passed');
