@@ -116,24 +116,60 @@
  const TRANSLATION_VERSION='William Davidson Edition - English';
  const translationCache=new Map();
  function normalizeEnglish(value){
-  return String(value||'').normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase()
-   .replace(/&amp;/g,' and ').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
+  return String(value||'').replace(/<[^>]*>/g,' ').replace(/&amp;/gi,' and ')
+   .replace(/&nbsp;/gi,' ').replace(/&#39;|&apos;/gi,"'")
+   .normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase()
+   .replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
  }
  function candidatePhrases(value){
-  return String(value||'').split(/[;,/|]+/).map(normalizeEnglish).filter(Boolean)
-   .flatMap(part=>part.split(/\s+(?:or|and)\s+/).map(x=>x.trim()).filter(Boolean));
+  // Dictionary glosses commonly list distinct senses with commas or semicolons.
+  // Keep conjunctions inside a phrase: "law and order" is one candidate, not two.
+  return [...new Set(String(value||'').split(/[;,/|]+/).map(normalizeEnglish).filter(Boolean))];
+ }
+ const IRREGULAR={
+  am:'be',is:'be',are:'be',was:'be',were:'be',been:'be',being:'be',
+  has:'have',had:'have',does:'do',did:'do',done:'do',
+  said:'say',says:'say',went:'go',gone:'go',made:'make',makes:'make',
+  took:'take',taken:'take',takes:'take',came:'come',comes:'come',
+  saw:'see',seen:'see',gave:'give',given:'give',got:'get',
+  ran:'run',written:'write',wrote:'write',thought:'think',
+  brought:'bring',bought:'buy',taught:'teach',caught:'catch',
+  kept:'keep',left:'leave',felt:'feel',found:'find',held:'hold',
+  told:'tell',sold:'sell',spoke:'speak',spoken:'speak',
+  ate:'eat',eaten:'eat',drank:'drink',drunk:'drink',
+  sat:'sit',stood:'stand',understood:'understand',paid:'pay',
+  children:'child',men:'man',women:'woman',people:'person',
+  feet:'foot',teeth:'tooth',mice:'mouse'
+ };
+ function stemEnglish(word){
+  if(IRREGULAR[word])return IRREGULAR[word];
+  if(word.length<4)return word;
+  if(word.endsWith('ies')&&word.length>4)return word.slice(0,-3)+'y';
+  if(word.endsWith('ing')&&word.length>5){
+   let stem=word.slice(0,-3);
+   if(stem.length>2&&stem.at(-1)===stem.at(-2))stem=stem.slice(0,-1);
+   if(!stem.endsWith('e'))return stem;
+   return stem;
+  }
+  if(word.endsWith('ied')&&word.length>4)return word.slice(0,-3)+'y';
+  if(word.endsWith('ed')&&word.length>4){
+   let stem=word.slice(0,-2);
+   if(stem.length>2&&stem.at(-1)===stem.at(-2))stem=stem.slice(0,-1);
+   return stem;
+  }
+  if(word.endsWith('es')&&word.length>4&&/(s|x|z|ch|sh)es$/.test(word))return word.slice(0,-2);
+  if(word.endsWith('s')&&!/(ss|us|is)$/.test(word)&&word.length>3)return word.slice(0,-1);
+  return word;
+ }
+ const STOP_WORDS=new Set(('a an the and or of to in on at by for from with without as is are was were be been being do does did have has had it its this that these those he she they we you I his her their our your who which what when where how very more most some any all each every other same such into onto over under up down out off not no yes can could may might must shall should will would').toLowerCase().split(/\s+/));
+ function tokenMatch(a,b){
+  return a===b||stemEnglish(a)===stemEnglish(b);
  }
  function phraseInText(phrase,text){
   if(!phrase||!text)return false;
   const words=phrase.split(' '),haystack=text.split(' ');
-  if(words.length===1&&words[0].length<5)return false;
-  const variants=[words];
-  if(words.length===1&&words[0].length>=5){
-   const stem=words[0];
-   if(stem.endsWith('y')&&stem.length>5)variants.push([stem.slice(0,-1)+'ies']);
-   else if(!stem.endsWith('s'))variants.push([stem+'s']);
-  }
-  return variants.some(needle=>haystack.some((_,i)=>needle.every((w,j)=>haystack[i+j]===w)));
+  if(words.length===1&&(STOP_WORDS.has(words[0])||words[0].length<3))return false;
+  return haystack.some((_,i)=>i+words.length<=haystack.length&&words.every((word,j)=>tokenMatch(word,haystack[i+j])));
  }
 
  function translationReference(selection){
