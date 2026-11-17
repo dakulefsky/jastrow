@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "com.kulefsky.jastrow",
   "name": "Aramaic → Eng.",
-  "version": "1.11.13",
+  "version": "1.11.14",
   "description": "Offline Aramaic and rabbinic Hebrew to English translation, with concise meanings and optional examples.",
   "author": "DanTheMan",
   "stability": "beta",
@@ -24,7 +24,8 @@
   "network": {
     "enabled": true,
     "allowlist": [
-      "https://otzaria-dictionary-community.dakulefsky.workers.dev"
+      "https://otzaria-dictionary-community.dakulefsky.workers.dev",
+      "https://www.sefaria.org"
     ]
   },
   "contributes": {
