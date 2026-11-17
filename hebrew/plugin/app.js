@@ -54,7 +54,20 @@ let lastSearched='',searchSerial=0;
 async function search(q,record=true){const serial=++searchSerial;lastSearched=String(q);if(activeReaderContext&&HebrewLookup.normalize(String(q))!==HebrewLookup.normalize(activeReaderContext.word))activeReaderContext=null;$('query').value=q;const out=$('results');out.replaceChildren();$('clear').hidden=!q;if(!q.trim()){renderMatches([],'');$('status').textContent='';return;}if(String(q).trim().toLowerCase()==='who created this?'){renderMatches([],'');out.append(el('p','Daniel Avrahom','creator-easter-egg'));$('status').textContent='';return;}let records=HebrewLookup.lookup(q);if(window.DictionaryCommunity?.enabled&&records.length>1){const ranked=await DictionaryCommunity.rank(q,records.map(e=>({rid:e.rid})),activeReaderContext?.selection);if(serial!==searchSerial)return;if(ranked.preferredEntryId){const order=new Map(ranked.entries.map((e,i)=>[e.rid,i]));records=[...records].sort((a,b)=>(order.get(a.rid)??999)-(order.get(b.rid)??999));}}activeSefariaEntryIds=new Set();if(activeReaderContext?.selection&&records.length&&window.SefariaEvidence){const evidence=await SefariaEvidence.lookup(q,records,activeReaderContext.selection);if(serial!==searchSerial)return;activeSefariaEntryIds=new Set(evidence.entryIds);}renderMatches(records,q);$('status').textContent=records.length?'':!HebrewLookup.valid(q)?'יש להזין מילה או ביטוי באותיות עבריות.':'לא נמצא ערך למילה או לביטוי זה.';if(!records.length)return;if(record){recordTrail(q);rememberLookup(q);}
  out.append(el('h2',q,'query-title'));const formMatch=records.find(e=>e.matchedForm);if(formMatch){const note=el('p','זוהתה צורה נטויה; הערך הבסיסי במילון: '+formMatch.word,'form-attestation');out.append(note);}const groups=new Map();
  for(const e of records)for(const p of e.parts){const text=p.meaning||p.text,key=[HebrewLookup.normalize(e.word),p.label.replace(/\b\d+\b/g,''),text].join('|');if(!groups.has(key))groups.set(key,{word:e.word,text,items:[]});groups.get(key).items.push({e,p});}
- let number=0;for(const g of groups.values()){const card=el('article','','meaning-card');card.append(el('span',String(++number),'number'),el('h3',g.word),el('p',g.text));const details=el('details','');details.append(el('summary','הערך המלא ומקורו'));for(const {e,p} of g.items){details.append(el('p',p.text),el('small','קרופניק וזילברמן · '+e.rid+(p.label?' · '+p.label:'')));}card.append(details);out.append(card);}
+ const groupList=[...groups.values()];
+ const active=activeReaderContext&&HebrewLookup.normalize(activeReaderContext.word)===HebrewLookup.normalize(q)?activeReaderContext.selection:null;
+ const translationMatches=new Map();
+ if(active&&window.SefariaEvidence?.compareTranslation){
+  const candidates=groupList.map((g,i)=>({id:String(i),text:[...new Set(g.items.map(({p})=>p.english||'').filter(Boolean))].join('; ')})).filter(candidate=>candidate.text);
+  if(candidates.length){
+   const evidence=await SefariaEvidence.compareTranslation(q,candidates,active);
+   if(serial!==searchSerial)return;
+   for(const match of evidence.matches||[])translationMatches.set(match.id,{...match,scope:evidence.scope});
+  }
+ }
+ let number=0;for(const [groupIndex,g] of groupList.entries()){const card=el('article','','meaning-card');card.append(el('span',String(++number),'number'),el('h3',g.word),el('p',g.text));
+ const translationMatch=translationMatches.get(String(groupIndex));
+ if(translationMatch){card.append(el('small','ניסוח מקביל מופיע בתרגום סטיינזלץ: “'+translationMatch.matchedPhrase+'”'+(translationMatch.scope==='paragraph'?' · פסקה זו':' · דף זה'),'translation-evidence-note'));}const details=el('details','');details.append(el('summary','הערך המלא ומקורו'));for(const {e,p} of g.items){details.append(el('p',p.text),el('small','קרופניק וזילברמן · '+e.rid+(p.label?' · '+p.label:'')));}card.append(details);out.append(card);}
 }
 $('form').onsubmit=e=>{e.preventDefault();search($('query').value);};$('clear').onclick=()=>{search('');$('query').focus();};
 $('selected').onclick=async()=>{try{const r=await Otzaria.call('reader.getSelection');const text=HebrewLookup.selectionText(r?.data);if(r?.success&&text){activeReaderContext={word:text,selection:r.data||null};search(text);}else $('status').textContent='יש לבחור מילה בטקסט תחילה.';}catch{$('status').textContent='לא ניתן לקרוא את הבחירה. אפשר להקליד בשדה החיפוש.';}};
