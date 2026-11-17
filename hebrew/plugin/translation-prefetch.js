@@ -31,7 +31,7 @@
   if(key===scheduledKey||key===preparedKey)return;
   cancel();
   const token=generation,snapshot={
-   currentRef:dafReference(location.currentRef,location.currentBook),
+   currentRef:String(location.currentRef||'').trim(),
    currentBook:String(location.currentBook||''),
    currentBookId:String(location.currentBookId||''),
   };
