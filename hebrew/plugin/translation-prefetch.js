@@ -48,7 +48,7 @@
     if(snapshot.currentBookId&&currentBookId&&snapshot.currentBookId!==currentBookId)return;
     const corpus=root.SefariaOfflineTranslation;
     if(typeof corpus?.prepareDaf!=='function')return;
-    await corpus.prepareDaf(snapshot);
+    await corpus.prepareDaf(snapshot,()=>token===generation&&active);
     if(token===generation)preparedKey=key;
    }catch(error){
     if(token===generation)console.warn('Offline translation preparation skipped',error);
@@ -64,6 +64,7 @@
    else cancel();
   }catch{cancel();}
  }
+ host.on('plugin.boot',()=>{active=true;isReading=true;refresh();});
  host.on('reader.current_ref_changed',schedule);
  host.on('navigation.changed',payload=>{
   if(payload?.screen==='reading'){isReading=true;active=true;refresh();}
