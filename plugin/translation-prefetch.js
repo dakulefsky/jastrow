@@ -8,9 +8,9 @@
  function parsedReference(value,book){
   try{return root.SefariaOfflineTranslation?.parseReference?.(value,book)||null;}catch{return null;}
  }
- function dafReference(value,book){
+ function dafReference(value,book,bookId){
   const parsed=parsedReference(value,book);
-  if(parsed)return (parsed.book||String(book||'')).trim()+' '+parsed.daf;
+  if(parsed)return String(bookId||parsed.book||book||'').trim()+'|'+parsed.daf;
   const ref=String(value||'').trim();
   const match=ref.match(/^(.*?\b\d+[ab])(?::.*)?$/i);
   return match?match[1].trim():ref;
@@ -18,7 +18,7 @@
  function keyOf(location){
   const parsed=parsedReference(location?.currentRef,location?.currentBook);
   if(!parsed)return '';
-  return [parsed.book||String(location?.currentBook||''),parsed.daf,String(location?.currentBookId||'')].join('|');
+  return [String(location?.currentBookId||parsed.book||location?.currentBook||''),parsed.daf].join('|');
  }
  function cancel(){
   generation++;
@@ -44,7 +44,7 @@
     if(token!==generation||!active)return;
     const currentRef=String(current?.data?.currentRef||'').trim();
     const currentBookId=String(current?.data?.currentBookId||'');
-    if(!currentRef||dafReference(currentRef,current?.data?.currentBook)!==snapshot.currentRef)return;
+    if(!currentRef||dafReference(currentRef,current?.data?.currentBook,currentBookId)!==dafReference(snapshot.currentRef,snapshot.currentBook,snapshot.currentBookId))return;
     if(snapshot.currentBookId&&currentBookId&&snapshot.currentBookId!==currentBookId)return;
     const corpus=root.SefariaOfflineTranslation;
     if(typeof corpus?.prepareDaf!=='function')return;
