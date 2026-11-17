@@ -38,5 +38,13 @@ global.fetch=async url=>{
  const deniedResult=await denied.lookup('אָמַר',entries,{currentRef:'ברכות דף ב'});
  assert.equal(deniedResult.reason,'permission');
  assert.equal(deniedFetches,0,'network permission denial must prevent external requests');
+ delete require.cache[require.resolve(file)];
+ let offlineFetches=0;
+ global.Otzaria={call:async method=>method==='app.getConnectivity'?{success:true,data:{isOnline:false}}:{success:true,data:{permissions:['network.access']}}};
+ global.fetch=async()=>{offlineFetches++;throw Error('offline request must not run');};
+ const offline=require(file);
+ const offlineResult=await offline.lookup('אָמַר',entries,{currentRef:'ברכות דף ב'});
+ assert.equal(offlineResult.reason,'permission');
+ assert.equal(offlineFetches,0,'offline mode must prevent external requests');
  console.log('Sefaria evidence tests passed');
 })().catch(error=>{console.error(error);process.exitCode=1;});
