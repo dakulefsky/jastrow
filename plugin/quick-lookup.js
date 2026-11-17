@@ -34,7 +34,7 @@
    if(linked?.preferredEntryId){ids.sort((a,b)=>{const aid=root.DictionaryCommunity.idFor(index.entries[a]),bid=root.DictionaryCommunity.idFor(index.entries[b]);return aid===linked.preferredEntryId?-1:bid===linked.preferredEntryId?1:0;});contextualPreferred=true;communityPreferred=true;}
   }
   if(!contextualPreferred&&selection&&root.SefariaEvidence){
-   const evidence=await root.SefariaEvidence.lookup(word,ids.map(id=>index.entries[id]),selection);
+   const evidence=await root.SefariaEvidence.lookup(word,ids.map(id=>index.entries[id]).filter(entry=>entry&&!entry.rid&&entry.source!=='krupnik'),selection);
    if(evidence.entryIds.length){
     const preferred=new Set(evidence.entryIds),idFor=root.DictionaryCommunity?.idFor;
     ids=[...ids.filter(id=>preferred.has(idFor?.(index.entries[id])||'')),...ids.filter(id=>!preferred.has(idFor?.(index.entries[id])||''))];
