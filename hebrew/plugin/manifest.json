@@ -17,7 +17,6 @@
     "events.subscribe:reader.selection_changed",
     "reader.open",
     "network.access",
-    "events.subscribe:plugin.permissions_changed",
     "library.links.read",
     "library.content.read"
   ],
