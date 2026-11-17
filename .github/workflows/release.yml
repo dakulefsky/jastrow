@@ -63,6 +63,7 @@ jobs:
           node test_quick.cjs
           node --check plugin/sefaria-evidence.js
           node plugin/test_sefaria_evidence.cjs
+          node plugin/test_translation_evidence.cjs
       - name: Test consistent student lookup in Chromium
         run: |
           npm install --no-save playwright
