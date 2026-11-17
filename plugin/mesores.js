@@ -80,8 +80,8 @@
    if(!links.length)return [];
    if(links.length>MAX_LINKS)return null;
    const loaded=await root.Otzaria.call('library.getLinkContent',{links:links.map(contentRequest)});
-   if(!loaded?.success||!Array.isArray(loaded.data?.items))return null;
-   return links.map((link,index)=>{
+   if(!loaded?.success||!Array.isArray(loaded.data?.items)||loaded.data.items.length!==links.length)return null;
+   const passages=links.map((link,index)=>{
     const item=loaded.data.items[index]||{};
     if(item.error||typeof item.content!=='string')return null;
     const text=htmlToText(item.content).replace(/\s+/g,' ').trim();
@@ -92,7 +92,8 @@
      text,
      connectionType:CONNECTION_TYPE
     };
-   }).filter(Boolean);
+   });
+   return passages.some(item=>!item)?null:passages;
   })();
   cache.set(key,promise);
   while(cache.size>32)cache.delete(cache.keys().next().value);
