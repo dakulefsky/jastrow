@@ -53,7 +53,9 @@
   if(cached&&cached.expires>Date.now())return cached.value;
   const data=await request(BASE+'/api/ref/'+encodeURIComponent(ref));
   if(data?.is_ref===false)return null;
-  const canonical=typeof data?.ref==='string'&&data.ref.trim()?data.ref.trim():
+  const canonical=typeof data?.normalized==='string'&&data.normalized.trim()?data.normalized.trim():
+   typeof data?.url_ref==='string'&&data.url_ref.trim()?data.url_ref.trim():
+   typeof data?.ref==='string'&&data.ref.trim()?data.ref.trim():
    typeof data?.tref==='string'&&data.tref.trim()?data.tref.trim():
    typeof data?.heRef==='string'&&data.heRef.trim()?data.heRef.trim():ref;
   refCache.set(key,{value:canonical,expires:Date.now()+CACHE_TTL});
