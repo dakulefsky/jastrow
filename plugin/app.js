@@ -134,7 +134,7 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
  const active=activeReaderContext&&JastrowSearch.normalize(activeReaderContext.word)===JastrowSearch.normalize(word)?activeReaderContext.selection:null;
  if(active&&window.SefariaEvidence?.compareTranslation){
   const candidates=DictionaryMeanings.merge(records,word).map((group,i)=>({id:String(i),text:group.text}));
-  const evidence=await SefariaEvidence.compareTranslation(word,candidates,active);
+  const evidence=await SefariaEvidence.compareTranslation(word,candidates,active,{preparedOnly:true});
   if(serial!==requestSerial||panelSerial!==entrySerial)return;
   const matches=new Map((evidence.matches||[]).map(item=>[item.id,item]));
   if(matches.size){
