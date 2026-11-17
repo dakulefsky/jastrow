@@ -3,52 +3,36 @@ const assert=require('node:assert/strict');
 const path=require('node:path');
 const file=path.join(__dirname,'sefaria-evidence.js');
 delete require.cache[require.resolve(file)];
-global.Otzaria={call:async method=>method==='app.getGrantedPermissions'?{success:true,data:{permissions:['network.access']}}:{success:true,data:{currentRef:'ברכות דף ב'}}};
-const calls=[];
-global.fetch=async url=>{
- calls.push(String(url));
- if(String(url).includes('/api/ref/'))return {ok:true,json:async()=>({is_ref:true,normalized:'Berakhot 2a',url_ref:'Berakhot_2a'})};
- if(String(url).includes('/api/words/')){
-  return {ok:true,json:async()=>[
-   {parent_lexicon:'Jastrow Dictionary',headword:'אָמַר I',refs:['Berakhot 2a']},
-   {parent_lexicon:'Jastrow Dictionary',headword:'אָמַר II',refs:['Berakhot 3a']},
-   {parent_lexicon:'Klein Dictionary',headword:'אָמַר',refs:['Berakhot 2a']}
-  ]};
- }
- throw Error('Unexpected URL '+url);
-};
+let localReads=0,networkCalls=0,hostCalls=0;
+global.SefariaOfflineTranslation={getPassage:async(ref,selection)=>{
+ localReads++;
+ assert.equal(ref,'ברכות, דף ב עמוד א:1');
+ assert.equal(selection.currentBook,'ברכות');
+ return {text:'The discussion was completed after the law and order were explained.',scope:'paragraph',
+  dafReference:'Berakhot 2a',license:'CC-BY-NC',versionTitle:'William Davidson Edition - English'};
+}};
+global.Otzaria={call:async()=>{hostCalls++;throw Error('host fallback should not be needed');}};
+global.fetch=async()=>{networkCalls++;throw Error('the dictionary must never use network access');};
+
 (async()=>{
  const evidence=require(file);
- const entries=[{r:'J001',h:'אָמַר I'},{r:'J002',h:'אָמַר II'}];
- const result=await evidence.lookup('אָמַר',entries,{currentRef:'ברכות דף ב'});
- assert.deepEqual(result.entryIds,['jastrow:J001']);
- assert.equal(result.reference,'ברכות דף ב');
- assert.equal(result.canonicalReference,'Berakhot 2a');
- assert.equal(calls.length,2);
- const reordered=await evidence.reorder('אָמַר',entries,{currentRef:'ברכות דף ב'});
- assert.equal(reordered.entries[0].r,'J001');
- const cached=await evidence.lookup('אָמַר',entries,{currentRef:'ברכות דף ב'});
- assert.deepEqual(cached.entryIds,['jastrow:J001']);
- assert.equal(calls.length,2,'repeated lookup should use the cache');
- const alternate=await evidence.lookup('אָמַר',[{r:'J003',h:'אָמַר III',alt:['אָמַר I']}],{currentRef:'ברכות דף ב'});
- assert.deepEqual(alternate.entryIds,['jastrow:J003'],'alternate Jastrow headwords should resolve to their entry');
- const krupnik=await evidence.lookup('אָמַר',[{rid:'K001',word:'אָמַר I'}],{currentRef:'ברכות דף ב'});
- assert.deepEqual(krupnik.entryIds,['krupnik:K001'],'exact shared headwords can be surfaced as a Krupnik cross-check');
- delete require.cache[require.resolve(file)];
- let deniedFetches=0;
- global.Otzaria={call:async method=>method==='app.getConnectivity'?{success:true,data:{isOnline:true}}:{success:true,data:{permissions:[]}}};
- global.fetch=async()=>{deniedFetches++;throw Error('network must not be used without permission');};
- const denied=require(file);
- const deniedResult=await denied.lookup('אָמַר',entries,{currentRef:'ברכות דף ב'});
- assert.equal(deniedResult.reason,'permission');
- assert.equal(deniedFetches,0,'network permission denial must prevent external requests');
- delete require.cache[require.resolve(file)];
- let offlineFetches=0;
- global.Otzaria={call:async method=>method==='app.getConnectivity'?{success:true,data:{isOnline:false}}:{success:true,data:{permissions:['network.access']}}};
- global.fetch=async()=>{offlineFetches++;throw Error('offline request must not run');};
- const offline=require(file);
- const offlineResult=await offline.lookup('אָמַר',entries,{currentRef:'ברכות דף ב'});
- assert.equal(offlineResult.reason,'permission');
- assert.equal(offlineFetches,0,'offline mode must prevent external requests');
- console.log('Sefaria evidence tests passed');
+ assert.equal(evidence.lookup,undefined);
+ assert.equal(evidence.reorder,undefined);
+ const candidates=[{id:'complete',text:'complete'},{id:'law-order',text:'law and order'},{id:'absent',text:'mountain'}];
+ const selection={sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'};
+ const result=await evidence.compareTranslation('אָמַר',candidates,selection);
+ assert.equal(result.source,'offline');
+ assert.equal(result.scope,'paragraph');
+ assert.deepEqual(result.matches.map(x=>x.id),['complete','law-order']);
+ assert.equal(result.matches[0].matchedPhrase,'completed');
+ assert.equal(result.matches[1].matchedPhrase,'law and order');
+ assert.equal(localReads,1);
+ await evidence.compareTranslation('אָמַר',candidates,selection);
+ assert.equal(localReads,1,'repeat comparison should use the in-memory result cache');
+ evidence.clearCache();
+ await evidence.compareTranslation('אָמַר',candidates,selection);
+ assert.equal(localReads,2,'clearCache should invalidate the comparison cache');
+ assert.equal(networkCalls,0);
+ assert.equal(hostCalls,0);
+ console.log('Offline translation evidence tests passed');
 })().catch(error=>{console.error(error);process.exitCode=1;});
