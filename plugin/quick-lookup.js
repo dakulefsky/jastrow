@@ -73,7 +73,7 @@
   const lines=items.slice(0,2).map((item,i)=>{
    if(typeof item==='string')return (i+1)+'. **'+short(item).replace(/\*/g,'')+'**';
    const heading=[item.selectedWord,item.spelling,item.label].filter((s,n,a)=>s&&a.indexOf(s)===n).join(' · ');
-   return (i+1)+'. **'+short(item.text).replace(/\*/g,'')+'**'+(heading?'\n'+heading.replace(/\*/g,''):'')+(item.translationMatch?'\nWording found in Steinsaltz translation'+(item.translationScope==='paragraph'?' of this paragraph.':' on this daf.'):'');
+   return (i+1)+'. **'+short(item.text).replace(/\*/g,'')+'**'+(heading?'\n'+heading.replace(/\*/g,''):'')+(item.translationMatch?'\nSteinsaltz wording: “'+item.translationPhrase+'”'+(item.translationScope==='paragraph'?' of this paragraph.':' on this daf.'):'');
   });
   return [word+(items[0]?.communityPreferred?' — likely in this context':'')+(prefixed?' — possible '+(typeof prefixed==='string'?prefixed:'prefixed form'):''),...lines,
    ...(prefixed?['Base-word meanings; check the grammatical form in context.']:[]),
