@@ -95,12 +95,19 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
             if not has_text(data.get("text")):
                 failures.append(f"{title}: translation text is empty")
                 continue
-            payload = json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+            slug = safe_slug(title)
+            json_text = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
+            json_text = json_text.replace("\\u2028", "\\\\u2028").replace("\\u2029", "\\\\u2029")
+            payload = (
+                "(function(root){root.SefariaOfflineTranslationData=root.SefariaOfflineTranslationData||{};"
+                + "root.SefariaOfflineTranslationData[" + json.dumps(slug) + "]=" + json_text + ";"
+                + "})(typeof window==='undefined'?globalThis:window);"
+            ).encode("utf-8")
             metadata = {
                 "title": title,
                 "heTitle": str(data.get("heTitle", "")),
-                "slug": safe_slug(title),
-                "file": f"texts/{safe_slug(title)}.json",
+                "slug": slug,
+                "file": f"texts/{slug}.js",
                 "categories": item.get("categories", []),
                 "versionTitle": EDITION,
                 "language": "English",
@@ -109,7 +116,7 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
                 "sha256": hashlib.sha256(payload).hexdigest(),
                 "bytes": len(payload),
             }
-            texts.append((f"texts/{safe_slug(title)}.json", payload, metadata))
+            texts.append((f"texts/{slug}.js", payload, metadata))
         except Exception as error:  # report all missing/blocked tractates together
             failures.append(f"{title}: {type(error).__name__}: {error}")
 
@@ -130,7 +137,9 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
-        archive.writestr("manifest.json", json.dumps(manifest, ensure_ascii=False, indent=2))
+        manifest_json = json.dumps(manifest, ensure_ascii=False, separators=(",", ":"))
+        manifest_js = "(function(root){root.SefariaOfflineTranslationManifest=" + manifest_json + ";})(typeof window==='undefined'?globalThis:window);"
+        archive.writestr("manifest.js", manifest_js)
         archive.writestr("ATTRIBUTION.txt", ATTRIBUTION + "\n")
         for name, payload, _ in texts:
             archive.writestr(name, payload)
