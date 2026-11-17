@@ -32,7 +32,7 @@
    label:group.form?group.sources[0].meaning.label:'',
   }));
   if(selection&&root.SefariaEvidence?.compareTranslation){
-   const evidence=await root.SefariaEvidence.compareTranslation(word,merged.map((item,i)=>({id:String(i),text:item.text})),selection);
+   const evidence=await root.SefariaEvidence.compareTranslation(word,merged.map((item,i)=>({id:String(i),text:item.text})),selection,{preparedOnly:true});
    const matched=new Map((evidence.matches||[]).map(item=>[item.id,item]));
    merged.forEach((item,i)=>{const match=matched.get(String(i));if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
   }
