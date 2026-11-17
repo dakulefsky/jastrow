@@ -3,7 +3,7 @@ from html.parser import HTMLParser
 import json,re,unicodedata,hashlib,zipfile
 ROOT=Path(__file__).parent
 class Hebrew(HTMLParser):
- def __init__(self):super().__init__(convert_charrefs=True);self.skip=0;self.parts=[];self.lead=[];self.seen=False
+ def __init__(self):super().__init__(convert_charrefs=True);self.skip=0;self.english_depth=0;self.parts=[];self.lead=[];self.english=[];self.seen=False
  def handle_starttag(self,t,a):
   if t=='span' and (self.skip or 'englishWithinHebrew' in dict(a).get('class','')):
    self.skip+=1;self.seen=True
@@ -34,7 +34,7 @@ def build():
   parts=[]
   for raw,label in senses(d['content']):
    p=Hebrew();p.feed(raw);full=clean(''.join(p.parts));lead=clean(''.join(p.lead))
-   if full:parts.append({'label':label,'meaning':lead if p.seen else '', 'text':full})
+   english=clean(''.join(p.english))\n   if full:parts.append({'label':label,'meaning':lead if p.seen else '', 'text':full, **({'english':english} if english else {})})
   if not parts:continue
   e={'word':d['headword'],'rid':d['rid'],'parts':parts,'alt':[a['word'] if isinstance(a,dict) else a for a in d.get('alt_headwords',[])]}
   i=len(entries);entries.append(e)
@@ -42,7 +42,7 @@ def build():
    key=' '.join(norm(w) for w in word.split())
    if key:index.setdefault(key,[]).append(i)
  (ROOT/'plugin/data.js').write_text('window.HEBREW_DICTIONARY='+json.dumps({'entries':entries,'index':index},ensure_ascii=False,separators=(',',':'))+';\n')
- provenance={'source':'Sefaria Krupnik Dictionary','edition':'London, 1927','authors':['Baruch Krupnik','A. M. Silbermann'],'license':'Public Domain','sourceRecords':len(docs),'includedRecords':len(entries),'sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'extraction':'Hebrew outside explicitly marked englishWithinHebrew spans, verbatim whitespace normalized. Concise text is only the prefix preceding the first multilingual span; no translated or generated definitions.'}
+ provenance={'source':'Sefaria Krupnik Dictionary','edition':'London, 1927','authors':['Baruch Krupnik','A. M. Silbermann'],'license':'Public Domain','sourceRecords':len(docs),'includedRecords':len(entries),'sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'extraction':'Hebrew explanations are preserved verbatim outside explicitly marked englishWithinHebrew spans; the original English gloss inside each such span is retained separately as hidden lookup metadata. Concise Hebrew text is only the prefix preceding the first multilingual span; no translated or generated definitions.'}
  (ROOT/'plugin/provenance.json').write_text(json.dumps(provenance,ensure_ascii=False,indent=2))
  print(len(entries),'entries')
 if __name__=='__main__':build()
