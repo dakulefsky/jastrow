@@ -9,15 +9,6 @@
   return (String(value||'').normalize('NFKD').replace(/\p{M}/gu,'').replace(/[ךםןףץ]/g,ch=>finals[ch]).match(/[\u05d0-\u05ea]+/g)||[])
    .map(word=>word.replace(/[ךםןףץ]/g,ch=>finals[ch]));
  }
- function containsPhrase(tokens,query){
-  if(!query.length||query.length>tokens.length)return false;
-  for(let i=0;i<=tokens.length-query.length;i++){
-   let matches=true;
-   for(let j=0;j<query.length;j++)if(tokens[i+j]!==query[j]){matches=false;break;}
-   if(matches)return true;
-  }
-  return false;
- }
  function htmlToText(html){
   const source=String(html||'').replace(/<br\s*\/?>/gi,' ').replace(/<\/(?:p|div|li|section|blockquote|h[1-6])\s*>/gi,' ');
   if(root.document&&typeof root.document.createElement==='function'){
@@ -99,69 +90,7 @@
   while(cache.size>32)cache.delete(cache.keys().next().value);
   try{const result=await promise;if(result===null){cache.delete(key);return [];}return result;}catch{cache.delete(key);return [];}
  }
- function makeExcerpt(tokens,index,length){
-  const start=Math.max(0,index-12),end=Math.min(tokens.length,index+length+18);
-  return (start?'…':'')+tokens.slice(start,end).join(' ')+(end<tokens.length?'…':'');
- }
- async function find(selection,word){
-  const query=tokenize(word);if(!query.length)return [];
-  const passages=await passagesFor(selection),matches=[];
-  for(const passage of passages){
-   const tokens=tokenize(passage.text);let at=-1;
-   for(let i=0;i<=tokens.length-query.length;i++){
-    let ok=true;for(let j=0;j<query.length;j++)if(tokens[i+j]!==query[j]){ok=false;break;}
-    if(ok){at=i;break;}
-   }
-   if(at<0)continue;
-   matches.push({
-    title:passage.title,
-    reference:passage.reference||passage.title,
-    excerpt:makeExcerpt(tokens,at,query.length),
-    connectionType:passage.connectionType
-   });
-  }
-  return matches;
- }
- function element(tag,text,className){
-  const node=root.document.createElement(tag);
-  if(text!==undefined)node.textContent=text;
-  if(className)node.className=className;
-  return node;
- }
- function clear(target){
-  if(!target?.querySelector)return;
-  const old=target.querySelector('.mesores-parallels');if(old)old.remove();
- }
- function render(target,matches,language='en'){
-  if(!target||!root.document||!matches.length)return null;
-  const hebrew=language==='he',section=element('section',undefined,'mesores-parallels');
-  section.setAttribute('aria-label',hebrew?'מקבילות במסורת הש״ס':'Mesores HaShas parallels');
-  section.append(element('span',hebrew?'מסורת הש״ס':'MESORES HASHAS','mesores-kicker'));
-  section.append(element('h3',hebrew?'סוגיות מקבילות':'Cross-referenced Gemara passages','mesores-title'));
-  section.append(element('p',hebrew
-   ?'ההפניות של מסורת הש״ס שמופיעות כאן מובילות לקטעים שבהם נמצאה המילה או הביטוי שנבחרו. כדאי להשוות את ההקשר; ההפניה לבדה אינה מוכיחה שהמשמעות זהה.'
-   :'These Mesores HaShas links lead to passages where the selected word or phrase also appears. Compare the wording; a cross-reference alone does not prove that the meaning is the same.','mesores-description'));
-  const list=element('div',undefined,'mesores-list');
-  for(const match of matches){
-   const card=element('article',undefined,'mesores-card');
-   card.append(element('strong',match.reference,'mesores-reference'));
-   if(match.title&&match.title!==match.reference)card.append(element('small',match.title,'mesores-book-title'));
-   card.append(element('p',match.excerpt,'mesores-excerpt'));
-   list.append(card);
-  }
-  section.append(list);target.append(section);return section;
- }
- async function attach(target,word,selection,language='en',options={}){
-  clear(target);
-  if(!selection||!word)return [];
-  let matches=[];
-  try{matches=await find(selection,word);}catch{return [];}
-  if(typeof options.isCurrent==='function'&&!options.isCurrent())return matches;
-  if(matches.length)render(target,matches,language);
-  return matches;
- }
-
-  // Use only local translation evidence from a Mesores-linked passage.
+ // Use only local translation evidence from a Mesores-linked passage.
  // A parallel clue is accepted only when the selected word occurs once there,
  // one candidate is uniquely supported, and every relevant linked passage agrees.
  async function translationRank(word,entries,selection){
@@ -205,7 +134,7 @@
   return preferences.every(id=>id===winner)?{preferredEntryId:winner,occurrences:relevantPassages}:null;
  }
 
- const api={connectionType:CONNECTION_TYPE,tokenize,containsPhrase,find,attach,clear,propagatedPreference};
+ const api={propagatedPreference};
  root.MesoresHaShas=api;
  if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window==='undefined'?globalThis:window);
