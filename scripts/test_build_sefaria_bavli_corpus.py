@@ -48,6 +48,8 @@ class BavliCorpusBuilderTests(unittest.TestCase):
             manifest = build_archive({"books": [self.match]}, output, lambda url: data)
             self.assertEqual(manifest["tractateCount"], 1)
             self.assertEqual(manifest["tractates"][0]["license"], "CC-BY-NC")
+            self.assertEqual(manifest["tractates"][0]["slug"], "shabbat")
+            self.assertEqual(manifest["tractates"][0]["file"], "texts/shabbat.json")
             with zipfile.ZipFile(output) as archive:
                 self.assertIn("ATTRIBUTION.txt", archive.namelist())
                 self.assertIn("manifest.json", archive.namelist())
