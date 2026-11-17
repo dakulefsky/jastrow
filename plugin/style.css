@@ -329,3 +329,6 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:0;box-sha
 /* Context carried from an in-reader lookup and its evidence-based recommendation. */
 .reader-origin{margin:.25rem 0 1rem;padding:.45rem .7rem;border-inline-start:3px solid var(--color-accent);background:var(--color-surface-container);color:var(--color-muted);font:.76rem/1.5 var(--ui)}
 .context-recommended{display:inline-block;margin:0 0 .45rem;padding:.12rem .48rem;border-radius:var(--radius-sm);background:var(--color-surface-container);color:var(--color-primary);font:700 .68rem/1.4 var(--ui)}
+
+/* Match the clearer definition hierarchy introduced in the Hebrew dictionary. */
+.meaning-text,.result-meaning,.source-gloss{font-weight:700}
