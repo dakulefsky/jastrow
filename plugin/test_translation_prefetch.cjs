@@ -5,7 +5,7 @@ const vm=require('node:vm');
 
 async function run(path){
  const listeners=new Map(),timers=new Map(),calls=[],prepared=[];
- let nextTimer=0,current={currentRef:'Berakhot 2a',currentBook:'Berakhot',currentBookId:'berakhot',currentIndex:0};
+ let nextTimer=0,current={currentRef:'Berakhot 2a:1',currentBook:'Berakhot',currentBookId:'berakhot',currentIndex:0};
  const host={
   on(name,fn){if(!listeners.has(name))listeners.set(name,[]);listeners.get(name).push(fn);},
   async call(method){calls.push(method);if(method==='reader.getCurrentRef')return {success:true,data:{...current}};return {success:true};}
@@ -25,6 +25,9 @@ async function run(path){
  // A location event only arms a timer. It does not begin preparation.
  await emit('reader.current_ref_changed',current);
  const first=onlyTimer();
+ current={currentRef:'Berakhot 2a:2',currentBook:'Berakhot',currentBookId:'berakhot',currentIndex:1};
+ await emit('reader.current_ref_changed',current);
+ assert.equal(onlyTimer(),first,'moving between paragraphs on the same daf must not restart the two-second wait');
  assert.equal(prepared.length,0);
  assert.equal(calls.length,0);
 
