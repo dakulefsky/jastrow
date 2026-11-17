@@ -28,6 +28,10 @@ vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),{window:r
  assert.equal(hebrewRef.book,'ברכות');
  assert.equal(hebrewRef.daf,2);
  assert.equal(hebrewRef.side,'a');
+ const gershayimRef=offline.parseReference('ברכות, דף ט״ו ע״ב','ברכות');
+ assert.equal(gershayimRef.daf,15);
+ assert.equal(gershayimRef.side,'b');
+ assert.equal(gershayimRef.dafIndex,29);
  const first=await offline.getPassage('ברכות, דף ב עמוד א:1',{currentBook:'ברכות'});
  assert.equal(first.scope,'paragraph');
  assert.match(first.text,/first paragraph/);
