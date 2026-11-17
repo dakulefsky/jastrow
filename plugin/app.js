@@ -91,7 +91,7 @@ async function search(word, more=false){
   if(words.length>1){await searchWords(words,serial);return;}
   const normalized=JastrowSearch.normalize(query);
   if(query&&!JastrowSearch.validWord(query)){setStatus('Enter a Hebrew or Aramaic word, or up to 12 words, without English letters or numbers.');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a single Aramaic or Hebrew word to see its dictionary matches.'));currentId=null;return;}
-  let r=JastrowSearch.lookup(index,query,limit,'length',includeJastrow),contextualPreferred=false;activeSefariaEntryIds=new Set();if(window.DictionaryCommunity?.enabled&&r.ids.length>1&&r.kind!=='suggestions'){const ranked=await DictionaryCommunity.rank(query,r.ids.map(id=>index.entries[id]),activeReaderContext?.selection);if(serial!==requestSerial)return;contextualPreferred=ranked.preferenceScope==='contextual';if(ranked.preferredEntryId)r={...r,ids:ranked.entries.map(entry=>index.entries.indexOf(entry))};}if(activeReaderContext?.selection&&r.ids.length&&r.kind!=='suggestions'&&window.SefariaEvidence){const evidence=await SefariaEvidence.lookup(query,r.ids.map(id=>index.entries[id]).filter(entry=>entry&&!entry.rid&&entry.source!=='krupnik'),activeReaderContext.selection);if(serial!==requestSerial)return;activeSefariaEntryIds=new Set(evidence.entryIds);if(evidence.entryIds.length&&!contextualPreferred){const preferred=activeSefariaEntryIds,idFor=DictionaryCommunity?.idFor;r={...r,ids:[...r.ids.filter(id=>preferred.has(idFor?.(index.entries[id])||'')),...r.ids.filter(id=>!preferred.has(idFor?.(index.entries[id])||''))]};}}paintMatches(r,query,serial);
+  let r=JastrowSearch.lookup(index,query,limit,'length',includeJastrow);activeSefariaEntryIds=new Set();if(activeReaderContext?.selection&&r.ids.length&&r.kind!=='suggestions'&&window.SefariaEvidence){const ordered=await SefariaEvidence.reorder(query,r.ids.map(id=>index.entries[id]).filter(entry=>entry&&!entry.rid&&entry.source!=='krupnik'),activeReaderContext.selection);if(serial!==requestSerial)return;activeSefariaEntryIds=new Set(ordered.entryIds);if(ordered.entryIds.length){const preferred=new Set(ordered.entryIds),byId=new Map(r.ids.map(id=>[index.entries[id].r,id]));const matching=r.ids.filter(id=>preferred.has('jastrow:'+index.entries[id].r));r={...r,ids:[...matching,...r.ids.filter(id=>!matching.includes(id))]};}}paintMatches(r,query,serial);
   try{history.replaceState(null,'','#'+new URLSearchParams({word:query}));}catch{}
   if(!normalized){setStatus('Enter an Aramaic or Hebrew word in Hebrew letters.');$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a word in Hebrew letters to begin.'));currentId=null;return;}
   if(!r.ids.length){currentId=null;$('match-count').textContent='0 matches';$('entry').replaceChildren(el('h2','No matching entry'),el('p','Try a different spelling or the dictionary headword. Not every inflected form is indexed.'));setStatus('No entry found for '+query+'.');return;}
@@ -116,53 +116,6 @@ async function searchWords(words,serial){
   await showTranslations(result,word,serial,target,3);
  }));
 }
-function renderCommunityVotes(result,word,target,records=[]){
- if(!window.DictionaryCommunity?.enabled||!result.ids.length)return;
- const active=activeReaderContext&&JastrowSearch.normalize(activeReaderContext.word)===JastrowSearch.normalize(word)?activeReaderContext.selection:null;
- const contextual=!!(active&&window.DictionaryCommunity.hasContext?.(active));
- const panel=el('section',undefined,'community-feedback');
- const heading=el('div',undefined,'community-feedback-heading');
- heading.append(el('span','COMMUNITY CONTRIBUTION','community-feedback-kicker'));
- heading.append(el('h3',contextual?'Which entry fits this use?':'Which meaning is generally best?','community-feedback-label'));
- heading.append(el('p',contextual?'“Fits here” helps learners in similar contexts. “Prefer generally” changes the broad dictionary preference.':'This lookup has no available surrounding text. A general vote affects the broad dictionary preference.','community-feedback-description'));
- panel.append(heading);
- const options=el('div',undefined,'community-vote-options');
- for(const id of result.ids.slice(0,12)){
-  const meta=index.entries[id],record=records.find(item=>item.id===id),preview=record?.meanings?.find(item=>item.text)?.text||'';
-  const source=meta.source==='krupnik'?'Krupnik & Silbermann':'Jastrow';
-  const card=el('div',undefined,'community-vote-card');
-  const button=el('button',undefined,'community-vote');
-  button.type='button';button.dir='auto';button.title='Choose '+meta.h+' ('+source+')';button.setAttribute('aria-label','Choose '+meta.h+' from '+source);
-  const main=el('span',undefined,'community-vote-main');
-  main.append(el('strong',meta.h,'community-vote-headword'),el('span',source,'community-vote-source'));
-  button.append(main);
-  if(preview)button.append(el('span',preview.slice(0,90),'community-vote-gloss'));
-  const action=el('span',contextual?'Fits here':'Prefer generally','community-vote-action');button.append(action);
-  const submit=async(scope,control,actionNode)=>{
-   control.disabled=true;const note=panel.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!note.isConnected)panel.append(note);
-   try{
-    const outcome=await DictionaryCommunity.vote(word,meta,{scope,selection:active});
-    if(!outcome.ok&&!outcome.duplicate){note.textContent=outcome.reason==='context_unavailable'?'Nearby text could not be read, so no contextual vote was sent.':outcome.reason==='queue_full'?'Your offline vote queue is full. Reconnect and try again.':outcome.reason==='storage'?'This choice could not be saved on this device.':'This choice could not be recorded. Please try again.';control.disabled=false;return;}
-    note.textContent=outcome.queued?'Saved on this device — it will sync when you’re online.':outcome.ok?(scope==='contextual'?'Thanks — your contextual vote was recorded.':'Thanks — your general preference was recorded.'):'You have already voted for this word in this scope.';
-    control.classList.add('is-selected');if(actionNode)actionNode.textContent='Selected';control.disabled=true;
-   }catch{note.textContent='Something went wrong. Please try again.';control.disabled=false;}
-  };
-  button.onclick=()=>submit(contextual?'contextual':'general',button,action);
-  card.append(button);
-  if(contextual){
-   const general=el('button','Prefer generally','community-vote-general');general.type='button';general.title='Prefer this meaning as the general dictionary meaning';
-   general.onclick=()=>submit('general',general,null);card.append(general);
-  }
-  options.append(card);
- }
- panel.append(options);
- const meanings=target.querySelector('.unified-meanings');if(meanings)target.insertBefore(panel,meanings);else target.append(panel);
-}
-if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-synced',()=>{document.querySelectorAll('.community-vote-status').forEach(node=>{if(node.textContent.includes('Saved on this device'))node.textContent='Your offline vote has now been sent to the community.';});});
-if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',()=>{
- document.querySelectorAll('.community-feedback,.community-vote').forEach(node=>node.remove());
- if(window.Otzaria)for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i})).catch(()=>{});}catch{}}
-});
 async function showTranslations(result,word,serial,target=$('entry'),pageSize=12){
  const panelSerial=entrySerial;
  currentId=null;target.replaceChildren(el('h2',word,'entry-title'));
