@@ -10,7 +10,7 @@ global.fetch=async url=>{
  if(String(url).includes('/api/ref/'))return {ok:true,json:async()=>({is_ref:true,normalized:'Berakhot 2a:1'})};
  if(String(url).includes('/api/v3/texts/'))return {ok:true,json:async()=>({versions:[{
   versionTitle:'William Davidson Edition - English',license:'CC-BY-NC',
-  text:['The discussion is completed. The forest is mentioned elsewhere.']
+  text:['The completion of the discussion. The forest is mentioned elsewhere.']
  }]})};
  throw Error('Unexpected URL '+url);
 };
