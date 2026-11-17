@@ -61,6 +61,8 @@ jobs:
           node test_phrases.cjs
           node test_unified.cjs
           node test_quick.cjs
+          node --check plugin/sefaria-evidence.js
+          node plugin/test_sefaria_evidence.cjs
       - name: Test consistent student lookup in Chromium
         run: |
           npm install --no-save playwright
@@ -111,6 +113,7 @@ jobs:
           node hebrew/test.cjs
           node hebrew/test_host.cjs
           node hebrew/test_quick.cjs
+          node --check hebrew/plugin/sefaria-evidence.js
       - name: Check Hebrew interface in Chromium
         env:
           HEBREW_STORE_SCREENSHOT: hebrew-store.png
