@@ -73,13 +73,22 @@
   return prefix&&ending?'prefixed form; possible inflected form':ending?'inflected form':prefix?'prefixed form':false;
  }
  async function captureReaderContext(selection){
-  const context={...(selection&&typeof selection==='object'?selection:{})};
-  try{
-   const response=await root.Otzaria.call('reader.getCurrentRef');
-   if(response?.success&&response.data){
-    for(const [key,value] of Object.entries(response.data))if(context[key]===undefined||context[key]===null||context[key]==='')context[key]=value;
-   }
-  }catch{}
+  const outer=selection&&typeof selection==='object'?selection:{};
+  const nested=outer.selection&&typeof outer.selection==='object'?outer.selection:outer;
+  const context={...nested};
+  for(const key of ['currentRef','currentTitle','currentBook','currentBookId','sourceRange','renderedRange','sections']){
+   if((context[key]===undefined||context[key]===null||context[key]==='')&&outer[key]!==undefined)context[key]=outer[key];
+  }
+  const hasReference=!!(context.currentRef||context.sourceRange?.ref||context.sourceRange?.currentRef||
+   context.renderedRange?.ref||context.sections?.[0]?.sourceRange?.ref||context.currentTitle||context.reference);
+  if(!hasReference&&selection&&typeof selection==='object'){
+   try{
+    const response=await root.Otzaria.call('reader.getCurrentRef');
+    if(response?.success&&response.data){
+     for(const [key,value] of Object.entries(response.data))if(context[key]===undefined||context[key]===null||context[key]==='')context[key]=value;
+    }
+   }catch{}
+  }
   return context;
  }
  async function show(word,selection){
@@ -107,7 +116,7 @@
  root.DictionaryQuick={results,meanings,message,show,previewCandidates};
  if(root.Otzaria)root.Otzaria.on('reader.context_menu_item_clicked',async p=>{
   const word=root.JastrowContext.selectionText(p);
-  if(p.itemId==='jastrow-lookup'){await show(word,p.selection);return;}
+  if(p.itemId==='jastrow-lookup'){await show(word,p);return;}
 
  });
 })(typeof window==='undefined'?globalThis:window);
