@@ -72,6 +72,9 @@ jobs:
           node test_phrases.cjs
           node test_unified.cjs
           node test_quick.cjs
+          node test_mesorat_context.cjs
+          node --check plugin/mesores.js
+          node --check hebrew/plugin/mesores.js
           node --check plugin/sefaria-offline.js
           node --check hebrew/plugin/sefaria-offline.js
           node --check plugin/sefaria-evidence.js
