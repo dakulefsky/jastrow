@@ -90,6 +90,20 @@
   while(cache.size>32)cache.delete(cache.keys().next().value);
   try{const result=await promise;if(result===null){cache.delete(key);return [];}return result;}catch{cache.delete(key);return [];}
  }
+ function containsPhrase(text,word){
+  const query=tokenize(word);if(!query.length)return false;
+  const tokens=tokenize(text);
+  for(let i=0;i<=tokens.length-query.length;i++){
+   let exact=true;for(let j=0;j<query.length;j++)if(tokens[i+j]!==query[j]){exact=false;break;}
+   if(exact)return true;
+  }
+  return false;
+ }
+ async function find(selection,word){
+  if(!word||!tokenize(word).length)return [];
+  const passages=await passagesFor(selection);
+  return passages.filter(passage=>containsPhrase(passage.text,word));
+ }
  // Use only local translation evidence from a Mesores-linked passage.
  // A parallel clue is accepted only when the selected word occurs once there,
  // one candidate is uniquely supported, and every relevant linked passage agrees.
@@ -134,7 +148,7 @@
   return preferences.every(id=>id===winner)?{preferredEntryId:winner,occurrences:relevantPassages}:null;
  }
 
- const api={propagatedPreference};
+ const api={connectionType:CONNECTION_TYPE,tokenize,find,propagatedPreference};
  root.MesoresHaShas=api;
  if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window==='undefined'?globalThis:window);
