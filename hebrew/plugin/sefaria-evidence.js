@@ -78,7 +78,7 @@
   const ref=await translationReference(selection);
   if(!ref)return {matches:[],reason:'no_reference'};
   const candidateKey=candidates.map(candidate=>String(candidate?.id||'')+'='+String(candidate?.text||'')).join('|');
-  const key=ref.toLowerCase().replace(/\s+/g,' ').trim()+'|'+stripMarks(word)+'|'+candidateKey;
+  const key=[ref.toLowerCase().replace(/\s+/g,' ').trim(),selection?.currentBookId||'',selection?.currentBook||'',stripMarks(word),candidateKey].join('|');
   const cached=translationCache.get(key);
   if(cached&&cached.expires>Date.now())return cached.value;
   try{
