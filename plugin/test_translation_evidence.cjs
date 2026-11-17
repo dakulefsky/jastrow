@@ -38,8 +38,12 @@ global.fetch=async url=>{
  assert.equal(noMatch.reason,'no_candidate_wording_found');
  const englishApp=fs.readFileSync(path.join(__dirname,'app.js'),'utf8');
  const hebrewApp=fs.readFileSync(path.join(__dirname,'../hebrew/plugin/app.js'),'utf8');
+ const englishQuick=fs.readFileSync(path.join(__dirname,'quick-lookup.js'),'utf8');
+ const hebrewQuick=fs.readFileSync(path.join(__dirname,'../hebrew/plugin/quick-lookup.js'),'utf8');
  assert(englishApp.includes('DictionaryMeanings.merge(records,word)')&&englishApp.includes('Steinsaltz translation cross-check'),'full English dictionary view must show candidate-level translation evidence');
  assert(hebrewApp.includes("g.items.map(({p})=>p.english||'')")&&hebrewApp.includes('translationMatches.get(String(groupIndex))'),'full Hebrew dictionary view must compare each Krupnik meaning using its original English gloss');
+ assert(englishQuick.includes('Steinsaltz wording:')&&englishQuick.includes('item.translationPhrase'),'English right-click results must show the actual matching translation wording');
+ assert(hebrewQuick.includes('הניסוח בתרגום סטיינזלץ:')&&hebrewQuick.includes('x.translationPhrase'),'Hebrew right-click results must show the actual matching translation wording');
  delete require.cache[require.resolve(file)];
  let deniedFetches=0;
  global.Otzaria={call:async method=>method==='app.getConnectivity'?{success:true,data:{isOnline:true}}:{success:true,data:{permissions:[]}}};
