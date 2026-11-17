@@ -3,8 +3,8 @@ const assert=require('node:assert/strict');
 const path=require('node:path');
 const file=path.join(__dirname,'sefaria-evidence.js');
 delete require.cache[require.resolve(file)];
-let localReads=0,hostCalls=0,networkCalls=0;
-global.SefariaOfflineTranslation={getPassage:async(ref,selection)=>{
+let localReads=0,hostCalls=0,networkCalls=0,prepared=false;
+global.SefariaOfflineTranslation={isDafPrepared:()=>prepared,getPassage:async(ref,selection)=>{
  localReads++;
  assert.equal(ref,'ברכות, דף ב');
  if(selection.currentBook)assert.equal(selection.currentBook,'ברכות');
@@ -16,6 +16,11 @@ global.fetch=async()=>{networkCalls++;throw Error('no runtime network requests a
 
 (async()=>{
  const evidence=require(file);
+ const cold=await evidence.compareTranslation('אָמַר',[{id:'law',text:'law'}],
+  {currentRef:'ברכות, דף ב',currentBook:'ברכות'},{preparedOnly:true});
+ assert.equal(cold.reason,'not_prepared');
+ assert.equal(localReads,0,'quick lookup must not trigger a cold tractate load');
+ prepared=true;
  const result=await evidence.compareTranslation('אָמַר',[{id:'law',text:'law'},{id:'complete',text:'complete'}],
   {currentRef:'ברכות, דף ב',currentBook:'ברכות'});
  assert.equal(result.source,'offline');
