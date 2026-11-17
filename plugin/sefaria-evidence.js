@@ -163,21 +163,35 @@
  }
  const STOP_WORDS=new Set(('a an the and or of to in on at by for from with without as is are was were be been being do does did have has had it its this that these those he she they we you I his her their our your who which what when where how very more most some any all each every other same such into onto over under up down out off not no yes can could may might must shall should will would').toLowerCase().split(/\s+/));
  function tokenForms(word){
-  const stem=stemEnglish(word),forms=new Set([word,stem]);
-  // English past/continuous forms often drop a final silent e (make/making,
-  // complete/completed). Accept that single predictable restoration only.
-  if(stem.length>=3&&!stem.endsWith('e'))forms.add(stem+'e');
+  const forms=new Set([word]);
+  if(IRREGULAR[word])forms.add(IRREGULAR[word]);
+  for(const suffix of ['ing','ed']){
+   if(word.endsWith(suffix)&&word.length>suffix.length+2){
+    let stem=word.slice(0,-suffix.length),doubled=false;
+    if(stem.length>2&&stem.at(-1)===stem.at(-2)){stem=stem.slice(0,-1);doubled=true;}
+    forms.add(stem);
+    // Restore a dropped silent e only when the spelling did not double
+    // its final consonant (make/making, hope/hoped; not hop/hopping).
+    if(!doubled&&/[bcdfghjklmnpqrstvwxyz]$/.test(stem))forms.add(stem+'e');
+   }
+  }
+  if(word.endsWith('ies')&&word.length>4)forms.add(word.slice(0,-3)+'y');
+  if(word.endsWith('es')&&word.length>4&&/(s|x|z|ch|sh)es$/.test(word))forms.add(word.slice(0,-2));
+  if(word.endsWith('s')&&!/(ss|us|is)$/.test(word)&&word.length>3)forms.add(word.slice(0,-1));
   return forms;
  }
  function tokenMatch(a,b){
   const left=tokenForms(a),right=tokenForms(b);
   return [...left].some(value=>right.has(value));
  }
- function phraseInText(phrase,text){
-  if(!phrase||!text)return false;
+ function findPhraseMatch(phrase,text){
+  if(!phrase||!text)return null;
   const words=phrase.split(' '),haystack=text.split(' ');
-  if(words.length===1&&(STOP_WORDS.has(words[0])||words[0].length<3))return false;
-  return haystack.some((_,i)=>i+words.length<=haystack.length&&words.every((word,j)=>tokenMatch(word,haystack[i+j])));
+  if(words.length===1&&(STOP_WORDS.has(words[0])||words[0].length<3))return null;
+  for(let i=0;i+words.length<=haystack.length;i++){
+   if(words.every((word,j)=>tokenMatch(word,haystack[i+j])))return haystack.slice(i,i+words.length).join(' ');
+  }
+  return null;
  }
 
  function translationReference(selection){
@@ -212,8 +226,9 @@
    if(!passage)return {matches:[],reason:'empty_translation',license};
    const matches=[];
    for(const candidate of candidates){
-    const matched=candidatePhrases(candidate.text).find(phrase=>phraseInText(phrase,passage));
-    if(matched)matches.push({id:String(candidate.id),matchedPhrase:matched,matchType:matched.includes(' ')?'phrase':'word'});
+    const matched=candidatePhrases(candidate.text).map(phrase=>({candidatePhrase:phrase,passagePhrase:findPhraseMatch(phrase,passage)})).find(item=>item.passagePhrase);
+    if(matched)matches.push({id:String(candidate.id),matchedPhrase:matched.passagePhrase,candidatePhrase:matched.candidatePhrase,
+     matchType:matched.candidatePhrase===matched.passagePhrase?'exact':matched.candidatePhrase.includes(' ')?'inflected_phrase':'inflected_word'});
    }
    const value={matches,reason:matches.length?'candidate_wording_found':'no_candidate_wording_found',
     reference:ref,canonicalReference:canonical,versionTitle:TRANSLATION_VERSION,license,scope:/[:.]\d+$/.test(canonical)?'paragraph':'daf'};
