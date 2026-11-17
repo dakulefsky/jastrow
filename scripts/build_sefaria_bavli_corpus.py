@@ -43,7 +43,7 @@ def selected_bavli_entries(entries: list[dict[str, Any]]) -> list[dict[str, Any]
 
 
 def normalize_license(value: Any) -> str:
-    return re.sub(r"\\s+", " ", str(value or "").strip()).upper()
+    return re.sub(r"\s+", " ", str(value or "").strip()).upper()
 
 
 def has_text(value: Any) -> bool:
