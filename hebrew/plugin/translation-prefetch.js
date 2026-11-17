@@ -12,7 +12,7 @@
   const parsed=parsedReference(value,book);
   if(parsed)return (parsed.book||String(book||'')).trim()+' '+parsed.daf+parsed.side;
   const ref=String(value||'').trim();
-  const match=ref.match(/^(.*?\\b\\d+[ab])(?::.*)?$/i);
+  const match=ref.match(/^(.*?\b\d+[ab])(?::.*)?$/i);
   return match?match[1].trim():ref;
  }
  function keyOf(location){
