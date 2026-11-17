@@ -5,7 +5,7 @@ const vm=require('node:vm');
 
 const manifest={
  formatVersion:1,edition:'William Davidson Edition - English',
- tractates:[{title:'Berakhot',heTitle:'ברכות',slug:'berakhot',file:'texts/berakhot.json'}]
+ tractates:[{title:'Berakhot',heTitle:'ברכות',slug:'berakhot',file:'texts/berakhot.js'}]
 };
 const tractate={
  title:'Berakhot',heTitle:'ברכות',versionTitle:'William Davidson Edition - English',
@@ -13,12 +13,18 @@ const tractate={
  text:[[],[],['The first paragraph discusses the law.','The second paragraph discusses a different subject.'],['The next daf contains another discussion.']]
 };
 const calls=[];
-const root={fetch:async url=>{
- calls.push(String(url));
- if(String(url).endsWith('manifest.json'))return {ok:true,json:async()=>manifest};
- if(String(url).endsWith('texts/berakhot.json'))return {ok:true,json:async()=>tractate};
- return {ok:false};
-}};
+const root={
+ document:{
+  createElement(){return {src:'',async:false,onload:null,onerror:null,remove(){}};},
+  head:{appendChild(script){
+   calls.push(String(script.src));
+   if(String(script.src).endsWith('manifest.js'))root.SefariaOfflineTranslationManifest=manifest;
+   else if(String(script.src).endsWith('texts/berakhot.js'))root.SefariaOfflineTranslationData={berakhot:tractate};
+   else{script.onerror?.();return;}
+   script.onload?.();
+  }}
+ }
+};
 vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),{window:root,globalThis:root,console});
 
 (async()=>{
@@ -51,6 +57,6 @@ vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),{window:r
  assert.match(next.text,/first paragraph/);
  assert.match(next.text,/next daf/);
  assert.equal(calls.filter(x=>x.endsWith('texts/berakhot.json')).length,1,'tractate JSON should stay cached after first load');
- assert.equal(calls.filter(x=>x.endsWith('manifest.json')).length,1,'manifest should stay cached');
+ assert.equal(calls.filter(x=>x.endsWith('manifest.js')).length,1,'manifest should stay cached');
  console.log('Offline Bavli passage tests passed');
 })().catch(error=>{console.error(error);process.exitCode=1;});
