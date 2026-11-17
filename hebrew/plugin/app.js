@@ -24,18 +24,23 @@ async function search(q,record=true){const serial=++searchSerial;lastSearched=St
  for(const e of records)for(const p of e.parts){const text=p.meaning||p.text,key=[HebrewLookup.normalize(e.word),p.label.replace(/\b\d+\b/g,''),text].join('|');if(!groups.has(key))groups.set(key,{word:e.word,text,items:[]});groups.get(key).items.push({e,p});}
  const groupList=[...groups.values()];
  const active=activeReaderContext&&HebrewLookup.normalize(activeReaderContext.word)===HebrewLookup.normalize(q)?activeReaderContext.selection:null;
- const translationMatches=new Map();
+ const cardsByGroup=new Map();
+ let number=0;for(const [groupIndex,g] of groupList.entries()){const card=el('article','','meaning-card');card.append(el('span',String(++number),'number'),el('h3',g.word),el('p',g.text));
+ const details=el('details','');details.append(el('summary','הערך המלא ומקורו'));for(const {e,p} of g.items){details.append(el('p',p.text),el('small','קרופניק וזילברמן · '+e.rid+(p.label?' · '+p.label:'')));}card.append(details);out.append(card);cardsByGroup.set(String(groupIndex),card);}
+ // Translation evidence is strictly optional: render the dictionary first and
+ // only add a clue later if this daf was already prepared in the background.
  if(active&&window.SefariaEvidence?.compareTranslation){
   const candidates=groupList.map((g,i)=>({id:String(i),text:[...new Set(g.items.map(({p})=>p.english||'').filter(Boolean))].join('; ')})).filter(candidate=>candidate.text);
   if(candidates.length){
-   const evidence=await SefariaEvidence.compareTranslation(q,candidates,active);
-   if(serial!==searchSerial)return;
-   for(const match of evidence.matches||[])translationMatches.set(match.id,{...match,scope:evidence.scope});
+   SefariaEvidence.compareTranslation(q,candidates,active,{preparedOnly:true}).then(evidence=>{
+    if(serial!==searchSerial)return;
+    for(const match of evidence.matches||[]){
+     const card=cardsByGroup.get(match.id);if(!card)continue;
+     card.append(el('small','ניסוח מקביל מופיע בתרגום סטיינזלץ: “'+match.matchedPhrase+'”'+(evidence.scope==='paragraph'?' · פסקה זו':' · דף זה'),'translation-evidence-note'));
+    }
+   }).catch(()=>{});
   }
  }
- let number=0;for(const [groupIndex,g] of groupList.entries()){const card=el('article','','meaning-card');card.append(el('span',String(++number),'number'),el('h3',g.word),el('p',g.text));
- const translationMatch=translationMatches.get(String(groupIndex));
- if(translationMatch){card.append(el('small','ניסוח מקביל מופיע בתרגום סטיינזלץ: “'+translationMatch.matchedPhrase+'”'+(translationMatch.scope==='paragraph'?' · פסקה זו':' · דף זה'),'translation-evidence-note'));}const details=el('details','');details.append(el('summary','הערך המלא ומקורו'));for(const {e,p} of g.items){details.append(el('p',p.text),el('small','קרופניק וזילברמן · '+e.rid+(p.label?' · '+p.label:'')));}card.append(details);out.append(card);}
 }
 $('form').onsubmit=e=>{e.preventDefault();search($('query').value);};$('clear').onclick=()=>{search('');$('query').focus();};
 $('selected').onclick=async()=>{try{const r=await Otzaria.call('reader.getSelection');const text=HebrewLookup.selectionText(r?.data);if(r?.success&&text){activeReaderContext={word:text,selection:r.data||null};search(text);}else $('status').textContent='יש לבחור מילה בטקסט תחילה.';}catch{$('status').textContent='לא ניתן לקרוא את הבחירה. אפשר להקליד בשדה החיפוש.';}};
