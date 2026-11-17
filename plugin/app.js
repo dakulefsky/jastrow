@@ -116,9 +116,23 @@ async function searchWords(words,serial){
   await showTranslations(result,word,serial,target,3);
  }));
 }
+function readerOriginLabel(selection){
+ const ref=selection?.currentRef||selection?.sourceRange?.ref||selection?.sourceRange?.currentRef||selection?.renderedRange?.ref||selection?.sections?.[0]?.sourceRange?.ref||selection?.currentTitle||selection?.reference||'';
+ const parsed=window.SefariaOfflineTranslation?.parseReference?.(ref,selection?.currentBook);
+ if(parsed?.daf){
+  const book=parsed.book||selection?.currentBook||'';
+  const side=parsed.side==='a'?'Amud Aleph':parsed.side==='b'?'Amud Beis':'';
+  return ['From the daf:',book?' '+book:'','Daf '+parsed.daf,side].filter(Boolean).join(' · ');
+ }
+ const fallback=selection?.currentTitle||selection?.currentRef||selection?.reference||'';
+ return fallback?'From: '+fallback:'';
+}
 async function showTranslations(result,word,serial,target=$('entry'),pageSize=12){
  const panelSerial=entrySerial;
+ const active=activeReaderContext&&JastrowSearch.normalize(activeReaderContext.word)===JastrowSearch.normalize(word)?activeReaderContext.selection:null;
  currentId=null;target.replaceChildren(el('h2',word,'entry-title'));
+ const origin=active&&readerOriginLabel(active);
+ if(origin)target.append(el('p',origin,'reader-origin'));
  target.dataset.matchKind=result.kind;
  if(['prefixed form','inflected form'].includes(result.kind)){
    const analyses=[...new Set(result.prefixMatches.map(m=>m.label?m.base+' ('+m.label+')':m.prefix+' + '+m.base))];
@@ -131,20 +145,23 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
  if(serial!==requestSerial||panelSerial!==entrySerial)return;
  const expanded=items.flat(),records=expanded.filter(x=>!x.error);
  target.append(DictionaryMeanings.render(records,word,result.kind==='phrase'?index.phraseNotes:{}));
- const active=activeReaderContext&&JastrowSearch.normalize(activeReaderContext.word)===JastrowSearch.normalize(word)?activeReaderContext.selection:null;
  if(active&&window.SefariaEvidence?.compareTranslation){
   const candidates=DictionaryMeanings.merge(records,word).map((group,i)=>({id:String(i),text:group.text}));
-  const evidence=await SefariaEvidence.compareTranslation(word,candidates,active,{preparedOnly:true});
+  const evidence=await SefariaEvidence.compareTranslation(word,candidates,active,{preparedOnly:false});
   if(serial!==requestSerial||panelSerial!==entrySerial)return;
   const matches=new Map((evidence.matches||[]).map(item=>[item.id,item]));
   if(matches.size){
-   const panel=el('section',undefined,'translation-evidence');
-   panel.append(el('h3','Steinsaltz translation cross-check','translation-evidence-title'));
-   panel.append(el('p','This candidate wording also appears in the selected passage’s translation. It is supporting evidence, not proof of the meaning.','translation-evidence-note'));
-   const list=el('ul');
-   candidates.forEach((candidate,i)=>{const match=matches.get(String(i));if(match){const line=el('li');line.append(el('strong',candidate.text),el('small','Wording found: “'+match.matchedPhrase+'”'));list.append(line);}});
-   panel.append(list,el('small',evidence.scope==='paragraph'?'William Davidson Edition — English · selected paragraph':'William Davidson Edition — English · daf'));
-   target.append(panel);
+   const ranked=[...matches.entries()].sort((a,b)=>{
+    const score=value=>value.matchType==='exact'?3:value.matchType==='inflected_phrase'?2:1;
+    return score(b[1])-score(a[1])||Number(a[0])-Number(b[0]);
+   });
+   const bestCard=[...target.querySelectorAll('.unified-meanings > ol > .meaning-card')][Number(ranked[0][0])];
+   if(bestCard){
+    bestCard.parentElement.prepend(bestCard);
+    [...bestCard.parentElement.children].forEach((card,i)=>{const number=card.querySelector('.meaning-number');if(number)number.textContent=String(i+1);});
+    const content=bestCard.querySelector('.meaning-content');
+    if(content)content.prepend(el('span','Recommended','context-recommended'));
+   }
   }
  }
 for(const failed of expanded.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
@@ -195,7 +212,19 @@ document.addEventListener('click',e=>{
 });
 $('selection').hidden=true;
 if(window.Otzaria){
- Otzaria.on('ui.messageClicked',p=>{const word=p?.payload?.dictionaryWord;if(typeof word!=='string')return;activeReaderContext=null;search(word);(async()=>{try{const selected=await Otzaria.call('reader.getSelection');const selectedWord=JastrowContext.selectionText(selected?.data);if(JastrowSearch.normalize(query)!==JastrowSearch.normalize(word))return;activeReaderContext=selected?.success&&JastrowSearch.normalize(selectedWord)===JastrowSearch.normalize(word)?{word,selection:selected.data}:null;if(activeReaderContext)search(word,true);}catch{}})();});
+ Otzaria.on('ui.messageClicked',p=>{
+  const word=p?.payload?.dictionaryWord;if(typeof word!=='string')return;
+  const carried=p?.payload?.readerContext;
+  if(carried&&typeof carried==='object'){activeReaderContext={word,selection:carried};search(word);return;}
+  activeReaderContext=null;search(word);
+  (async()=>{try{
+   const selected=await Otzaria.call('reader.getSelection');
+   const selectedWord=JastrowContext.selectionText(selected?.data);
+   if(JastrowSearch.normalize(query)!==JastrowSearch.normalize(word))return;
+   activeReaderContext=selected?.success&&JastrowSearch.normalize(selectedWord)===JastrowSearch.normalize(word)?{word,selection:selected.data}:null;
+   if(activeReaderContext)search(word,true);
+  }catch{} })();
+ });
   Otzaria.on('theme.changed',theme);
   Otzaria.on('plugin.boot',p=>{
     theme(p.theme);$('selection').hidden=false;
@@ -206,9 +235,15 @@ if(window.Otzaria){
       if(missing)$('right-click-state').textContent='For delayed daf preparation and right-click lookup, enable background execution, keep-alive, reading-location/navigation events, and text-selection/context-menu access in Otzaria’s permissions for Aramaic to English Dictionary.';
     }).catch(()=>{});
     $('selection').onclick=async()=>{
-      try{const res=await Otzaria.call('reader.getSelection');
-      const text=JastrowContext.selectionText(res?.data);if(res?.success&&text){activeReaderContext={word:text,selection:res.data||null};search(text);}else setStatus('Select a word in an Otzaria text first, then choose Aramaic → Eng. — Quick result from the context menu.');}
-      catch{setStatus('Could not read the selected word. You can type it in the search field.');}
+      try{
+        const res=await Otzaria.call('reader.getSelection');
+        const text=JastrowContext.selectionText(res?.data);
+        if(res?.success&&text){
+          let location={};try{const current=await Otzaria.call('reader.getCurrentRef');if(current?.success)location=current.data||{};}catch{}
+          activeReaderContext={word:text,selection:{...(res.data||{}),...location}};
+          search(text);
+        }else setStatus('Select a word in an Otzaria text first, then choose Aramaic → Eng. — Quick result from the context menu.');
+      }catch{setStatus('Could not read the selected word. You can type it in the search field.');}
     };
   });
 }
