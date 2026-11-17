@@ -25,11 +25,6 @@
   const result=phrase.ids.length?phrase:S.lookup(index,word,100,'length',false);
   if(['suggestions','invalid','empty'].includes(result.kind))return [];
   let ids=result.ids;
-  if(selection&&root.SefariaEvidence){
-   const entries=ids.map(id=>index.entries[id]).filter(entry=>entry&&!entry.rid&&entry.source!=='krupnik');
-   const evidence=await root.SefariaEvidence.lookup(word,entries,selection);
-   if(evidence.entryIds.length){const preferred=new Set(evidence.entryIds);ids=[...ids.filter(id=>preferred.has('jastrow:'+index.entries[id].r)),...ids.filter(id=>!preferred.has('jastrow:'+index.entries[id].r))];}
-  }
   const records=(await Promise.all(ids.map(id=>root.JastrowReadingView.records(index,id,load,word,{phrase:phrase.ids.length>0,lookupWord:S.matchingQuery(index,result.prefixMatches,id,word)})))).flat();
   const merged=root.DictionaryMeanings.merge(records,word).map(group=>({
    text:group.text,spelling:group.spelling,
