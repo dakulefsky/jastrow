@@ -10,46 +10,14 @@ function recordTrail(word){if(trail[trailPosition]===word)return;trail=trail.sli
 function renderMatches(records,word){
  const list=$('matches'),count=$('match-count');if(!list||!count)return;list.replaceChildren();
  const entries=[...new Map(records.map(e=>[e.rid,e])).values()];
- const active=activeReaderContext&&HebrewLookup.normalize(activeReaderContext.word)===HebrewLookup.normalize(word)?activeReaderContext.selection:null;
- const contextual=!!(active&&window.DictionaryCommunity?.hasContext?.(active));
  count.textContent=entries.length+' ערכים';
- if(window.DictionaryCommunity?.enabled&&entries.length){
-  const intro=el('section','','community-feedback community-feedback-he');
-  intro.append(el('span','תרומה לקהילה','community-feedback-kicker'),
-   el('h3',contextual?'איזה ערך מתאים כאן?':'איזו משמעות מתאימה בדרך כלל?','community-feedback-label'),
-   el('p',contextual?'״מתאים כאן״ עוזר ללומדים בהקשרים דומים. ״העדפה כללית״ משפיעה על העדפת המילון הרחבה.':'בחיפוש הזה אין טקסט סמוך זמין. הצבעה כללית משפיעה על העדפת המילון הרחבה.','community-feedback-description'));
-  list.append(intro);
- }
  for(const entry of entries){
-  const row=el('div','','community-match-row');
-  const open=el('button',entry.word,'result');open.type='button';open.dir='rtl';open.onclick=()=>search(entry.word);row.append(open);if(activeSefariaEntryIds.has('krupnik:'+entry.rid))row.append(el('small','התאמה בכותרת מול מיפוי Jastrow של ספריא','sefaria-evidence-note'));
-  if(window.DictionaryCommunity?.enabled){
-   const preview=entry.parts?.map(part=>part.meaning||part.text).find(Boolean)||'';
-   if(preview)row.append(el('small',preview.slice(0,70),'community-match-preview'));
-   const controls=el('div','','community-vote-controls');const vote=el('button',contextual?'מתאים כאן':'העדפה כללית','community-vote');vote.type='button';vote.title='בחירת הערך למילה';
-   vote.setAttribute('aria-label','בחירת הערך '+entry.word+(preview?' — '+preview:''));
-   const submit=async(scope,control)=>{
-    control.disabled=true;const status=row.querySelector('.community-vote-status')||el('small','','community-vote-status');if(!status.isConnected)row.append(status);
-    try{
-     const result=await DictionaryCommunity.vote(word,{rid:entry.rid},{scope,selection:active});
-     if(!result.ok&&!result.duplicate){status.textContent=result.reason==='context_unavailable'?'לא ניתן לקרוא את המילים שסביב הבחירה, ולכן לא נשלחה הצבעה הקשרית.':result.reason==='queue_full'?'תור הבחירות הלא־מקוונות מלא. יש להתחבר לרשת ולנסות שוב.':result.reason==='storage'?'לא ניתן לשמור את הבחירה במכשיר.':'לא ניתן לשמור את הבחירה. אפשר לנסות שוב.';control.disabled=false;return;}
-     status.textContent=result.queued?'הבחירה נשמרה במכשיר ותישלח כשיהיה חיבור לרשת.':result.ok?(scope==='contextual'?'תודה, ההצבעה ההקשרית נשמרה.':'תודה, ההעדפה הכללית נשמרה.'):'כבר הצבעת עבור המילה הזאת בהיקף הזה.';
-     control.textContent='נבחר';control.classList.add('is-selected');control.disabled=true;
-    }catch{status.textContent='אירעה שגיאה. אפשר לנסות שוב.';control.disabled=false;}
-   };
-   vote.onclick=()=>submit(contextual?'contextual':'general',vote);
-   vote.classList.add('community-vote-compact');controls.append(vote);
-   if(contextual){const general=el('button','העדפה כללית','community-vote-general');general.type='button';general.title='קביעת העדפה כללית למילה';general.onclick=()=>submit('general',general);controls.append(general);}
-   row.append(controls);
-  }
+  const row=el('div','','match-row');
+  const open=el('button',entry.word,'result');open.type='button';open.dir='rtl';open.onclick=()=>search(entry.word);row.append(open);
+  if(activeSefariaEntryIds.has('krupnik:'+entry.rid))row.append(el('small','התאמה בכותרת מול מיפוי Jastrow של ספריא','sefaria-evidence-note'));
   list.append(row);
  }
 }
-if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-synced',()=>{document.querySelectorAll('.community-vote-status').forEach(node=>{if(node.textContent.includes('נשמרה במכשיר'))node.textContent='ההצבעה נשלחה כעת לקהילה.';});});
-if(typeof window.addEventListener==='function')window.addEventListener('dictionary-community-disabled',()=>{
- document.querySelectorAll('.community-feedback,.community-vote,.community-vote-status,.community-match-preview').forEach(node=>node.remove());
- if(window.Otzaria)for(let i=0;i<3;i++){try{Promise.resolve(Otzaria.call('reader.removeContextMenuItem',{id:'aramaic-hebrew-community-vote-'+i})).catch(()=>{});}catch{}}
-});
 let lastSearched='',searchSerial=0;
 async function search(q,record=true){const serial=++searchSerial;lastSearched=String(q);if(activeReaderContext&&HebrewLookup.normalize(String(q))!==HebrewLookup.normalize(activeReaderContext.word))activeReaderContext=null;$('query').value=q;const out=$('results');out.replaceChildren();$('clear').hidden=!q;if(!q.trim()){renderMatches([],'');$('status').textContent='';return;}if(String(q).trim().toLowerCase()==='who created this?'){renderMatches([],'');out.append(el('p','Daniel Avrahom','creator-easter-egg'));$('status').textContent='';return;}let records=HebrewLookup.lookup(q);if(window.DictionaryCommunity?.enabled&&records.length>1){const ranked=await DictionaryCommunity.rank(q,records.map(e=>({rid:e.rid})),activeReaderContext?.selection);if(serial!==searchSerial)return;if(ranked.preferredEntryId){const order=new Map(ranked.entries.map((e,i)=>[e.rid,i]));records=[...records].sort((a,b)=>(order.get(a.rid)??999)-(order.get(b.rid)??999));}}activeSefariaEntryIds=new Set();if(activeReaderContext?.selection&&records.length&&window.SefariaEvidence){const evidence=await SefariaEvidence.lookup(q,records,activeReaderContext.selection);if(serial!==searchSerial)return;activeSefariaEntryIds=new Set(evidence.entryIds);}renderMatches(records,q);$('status').textContent=records.length?'':!HebrewLookup.valid(q)?'יש להזין מילה או ביטוי באותיות עבריות.':'לא נמצא ערך למילה או לביטוי זה.';if(!records.length)return;if(record){recordTrail(q);rememberLookup(q);}
  out.append(el('h2',q,'query-title'));const formMatch=records.find(e=>e.matchedForm);if(formMatch){const note=el('p','זוהתה צורה נטויה; הערך הבסיסי במילון: '+formMatch.word,'form-attestation');out.append(note);}const groups=new Map();
