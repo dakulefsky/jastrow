@@ -63,8 +63,10 @@
   const manifest=await getManifest();
   const bookKey=normalizeName(parsed.book),currentBookKey=normalizeName(selection?.currentBook);
   const meta=manifest.tractates.find(item=>{
-   const names=[item.title,item.heTitle,item.slug].map(normalizeName);
-   return names.includes(bookKey)||(currentBookKey&&names.includes(currentBookKey));
+   const names=[item.title,item.heTitle,item.slug].map(normalizeName).filter(Boolean);
+   const matches=name=>name===bookKey||name===currentBookKey||
+    (bookKey&&bookKey.endsWith(' '+name))||(currentBookKey&&currentBookKey.endsWith(' '+name));
+   return names.some(matches);
   });
   if(!meta)return {text:'',reason:'tractate_not_in_offline_corpus',reference:parsed.ref};
   const data=await loadTractate(meta);
