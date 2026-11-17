@@ -34,7 +34,7 @@
  async function meanings(word,selection){
   const records=root.HebrewLookup.lookup(word),seen=new Set(),items=[];
   for(const entry of records)for(const part of entry.parts){
-   const text=part.meaning||part.text,key=[root.HebrewLookup.normalize(entry.word),part.label.replace(/\\b\\d+\\b/g,''),text].join('|');
+   const text=part.meaning||part.text,key=[root.HebrewLookup.normalize(entry.word),part.label.replace(/\b\d+\b/g,''),text].join('|');
    if(!seen.has(key)){seen.add(key);items.push({text,entry,englishGloss:part.english||''});}
   }
   if(selection&&root.SefariaEvidence?.compareTranslation){
