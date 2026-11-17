@@ -325,3 +325,7 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:0;box-sha
 .translation-evidence li small{display:block;color:var(--color-muted,var(--color-muted));font-size:.82rem}
 .translation-evidence>small{display:block;margin-top:.45rem;color:var(--color-muted,var(--color-muted));font-size:.78rem}
 .translation-evidence-note{display:block;margin:.45rem 0;padding:.4rem .6rem;border-inline-start:3px solid var(--color-accent,var(--color-accent));background:var(--color-surface-container,var(--color-surface));color:var(--color-muted,var(--color-muted));font-size:.86rem;line-height:1.45}
+
+/* Context carried from an in-reader lookup and its evidence-based recommendation. */
+.reader-origin{margin:.25rem 0 1rem;padding:.45rem .7rem;border-inline-start:3px solid var(--color-accent);background:var(--color-surface-container);color:var(--color-muted);font:.76rem/1.5 var(--ui)}
+.context-recommended{display:inline-block;margin:0 0 .45rem;padding:.12rem .48rem;border-radius:var(--radius-sm);background:var(--color-surface-container);color:var(--color-primary);font:700 .68rem/1.4 var(--ui)}
