@@ -24,14 +24,21 @@
   }
   const result=phrase.ids.length?phrase:S.lookup(index,word,100,'length',false);
   if(['suggestions','invalid','empty'].includes(result.kind))return [];
-  let ids=result.ids,communityPreferred=false,contextualPreferred=false;
+  let ids=result.ids,communityPreferred=false,contextualPreferred=false,generalRanked=null;
   if(root.DictionaryCommunity?.enabled&&ids.length>1){
-   const ranked=await root.DictionaryCommunity.rank(word,ids.map(id=>index.entries[id]),selection);
-   if(ranked.preferredEntryId){ids=ranked.entries.map(entry=>index.entries.indexOf(entry));contextualPreferred=ranked.preferenceScope==='contextual';communityPreferred=contextualPreferred;}
-   if(!contextualPreferred&&selection&&root.MesoresHaShas?.propagatedPreference){
-    const linked=await root.MesoresHaShas.propagatedPreference(selection,word,ids.map(id=>index.entries[id]),root.DictionaryCommunity.rank);
-    if(linked?.preferredEntryId){ids.sort((a,b)=>{const aid=root.DictionaryCommunity.idFor(index.entries[a]),bid=root.DictionaryCommunity.idFor(index.entries[b]);return aid===linked.preferredEntryId?-1:bid===linked.preferredEntryId?1:0;});communityPreferred=true;}
-   }
+   generalRanked=await root.DictionaryCommunity.rank(word,ids.map(id=>index.entries[id]),selection);
+   if(generalRanked.preferredEntryId){ids=generalRanked.entries.map(entry=>index.entries.indexOf(entry));contextualPreferred=generalRanked.preferenceScope==='contextual';communityPreferred=contextualPreferred;}
+  }
+  if(!contextualPreferred&&selection&&root.MesoresHaShas?.propagatedPreference&&root.DictionaryCommunity?.rank){
+   const linked=await root.MesoresHaShas.propagatedPreference(selection,word,ids.map(id=>index.entries[id]),root.DictionaryCommunity.rank);
+   if(linked?.preferredEntryId){ids.sort((a,b)=>{const aid=root.DictionaryCommunity.idFor(index.entries[a]),bid=root.DictionaryCommunity.idFor(index.entries[b]);return aid===linked.preferredEntryId?-1:bid===linked.preferredEntryId?1:0;});contextualPreferred=true;communityPreferred=true;}
+  }
+  if(!contextualPreferred&&selection&&root.SefariaEvidence){
+   const evidence=await root.SefariaEvidence.lookup(word,ids.map(id=>index.entries[id]),selection);
+   if(evidence.entryIds.length){
+    const preferred=new Set(evidence.entryIds),idFor=root.DictionaryCommunity?.idFor;
+    ids=[...ids.filter(id=>preferred.has(idFor?.(index.entries[id])||'')),...ids.filter(id=>!preferred.has(idFor?.(index.entries[id])||''))];
+   }else if(generalRanked?.preferredEntryId)ids=generalRanked.entries.map(entry=>index.entries.indexOf(entry));
   }
   const records=(await Promise.all(ids.map(id=>root.JastrowReadingView.records(index,id,load,word,{phrase:phrase.ids.length>0,lookupWord:S.matchingQuery(index,result.prefixMatches,id,word)})))).flat();
   const merged=root.DictionaryMeanings.merge(records,word).map(group=>({
