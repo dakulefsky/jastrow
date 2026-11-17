@@ -1,7 +1,15 @@
 'use strict';
 const $=id=>document.getElementById(id),el=(tag,text,cls)=>{const n=document.createElement(tag);n.textContent=text;if(cls)n.className=cls;return n;};
 let recentLookups=[],trail=[],trailPosition=-1,activeReaderContext=null;
-function readerSourceLabel(context){const ref=DictionaryQuick.sourceLabel(context);return ref?el('p',ref,'reader-origin'):null;}
+function readerSourceLabel(context){
+ const s=context||{},ranges=[s.sourceRange,s.renderedRange,s.sections?.[0]?.sourceRange,s.sections?.[0]?.renderedRange];let ref='';
+ for(const range of ranges)for(const value of [range?.ref,range?.currentRef,range?.reference])if(typeof value==='string'&&value.trim()){ref=value.trim();break;}
+ if(!ref)ref=[s.currentRef,s.currentTitle,s.reference].find(value=>typeof value==='string'&&value.trim())||'';
+ if(!ref)return null;
+ const parsed=window.SefariaOfflineTranslation?.parseReference?.(ref,s.currentBook);
+ const label=parsed?'מתוך: '+(parsed.book||s.currentBook||'')+' · דף '+parsed.daf+(parsed.side?(parsed.side==='a'?' · עמוד א׳':' · עמוד ב׳'):''):'מתוך: '+ref;
+ return el('p',label,'reader-origin');
+}
 try{const saved=JSON.parse(localStorage.getItem('aramaic-hebrew-student-v1')||'{}');if(Array.isArray(saved.recent))recentLookups=saved.recent.filter(x=>typeof x==='string'&&x.length<=300).slice(0,10);}catch{}
 function renderRecent(){const nav=$('recent-lookups');if(!nav)return;nav.replaceChildren();nav.hidden=!recentLookups.length;if(nav.hidden)return;nav.append(el('span','חיפושים אחרונים','recent-label'));for(const word of recentLookups){const b=el('button',word);b.type='button';b.onclick=()=>search(word);nav.append(b);}const clear=el('button','ניקוי','clear-recent');clear.type='button';clear.onclick=()=>{recentLookups=[];saveRecent();renderRecent();};nav.append(clear);}
 function saveRecent(){try{localStorage.setItem('aramaic-hebrew-student-v1',JSON.stringify({recent:recentLookups}));}catch{}}
@@ -29,8 +37,7 @@ async function search(q,record=true,preserveReaderContext=false){const serial=++
  const cardsByGroup=new Map();
  let number=0;for(const [groupIndex,g] of groupList.entries()){const card=el('article','','meaning-card');card.append(el('span',String(++number),'number'),el('h3',g.word));const definition=el('p',g.text,'definition-text');card.append(definition);
  const details=el('details','');details.append(el('summary','הערך המלא ומקורו'));for(const {e,p} of g.items){details.append(el('p',p.text),el('small','קרופניק וזילברמן · '+e.rid+(p.label?' · '+p.label:'')));}card.append(details);out.append(card);cardsByGroup.set(String(groupIndex),card);}
- // Translation evidence is strictly optional: render the dictionary first and
- // only add a clue later if this daf was already prepared in the background.
+ // Render definitions immediately; the full page may load its local passage on demand.
  if(active&&window.SefariaEvidence?.compareTranslation){
   const candidates=groupList.map((g,i)=>({id:String(i),text:[...new Set(g.items.map(({p})=>p.english||'').filter(Boolean))].join('; ')})).filter(candidate=>candidate.text);
   if(candidates.length){
