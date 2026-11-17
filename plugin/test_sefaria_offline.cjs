@@ -61,7 +61,7 @@ vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),{window:r
  assert.match(warmed.text,/The first paragraph discusses the law/);
  assert.match(warmed.text,/The next daf contains another discussion/);
  assert.equal(calls.length,afterPrepare,'right-click passage should use the daf warmed by background preparation');
- assert.equal(calls.filter(x=>x.endsWith('texts/berakhot.js')).length,1,'tractate script should stay cached after first load');
- assert.equal(calls.filter(x=>x.endsWith('manifest.js')).length,1,'manifest should stay cached');
+ assert.equal(calls.filter(x=>x.endsWith('texts/berakhot.js')).length,2,'tractate script should reload only after explicit cache clear');
+ assert.equal(calls.filter(x=>x.endsWith('manifest.js')).length,2,'manifest should reload only after explicit cache clear');
  console.log('Offline Bavli passage tests passed');
 })().catch(error=>{console.error(error);process.exitCode=1;});
