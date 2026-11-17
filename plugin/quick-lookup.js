@@ -35,6 +35,8 @@
    const evidence=await root.SefariaEvidence.compareTranslation(word,merged.map((item,i)=>({id:String(i),text:item.text})),selection,{preparedOnly:true});
    const matched=new Map((evidence.matches||[]).map(item=>[item.id,item]));
    merged.forEach((item,i)=>{const match=matched.get(String(i));if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
+   const score=item=>item.translationMatchType==='exact'?3:item.translationMatchType==='inflected_phrase'?2:item.translationMatchType==='inflected_word'?1:0;
+   merged.sort((a,b)=>score(b)-score(a));
   }
   return merged;
  }
@@ -57,7 +59,7 @@
   const lines=items.slice(0,2).map((item,i)=>{
    if(typeof item==='string')return (i+1)+'. **'+short(item).replace(/\*/g,'')+'**';
    const heading=[item.selectedWord,item.spelling,item.label].filter((s,n,a)=>s&&a.indexOf(s)===n).join(' · ');
-   return (i+1)+'. **'+short(item.text).replace(/\*/g,'')+'**'+(heading?'\n'+heading.replace(/\*/g,''):'')+(item.translationMatch?'\nSteinsaltz wording: “'+item.translationPhrase+'”'+(item.translationScope==='paragraph'?' (this paragraph).':' (this daf).'):'');
+   return (i+1)+'. **'+short(item.text).replace(/\*/g,'')+'**'+(heading?'\n'+heading.replace(/\*/g,''):'')+(item.translationMatch&&i===0?'\n— Recommended':'');
   });
   return [word+(prefixed?' — possible '+(typeof prefixed==='string'?prefixed:'prefixed form'):''),...lines,
    ...(prefixed?['Base-word meanings; check the grammatical form in context.']:[]),
@@ -70,17 +72,28 @@
   const ending=analyses.some(r=>r.kind==='inflected form'||r.prefixMatches?.some(m=>m.suffix!==undefined));
   return prefix&&ending?'prefixed form; possible inflected form':ending?'inflected form':prefix?'prefixed form':false;
  }
+ async function captureReaderContext(selection){
+  const context={...(selection&&typeof selection==='object'?selection:{})};
+  try{
+   const response=await root.Otzaria.call('reader.getCurrentRef');
+   if(response?.success&&response.data){
+    for(const [key,value] of Object.entries(response.data))if(context[key]===undefined||context[key]===null||context[key]==='')context[key]=value;
+   }
+  }catch{}
+  return context;
+ }
  async function show(word,selection){
   const current=++serial;
+  const context=await captureReaderContext(selection);
   if(String(word).trim().toLowerCase()==='who created this?'){
    try{await root.Otzaria.call('ui.showMessage',{message:'Daniel Avrahom'});}catch{console.warn('Quick dictionary lookup unavailable');}
    return;
   }
   try{
-   const items=await results(word,selection);if(current!==serial)return;
+   const items=await results(word,context);if(current!==serial)return;
    if(!items.length){
     if(!root.JastrowSearch.hasSelectionTranslations(root.JASTROW_INDEX,word))return;
-    await root.Otzaria.call('ui.showMessage',{message:word+'\nNo short meaning is available. Click to open the dictionary entry and references.',tapPayload:{dictionaryWord:word},tapOpenPlugin:true});return;
+    await root.Otzaria.call('ui.showMessage',{message:word+'\nNo short meaning is available. Click to open the dictionary entry and references.',tapPayload:{dictionaryWord:word,readerContext:context},tapOpenPlugin:true});return;
    }
    const res=await root.Otzaria.call('ui.showMessage',{message:message(word,items,formKind(word)),tapPayload:{dictionaryWord:word},tapOpenPlugin:true});
    if(res?.success===false)console.warn('Quick dictionary lookup unavailable; use Open dictionary.');
