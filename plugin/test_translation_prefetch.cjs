@@ -22,9 +22,15 @@ async function run(path){
  const fire=async(id)=>{const timer=timers.get(id);assert(timer,'expected timer');timers.delete(id);assert.equal(timer.delay,2000);await timer.fn();};
  const onlyTimer=()=>{assert.equal(timers.size,1);return [...timers.keys()][0];};
 
- // A background worker can start while a daf is already open. plugin.boot
- // must query the active reader and arm the same two-second delay.
+ // The visible dictionary tab must never prepare while the user is
+ // looking at the plugin rather than the Gemara reader.
  current={currentRef:'ברכות, דף א',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:1};
+ await emit('plugin.boot',{app:{runMode:'foreground'}});
+ assert.equal(timers.size,0,'foreground plugin UI must not trigger daf preparation');
+ assert.equal(prepared.length,0);
+
+ // The background worker can start while a daf is already open. It queries
+ // the active reader and arms the same two-second delay.
  await emit('plugin.boot',{app:{runMode:'background'}});
  const bootTimer=onlyTimer();
  assert.equal(prepared.length,0);
