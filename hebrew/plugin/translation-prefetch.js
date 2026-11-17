@@ -3,7 +3,7 @@
  const DELAY_MS=2000;
  const host=root.Otzaria;
  if(!host||typeof host.on!=='function'||typeof host.call!=='function')return;
- let timer=null,generation=0,scheduledKey='',preparedKey='',active=false,isReading=false;
+ let timer=null,generation=0,scheduledKey='',preparedKey='',active=false,isReading=false,backgroundInstance=false;
 
  function parsedReference(value,book){
   try{return root.SefariaOfflineTranslation?.parseReference?.(value,book)||null;}catch{return null;}
@@ -64,13 +64,20 @@
    else cancel();
   }catch{cancel();}
  }
- host.on('plugin.boot',async()=>{active=true;isReading=true;await refresh();});
- host.on('reader.current_ref_changed',schedule);
+ host.on('plugin.boot',async payload=>{
+  backgroundInstance=payload?.app?.runMode==='background';
+  active=backgroundInstance;
+  isReading=backgroundInstance;
+  if(active)await refresh();
+  else cancel();
+ });
+ host.on('reader.current_ref_changed',location=>{if(backgroundInstance)schedule(location);});
  host.on('navigation.changed',payload=>{
+  if(!backgroundInstance)return;
   if(payload?.screen==='reading'){isReading=true;active=true;refresh();}
   else{isReading=false;active=false;cancel();preparedKey='';}
  });
- host.on('plugin.suspended',()=>{active=false;cancel();});
- host.on('plugin.resumed',()=>{active=isReading;if(active)refresh();});
+ host.on('plugin.suspended',()=>{if(!backgroundInstance)return;active=false;cancel();});
+ host.on('plugin.resumed',()=>{if(!backgroundInstance)return;active=isReading;if(active)refresh();});
  root.SefariaDafPrefetch={cancel,refresh,delayMs:DELAY_MS};
 })(typeof window==='undefined'?globalThis:window);
