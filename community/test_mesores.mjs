@@ -54,7 +54,7 @@ const wrongWord=await loaded.api.find(selection,'מנפקא');
 assert.equal(wrongWord.length,0,'substring matches inside a longer word are rejected');
 
 const fallback=await setup({
- links:[{connectionType:'MESORAT_HASHAS',targetTitle:'פסחים',targetLine:5,targetHeRef:'פסחים דף ה'}],
+ links:[{connectionType:'MESORAT_HASHAS',targetTitle:'פסחים',targetLine:5,targetHeRef:'פסחים דף ה',targetIsUserBook:false}],
  items:[{content:'<p>הדין נפקא מינה הכא</p>'}],
  currentRef:{currentBookId:'ברכות',currentIndex:9}
 });
@@ -64,7 +64,7 @@ assert.equal(fallback.calls.find(x=>x.method==='library.getLinks').args.startLin
 
 const unavailable=await setup({
  failMethod:'library.getLinks',
- links:[{connectionType:'MESORAT_HASHAS',targetTitle:'פסחים',targetLine:5,targetHeRef:'פסחים דף ה'}],
+ links:[{connectionType:'MESORAT_HASHAS',targetTitle:'פסחים',targetLine:5,targetHeRef:'פסחים דף ה',targetIsUserBook:false}],
  items:[{content:'<p>הדין נפקא מינה הכא</p>'}]
 });
 assert.equal((await unavailable.api.find(selection,'נפקא')).length,0,'permission and host errors fail closed');
