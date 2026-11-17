@@ -23,7 +23,8 @@ global.fetch=async()=>{networkCalls++;throw Error('no runtime network requests a
  assert.deepEqual(result.matches.map(x=>x.id),['law','complete']);
  assert.equal(localReads,1);
  const fallback=await evidence.compareTranslation('אָמַר',[{id:'law',text:'law'}],{});
- assert.equal(fallback.reason,'no_reference');
+ assert.equal(fallback.reason,'candidate_wording_found');
+ assert.equal(localReads,2,'reader.getCurrentRef should supply the active daf when selection has no reference');
  assert.equal(hostCalls,1);
  assert.equal(networkCalls,0);
  console.log('Offline translation reference tests passed');
