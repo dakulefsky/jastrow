@@ -16,7 +16,7 @@
  function normalizeRef(value){
   return stripMarks(value).replace(/\s+/g,' ').trim().toLowerCase();
  }
- function localHeadword(entry){return entry?.h||entry?.word||entry?.headword||'';}
+ function localHeadwords(entry){return [entry?.h||entry?.word||entry?.headword||'',...(Array.isArray(entry?.alt)?entry.alt:[])].map(normalizeHeadword).filter(Boolean);}
  function localId(entry){
   if(entry?.rid)return 'krupnik:'+entry.rid;
   if(entry?.source==='krupnik')return 'krupnik:'+(entry.r||entry.id||'');
@@ -100,8 +100,8 @@
   if(!associatedHeadwords.length)return {entryIds:[],reference:ref,canonicalReference,reason:'no_passage_association'};
   const wanted=new Set(associatedHeadwords),matched=[];
   for(const entry of entries){
-   const headword=normalizeHeadword(localHeadword(entry)),id=localId(entry);
-   if(id&&headword&&wanted.has(headword))matched.push(id);
+   const headwords=localHeadwords(entry),id=localId(entry);
+   if(id&&headwords.some(headword=>wanted.has(headword)))matched.push(id);
   }
   return {entryIds:[...new Set(matched)],reference:ref,canonicalReference,headwords:associatedHeadwords,
    reason:matched.length?'passage_association':'no_local_headword_match'};
