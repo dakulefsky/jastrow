@@ -25,6 +25,7 @@ class BavliCorpusBuilderTests(unittest.TestCase):
     def test_selects_only_english_william_davidson_bavli(self):
         entries = [
             self.match,
+            {**self.match, "title": "Introductions to the Babylonian Talmud"},
             {**self.match, "title": "Mishnah Shabbat", "categories": ["Mishnah"]},
             {**self.match, "title": "Hebrew Shabbat", "language": "Hebrew"},
             {**self.match, "title": "Other edition", "versionTitle": "Other"},
