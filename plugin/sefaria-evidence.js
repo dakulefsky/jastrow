@@ -24,6 +24,11 @@
  }
  function empty(reason){return {entryIds:[],reference:null,reason:reason||'unavailable'};}
  async function permitted(){
+  if(root.navigator?.onLine===false)return false;
+  try{
+   const connectivity=await root.Otzaria?.call?.('app.getConnectivity',{});
+   if(connectivity?.success&&connectivity.data&&(connectivity.data.isOfflineMode===true||connectivity.data.isOnline===false))return false;
+  }catch{}
   const now=Date.now();
   if(permissionState!==null&&now-permissionCheckedAt<30000)return permissionState;
   permissionCheckedAt=now;
@@ -72,8 +77,8 @@
   if(!ref)return empty('no_reference');
   const cacheKey=normalizeRef(ref)+'|'+stripMarks(word).replace(/\s+/g,'');
   const cached=cache.get(cacheKey);
-  let associatedHeadwords;
-  if(cached&&cached.expires>Date.now())associatedHeadwords=cached.headwords;
+  let associatedHeadwords,canonicalReference;
+  if(cached&&cached.expires>Date.now()){associatedHeadwords=cached.headwords;canonicalReference=cached.canonicalReference;}
   else{
    try{
     const canonicalRef=await resolveReference(ref);
@@ -85,17 +90,18 @@
       Array.isArray(item.refs)&&item.refs.some(itemRef=>normalizeRef(itemRef)===normalizeRef(canonicalRef)))
       .map(item=>normalizeHeadword(item.headword)).filter(Boolean);
     associatedHeadwords=[...new Set(associatedHeadwords)];
-    cache.set(cacheKey,{headwords:associatedHeadwords,expires:Date.now()+CACHE_TTL});
+    canonicalReference=canonicalRef;
+    cache.set(cacheKey,{headwords:associatedHeadwords,canonicalReference,expires:Date.now()+CACHE_TTL});
     while(cache.size>MAX_CACHE)cache.delete(cache.keys().next().value);
    }catch{return empty('request_failed');}
   }
-  if(!associatedHeadwords.length)return {entryIds:[],reference:ref,canonicalReference:null,reason:'no_passage_association'};
+  if(!associatedHeadwords.length)return {entryIds:[],reference:ref,canonicalReference,reason:'no_passage_association'};
   const wanted=new Set(associatedHeadwords),matched=[];
   for(const entry of entries){
    const headword=normalizeHeadword(localHeadword(entry)),id=localId(entry);
    if(id&&headword&&wanted.has(headword))matched.push(id);
   }
-  return {entryIds:[...new Set(matched)],reference:ref,canonicalReference:null,headwords:associatedHeadwords,
+  return {entryIds:[...new Set(matched)],reference:ref,canonicalReference,headwords:associatedHeadwords,
    reason:matched.length?'passage_association':'no_local_headword_match'};
  }
  async function reorder(word,entries,selection){
@@ -105,6 +111,7 @@
   return {...evidence,entries:[...entries.filter(entry=>preferred.has(localId(entry))),...entries.filter(entry=>!preferred.has(localId(entry)))]};
  }
  function clearCache(){cache.clear();refCache.clear();}
+ try{root.Otzaria?.on?.('plugin.permissions_changed',()=>{permissionState=null;permissionCheckedAt=0;});}catch{}
  root.SefariaEvidence={lookup,reorder,normalizeHeadword,normalizeRef,clearCache};
  if(typeof module!=='undefined'&&module.exports)module.exports=root.SefariaEvidence;
 })(typeof window==='undefined'?globalThis:window);
