@@ -120,12 +120,18 @@
    dafReference:meta.title+' '+parsed.daf+(parsed.side||''),tractate:meta.title,
    versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'};
  }
- async function prepareDaf(location){
+ async function prepareDaf(location,shouldContinue){
+  const current=()=>typeof shouldContinue!=='function'||shouldContinue();
   const parsed=parseReference(location?.currentRef,location?.currentBook);
   if(!parsed)return {text:'',reason:'unsupported_reference'};
-  const manifest=await getManifest(),meta=findTractate(manifest,parsed,location);
+  if(!current())return {ready:false,reason:'stale'};
+  const manifest=await getManifest();
+  if(!current())return {ready:false,reason:'stale'};
+  const meta=findTractate(manifest,parsed,location);
   if(!meta)return {text:'',reason:'tractate_not_in_offline_corpus',reference:parsed.ref};
-  const data=await loadTractate(meta),cached=cacheDaf(meta,parsed.daf,data);
+  const data=await loadTractate(meta);
+  if(!current())return {ready:false,reason:'stale'};
+  const cached=cacheDaf(meta,parsed.daf,data);
   return {ready:!!cached.all,scope:'daf',reference:parsed.ref,dafReference:meta.title+' '+parsed.daf,
    tractate:meta.title,versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'};
  }
