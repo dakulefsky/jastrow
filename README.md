@@ -4,7 +4,7 @@ The right-click voting submenu in both dictionaries now uses restrained scholarl
 
 Contextual consensus now excludes an installation when its votes from similarly matching but different passages support competing meanings with nearly equal strength. This prevents ambiguous cross-context evidence from being resolved by arbitrary database row order. Added Worker regression coverage for that case.
 
-The offline reader test now reflects the two-slot menu contract and the actual no-network fallback: without community access, only Quick result is offered; its message opens the full dictionary. English and Hebrew help text now matches the real menu. Existing Mesores HaShas cross-references remain local research aids and do not influence community ranking.
+The offline reader test now reflects the two-slot menu contract and the actual no-network fallback: without community access, only Quick result is offered; its message opens the full dictionary. English and Hebrew help text now matches the real menu. Mesores HaShas remains an internal tool, not a learner-facing panel. The dictionaries may use a linked passage as an additional offline clue only when the selected word occurs exactly once, the bundled English translation uniquely supports one existing meaning in every relevant linked passage, and the result does not conflict with evidence from the current daf. References and excerpts are not displayed, no community vote is created or transmitted, and only outgoing links exposed by Otzaria are available.
 
 # 1.11.9 — design-token polish and race-safe community sync
 
