@@ -2,7 +2,7 @@
 window.JASTROW_CHUNKS=window.JASTROW_CHUNKS||{};
 const index=window.JASTROW_INDEX, $=id=>document.getElementById(id);
 let resultIds=[], currentId=null, query='',limit=60, requestSerial=0, entrySerial=0;
-let includeJastrow=false,activeReaderContext=null;
+let includeJastrow=false,activeReaderContext=null,activeSefariaEntryIds=new Set();
 const chunkPromises=new Map();
 function loadChunk(n){
   if(window.JASTROW_CHUNKS[n])return Promise.resolve(window.JASTROW_CHUNKS[n]);
@@ -74,7 +74,7 @@ function paintMatches(r,word,serial){
  document.body.classList.toggle('single-lookup',r.kind!=='suggestions');
  resultIds=r.ids;$('results').replaceChildren();$('more').hidden=r.total<=limit;
  $('match-count').textContent=r.total?r.total.toLocaleString()+(r.total===1?' match':' matches'):'';
- for(const id of r.ids){const b=el('button',JastrowSearch.displayHeadword(index.entries[id],word),'result');b.dir='rtl';b.dataset.id=id;b.setAttribute('aria-pressed','false');b.onclick=()=>showEntry(id,true,null,word);$('results').append(b);}
+ for(const id of r.ids){const b=el('button',JastrowSearch.displayHeadword(index.entries[id],word),'result');b.dir='rtl';b.dataset.id=id;b.setAttribute('aria-pressed','false');b.onclick=()=>showEntry(id,true,null,word);if(activeSefariaEntryIds.has(DictionaryCommunity?.idFor?.(index.entries[id])||'')){b.classList.add('sefaria-associated');b.append(el('small','Sefaria passage-specific word-form match','sefaria-evidence-note'));}$('results').append(b);}
  $('ranking-note').hidden=r.total<2||r.kind==='suggestions'||$('match-order').value!=='length';
  fillMatchPreviews(r.ids,serial);
 }
@@ -91,7 +91,7 @@ async function search(word, more=false){
   if(words.length>1){await searchWords(words,serial);return;}
   const normalized=JastrowSearch.normalize(query);
   if(query&&!JastrowSearch.validWord(query)){setStatus('Enter a Hebrew or Aramaic word, or up to 12 words, without English letters or numbers.');$('results').replaceChildren();$('more').hidden=true;$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a single Aramaic or Hebrew word to see its dictionary matches.'));currentId=null;return;}
-  let r=JastrowSearch.lookup(index,query,limit,'length',includeJastrow);if(window.DictionaryCommunity?.enabled&&r.ids.length>1&&r.kind!=='suggestions'){const ranked=await DictionaryCommunity.rank(query,r.ids.map(id=>index.entries[id]),activeReaderContext?.selection);if(serial!==requestSerial)return;if(ranked.preferredEntryId)r={...r,ids:ranked.entries.map(entry=>index.entries.indexOf(entry))};}paintMatches(r,query,serial);
+  let r=JastrowSearch.lookup(index,query,limit,'length',includeJastrow),contextualPreferred=false;activeSefariaEntryIds=new Set();if(window.DictionaryCommunity?.enabled&&r.ids.length>1&&r.kind!=='suggestions'){const ranked=await DictionaryCommunity.rank(query,r.ids.map(id=>index.entries[id]),activeReaderContext?.selection);if(serial!==requestSerial)return;contextualPreferred=ranked.preferenceScope==='contextual';if(ranked.preferredEntryId)r={...r,ids:ranked.entries.map(entry=>index.entries.indexOf(entry))};}if(activeReaderContext?.selection&&r.ids.length&&r.kind!=='suggestions'&&window.SefariaEvidence){const evidence=await SefariaEvidence.lookup(query,r.ids.map(id=>index.entries[id]),activeReaderContext.selection);if(serial!==requestSerial)return;activeSefariaEntryIds=new Set(evidence.entryIds);if(evidence.entryIds.length&&!contextualPreferred){const preferred=activeSefariaEntryIds,idFor=DictionaryCommunity?.idFor;r={...r,ids:[...r.ids.filter(id=>preferred.has(idFor?.(index.entries[id])||'')),...r.ids.filter(id=>!preferred.has(idFor?.(index.entries[id])||''))]};}}paintMatches(r,query,serial);
   try{history.replaceState(null,'','#'+new URLSearchParams({word:query}));}catch{}
   if(!normalized){setStatus('Enter an Aramaic or Hebrew word in Hebrew letters.');$('match-count').textContent='';$('entry').replaceChildren(el('p','Enter a word in Hebrew letters to begin.'));currentId=null;return;}
   if(!r.ids.length){currentId=null;$('match-count').textContent='0 matches';$('entry').replaceChildren(el('h2','No matching entry'),el('p','Try a different spelling or the dictionary headword. Not every inflected form is indexed.'));setStatus('No entry found for '+query+'.');return;}
@@ -227,7 +227,7 @@ document.addEventListener('click',e=>{
 });
 $('selection').hidden=true;
 if(window.Otzaria){
- Otzaria.on('ui.messageClicked',p=>{const word=p?.payload?.dictionaryWord;if(typeof word==='string')search(word);});
+ Otzaria.on('ui.messageClicked',async p=>{const word=p?.payload?.dictionaryWord;if(typeof word!=='string')return;try{const selected=await Otzaria.call('reader.getSelection');const selectedWord=JastrowContext.selectionText(selected?.data);activeReaderContext=selected?.success&&JastrowSearch.normalize(selectedWord)===JastrowSearch.normalize(word)?{word,selection:selected.data}:null;}catch{activeReaderContext=null;}search(word);});
   Otzaria.on('theme.changed',theme);
   Otzaria.on('plugin.boot',p=>{
     theme(p.theme);$('selection').hidden=false;
