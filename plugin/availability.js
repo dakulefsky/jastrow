@@ -62,7 +62,7 @@
     }));
     // Mirror Otzaria's own dictionary: keep the native submenu compact, but
     // never hide additional matches without a direct route to the full list.
-    if(items.length>choices.length)children.push({
+    if(items.hasMore===true||items.length>choices.length)children.push({
      id:'jastrow-meaning-more',
      title:'Open full dictionary for more meanings',
      openPlugin:true,
