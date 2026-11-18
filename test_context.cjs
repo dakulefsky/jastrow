@@ -1,6 +1,10 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const manifest=JSON.parse(fs.readFileSync(__dirname+'/plugin/manifest.json'));
-assert(!manifest.contributes.startup.contextMenuItems);assert(manifest.contributes.startup.activationEvents.includes('app.startup'));assert(manifest.contributes.startup.activationEvents.includes('reader.selection_changed'));assert(manifest.contributes.startup.keepAlive);for(const p of ['reader.context_menu','app.run_on_startup','app.background_keep_alive','events.subscribe:reader.selection_changed'])assert(manifest.permissions.includes(p));
+const declaredMenu=manifest.contributes.startup.contextMenuItems?.find(item=>item.id==='jastrow-lookup');
+assert.equal(declaredMenu?.type,'submenu');
+assert.equal(declaredMenu?.children?.[0]?.id,'jastrow-meaning-fallback');
+assert.equal(declaredMenu?.children?.[0]?.openPlugin,true);
+assert.equal(declaredMenu?.children?.[0]?.title,'Open full dictionary');assert(manifest.contributes.startup.activationEvents.includes('app.startup'));assert(manifest.contributes.startup.activationEvents.includes('reader.selection_changed'));assert(manifest.contributes.startup.keepAlive);for(const p of ['reader.context_menu','app.run_on_startup','app.background_keep_alive','events.subscribe:reader.selection_changed'])assert(manifest.permissions.includes(p));
 const ctx={window:{},console};vm.createContext(ctx);for(const f of ['search.js','data/index.js','data/attested-forms.js','data/krupnik-index.js','data/phrases.js','data/inflections.js','context-menu.js'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/'+f,'utf8'),ctx);
 ctx.JastrowSearch=ctx.window.JastrowSearch;ctx.JastrowContext=ctx.window.JastrowContext;
 ctx.DictionaryQuick={captureReaderContext:async selection=>selection,results:async word=>{const items=Array.from({length:word==='תניא'?10:word==='תנן'?8:word==='נפקא מינה'?2:1},(_,i)=>({text:'a concise meaning '+i,spelling:word,entryId:i,...(word==='נפקא מינה'&&i===0?{translationMatch:true,recommended:true,translationPhrase:'practical difference'}:{})}));if(word==='תנן')items.hasMore=true;return items;}};
