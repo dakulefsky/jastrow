@@ -277,7 +277,7 @@ if(window.Otzaria){
           let location={};try{const current=await Otzaria.call('reader.getCurrentRef');if(current?.success)location=current.data||{};}catch{}
           activeReaderContext={word:text,selection:{...(res.data||{}),...location}};
           search(text);
-        }else setStatus('Select a word in an Otzaria text first, then choose Aramaic → Eng. — Quick result from the context menu.');
+        }else setStatus('Select a word in an Otzaria text first, then choose a meaning from the Aramaic → Eng. context menu.');
       }catch{setStatus('Could not read the selected word. You can type it in the search field.');}
     };
   });
