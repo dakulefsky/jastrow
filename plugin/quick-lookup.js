@@ -60,25 +60,6 @@
     const highest=Math.max(...matches.map(matchScore));
     const winners=[...new Set(matches.filter(match=>matchScore(match)===highest).map(match=>String(match.id)))];
     if(winners.length===1)preferredId=winners[0];
-   }else if(evidence.reason==='no_candidate_wording_found'&&root.MesoresHaShas?.propagatedPreference){
-    const preparedRank=async(candidateWord,entries,linkedSelection)=>{
-     if(!root.SefariaEvidence?.compareTranslation)return null;
-     const linkedEvidence=await root.SefariaEvidence.compareTranslation(candidateWord,entries,linkedSelection,{preparedOnly:true});
-     const linkedMatches=Array.isArray(linkedEvidence?.matches)?linkedEvidence.matches:[];
-     if(!linkedMatches.length)return null;
-     const highest=Math.max(...linkedMatches.map(matchScore));
-     const winners=[...new Set(linkedMatches.filter(match=>matchScore(match)===highest).map(match=>String(match.id)))];
-     return winners.length===1?{preferredEntryId:winners[0],preferenceScope:'contextual'}:null;
-    };
-    const mesoresPromise=root.MesoresHaShas.propagatedPreference(selection,word,candidates,preparedRank).catch(()=>null);
-    const parallel=typeof root.setTimeout==='function'
-     ?await new Promise(resolve=>{
-       let settled=false;
-       const timer=root.setTimeout(()=>{if(!settled){settled=true;resolve(null);}},500);
-       Promise.resolve(mesoresPromise).then(value=>{if(!settled){settled=true;root.clearTimeout?.(timer);resolve(value);}},()=>{if(!settled){settled=true;root.clearTimeout?.(timer);resolve(null);}});
-      })
-     :await mesoresPromise;
-    if(parallel?.preferredEntryId)preferredId=String(parallel.preferredEntryId);
    }
    merged.sort((a,b)=>score(b)-score(a));
    if(preferredId){
