@@ -78,17 +78,22 @@
   }
   const suggestionCatalogs=new WeakMap();
   function suggestionMatches(index,prefix){
-    let catalog=suggestionCatalogs.get(index);
-    if(!catalog){
-      catalog=index.entries.map((entry,id)=>({key:normalize(entry.h),id})).filter(item=>item.key);
-      catalog.sort((a,b)=>a.key<b.key?-1:a.key>b.key?1:a.id-b.id);
-      suggestionCatalogs.set(index,catalog);
+    let buckets=suggestionCatalogs.get(index);
+    if(!buckets){
+      buckets=new Map();
+      index.entries.forEach((entry,id)=>{
+        const key=normalize(entry.h);
+        for(let length=1;length<=Math.min(key.length,8);length++){
+          const part=key.slice(0,length);
+          let ids=buckets.get(part);
+          if(!ids){ids=[];buckets.set(part,ids);}
+          ids.push(id);
+        }
+      });
+      suggestionCatalogs.set(index,buckets);
     }
-    let low=0,high=catalog.length;
-    while(low<high){const mid=(low+high)>>>1;if(catalog[mid].key<prefix)low=mid+1;else high=mid;}
-    const ids=[];
-    for(let i=low;i<catalog.length&&catalog[i].key.startsWith(prefix);i++)ids.push(catalog[i].id);
-    return ids.sort((a,b)=>a-b);
+    const candidates=buckets.get(prefix.length<=8?prefix:prefix.slice(0,8))||[];
+    return prefix.length<=8?candidates:candidates.filter(id=>normalize(index.entries[id].h).startsWith(prefix));
   }
   function lookup(index, query, limit=100, order='length',includeJastrow=false){
     if(!validWord(query))return {kind:String(query).trim()?'invalid':'empty',ids:[],total:0};
