@@ -60,6 +60,14 @@
      openPlugin:true,
      param:{dictionaryWord:text,entryId:item.entryId}
     }));
+    // Mirror Otzaria's own dictionary: keep the native submenu compact, but
+    // never hide additional matches without a direct route to the full list.
+    if(items.length>choices.length)children.push({
+     id:'jastrow-meaning-more',
+     title:'Open full dictionary for more meanings',
+     openPlugin:true,
+     param:{dictionaryWord:text,showAll:true}
+    });
     const rendered=JastrowContext.selectionText(selection);
     const variants=[...new Set([rendered,text,JastrowSearch.splitWords(text).map(JastrowSearch.normalize).join(' ')])].filter(value=>value&&value.length<=100);
     const title='Aramaic → Eng. — '+compact(text,72);
