@@ -6,9 +6,10 @@
  const MAX_MENU_MEANINGS=8;
  const compact=(value,max)=>String(value||'').replace(/\s+/g,' ').trim().slice(0,max).replace(/[\s,;:.—-]+$/,'');
  function childTitle(item,word,position){
-  const spelling=[item.selectedWord,item.spelling].filter(Boolean).join(' · ')||word;
+  const selected=item.selectedWord||'',spelling=item.spelling||'';
+  const head=selected&&spelling&&JastrowSearch.normalize(selected)!==JastrowSearch.normalize(spelling)?selected+' · '+spelling:(spelling||selected||word);
   const recommended=position===0&&item.translationMatch===true;
-  let label=spelling+' — '+compact(item.text,recommended?34:56);
+  let label=head+' — '+compact(item.text,recommended?34:56);
   if(recommended){
    label+=' · Recommended';
    if(item.translationPhrase)label+=' · “'+compact(item.translationPhrase,26)+'”';
