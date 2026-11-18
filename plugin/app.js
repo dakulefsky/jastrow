@@ -256,6 +256,9 @@ if(window.Otzaria){
   const selection=p.selection&&typeof p.selection==='object'?p.selection:p;
   const selected=JastrowContext.selectionText(p);
   activeReaderContext=!selected||JastrowSearch.normalize(selected)===JastrowSearch.normalize(word)?{word,selection}:null;
+  // The overflow item deliberately opens the ordinary full result list,
+  // rather than trying to navigate to a single dictionary entry.
+  if(param.showAll===true){search(word);return;}
   const id=Number(param.entryId);
   if(param.entryId!==undefined&&Number.isInteger(id)&&id>=0)showEntry(id,true,null,word);
   else search(word);
