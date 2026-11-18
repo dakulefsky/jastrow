@@ -52,7 +52,7 @@
     const highest=Math.max(...matches.map(matchScore));
     const winners=[...new Set(matches.filter(match=>matchScore(match)===highest).map(match=>String(match.id)))];
     if(winners.length===1)preferredId=winners[0];
-   }else if(root.MesoresHaShas?.propagatedPreference){
+   }else if(evidence.reason==='no_candidate_wording_found'&&root.MesoresHaShas?.propagatedPreference){
     const preparedRank=async(candidateWord,entries,linkedSelection)=>{
      if(!root.SefariaEvidence?.compareTranslation)return null;
      const linkedEvidence=await root.SefariaEvidence.compareTranslation(candidateWord,entries,linkedSelection,{preparedOnly:true});
