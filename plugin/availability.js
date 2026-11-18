@@ -43,7 +43,7 @@
     }catch{}
     if(job.revision!==revision)continue;
     const context=await DictionaryQuick.captureReaderContext(selection);
-    const items=await DictionaryQuick.results(text,context,{maxCandidates:24});
+    const items=await DictionaryQuick.results(text,context,{maxCandidates:16});
     if(job.revision!==revision)continue;
     const choices=items.filter(item=>item.text&&Number.isInteger(item.entryId)).slice(0,MAX_MENU_MEANINGS);
     if(!choices.length){
