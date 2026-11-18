@@ -23,11 +23,12 @@ const {chromium,executablePath}=require('./browser_support.cjs');
     plugin=await context.newPage();plugin.on('pageerror',e=>errors.push(String(e)));
     await plugin.exposeBinding('hostRpc',async(_,{method})=>method==='app.getGrantedPermissions'?{success:true,data:{permissions:manifest.permissions}}:{success:true});
     await plugin.addInitScript(()=>{window.events={};window.Otzaria={on:(e,f)=>(events[e]??=[]).push(f),call:(method,args)=>hostRpc({method,args})};});
-    await plugin.goto(base);await plugin.evaluate(()=>Promise.all(events['plugin.boot'].map(f=>f({theme:{}})));
+    await plugin.goto(base);await plugin.evaluate(()=>Promise.all(events['plugin.boot'].map(f=>f({theme:{}}))));
    }
    await plugin.evaluate(({word,itemId,param,selection})=>Promise.all(events['reader.context_menu_item_clicked'].map(f=>f({itemId,param,selectedText:word,selection,currentRef:selection.currentRef||null}))),{word,itemId,param,selection});
    await plugin.waitForFunction(()=>document.querySelector('.unified-meanings'));
    assert.equal(await plugin.locator('#query').inputValue(),word);
+   await reader.evaluate(word=>document.body.dataset.openedWord=word,word);
   });
   await reader.evaluate(()=>{document.querySelector('#word').oncontextmenu=e=>{
    e.preventDefault();const word=getSelection().toString(),menu=document.querySelector('#menu');menu.replaceChildren();
@@ -45,7 +46,7 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   assert.equal(item.type,'submenu');assert(item.children.length>0);
   assert(item.children.every(x=>x.openPlugin===true&&x.param.dictionaryWord==='מיתיבי'));
   await reader.locator('#menu button').first().click();
-  await reader.waitForFunction(()=>document.body.dataset.openedWord==='מיתיבי').catch(async()=>{await plugin.waitForFunction(()=>document.querySelector('.unified-meanings'));});
+  await reader.waitForFunction(()=>document.body.dataset.openedWord==='מיתיבי');
   await plugin.locator('.unified-meanings').first().waitFor();
   assert.equal(await plugin.locator('#query').inputValue(),'מיתיבי');
   await choose('אבגדהוזחטיכלמנסעפצקרשת','אבגדהוזחטיכלמנסעפצקרשת',false);
