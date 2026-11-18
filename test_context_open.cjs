@@ -53,6 +53,11 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   await reader.waitForFunction(()=>document.body.dataset.openedWord==='מיתיבי');
   await plugin.locator('.unified-meanings').first().waitFor();
   assert.equal(await plugin.locator('#query').inputValue(),'מיתיבי');
+  // The overflow action must open the ordinary full results list, not a blank
+  // entry or a malformed lookup.
+  await plugin.evaluate(({word,selection})=>Promise.all(events['reader.context_menu_item_clicked'].map(f=>f({itemId:'jastrow-meaning-more',param:{dictionaryWord:word,showAll:true},selectedText:word,selection,currentRef:selection.currentRef||null}))),{word:'מיתיבי',selection});
+  await plugin.waitForFunction(()=>document.querySelectorAll('.result').length>0);
+  assert.equal(await plugin.locator('#query').inputValue(),'מיתיבי');
   await choose('אבגדהוזחטיכלמנסעפצקרשת','אבגדהוזחטיכלמנסעפצקרשת',false);
   assert.equal(await reader.locator('#menu button').count(),0);
   assert.deepEqual(errors,[]);
