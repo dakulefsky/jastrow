@@ -20,9 +20,16 @@ const {chromium,executablePath}=require('./browser_support.cjs');
     await foreground.addInitScript(installHost);await foreground.goto(base);
     await foreground.evaluate(()=>Promise.all(events['plugin.boot'].map(f=>f({theme:{}}))));
    }
+   console.log('Opening quick-menu choice:',word,'entry',param?.entryId);
    await foreground.evaluate(({word,itemId,param,selection})=>Promise.all((events['reader.context_menu_item_clicked']||[]).map(f=>f({itemId,param,selectedText:word,selection,currentRef:selection.currentRef||null}))),{word,itemId,param,selection});
-   await foreground.waitForFunction(()=>document.querySelector('.unified-meanings'));
-   await foreground.locator('.unified-meanings').first().waitFor();
+   try{
+    await foreground.waitForFunction(()=>document.querySelector('.unified-meanings'),null,{timeout:10000});
+    await foreground.locator('.unified-meanings').first().waitFor({timeout:10000});
+   }catch(e){
+    const status=await foreground.locator('#status').innerText().catch(()=>'<no status>');
+    const entry=await foreground.locator('#entry').innerText().catch(()=>'<no entry>');
+    throw Error('No dictionary result for '+word+' / '+param?.entryId+'; status='+status+'; entry='+entry+'; cause='+e.message);
+   }
    assert.equal(await foreground.locator('#query').inputValue(),word);
    await reader.evaluate(word=>document.body.dataset.openedWord=word,word);
   }
