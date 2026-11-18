@@ -54,19 +54,24 @@
    const mesoresPromise=root.MesoresHaShas?.propagatedPreference
     ?root.MesoresHaShas.propagatedPreference(selection,word,candidates,preparedRank).catch(()=>null)
     :Promise.resolve(null);
-   const boundedMesores=typeof root.setTimeout==='function'
-    ?Promise.race([mesoresPromise,new Promise(resolve=>root.setTimeout(()=>resolve(null),500))])
+   const boundedMesores=root.MesoresHaShas&&typeof root.setTimeout==='function'
+    ?new Promise(resolve=>{
+      let settled=false;
+      const timer=root.setTimeout(()=>{if(!settled){settled=true;resolve(null);}},500);
+      Promise.resolve(mesoresPromise).then(value=>{if(!settled){settled=true;root.clearTimeout?.(timer);resolve(value);}},()=>{if(!settled){settled=true;root.clearTimeout?.(timer);resolve(null);}});
+     })
     :mesoresPromise;
    const [evidence,parallel]=await Promise.all([sourcePromise,boundedMesores]);
    const matches=Array.isArray(evidence?.matches)?evidence.matches:[];
    const matched=new Map(matches.map(item=>[String(item.id),item]));
    merged.forEach(item=>{const match=matched.get(item.candidateId);if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
+   const matchScore=match=>match.matchType==='exact'?3:match.matchType==='inflected_phrase'?2:1;
    const score=item=>item.translationMatchType==='exact'?3:item.translationMatchType==='inflected_phrase'?2:item.translationMatchType==='inflected_word'?1:0;
    const sourceHasEvidence=matches.length>0;
    let sourcePreferredId=null;
    if(sourceHasEvidence){
-    const highest=Math.max(...matches.map(score));
-    const winners=[...new Set(matches.filter(match=>score(match)===highest).map(match=>String(match.id)))];
+    const highest=Math.max(...matches.map(matchScore));
+    const winners=[...new Set(matches.filter(match=>matchScore(match)===highest).map(match=>String(match.id)))];
     if(winners.length===1)sourcePreferredId=winners[0];
    }
    let preferredId=sourcePreferredId;
