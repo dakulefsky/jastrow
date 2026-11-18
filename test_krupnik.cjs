@@ -7,7 +7,7 @@ for(const file of fs.readdirSync(__dirname+'/plugin/data').filter(x=>/^krupnik-1
 let count=0;
 for(let id=32512;id<i.entries.length;id++){
  const meta=i.entries[id],entry=c.window.JASTROW_CHUNKS[meta.b][id];assert.equal(entry.h,meta.h);assert.equal(entry.source,'krupnik');assert(entry.glosses.length);
- for(const g of entry.glosses){assert(g.text.trim());assert(!g.text.includes('|'));assert(!/<script|javascript:/i.test(entry.html));}count++;
+ for(const g of entry.glosses){assert(g.text.trim());assert(!/^i>/.test(g.text),'malformed italic-tag prefix must never reach the lookup');assert(/[A-Za-z]/.test(g.text),'punctuation-only remnants must not be indexed');assert(!g.text.includes('|'));assert(!/<script|javascript:/i.test(entry.html));}count++;
 }
 for(const word of ['מא','אמר','אוֹגַר','תניא']){
  const found=S.lookup(i,word,100);const direct=new Set(i.direct[S.normalize(word)]||[]);let sawForm=false;
