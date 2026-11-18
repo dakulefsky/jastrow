@@ -22,7 +22,11 @@ class English(HTMLParser):
    if not self.depth:
     # The source separates its English and German columns with a literal bar.
     text=''.join(self.current).split('|',1)[0].strip()
-    if text:self.glosses.append(text)
+    # Some digitized English spans contain a damaged opening italic tag as
+    # literal `i>` text. It is markup debris, not part of the dictionary gloss.
+    if text.startswith('i>'):text=text[2:].lstrip()
+    # Do not index punctuation-only remnants such as the source's `i>.`.
+    if text and re.search(r'[A-Za-z]',text):self.glosses.append(text)
  def handle_data(self,text):
   if self.depth:
    self.current.append(text)
