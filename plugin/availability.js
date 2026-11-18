@@ -12,11 +12,10 @@
   const selected=item.selectedWord||'',spelling=item.spelling||'';
   const head=selected&&spelling&&JastrowSearch.normalize(selected)!==JastrowSearch.normalize(spelling)?selected+' · '+spelling:(spelling||selected||word);
   const recommended=item.recommended===true;
-  let label=head+' — '+compact(item.text,recommended?34:56);
-  if(recommended){
-   label+=' · Recommended';
-   if(item.translationPhrase)label+=' · “'+compact(item.translationPhrase,26)+'”';
-  }
+  // Put the recommendation marker first: Otzaria may clip the end of long
+  // native menu labels, so a suffix such as "Recommended" is easy to lose.
+  let label=(recommended?'★ ':'')+head+' — '+compact(item.text,recommended?42:56);
+  if(recommended&&item.translationPhrase)label+=' · “'+compact(item.translationPhrase,22)+'”';
   return label.length>100?label.slice(0,99).trimEnd()+'…':label;
  }
  function removeLegacyVotes(){
@@ -79,7 +78,7 @@
      id:'jastrow-lookup',
      type:'submenu',
      title:title.length>100?title.slice(0,99).trimEnd()+'…':title,
-     icon:'book_24_regular',
+     icon:'book_dictionary_24_regular',
      contexts:['reader-selection','reader-page-shape-selection'],
      showWhen:{selectionContainsAny:variants},
      children
