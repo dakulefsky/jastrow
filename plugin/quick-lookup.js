@@ -1,6 +1,5 @@
 (function(root){
  'use strict';
- let serial=0;
  const loads=new Map();
  root.JASTROW_CHUNKS=root.JASTROW_CHUNKS||{};
  function load(n){
@@ -15,20 +14,24 @@
   }
   return loads.get(n);
  }
- async function results(word,selection){
+ async function results(word,selection,options={}){
   const index=root.JASTROW_INDEX,S=root.JastrowSearch,phrase=S.phraseLookup(index,word);
+  const maxCandidates=Number.isInteger(options.maxCandidates)?Math.max(1,Math.min(40,options.maxCandidates)):100;
   if(!phrase.ids.length&&S.splitWords(word).length>1){
    if(!S.hasSelectionTranslations(index,word))return [];
-   const lists=await Promise.all(S.segmentWords(index,word).map(async part=>(await results(part.word,selection)).map(item=>({...item,selectedWord:part.word}))));
+   const lists=await Promise.all(S.segmentWords(index,word).map(async part=>(await results(part.word,selection,{maxCandidates})).map(item=>({...item,selectedWord:part.word}))));
    return lists.flat();
   }
-  const result=phrase.ids.length?phrase:S.lookup(index,word,100,'length',false);
+  const result=phrase.ids.length?phrase:S.lookup(index,word,maxCandidates,'length',false);
   if(['suggestions','invalid','empty'].includes(result.kind))return [];
-  let ids=result.ids;
+  const ids=result.ids.slice(0,maxCandidates);
   const records=(await Promise.all(ids.map(id=>root.JastrowReadingView.records(index,id,load,word,{phrase:phrase.ids.length>0,lookupWord:S.matchingQuery(index,result.prefixMatches,id,word)})))).flat();
   const merged=root.DictionaryMeanings.merge(records,word).map(group=>({
    text:group.text,spelling:group.spelling,
-   // Numeric sense numbers are not grammatical qualifications.
+   entryId:group.sources[0]?.id,
+   sourceCount:new Set(group.sources.map(source=>source.id)).size,
+   // Retain source metadata for the full dictionary; the quick menu shows the
+   // spelling and concise gloss, not grammatical labels.
    label:group.form?group.sources[0].meaning.label:'',
   }));
   if(selection&&root.SefariaEvidence?.compareTranslation){
@@ -51,20 +54,6 @@
    }catch{return {id,meaning:''};}
   }));
  }
- async function meanings(word){
-  return (await results(word)).map(item=>(item.selectedWord?item.selectedWord+': ':'')+item.text);
- }
- function message(word,items){
-  const short=s=>s.length>180?s.slice(0,177)+'…':s;
-  // Otzaria's native message surface can inherit RTL from its Hebrew reader.
-  // Isolate each English line so its number, punctuation, and meaning stay LTR.
-  const lines=items.slice(0,2).map((item,i)=>{
-   const meaning=typeof item==='string'?item:item.text;
-   const number=items.length>1?(i+1)+'. ':'';
-   return '\u2066'+number+short(String(meaning||'').replace(/\*/g,''))+'\u2069';
-  });
-  return [word,'',...lines,'','\u2066Tap to open the full dictionary entry.\u2069'].join('\n');
- }
  async function captureReaderContext(selection){
   if(!selection||typeof selection!=='object')return null;
   const outer=selection;
@@ -85,32 +74,6 @@
   }
   return context;
  }
- async function show(word,selection){
-  const current=++serial;
-  const context=await captureReaderContext(selection);
-  if(String(word).trim().toLowerCase()==='who created this?'){
-   try{await root.Otzaria.call('ui.showMessage',{message:'Daniel Avrahom'});}catch{console.warn('Quick dictionary lookup unavailable');}
-   return;
-  }
-  try{
-   const items=await results(word,context);if(current!==serial)return;
-   if(!items.length){
-    if(!root.JastrowSearch.hasSelectionTranslations(root.JASTROW_INDEX,word))return;
-    await root.Otzaria.call('ui.showMessage',{message:word+'\nNo short meaning is available. Click to open the dictionary entry and references.',tapPayload:{dictionaryWord:word,readerContext:context},tapOpenPlugin:true});return;
-   }
-   const res=await root.Otzaria.call('ui.showMessage',{message:message(word,items),tapPayload:{dictionaryWord:word,readerContext:context},tapOpenPlugin:true});
-   if(res?.success===false)console.warn('Quick dictionary lookup unavailable; use Open dictionary.');
-  }catch{
-   if(current===serial){
-    console.warn('Quick dictionary lookup failed; use Open dictionary.');
-    await root.Otzaria.call('ui.showMessage',{message:word+'\nThe quick result could not load. Click to open the dictionary.',tapPayload:{dictionaryWord:word,readerContext:context},tapOpenPlugin:true});
-   }
-  }
- }
- root.DictionaryQuick={results,meanings,message,show,previewCandidates};
- if(root.Otzaria)root.Otzaria.on('reader.context_menu_item_clicked',async p=>{
-  const word=root.JastrowContext.selectionText(p);
-  if(p.itemId==='jastrow-lookup'){await show(word,p);return;}
-
- });
+ async function meanings(word,selection){return (await results(word,selection)).map(item=>(item.selectedWord?item.selectedWord+': ':'')+item.text);}
+ root.DictionaryQuick={results,meanings,previewCandidates,captureReaderContext};
 })(typeof window==='undefined'?globalThis:window);
