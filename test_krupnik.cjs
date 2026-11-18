@@ -7,12 +7,14 @@ for(const file of fs.readdirSync(__dirname+'/plugin/data').filter(x=>/^krupnik-1
 let count=0;
 for(let id=32512;id<i.entries.length;id++){
  const meta=i.entries[id],entry=c.window.JASTROW_CHUNKS[meta.b][id];assert.equal(entry.h,meta.h);assert.equal(entry.source,'krupnik');assert(entry.glosses.length);
- for(const g of entry.glosses){assert(g.text.trim());assert(!g.text.includes('|'));assert(!/<script|javascript:/i.test(entry.html));}count++;
+ for(const g of entry.glosses){assert(g.text.trim());assert(!/[<>]/.test(g.text),'markup remnants must never reach the lookup');assert(/[A-Za-z]/.test(g.text),'punctuation-only remnants must not be indexed');assert(!g.text.includes('|'));assert(!/<script|javascript:/i.test(entry.html));}count++;
 }
 for(const word of ['מא','אמר','אוֹגַר','תניא']){
  const found=S.lookup(i,word,100);const direct=new Set(i.direct[S.normalize(word)]||[]);let sawForm=false;
  for(const id of found.ids){if(!direct.has(id))sawForm=true;else assert(!sawForm,'Exact matches must precede forms');}
 }
+const zimnaId=i.entries.findIndex(e=>e.h==='זִמְנָא');assert(zimnaId>=32512);assert.equal(Array.from(c.window.JASTROW_CHUNKS[i.entries[zimnaId].b][zimnaId].glosses,g=>g.text).join('|'),'time|times');
+const zimninId=i.entries.findIndex(e=>e.h==='זִמְנִין');assert(zimninId>=32512);assert.equal(Array.from(c.window.JASTROW_CHUNKS[i.entries[zimninId].b][zimninId].glosses,g=>g.text).join('|'),'sometimes');
 const kOnly=Object.keys(c.window.KRUPNIK_DATA.direct).find(w=>!i.forms[w]&&!i.direct[w].some(id=>id<32512));assert(kOnly);assert(S.hasTranslation(i,kOnly));assert(!S.hasTranslation(i,'hello'));assert(!S.hasTranslation(i,'מא אמר'));
 const ma=S.lookup(i,'מא').ids;assert(ma.some(id=>i.entries[id].source==='krupnik'));assert(ma.some(id=>id<32512));assert.equal(i.entries[ma[0]].source,'krupnik');assert(S.lookup(i,'מא',100,'length',true).ids.some(id=>id<32512));assert(S.lookup(i,'דאמר').ids.some(id=>id<32512));
 assert(c.window.JASTROW_CHUNKS[i.entries[ma[0]].b][ma[0]].glosses.some(g=>g.text==='what? how?'));
