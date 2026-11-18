@@ -33,7 +33,8 @@
     const job=pending;pending=null;
     await selectionRemoval;
     if(job.revision!==revision)continue;
-    let text=JastrowContext.selectionText(job.payload);
+    const eventText=JastrowContext.selectionText(job.payload);
+    let text=eventText;
     if(!text||text.length>100||!JastrowSearch.hasSelectionTranslations(index,text))continue;
     let selection=job.payload;
     try{
@@ -42,7 +43,10 @@
      if(job.revision!==revision)continue;
      if(response?.success&&current&&JastrowSearch.splitWords(current).map(JastrowSearch.normalize).join(' ')===JastrowSearch.splitWords(text).map(JastrowSearch.normalize).join(' ')){
       selection=response.data||selection;
-      text=current;
+      // The host's follow-up selection can omit niqqud present in the original
+      // selection event. Keep whichever spelling carries more vowel detail;
+      // both spellings remain valid menu-visibility variants below.
+      if(!JastrowSearch.hasVowels(text)||JastrowSearch.hasVowels(current))text=current;
      }
     }catch{}
     if(job.revision!==revision)continue;
@@ -69,7 +73,7 @@
      param:{dictionaryWord:text,showAll:true}
     });
     const rendered=JastrowContext.selectionText(selection);
-    const variants=[...new Set([rendered,text,JastrowSearch.splitWords(text).map(JastrowSearch.normalize).join(' ')])].filter(value=>value&&value.length<=100);
+    const variants=[...new Set([rendered,eventText,text,JastrowSearch.splitWords(text).map(JastrowSearch.normalize).join(' ')])].filter(value=>value&&value.length<=100);
     const title='Aramaic → Eng. — '+compact(text,72);
     const response=await Otzaria.call('reader.addContextMenuItem',{
      id:'jastrow-lookup',
