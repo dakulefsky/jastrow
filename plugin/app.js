@@ -247,7 +247,17 @@ if(window.Otzaria){
    if(activeReaderContext)search(word,true);
   }catch{} })();
  });
-  Otzaria.on('theme.changed',theme);
+  Otzaria.on('reader.context_menu_item_clicked',p=>{
+  if(!String(p?.itemId||'').startsWith('jastrow-meaning-'))return;
+  const param=p?.param&&typeof p.param==='object'?p.param:{};
+  const word=typeof param.dictionaryWord==='string'?param.dictionaryWord:JastrowContext.selectionText(p);
+  if(!word)return;
+  activeReaderContext={word,selection:p.selection&&typeof p.selection==='object'?p.selection:p};
+  const id=Number(param.entryId);
+  if(param.entryId!==undefined&&Number.isInteger(id)&&id>=0)showEntry(id,true,null,word);
+  else search(word);
+ });
+ Otzaria.on('theme.changed',theme);
   Otzaria.on('plugin.boot',p=>{
     theme(p.theme);$('selection').hidden=false;
     Otzaria.call('app.getGrantedPermissions').then(res=>{
