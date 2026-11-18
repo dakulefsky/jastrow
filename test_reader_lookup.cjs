@@ -79,7 +79,8 @@ const {chromium,executablePath}=require('./browser_support.cjs');
 
   await choose('נפקא מינה');
   const contextual=items.get('jastrow-lookup');
-  assert(contextual.children[0].title.includes('Recommended'),'the strongest translation match must be marked Recommended');
+  assert(contextual.children[0].title.startsWith('★ '),'the strongest translation match must carry the visible leading star marker');
+  assert(!contextual.children[0].title.includes('Recommended'),'the clipped menu label should not rely on a trailing word');
   assert(contextual.children[0].title.includes('the practical difference'),'show a short phrase from the selected passage as context');
   const choice=contextual.children[0];
   await reader.locator('#menu').evaluate(()=>document.querySelector('button').click());
