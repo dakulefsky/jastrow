@@ -71,10 +71,10 @@
    if(!links.length)return [];
    if(links.length>MAX_LINKS)return null;
    const loaded=await root.Otzaria.call('library.getLinkContent',{links:links.map(contentRequest)});
-   if(!loaded?.success||!Array.isArray(loaded.data?.items)||loaded.data.items.length!==links.length)return null;
+   if(!loaded?.success||loaded.data?.truncated===true||!Array.isArray(loaded.data?.items)||loaded.data.items.length!==links.length)return null;
    const passages=links.map((link,index)=>{
     const item=loaded.data.items[index]||{};
-    if(item.error||typeof item.content!=='string')return null;
+    if(item.error||item.forbidden===true||item.restricted===true||item.partial===true||item.isPartial===true||item.truncated===true||typeof item.content!=='string')return null;
     const text=htmlToText(item.content).replace(/\s+/g,' ').trim();
     if(!text)return null;
     return {
