@@ -148,43 +148,20 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
  target.append(DictionaryMeanings.render(records,word,result.kind==='phrase'?index.phraseNotes:{}));
  if(active){
   const candidates=DictionaryMeanings.merge(records,word).map((group,i)=>({id:String(i),text:group.text}));
-  let sourcePreferredId=null,sourceHasEvidence=false;
-  const applyRecommendation=id=>{
-   const bestCard=[...target.querySelectorAll('.unified-meanings > ol > .meaning-card')][Number(id)];
-   if(!bestCard)return;
-   bestCard.parentElement.prepend(bestCard);
-   [...bestCard.parentElement.children].forEach((card,i)=>{const number=card.querySelector('.meaning-number');if(number)number.textContent=String(i+1);});
-   const content=bestCard.querySelector('.meaning-content');
-   if(content&&!content.querySelector('.context-recommended'))content.prepend(el('span','Recommended','context-recommended'));
-  };
-  // Recommendations are enrichment: never keep the dictionary panel or its
-  // controls waiting for a first-time offline tractate load or linked-daf fetch.
-  // Start both evidence paths together; shared tractate loads are coalesced.
+  // The full dictionary follows the same single decision path as quick lookup:
+  // only direct evidence from the currently selected passage may recommend.
   void (async()=>{
-   const sourcePromise=window.SefariaEvidence?.compareTranslation
-    ?SefariaEvidence.compareTranslation(word,candidates,active,{preparedOnly:false})
-    :Promise.resolve({matches:[]});
-   const mesoresPromise=window.MesoresHaShas?.propagatedPreference&&candidates.length
-    ?MesoresHaShas.propagatedPreference(active,word,candidates)
-    :Promise.resolve(null);
-   const [evidence,parallel]=await Promise.all([sourcePromise,mesoresPromise]);
+   const evidence=window.SefariaEvidence?.compareTranslation
+    ?await SefariaEvidence.compareTranslation(word,candidates,active,{preparedOnly:false})
+    :{matches:[]};
    if(serial!==requestSerial||panelSerial!==entrySerial)return;
-   const matches=new Map((evidence?.matches||[]).map(item=>[item.id,item]));
-   sourceHasEvidence=matches.size>0;
-   if(matches.size){
-    const score=value=>value.matchType==='exact'?3:value.matchType==='inflected_phrase'?2:1;
-    const highest=Math.max(...[...matches.values()].map(score));
-    const winners=[...matches.entries()].filter(([,value])=>score(value)===highest);
-    // Never break a lexical tie by dictionary ID or source order.
-    if(winners.length===1){
-     sourcePreferredId=winners[0][0];
-     applyRecommendation(sourcePreferredId);
-    }
-   }
-   // Linked evidence may reinforce a current-daf choice, but cannot
-   // overrule it or break an unresolved current-daf tie.
-   if(parallel?.preferredEntryId&&(!sourceHasEvidence||parallel.preferredEntryId===sourcePreferredId))
-    applyRecommendation(parallel.preferredEntryId);
+   const matches=new Map((evidence?.matches||[]).map(item=>[String(item.id),item]));
+   if(!matches.size)return;
+   const score=value=>value.matchType==='exact'?3:value.matchType==='inflected_phrase'?2:1;
+   const highest=Math.max(...[...matches.values()].map(score));
+   const winners=[...matches.entries()].filter(([,value])=>score(value)===highest);
+   // Never break a lexical tie by dictionary ID or source order.
+   if(winners.length===1)applyRecommendation(winners[0][0]);
   })().catch(()=>{});
  }
 for(const failed of expanded.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
