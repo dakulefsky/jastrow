@@ -129,7 +129,8 @@ function readerOriginLabel(selection){
 }
 async function showTranslations(result,word,serial,target=$('entry'),pageSize=12){
  const panelSerial=entrySerial;
- const active=activeReaderContext&&JastrowSearch.normalize(activeReaderContext.word)===JastrowSearch.normalize(word)?activeReaderContext.selection:null;
+ const activeWords=activeReaderContext?JastrowSearch.splitWords(activeReaderContext.word).map(JastrowSearch.normalize):[];
+ const active=activeReaderContext&&(JastrowSearch.normalize(activeReaderContext.word)===JastrowSearch.normalize(word)||activeWords.includes(JastrowSearch.normalize(word)))?activeReaderContext.selection:null;
  currentId=null;target.replaceChildren(el('h2',word,'entry-title'));
  const origin=active&&readerOriginLabel(active);
  if(origin)target.append(el('p',origin,'reader-origin'));
