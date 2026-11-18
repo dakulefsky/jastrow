@@ -35,12 +35,47 @@
    // spelling and concise gloss, not grammatical labels.
    label:group.form?group.sources[0].meaning.label:'',
   }));
-  if(selection&&root.SefariaEvidence?.compareTranslation){
-   const evidence=await root.SefariaEvidence.compareTranslation(word,merged.map((item,i)=>({id:String(i),text:item.text})),selection,{preparedOnly:true});
-   const matched=new Map((evidence.matches||[]).map(item=>[item.id,item]));
-   merged.forEach((item,i)=>{const match=matched.get(String(i));if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
+  if(selection&&merged.length){
+   merged.forEach((item,i)=>{item.candidateId=String(i);});
+   const candidates=merged.map(item=>({id:item.candidateId,text:item.text}));
+   const sourcePromise=root.SefariaEvidence?.compareTranslation
+    ?root.SefariaEvidence.compareTranslation(word,candidates,selection,{preparedOnly:true}).catch(()=>({matches:[]}))
+    :Promise.resolve({matches:[]});
+   const preparedRank=async(candidateWord,entries,linkedSelection)=>{
+    if(!root.SefariaEvidence?.compareTranslation)return null;
+    const evidence=await root.SefariaEvidence.compareTranslation(candidateWord,entries,linkedSelection,{preparedOnly:true});
+    const matches=Array.isArray(evidence?.matches)?evidence.matches:[];
+    if(!matches.length)return null;
+    const score=match=>match.matchType==='exact'?3:match.matchType==='inflected_phrase'?2:1;
+    const highest=Math.max(...matches.map(score));
+    const winners=[...new Set(matches.filter(match=>score(match)===highest).map(match=>String(match.id)))];
+    return winners.length===1?{preferredEntryId:winners[0],preferenceScope:'contextual'}:null;
+   };
+   const mesoresPromise=root.MesoresHaShas?.propagatedPreference
+    ?root.MesoresHaShas.propagatedPreference(selection,word,candidates,preparedRank).catch(()=>null)
+    :Promise.resolve(null);
+   const boundedMesores=typeof root.setTimeout==='function'
+    ?Promise.race([mesoresPromise,new Promise(resolve=>root.setTimeout(()=>resolve(null),500))])
+    :mesoresPromise;
+   const [evidence,parallel]=await Promise.all([sourcePromise,boundedMesores]);
+   const matches=Array.isArray(evidence?.matches)?evidence.matches:[];
+   const matched=new Map(matches.map(item=>[String(item.id),item]));
+   merged.forEach(item=>{const match=matched.get(item.candidateId);if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
    const score=item=>item.translationMatchType==='exact'?3:item.translationMatchType==='inflected_phrase'?2:item.translationMatchType==='inflected_word'?1:0;
+   const sourceHasEvidence=matches.length>0;
+   let sourcePreferredId=null;
+   if(sourceHasEvidence){
+    const highest=Math.max(...matches.map(score));
+    const winners=[...new Set(matches.filter(match=>score(match)===highest).map(match=>String(match.id)))];
+    if(winners.length===1)sourcePreferredId=winners[0];
+   }
+   let preferredId=sourcePreferredId;
+   if(parallel?.preferredEntryId&&(!sourceHasEvidence||parallel.preferredEntryId===sourcePreferredId))preferredId=String(parallel.preferredEntryId);
    merged.sort((a,b)=>score(b)-score(a));
+   if(preferredId){
+    const best=merged.findIndex(item=>item.candidateId===preferredId);
+    if(best>=0){merged[best].recommended=true;if(best>0)merged.unshift(merged.splice(best,1)[0]);}
+   }
   }
   return merged;
  }
