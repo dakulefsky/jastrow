@@ -30,6 +30,7 @@
    id:'jastrow-lookup',type:'submenu',title:'Aramaic → Eng.',
    icon:'book_dictionary_24_regular',
    contexts:['reader-selection','reader-page-shape-selection'],
+   ...(word.length<=100?{showWhen:{selectionContainsAny:[word]}}:{}),
    children:[{id:'jastrow-meaning-fallback',title:'Open full dictionary',openPlugin:true,param:{dictionaryWord:word,showAll:true}}]
   }).catch(()=>{});
  }
