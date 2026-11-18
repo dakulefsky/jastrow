@@ -11,6 +11,7 @@ const flush=()=>new Promise(r=>setImmediate(r)),lastAdd=()=>calls.filter(c=>c.m=
  selected='אבגדהוזחטיכלמנסעפצקרשת';events['reader.selection_changed']({text:selected});await flush();assert.equal(calls.at(-1).m,'reader.removeContextMenuItem');
  selected='אמר אבגדהוזחטיכלמנסעפצקרשת';events['reader.selection_changed']({text:selected});await flush();assert.equal(calls.at(-1).m,'reader.removeContextMenuItem');
  selected='צפרא טבא';events['reader.selection_changed']({text:selected});await flush();assert(lastAdd());assert(lastAdd().p.showWhen.selectionContainsAny.includes(selected));
+ // Reader follow-up may lose niqqud from the event, or restore niqqud missing there.
  selected='אמר';events['reader.selection_changed']({text:'אָמַר'});await flush();assert(lastAdd());assert(lastAdd().p.showWhen.selectionContainsAny.includes('אמר'));assert(lastAdd().p.showWhen.selectionContainsAny.includes('אָמַר'));
  selected='אָמַר';events['reader.selection_changed']({text:'אמר'});await flush();assert(lastAdd());assert(lastAdd().p.showWhen.selectionContainsAny.includes('אמר'));assert(lastAdd().p.showWhen.selectionContainsAny.includes('אָמַר'));
  delay={};events['reader.selection_changed']({text:'רחמנא'});await flush();events['reader.selection_changed']({text:'אבגדהוזחטיכלמנסעפצקרשת'});delay.resolve({success:true,data:{renderedSelectedText:'רחמנא'}});delay=null;await flush();assert.equal(calls.at(-1).m,'reader.removeContextMenuItem');
