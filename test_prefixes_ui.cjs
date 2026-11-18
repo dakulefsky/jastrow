@@ -14,14 +14,20 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   await page.evaluate(()=>showEntry(JastrowSearch.lookup(index,'לצפרא').ids[0],true,null,'לצפרא'));await page.locator('.prefix-analysis').waitFor();
   await lookup('דְּלְאַרְעָא');assert.match(await page.locator('.unified-meanings>ol').innerText(),/land/);assert(!/accident/.test(await page.locator('.unified-meanings>ol').innerText()));
   await lookup('לצפרא טבא');assert.equal(await page.locator('.phrase-word').count(),2);assert.equal(await page.locator('.prefix-analysis').count(),1);
-  const quick=await page.evaluate(async()=>({meanings:await DictionaryQuick.meanings('לצפרא'),message:DictionaryQuick.message('לצפרא',['morning'],true)}));assert(quick.meanings.some(t=>/morning/.test(t)));assert.match(quick.message,/possible prefixed form/);
-  const messages=await page.evaluate(async()=>{const calls=[];window.Otzaria={call:async(method,args)=>{calls.push({method,args});return {success:true};}};try{await DictionaryQuick.show('לצפרא');await DictionaryQuick.show('לצפרא טבא');return calls;}finally{delete window.Otzaria;}});
-  assert.equal(messages.length,2);for(const call of messages){assert.equal(call.method,'ui.showMessage');assert.match(call.args.message,/possible prefixed form/);assert.equal(call.args.tapOpenPlugin,true);}assert.equal(messages[0].args.tapPayload.dictionaryWord,'לצפרא');
+  const quick=await page.evaluate(async()=>({
+   prefixed:await DictionaryQuick.results('לצפרא',null,{maxCandidates:16}),
+   phrase:await DictionaryQuick.results('לצפרא טבא',null,{maxCandidates:16}),
+   inflected:await DictionaryQuick.results('ביתיהון',null,{maxCandidates:16})
+  }));
+  assert(quick.prefixed.some(item=>/morning/.test(item.text)&&Number.isInteger(item.entryId)));
+  assert(quick.phrase.some(item=>item.selectedWord),'multiword quick lookup should retain the source word for each result');
+  assert(quick.inflected.some(item=>Number.isInteger(item.entryId)),'inflected quick results must retain their source dictionary entry');
+  assert(quick.prefixed.every(item=>!item.text.includes('possible prefixed form')),'technical form labels stay out of quick-result glosses');
   await lookup('צפרא');assert.equal(await page.locator('.prefix-analysis').count(),0);
   await lookup('מילתיהון');assert.match(await page.locator('.prefix-analysis').innerText(),/possible noun ending/);assert.match(await page.locator('#entry').innerText(),/word|thing|affair/);
   await page.reload();await page.locator('.unified-meanings').waitFor();assert.equal(await page.locator('#query').inputValue(),'מילתיהון');assert.match(await page.locator('.prefix-analysis').innerText(),/noun ending/);
   await lookup('דמילתייכו טבא');assert.equal(await page.locator('.phrase-word').count(),2);assert.match(await page.locator('.prefix-analysis').innerText(),/noun ending/);
-  const inflected=await page.evaluate(async()=>{const calls=[];window.Otzaria={call:async(method,args)=>{calls.push(args);return {success:true};}};try{await DictionaryQuick.show('ביתיהון');return calls;}finally{delete window.Otzaria;}});assert.equal(inflected.length,1);assert.match(inflected[0].message,/possible inflected form/);assert.equal(inflected[0].tapPayload.dictionaryWord,'ביתיהון');
-  assert.deepEqual(errors,[]);console.log('PASS rendered prefix analysis, full ambiguous base meanings, vowel ranking, reload, direct entry, multiword and quick-lookup consistency.');
+
+  assert.deepEqual(errors,[]);console.log('PASS rendered prefix analysis, full ambiguous base meanings, vowel ranking, reload, direct entry, multiword and native quick-menu candidate consistency.');
  }finally{if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -1,6 +1,5 @@
 (function(root){
  'use strict';
- let serial=0;
  const loads=new Map();
  root.JASTROW_CHUNKS=root.JASTROW_CHUNKS||{};
  function load(n){
@@ -15,29 +14,62 @@
   }
   return loads.get(n);
  }
- async function results(word,selection){
+ async function results(word,selection,options={}){
   const index=root.JASTROW_INDEX,S=root.JastrowSearch,phrase=S.phraseLookup(index,word);
+  const maxCandidates=Number.isInteger(options.maxCandidates)?Math.max(1,Math.min(40,options.maxCandidates)):100;
   if(!phrase.ids.length&&S.splitWords(word).length>1){
    if(!S.hasSelectionTranslations(index,word))return [];
-   const lists=await Promise.all(S.segmentWords(index,word).map(async part=>(await results(part.word,selection)).map(item=>({...item,selectedWord:part.word}))));
-   return lists.flat();
+   const parts=S.segmentWords(index,word),perPart=Math.max(2,Math.ceil(maxCandidates/Math.max(1,parts.length)));
+   const lists=await Promise.all(parts.map(async part=>{
+    const items=await results(part.word,selection,{maxCandidates:perPart});
+    const mapped=items.map(item=>({...item,selectedWord:part.word}));
+    mapped.hasMore=items.hasMore===true;
+    return mapped;
+   }));
+   const combined=lists.flat().slice(0,maxCandidates);
+   combined.hasMore=lists.some(list=>list.hasMore)||lists.reduce((count,list)=>count+list.length,0)>maxCandidates;
+   return combined;
   }
-  const result=phrase.ids.length?phrase:S.lookup(index,word,100,'length',false);
+  const result=phrase.ids.length?phrase:S.lookup(index,word,maxCandidates,'length',false);
   if(['suggestions','invalid','empty'].includes(result.kind))return [];
-  let ids=result.ids;
+  const ids=result.ids.slice(0,maxCandidates);
+  const hasMore=Number.isFinite(result.total)&&result.total>ids.length;
   const records=(await Promise.all(ids.map(id=>root.JastrowReadingView.records(index,id,load,word,{phrase:phrase.ids.length>0,lookupWord:S.matchingQuery(index,result.prefixMatches,id,word)})))).flat();
   const merged=root.DictionaryMeanings.merge(records,word).map(group=>({
    text:group.text,spelling:group.spelling,
-   // Numeric sense numbers are not grammatical qualifications.
+   entryId:group.sources[0]?.id,
+   sourceCount:new Set(group.sources.map(source=>source.id)).size,
+   // Retain source metadata for the full dictionary; the quick menu shows the
+   // spelling and concise gloss, not grammatical labels.
    label:group.form?group.sources[0].meaning.label:'',
   }));
-  if(selection&&root.SefariaEvidence?.compareTranslation){
-   const evidence=await root.SefariaEvidence.compareTranslation(word,merged.map((item,i)=>({id:String(i),text:item.text})),selection,{preparedOnly:true});
-   const matched=new Map((evidence.matches||[]).map(item=>[item.id,item]));
-   merged.forEach((item,i)=>{const match=matched.get(String(i));if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
+  if(selection&&merged.length){
+   merged.forEach((item,i)=>{item.candidateId=String(i);});
+   const candidates=merged.map(item=>({id:item.candidateId,text:item.text}));
+   const evidence=root.SefariaEvidence?.compareTranslation
+    ?await root.SefariaEvidence.compareTranslation(word,candidates,selection,{preparedOnly:true}).catch(()=>({matches:[]}))
+    :{matches:[]};
+   const matches=Array.isArray(evidence?.matches)?evidence.matches:[];
+   const matched=new Map(matches.map(item=>[String(item.id),item]));
+   merged.forEach(item=>{const match=matched.get(item.candidateId);if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
+   const matchScore=match=>match.matchType==='exact'?3:match.matchType==='inflected_phrase'?2:1;
    const score=item=>item.translationMatchType==='exact'?3:item.translationMatchType==='inflected_phrase'?2:item.translationMatchType==='inflected_word'?1:0;
+   const sourceHasEvidence=matches.length>0;
+   let preferredId=null;
+   if(sourceHasEvidence){
+    const highest=Math.max(...matches.map(matchScore));
+    const winners=[...new Set(matches.filter(match=>matchScore(match)===highest).map(match=>String(match.id)))];
+    if(winners.length===1)preferredId=winners[0];
+   }
    merged.sort((a,b)=>score(b)-score(a));
+   if(preferredId){
+    const best=merged.findIndex(item=>item.candidateId===preferredId);
+    if(best>=0){merged[best].recommended=true;if(best>0)merged.unshift(merged.splice(best,1)[0]);}
+   }
   }
+  // Preserve the lookup's overflow count even when duplicate source entries
+  // merge into fewer visible meaning groups than the fetched candidate cap.
+  merged.hasMore=hasMore;
   return merged;
  }
  async function previewCandidates(word,result){
@@ -50,27 +82,6 @@
     return {id,meaning};
    }catch{return {id,meaning:''};}
   }));
- }
- async function meanings(word){
-  return (await results(word)).map(item=>(item.selectedWord?item.selectedWord+': ':'')+item.text);
- }
- function message(word,items,prefixed=false){
-  const short=s=>s.length>180?s.slice(0,177)+'…':s;
-  const lines=items.slice(0,2).map((item,i)=>{
-   if(typeof item==='string')return (i+1)+'. **'+short(item).replace(/\*/g,'')+'**';
-   const heading=[item.selectedWord,item.spelling,item.label].filter((s,n,a)=>s&&a.indexOf(s)===n).join(' · ');
-   return (i+1)+'. **'+short(item.text).replace(/\*/g,'')+'**'+(heading?'\n'+heading.replace(/\*/g,''):'')+(item.translationMatch&&i===0?'\n— Recommended':'');
-  });
-  return [word+(prefixed?' — possible '+(typeof prefixed==='string'?prefixed:'prefixed form'):''),...lines,
-   ...(prefixed?['Base-word meanings; check the grammatical form in context.']:[]),
-   items.length>2?'More meanings — click to open dictionary':'Click for full entry and sources'].join('\n');
- }
- function formKind(word){
-  const S=root.JastrowSearch,index=root.JASTROW_INDEX;
-  const analyses=S.segmentWords(index,word).filter(part=>!part.result).map(part=>S.lookup(index,part.word));
-  const prefix=analyses.some(r=>r.kind==='prefixed form');
-  const ending=analyses.some(r=>r.kind==='inflected form'||r.prefixMatches?.some(m=>m.suffix!==undefined));
-  return prefix&&ending?'prefixed form; possible inflected form':ending?'inflected form':prefix?'prefixed form':false;
  }
  async function captureReaderContext(selection){
   if(!selection||typeof selection!=='object')return null;
@@ -92,32 +103,6 @@
   }
   return context;
  }
- async function show(word,selection){
-  const current=++serial;
-  const context=await captureReaderContext(selection);
-  if(String(word).trim().toLowerCase()==='who created this?'){
-   try{await root.Otzaria.call('ui.showMessage',{message:'Daniel Avrahom'});}catch{console.warn('Quick dictionary lookup unavailable');}
-   return;
-  }
-  try{
-   const items=await results(word,context);if(current!==serial)return;
-   if(!items.length){
-    if(!root.JastrowSearch.hasSelectionTranslations(root.JASTROW_INDEX,word))return;
-    await root.Otzaria.call('ui.showMessage',{message:word+'\nNo short meaning is available. Click to open the dictionary entry and references.',tapPayload:{dictionaryWord:word,readerContext:context},tapOpenPlugin:true});return;
-   }
-   const res=await root.Otzaria.call('ui.showMessage',{message:message(word,items,formKind(word)),tapPayload:{dictionaryWord:word,readerContext:context},tapOpenPlugin:true});
-   if(res?.success===false)console.warn('Quick dictionary lookup unavailable; use Open dictionary.');
-  }catch{
-   if(current===serial){
-    console.warn('Quick dictionary lookup failed; use Open dictionary.');
-    await root.Otzaria.call('ui.showMessage',{message:word+'\nThe quick result could not load. Click to open the dictionary.',tapPayload:{dictionaryWord:word,readerContext:context},tapOpenPlugin:true});
-   }
-  }
- }
- root.DictionaryQuick={results,meanings,message,show,previewCandidates};
- if(root.Otzaria)root.Otzaria.on('reader.context_menu_item_clicked',async p=>{
-  const word=root.JastrowContext.selectionText(p);
-  if(p.itemId==='jastrow-lookup'){await show(word,p);return;}
-
- });
+ async function meanings(word,selection){return (await results(word,selection)).map(item=>(item.selectedWord?item.selectedWord+': ':'')+item.text);}
+ root.DictionaryQuick={results,meanings,previewCandidates,captureReaderContext};
 })(typeof window==='undefined'?globalThis:window);

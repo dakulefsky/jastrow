@@ -12,12 +12,13 @@ async function testEnglish(){
   JASTROW_INDEX:{entries},
   JastrowContext:{selectionText:p=>p?.selection?.renderedSelectedText||p?.selectedText||''},
   JastrowSearch:{splitWords:w=>[w],normalize:w=>w,hasSelectionTranslations:()=>true},
+  DictionaryQuick:{captureReaderContext:async selection=>selection,results:async()=>[{text:'a concise meaning',spelling:'נפקא',entryId:0}]},
   Otzaria:{
    on:(name,fn)=>{if(!events.has(name))events.set(name,[]);events.get(name).push(fn);},
-   call:async(method,args)=>{calls.push({method,args});if(method==='reader.addContextMenuItem')items.set(args.id,args);if(method==='reader.removeContextMenuItem')items.delete(args.id);return {success:true};}
+   call:async(method,args)=>{calls.push({method,args});if(method==='reader.getSelection')return {success:true,data:{renderedSelectedText:'נפקא',currentRef:'ברכות ב',sourceRange:{ref:'ברכות ב'}}};if(method==='reader.addContextMenuItem')items.set(args.id,args);if(method==='reader.removeContextMenuItem')items.delete(args.id);return {success:true};}
   }
  };
- const context={window:root,globalThis:root,Otzaria:root.Otzaria,JastrowContext:root.JastrowContext,JastrowSearch:root.JastrowSearch,JASTROW_INDEX:root.JASTROW_INDEX,console};
+ const context={window:root,globalThis:root,Otzaria:root.Otzaria,JastrowContext:root.JastrowContext,JastrowSearch:root.JastrowSearch,DictionaryQuick:root.DictionaryQuick,JASTROW_INDEX:root.JASTROW_INDEX,console};
  vm.runInNewContext(await read('plugin/availability.js'),context);
  for(const fn of events.get('reader.selection_changed')||[])fn({selection:{renderedSelectedText:'נפקא'}});
  await settle();

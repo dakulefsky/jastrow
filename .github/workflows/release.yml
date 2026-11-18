@@ -82,15 +82,22 @@ jobs:
           node plugin/test_translation_prefetch.cjs
           node plugin/test_sefaria_evidence.cjs
           node plugin/test_translation_evidence.cjs
-      - name: Test consistent student lookup in Chromium
+      - name: Install Chromium test dependencies
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
-          node test_consistency_ui.cjs
-          node test_prefixes_ui.cjs
-          node test_reader_lookup.cjs
-          node test_redirects_ui.cjs
-          node test_unified_ui.cjs
+      - name: Test dictionary consistency in Chromium
+        run: node test_consistency_ui.cjs
+      - name: Test prefix and inflection lookups in Chromium
+        run: node test_prefixes_ui.cjs
+      - name: Test native reader submenu in Chromium
+        run: node test_reader_lookup.cjs
+      - name: Test redirect handling in Chromium
+        run: node test_redirects_ui.cjs
+      - name: Test unified dictionary UI in Chromium
+        run: node test_unified_ui.cjs
+      - name: Test cold-start native submenu in Chromium
+        run: node test_context_open.cjs
       - name: Validate, build, and publish
         if: github.ref == 'refs/heads/main'
         id: publish

@@ -1,2 +1,37 @@
-const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');const events={},calls=[],messages=()=>calls.filter(x=>x.method==='ui.showMessage'),c={console,Otzaria:{on:(e,f)=>events[e]=f,call:async(method,args)=>{calls.push({method,args});return {success:true}}}};c.window=c;vm.createContext(c);for(const f of ['search.js','data/index.js','data/attested-forms.js','data/ranking.js','data/krupnik-index.js','data/phrases.js','data/inflections.js','context-menu.js','reading-view.js','unified-view.js'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/'+f,'utf8'),c);c.JASTROW_CHUNKS={};for(const f of fs.readdirSync(__dirname+'/plugin/data').filter(x=>/^(krupnik-|chunk-)\d+\.js$/.test(x)))vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+f,'utf8'),c);vm.runInContext(fs.readFileSync(__dirname+'/plugin/quick-lookup.js','utf8'),c);
-(async()=>{await events['reader.context_menu_item_clicked']({itemId:'jastrow-lookup',selectedText:'נפקא מינה'});assert.equal(messages().length,1);assert(messages()[0].args.message.includes('the practical difference is'));assert(!messages()[0].args.message.includes('to bring out'));assert.equal(messages()[0].args.tapOpenPlugin,true);assert.equal(messages()[0].args.tapPayload.dictionaryWord,'נפקא מינה');assert(messages()[0].args.tapPayload.readerContext);await events['reader.context_menu_item_clicked']({itemId:'jastrow-lookup',selectedText:'zzzz'});assert.equal(messages().length,1);const text=c.DictionaryQuick.message('word',['a','b','c']);assert(text.includes('1. **a**'));assert(text.includes('2. **b**'));assert(!text.includes('3. **c**'));assert(!c.DictionaryQuick.message('word',['a*b']).includes('a*b'));assert(c.DictionaryQuick.message('word',['x'.repeat(200)]).includes('…**'));assert(text.includes('More meanings'));let comparisonCalled=false;c.SefariaEvidence={lookup:async()=>{throw new Error('right-click must not make an online Sefaria lookup');},compareTranslation:async(word,candidates,selection)=>{comparisonCalled=true;assert(selection&&selection.sourceRange?.ref);assert(candidates.length>0);return {matches:[{id:candidates[0].id,matchedPhrase:'completed',matchType:'inflected_word'}],scope:'paragraph',source:'offline'};}};await c.DictionaryQuick.show('נפקא מינה',{currentBook:'ברכות',sourceRange:{ref:'ברכות, דף ב עמוד א:1'}});assert(comparisonCalled);assert(messages().at(-1).args.message.includes('— Recommended'));assert(!messages().at(-1).args.message.includes('Steinsaltz wording'));assert(messages().at(-1).args.tapPayload.readerContext);const contextual=c.DictionaryQuick.message('כתבינן',[{text:'to write',spelling:'כָּתַב',label:'Pa.'}], 'inflected form');assert(contextual.includes('**to write**'));assert(contextual.includes('כָּתַב · Pa.'));assert(contextual.includes('Base-word meanings'));assert(c.DictionaryQuick.message('א ב',[{text:'a meaning',selectedWord:'א',spelling:'ב',label:''}]).includes('א · ב'));await c.DictionaryQuick.show('WHO CREATED THIS?');assert.equal(messages().at(-1).args.message,'Daniel Avrahom');await c.DictionaryQuick.show('Who Created This?');assert.equal(calls.at(-1).args.message,'Daniel Avrahom');console.log('PASS: English actual offline phrase lookup, source gloss, no derived-form leakage, first two only, click-to-open payload, unknown exclusion.');})().catch(e=>{console.error(e);process.exit(1)});
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const events={},calls=[],c={console,Otzaria:{on:(e,f)=>events[e]=f,call:async(method,args)=>{calls.push({method,args});return {success:true}}}};
+c.window=c;vm.createContext(c);
+for(const f of ['search.js','data/index.js','data/attested-forms.js','data/ranking.js','data/krupnik-index.js','data/phrases.js','data/inflections.js','context-menu.js','reading-view.js','unified-view.js'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/'+f,'utf8'),c);
+c.JASTROW_CHUNKS={};
+for(const f of fs.readdirSync(__dirname+'/plugin/data').filter(x=>/^(krupnik-|chunk-)\d+\.js$/.test(x)))vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+f,'utf8'),c);
+vm.runInContext(fs.readFileSync(__dirname+'/plugin/quick-lookup.js','utf8'),c);
+(async()=>{
+ const selection={currentBook:'ברכות',sourceRange:{ref:'ברכות, דף ב עמוד א:1',beforeText:{raw:'הדבר הוא '},afterText:{raw:' בפועל'} }};
+ const offline=await c.DictionaryQuick.results('נפקא מינה',null,{maxCandidates:24});
+ assert(offline.length>0,'known phrase should have dictionary meanings');
+ assert(offline[0].text.includes('the practical difference is'));
+ assert(Number.isInteger(offline[0].entryId),'each quick choice must retain its source entry id');
+ let comparisonCalled=false;
+ c.SefariaEvidence={compareTranslation:async(word,candidates,context,options)=>{
+  comparisonCalled=true;assert.equal(word,'נפקא מינה');assert(context.sourceRange?.ref);assert.equal(options.preparedOnly,true);
+  assert(candidates.length>0);
+  return {matches:[{id:candidates[0].id,matchedPhrase:'the practical difference',matchType:'exact'}],scope:'paragraph',source:'offline'};
+ }};
+ const contextual=await c.DictionaryQuick.results('נפקא מינה',selection,{maxCandidates:24});
+ assert(comparisonCalled,'prepared offline translation evidence should be checked');
+ assert.equal(contextual[0].translationMatch,true,'the strongest contextual candidate should rank first');
+ assert.equal(contextual[0].translationPhrase,'the practical difference');
+ assert.equal(contextual[0].recommended,true,'a unique strongest translation match should be marked recommended');
+ assert(Number.isInteger(contextual[0].entryId));
+ assert.equal(typeof c.DictionaryQuick.captureReaderContext,'function');
+ let mesoresCalls=0;
+ c.MesoresHaShas={propagatedPreference:async()=>{mesoresCalls++;return{preferredEntryId:'0'};}};
+ c.SefariaEvidence.compareTranslation=async()=>({matches:[],reason:'no_candidate_wording_found',scope:'paragraph'});
+ const noDirectMatch=await c.DictionaryQuick.results('נפקא מינה',selection,{maxCandidates:24});
+ assert.equal(mesoresCalls,0,'Mesores must not independently reinterpret linked passages to choose a dictionary meaning');
+ assert.equal(noDirectMatch.some(item=>item.recommended),false,'without direct contextual evidence, no meaning should be recommended');
+
+ assert.equal(c.DictionaryQuick.message,undefined,'the old message-based quick result is no longer the UI');
+ assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,0);
+ console.log('PASS: offline phrase meanings, source-entry identity, direct prepared contextual evidence ranking, no Mesores-side interpretation, and native-menu data (no message popup).');
+})().catch(e=>{console.error(e);process.exit(1)});
