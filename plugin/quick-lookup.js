@@ -19,8 +19,9 @@
   const maxCandidates=Number.isInteger(options.maxCandidates)?Math.max(1,Math.min(40,options.maxCandidates)):100;
   if(!phrase.ids.length&&S.splitWords(word).length>1){
    if(!S.hasSelectionTranslations(index,word))return [];
-   const lists=await Promise.all(S.segmentWords(index,word).map(async part=>(await results(part.word,selection,{maxCandidates})).map(item=>({...item,selectedWord:part.word}))));
-   return lists.flat();
+   const parts=S.segmentWords(index,word),perPart=Math.max(2,Math.ceil(maxCandidates/Math.max(1,parts.length)));
+   const lists=await Promise.all(parts.map(async part=>(await results(part.word,selection,{maxCandidates:perPart})).map(item=>({...item,selectedWord:part.word}))));
+   return lists.flat().slice(0,maxCandidates);
   }
   const result=phrase.ids.length?phrase:S.lookup(index,word,maxCandidates,'length',false);
   if(['suggestions','invalid','empty'].includes(result.kind))return [];
