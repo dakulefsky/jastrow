@@ -33,7 +33,7 @@
     const job=pending;pending=null;
     await selectionRemoval;
     if(job.revision!==revision)continue;
-    const text=JastrowContext.selectionText(job.payload);
+    let text=JastrowContext.selectionText(job.payload);
     if(!text||text.length>100||!JastrowSearch.hasSelectionTranslations(index,text))continue;
     let selection=job.payload;
     try{
@@ -42,6 +42,7 @@
      if(job.revision!==revision)continue;
      if(response?.success&&current&&JastrowSearch.splitWords(current).map(JastrowSearch.normalize).join(' ')===JastrowSearch.splitWords(text).map(JastrowSearch.normalize).join(' ')){
       selection=response.data||selection;
+      text=current;
      }
     }catch{}
     if(job.revision!==revision)continue;
