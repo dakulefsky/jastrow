@@ -253,7 +253,9 @@ if(window.Otzaria){
   const param=p?.param&&typeof p.param==='object'?p.param:{};
   const word=typeof param.dictionaryWord==='string'?param.dictionaryWord:JastrowContext.selectionText(p);
   if(!word)return;
-  activeReaderContext={word,selection:p.selection&&typeof p.selection==='object'?p.selection:p};
+  const selection=p.selection&&typeof p.selection==='object'?p.selection:p;
+  const selected=JastrowContext.selectionText(p);
+  activeReaderContext=!selected||JastrowSearch.normalize(selected)===JastrowSearch.normalize(word)?{word,selection}:null;
   const id=Number(param.entryId);
   if(param.entryId!==undefined&&Number.isInteger(id)&&id>=0)showEntry(id,true,null,word);
   else search(word);
