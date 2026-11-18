@@ -47,7 +47,11 @@
     const context=await DictionaryQuick.captureReaderContext(selection);
     const items=await DictionaryQuick.results(text,context,{maxCandidates:24});
     if(job.revision!==revision)continue;
-    const choices=items.filter(item=>item.text&&Number.isInteger(item.entryId)).slice(0,MAX_MENU_MEANINGS);
+    const available=items.filter(item=>item.text&&Number.isInteger(item.entryId));
+    const hasMore=items.hasMore===true||available.length>MAX_MENU_MEANINGS;
+    // Four visible choices total: reserve the last slot for the full dictionary
+    // whenever there are additional meanings.
+    const choices=available.slice(0,hasMore?MAX_MENU_MEANINGS-1:MAX_MENU_MEANINGS);
     if(!choices.length){
      await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-lookup'}).catch(()=>{});
      continue;
@@ -58,7 +62,7 @@
      openPlugin:true,
      param:{dictionaryWord:text,entryId:item.entryId}
     }));
-    if(items.hasMore===true||items.length>choices.length)children.push({
+    if(hasMore)children.push({
      id:'jastrow-meaning-more',
      title:'Open full dictionary for more meanings',
      openPlugin:true,
