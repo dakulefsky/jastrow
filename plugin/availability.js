@@ -3,34 +3,88 @@
  if(!window.Otzaria)return;
  const index=window.JASTROW_INDEX;
  let pending=null,running=false,revision=0;
+ const MAX_MENU_MEANINGS=8;
+ const compact=(value,max)=>String(value||'').replace(/\s+/g,' ').trim().slice(0,max).replace(/[\s,;:.—-]+$/,'');
+ function childTitle(item,word,position){
+  const spelling=[item.selectedWord,item.spelling].filter(Boolean).join(' · ')||word;
+  const recommended=position===0&&item.translationMatch===true;
+  let label=spelling+' — '+compact(item.text,recommended?43: sixty());
+  if(recommended){
+   label+=' · Recommended';
+   if(item.translationPhrase)label+=' · “'+compact(item.translationPhrase,18)+'”';
+  }
+  return label.length>100?label.slice(0,99).trimEnd()+'…':label;
+ }
+ function sixty(){return 56;}
+ function removeLegacyVotes(){
+  return Promise.all([
+   Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-votes'}).catch(()=>{}),
+   ...[0,1,2].map(i=>Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i}).catch(()=>{}))
+  ]);
+ }
  async function update(){
   if(running)return;running=true;
   try{
    while(pending){
     const job=pending;pending=null;
     const text=JastrowContext.selectionText(job.payload);
-    let rendered=text;
-    if(JastrowSearch.hasSelectionTranslations(index,text)&&!job.payload.renderedSelectedText){
-     try{const res=await Otzaria.call('reader.getSelection');const current=JastrowContext.selectionText(res?.data);
-      if(job.revision!==revision)continue;
-      if(res?.success&&JastrowSearch.splitWords(current).map(JastrowSearch.normalize).join(' ')===JastrowSearch.splitWords(text).map(JastrowSearch.normalize).join(' '))rendered=current;
-     }catch{}
+    if(!text||text.length>100||!JastrowSearch.hasSelectionTranslations(index,text)){
+     if(job.revision===revision)await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-lookup'}).catch(()=>{});
+     continue;
     }
+    let selection=job.payload;
+    try{
+     const response=await Otzaria.call('reader.getSelection');
+     const current=JastrowContext.selectionText(response?.data);
+     if(job.revision!==revision)continue;
+     if(response?.success&&current&&JastrowSearch.splitWords(current).map(JastrowSearch.normalize).join(' ')===JastrowSearch.splitWords(text).map(JastrowSearch.normalize).join(' ')){
+      selection=response.data||selection;
+     }
+    }catch{}
     if(job.revision!==revision)continue;
-    const matched=JastrowSearch.hasSelectionTranslations(index,text);
-    const variants=[...new Set([rendered,text,JastrowSearch.splitWords(text).map(JastrowSearch.normalize).join(' ')])].filter(x=>x&&x.length<=100);
-    const method=matched&&variants.length?'reader.addContextMenuItem':'reader.removeContextMenuItem';
-    const args=method==='reader.addContextMenuItem'?{id:'jastrow-lookup',title:'Aramaic → Eng. — Quick result',label:'Aramaic → Eng. — Quick result',icon:'book_24_regular',contexts:['reader-selection','reader-page-shape-selection'],openPlugin:false,showWhen:{selectionContainsAny:variants}}:{id:'jastrow-lookup'};
-    const res=await Otzaria.call(method,args);
+    const context=await DictionaryQuick.captureReaderContext(selection);
+    const items=await DictionaryQuick.results(text,context,{maxCandidates:24});
     if(job.revision!==revision)continue;
-    // Remove any submenu left by an earlier plugin version.
-    await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-votes'}).catch(()=>{});
-    for(let i=0;i<3;i++)await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i}).catch(()=>{});
-    if(res?.success===false&&res.error?.code!=='error.not_found')console.warn('Dictionary filtered lookup registration failed',res.error?.code);
+    const choices=items.filter(item=>item.text&&Number.isInteger(item.entryId)).slice(0,MAX_MENU_MEANINGS);
+    if(!choices.length){
+     await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-lookup'}).catch(()=>{});
+     continue;
+    }
+    const children=choices.map((item,i)=>({
+     id:'jastrow-meaning-'+i,
+     title:childTitle(item,text,i),
+     openPlugin:true,
+     param:{
+      dictionaryWord:text,
+      entryId:item.entryId,
+      ...(item.translationMatch?{recommended:true,translationPhrase:item.translationPhrase||''}:{})
+     }
+    }));
+    const rendered=JastrowContext.selectionText(selection);
+    const variants=[...new Set([rendered,text,JastrowSearch.splitWords(text).map(JastrowSearch.normalize).join(' ')])].filter(value=>value&&value.length<=100);
+    const title='Aramaic → Eng. — '+compact(text,72);
+    const response=await Otzaria.call('reader.addContextMenuItem',{
+     id:'jastrow-lookup',
+     type:'submenu',
+     title:title.length>100?title.slice(0,99).trimEnd()+'…':title,
+     icon:'book_24_regular',
+     contexts:['reader-selection','reader-page-shape-selection'],
+     showWhen:{selectionContainsAny:variants},
+     children
+    });
+    if(job.revision!==revision)continue;
+    await removeLegacyVotes();
+    if(response?.success===false&&response.error?.code!=='error.not_found')console.warn('Dictionary meaning menu registration failed',response.error?.code);
    }
-  }finally{running=false;if(pending)update().catch(()=>console.warn('Dictionary filtered lookup unavailable'));}
+  }finally{
+   running=false;
+   if(pending)update().catch(()=>console.warn('Dictionary meaning menu unavailable'));
+  }
  }
- function offer(payload){pending={payload:payload||{},revision:++revision};update().catch(()=>console.warn('Dictionary filtered lookup unavailable'));}
+ function offer(payload){pending={payload:payload||{},revision:++revision};update().catch(()=>console.warn('Dictionary meaning menu unavailable'));}
  Otzaria.on('reader.selection_changed',offer);
- Otzaria.on('plugin.boot',async()=>{const before=revision;try{const res=await Otzaria.call('reader.getSelection');if(before===revision&&res?.success)offer(res.data||{});}catch{}});
+ Otzaria.on('plugin.boot',async()=>{
+  const before=revision;
+  try{const response=await Otzaria.call('reader.getSelection');if(before===revision&&response?.success)offer(response.data||{});}catch{}
+ });
 })();
