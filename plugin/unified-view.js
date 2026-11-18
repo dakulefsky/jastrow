@@ -4,24 +4,29 @@
  const clean=text=>String(text).normalize('NFKC').toLowerCase().replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
  const stem=label=>/^[—\s]*\d+[).]?\s*$/.test(label||'')?'':clean(label||'');
  const parts=text=>String(text).split(/[,;]/).map(clean).filter(Boolean);
+ // Exact, reviewed English gloss equivalents only. Avoid fuzzy token overlap:
+ // shared words alone are not enough to collapse distinct dictionary senses.
+ const synonymGroups=[
+  ['sometimes','at times','from time to time','occasionally'],
+  ['happen','to happen','occur','to occur','take place']
+ ];
+ const synonymKey=text=>{
+  const value=clean(text);
+  return synonymGroups.find(group=>group.includes(value))?.[0]||value;
+ };
  function compatible(a,b){
   const aa=S.markedLetters(a),bb=S.markedLetters(b);
   if(S.normalize(a)!==S.normalize(b))return false;
   return aa.every((x,i)=>!x.marks.length||!bb[i].marks.length||x.marks.join('')===bb[i].marks.join(''));
  }
- // Reviewed source equivalence: both cite Targum Ruth 2:3 for אִרְעָא.
- // Restrict this to these original glosses, not a general synonym rewrite.
  function reviewedEquivalent(source,item){
   const pair=[source,item].map(s=>s.entry.r+'|'+s.meaning.text).sort();
   return pair[0]==='A03220|accident, occurrence'&&pair[1]==='KRU02095|in accident';
  }
  function sameMeaning(group,item){
   if(group.form!==stem(item.meaning.label)||!group.sources.every(s=>S.normalize(s.spelling)===S.normalize(item.spelling)))return false;
-  if(clean(group.text)===clean(item.meaning.text)||group.sources.some(s=>reviewedEquivalent(s,item)))return true;
+  if(synonymKey(group.text)===synonymKey(item.meaning.text)||group.sources.some(s=>reviewedEquivalent(s,item)))return true;
   const a=parts(group.text),b=parts(item.meaning.text);
-  // Consolidate identical English meanings and contained synonym lists.
-  // Different lists merely sharing one word remain separate. Original vowel
-  // readings belong to their source references, not duplicate meaning cards.
   return Math.min(a.length,b.length)>=1&&(a.every(x=>b.includes(x))||b.every(x=>a.includes(x)));
  }
  function merge(records,word){
@@ -80,5 +85,5 @@
   if(withoutMeanings.length){const details=element('details',undefined,'scholarly-entry original-only');details.append(element('summary','Additional dictionary references'));withoutMeanings.forEach((r,i)=>details.append(sourceBlock({...r,meaning:{text:'',label:''}},i)));section.append(details);}
   return section;
  }
- const api={merge,render,compatible};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.DictionaryMeanings=api;
+ const api={merge,render,compatible,synonymKey};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.DictionaryMeanings=api;
 })(typeof window!=='undefined'?window:globalThis);
