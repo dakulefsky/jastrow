@@ -24,7 +24,10 @@ async function testEnglish(){
  await settle();
  assert(items.has('jastrow-lookup'),'English quick lookup must remain available');
  assert(![...items.keys()].some(id=>id.includes('community-vote')),'English voting submenu must not be registered');
- assert.equal(calls.filter(x=>x.method==='reader.addContextMenuItem').length,1,'English should register only the quick lookup menu item');
+ const englishAdds=calls.filter(x=>x.method==='reader.addContextMenuItem');
+ assert.equal(englishAdds.length,2,'English should install a safe fallback, then upgrade it to the quick lookup menu');
+ assert.equal(englishAdds[0].args.children[0].id,'jastrow-meaning-fallback','fallback must be registered before asynchronous lookup');
+ assert.equal(englishAdds[1].args.children[0].id,'jastrow-meaning-0','recognized words should replace the fallback with a meaning choice');
  assert(calls.some(x=>x.method==='reader.removeContextMenuItem'&&x.args.id==='jastrow-community-votes'),'stale English voting submenu must be removed');
 }
 
