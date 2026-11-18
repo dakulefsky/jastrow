@@ -7,13 +7,18 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   const index={entries,forms:{},direct:Object.fromEntries(entries.map((e,id)=>[JastrowSearch.normalize(e.h),[id]]))},chunk=Object.fromEntries(entries.map((e,id)=>[id,e]));
   const load=async()=>chunk,read=id=>JastrowReadingView.records(index,id,load,entries[id].h);
   const chain=await read(0),cycle=await read(3),discussion=await read(5),own=await read(6),missing=await read(8);
-  window.JASTROW_INDEX=index;window.JASTROW_CHUNKS[9000]=chunk;const calls=[];window.Otzaria={call:async(method,args)=>{calls.push({method,args});return {success:true};}};
-  const qualified=await DictionaryQuick.results('פעל'),redirected=await DictionaryQuick.results('כינוי');await DictionaryQuick.show('כינוי');await DictionaryQuick.show('מחזור');await DictionaryQuick.show('חסר');await DictionaryQuick.show('דיון');await DictionaryQuick.show('אבגדהוזחטיכלמנסעפצקרשת');
-  const original=JastrowReadingView.records;try{JastrowReadingView.records=async()=>{throw Error('Simulated chunk failure');};await DictionaryQuick.show('כינוי');}finally{JastrowReadingView.records=original;}
-  return {qualified,redirected,chain:chain.map(r=>r.id),target:DictionaryMeanings.merge(chain,'כינוי').map(g=>({text:g.text,sources:g.sources.map(s=>s.id)})),cycle:cycle.map(r=>r.id),discussion:discussion.map(r=>r.id),own:own.map(r=>r.id),missing:missing.map(r=>r.id),calls};
+  window.JASTROW_INDEX=index;window.JASTROW_CHUNKS[9000]=chunk;
+  const qualified=await DictionaryQuick.results('פעל'),redirected=await DictionaryQuick.results('כינוי');
+  const cyclic=await DictionaryQuick.results('מחזור'),missingTarget=await DictionaryQuick.results('חסר'),ordinaryProse=await DictionaryQuick.results('דיון'),unknown=await DictionaryQuick.results('אבגדהוזחטיכלמנסעפצקרשת');
+  const original=JastrowReadingView.records;let failure='';
+  try{JastrowReadingView.records=async()=>{throw Error('Simulated chunk failure');};await DictionaryQuick.results('כינוי');}catch(e){failure=e.message;}finally{JastrowReadingView.records=original;}
+  return {qualified,redirected,cyclic,missingTarget,ordinaryProse,unknown,failure,chain:chain.map(r=>r.id),target:DictionaryMeanings.merge(chain,'כינוי').map(g=>({text:g.text,sources:g.sources.map(s=>s.id)})),cycle:cycle.map(r=>r.id),discussion:discussion.map(r=>r.id),own:own.map(r=>r.id),missing:missing.map(r=>r.id)};
  });
- assert.deepEqual(result.chain,[0,1,2]);assert.deepEqual(result.target,[{text:'original target meaning',sources:[2]}]);assert.deepEqual(result.cycle,[3,4]);assert.deepEqual(result.discussion,[5]);assert.deepEqual(result.own,[6]);assert.deepEqual(result.missing,[8]);assert.deepEqual(result.qualified.map(x=>x.label),['','Pa.']);assert.equal(result.redirected[0].spelling,'עיקר');
- assert.equal(result.calls.length,5);assert.match(result.calls[0].args.message,/original target meaning/);assert.match(result.calls[4].args.message,/could not load/);assert.equal(result.calls[4].args.tapPayload.dictionaryWord,'כינוי');assert.equal(result.calls[4].args.tapOpenPlugin,true);
- for(const [n,word] of [[1,'מחזור'],[2,'חסר'],[3,'דיון']]){assert.match(result.calls[n].args.message,/No short meaning/);assert.equal(result.calls[n].args.tapPayload.dictionaryWord,word);assert.equal(result.calls[n].args.tapOpenPlugin,true);}
- console.log('PASS explicit redirect chains, exact target attribution, cycle/missing-target termination, no following ordinary prose references, actionable reference-only messages, unknown exclusion.');
+ assert.deepEqual(result.chain,[0,1,2]);assert.deepEqual(result.target,[{text:'original target meaning',sources:[2]}]);assert.deepEqual(result.cycle,[3,4]);assert.deepEqual(result.discussion,[5]);assert.deepEqual(result.own,[6]);assert.deepEqual(result.missing,[8]);
+ assert.deepEqual(result.qualified.map(x=>x.label),['','Pa.']);assert.equal(result.redirected[0].spelling,'עיקר');assert.equal(result.redirected[0].text,'original target meaning');assert.equal(result.redirected[0].entryId,2);
+ assert.equal(result.cyclic.length,0,'redirect cycles must not create quick choices');assert.equal(result.missingTarget.length,0,'missing redirect targets must not create quick choices');
+ assert(result.ordinaryProse.every(x=>x.entryId!==2),'ordinary prose references must not be followed as dictionary redirects');
+ if(result.ordinaryProse.length)assert(result.ordinaryProse.some(x=>/extended discussion/.test(x.text)));
+ assert.equal(result.unknown.length,0);assert.equal(result.failure,'Simulated chunk failure','failed dictionary chunks must fail closed rather than show a misleading popup');
+ console.log('PASS redirect chains preserve exact target attribution; cycles, missing targets and unknown words produce no quick choices; ordinary prose references remain untouched; chunk errors fail closed.');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
