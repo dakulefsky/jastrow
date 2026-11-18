@@ -26,7 +26,7 @@ vm.runInContext(fs.readFileSync(__dirname+'/plugin/quick-lookup.js','utf8'),c);
  assert.equal(typeof c.DictionaryQuick.captureReaderContext,'function');
  c.SefariaEvidence.compareTranslation=async(word,candidates,context)=>context.currentBook==='linked'
   ?{matches:[{id:candidates[0].id,matchedPhrase:'linked context',matchType:'exact'}],scope:'paragraph'}
-  :{matches:[],scope:'paragraph'};
+  :{matches:[],reason:'no_candidate_wording_found',scope:'paragraph'};
  c.MesoresHaShas={propagatedPreference:async(wordSelection,word,candidates,rank)=>{
   const preference=await rank(word,candidates,{currentBook:'linked',sourceRange:{ref:'linked passage'}});
   return preference?{preferredEntryId:preference.preferredEntryId}:null;
