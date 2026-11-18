@@ -39,7 +39,7 @@
           "id": "jastrow-lookup",
           "type": "submenu",
           "title": "Aramaic → Eng.",
-          "icon": "book_dictionary_24_regular",
+          "icon": "alef_with_score_24_regular",
           "children": [
             {
               "id": "jastrow-meaning-fallback",
