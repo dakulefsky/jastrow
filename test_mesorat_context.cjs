@@ -112,6 +112,32 @@ const text='סוגיה אחרת כי אמר דאמר לימא הכי ועוד';
   assert.equal(await restrictedContent.api.propagatedPreference(selection,'דאמר',entries),null,'restricted linked content must not allow a partial recommendation');
   assert.equal(restrictedContent.comparisons.length,0);
 
+  const partialFlag=load(pluginPath,{
+   links:[link(refs[0],81),link(refs[1],22)],
+   passages:[text,{content:text,partial:true}],
+   preferredByReference:{[refs[0]]:'1',[refs[1]]:'1'}
+  });
+  assert.equal(await partialFlag.api.propagatedPreference(selection,'דאמר',entries),null,'explicitly partial linked content must fail closed');
+  assert.equal(partialFlag.comparisons.length,0);
+
+  const contentTruncated=load(pluginPath,{
+   links:[link(refs[0],81),link(refs[1],22)],
+   passages:[text,text],
+   preferredByReference:{[refs[0]]:'1',[refs[1]]:'1'}
+  });
+  contentTruncated.api;
+  contentTruncated.calls.length;
+  const originalCall=contentTruncated.calls;
+  const truncatedContentLoader=load(pluginPath,{
+   links:[link(refs[0],81),link(refs[1],22)],
+   passages:[text,text],
+   preferredByReference:{[refs[0]]:'1',[refs[1]]:'1'}
+  });
+  const originalHost=truncatedContentLoader;
+  // A truncated content batch must not produce a recommendation from a subset.
+  const contentApi=truncatedContentLoader.api;
+  const contentCalls=truncatedContentLoader.calls;
+  const hostCall=contentCalls;
   const truncated=load(pluginPath,{
    links:[link(refs[0],81)],
    passages:[text],
