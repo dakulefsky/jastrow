@@ -13,6 +13,8 @@ for(const word of ['מא','אמר','אוֹגַר','תניא']){
  const found=S.lookup(i,word,100);const direct=new Set(i.direct[S.normalize(word)]||[]);let sawForm=false;
  for(const id of found.ids){if(!direct.has(id))sawForm=true;else assert(!sawForm,'Exact matches must precede forms');}
 }
+const zimnaId=i.entries.findIndex(e=>e.h==='זִמְנָא');assert(zimnaId>=32512);assert.deepEqual(c.window.JASTROW_CHUNKS[i.entries[zimnaId].b][zimnaId].glosses.map(g=>g.text),['time','times']);
+const zimninId=i.entries.findIndex(e=>e.h==='זִמְנִין');assert(zimninId>=32512);assert.deepEqual(c.window.JASTROW_CHUNKS[i.entries[zimninId].b][zimninId].glosses.map(g=>g.text),['sometimes']);
 const kOnly=Object.keys(c.window.KRUPNIK_DATA.direct).find(w=>!i.forms[w]&&!i.direct[w].some(id=>id<32512));assert(kOnly);assert(S.hasTranslation(i,kOnly));assert(!S.hasTranslation(i,'hello'));assert(!S.hasTranslation(i,'מא אמר'));
 const ma=S.lookup(i,'מא').ids;assert(ma.some(id=>i.entries[id].source==='krupnik'));assert(ma.some(id=>id<32512));assert.equal(i.entries[ma[0]].source,'krupnik');assert(S.lookup(i,'מא',100,'length',true).ids.some(id=>id<32512));assert(S.lookup(i,'דאמר').ids.some(id=>id<32512));
 assert(c.window.JASTROW_CHUNKS[i.entries[ma[0]].b][ma[0]].glosses.some(g=>g.text==='what? how?'));
