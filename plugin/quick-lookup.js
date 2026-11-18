@@ -61,9 +61,9 @@
   const lines=items.slice(0,2).map((item,i)=>{
    const meaning=typeof item==='string'?item:item.text;
    const number=items.length>1?(i+1)+'. ':'';
-   return '\u2066'+number+short(String(meaning||'').replace(/\\*/g,''))+'\u2069';
+   return '\u2066'+number+short(String(meaning||'').replace(/\*/g,''))+'\u2069';
   });
-  return [word,'',...lines,'','\u2066Tap to open the full dictionary entry.\u2069'].join('\\n');
+  return [word,'',...lines,'','\u2066Tap to open the full dictionary entry.\u2069'].join('\n');
  }
  async function captureReaderContext(selection){
   if(!selection||typeof selection!=='object')return null;
