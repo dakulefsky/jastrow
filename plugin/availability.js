@@ -2,7 +2,7 @@
  'use strict';
  if(!window.Otzaria)return;
  const index=window.JASTROW_INDEX;
- let pending=null,running=false,revision=0;
+ let pending=null,running=false,revision=0,legacyRemoval=null;
  const MAX_MENU_MEANINGS=8;
  function compact(value,max){
   const text=String(value||'').replace(/\s+/g,' ').trim();
@@ -20,10 +20,11 @@
   return label.length>100?label.slice(0,99).trimEnd()+'…':label;
  }
  function removeLegacyVotes(){
-  return Promise.all([
+  if(!legacyRemoval)legacyRemoval=Promise.all([
    Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-votes'}).catch(()=>{}),
    ...[0,1,2].map(i=>Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i}).catch(()=>{}))
   ]);
+  return legacyRemoval;
  }
  async function update(){
   if(running)return;running=true;
@@ -83,6 +84,7 @@
  function offer(payload){pending={payload:payload||{},revision:++revision};update().catch(()=>console.warn('Dictionary meaning menu unavailable'));}
  Otzaria.on('reader.selection_changed',offer);
  Otzaria.on('plugin.boot',async()=>{
+  await removeLegacyVotes();
   const before=revision;
   try{const response=await Otzaria.call('reader.getSelection');if(before===revision&&response?.success)offer(response.data||{});}catch{}
  });
