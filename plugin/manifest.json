@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "com.kulefsky.jastrow",
   "name": "Aramaic → Eng.",
-  "version": "1.11.20",
+  "version": "1.11.21",
   "description": "Offline Aramaic and rabbinic Hebrew to English dictionary, with contextual clues from the bundled English Babylonian Talmud.",
   "author": "DanTheMan",
   "stability": "beta",
@@ -33,7 +33,22 @@
         "app.startup",
         "reader.selection_changed"
       ],
-      "keepAlive": true
+      "keepAlive": true,
+      "contextMenuItems": [
+        {
+          "id": "jastrow-lookup",
+          "type": "submenu",
+          "title": "Aramaic → Eng.",
+          "icon": "book_dictionary_24_regular",
+          "children": [
+            {
+              "id": "jastrow-meaning-fallback",
+              "title": "Open full dictionary",
+              "openPlugin": true
+            }
+          ]
+        }
+      ]
     },
     "background": {
       "entrypoint": "background.html"

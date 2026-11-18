@@ -3,6 +3,8 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {chromium,executablePath}=require('./browser_support.cjs');
 (async()=>{
  const manifest=JSON.parse(fs.readFileSync(__dirname+'/plugin/manifest.json'));
+ const fallback=manifest.contributes?.startup?.contextMenuItems?.find(item=>item.id==='jastrow-lookup');
+ assert(fallback?.children?.some(item=>item.id==='jastrow-meaning-fallback'&&item.openPlugin===true),'the manifest must provide a native fallback even when background JS activation is unavailable');
  const server=http.createServer((req,res)=>{try{const pathname=new URL(req.url,'http://localhost').pathname;if(pathname==='/community-config.js'){res.setHeader('Content-Type','text/javascript');res.end("window.DICTIONARY_COMMUNITY_API='';");return;}const f=path.join(__dirname,'plugin',pathname==='/'?'index.html':pathname);res.setHeader('Content-Type',f.endsWith('.js')?'text/javascript':f.endsWith('.css')?'text/css':f.endsWith('.png')?'image/png':'text/html');res.end(fs.readFileSync(f));}catch{res.statusCode=404;res.end();}});
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));let browser;
  try{
@@ -60,15 +62,19 @@ const {chromium,executablePath}=require('./browser_support.cjs');
    selection={text:source,renderedSelectedText:display,currentRef:'ברכות, דף ב עמוד א:1',currentBook:'ברכות',sourceRange:{ref:'ברכות, דף ב עמוד א:1',beforeText:{raw:'לפני המילה '},afterText:{raw:' אחרי המילה'}}};
    await reader.evaluate(word=>{const n=document.querySelector('#word');n.textContent=word;const range=document.createRange();range.selectNodeContents(n);getSelection().removeAllRanges();getSelection().addRange(range);},display);
    await bg.evaluate(text=>events['reader.selection_changed'].forEach(f=>f({text,currentRef:'ברכות, דף ב עמוד א:1'})),source);
-   await reader.waitForFunction(({word,count})=>window.registeredWord===word&&window.menuItems.length===count,{word:display,count:known?1:0});
+   await reader.waitForFunction(({word,count})=>window.registeredWord===word&&window.menuItems.length===count,{word:display,count:1});
    await reader.locator('#word').click({button:'right'});
   }
   await choose('לצפרא');
   const first=items.get('jastrow-lookup');
   assert.equal(first.type,'submenu','quick result must use Otzaria native submenu');
   assert(first.children.length>0,'the submenu should offer clickable meanings');
-  assert(first.children.length<=8,'keep the quick menu concise');
-  assert(first.children.every(x=>x.openPlugin===true&&Number.isInteger(x.param.entryId)),'each meaning should open its dictionary source entry');
+  assert(first.children.length<=4,'show no more than four total choices');
+  const firstMeanings=first.children.filter(x=>x.id.startsWith('jastrow-meaning-')&&x.id!=='jastrow-meaning-more');
+  assert(firstMeanings.length<=4,'show no more than four meanings');
+  assert(firstMeanings.every(x=>x.openPlugin===true&&Number.isInteger(x.param.entryId)),'each meaning should open its dictionary source entry');
+  const firstMore=first.children.find(x=>x.id==='jastrow-meaning-more');
+  if(firstMore)assert.equal(firstMore.param.showAll,true,'overflow should open the full dictionary');
   for(const item of items.values())assert.deepEqual(item.contexts,['reader-selection','reader-page-shape-selection']);
   assert.equal(await reader.locator('#menu button').count(),first.children.length);
   const firstTitle=first.children[0].title;
@@ -81,7 +87,7 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   const contextual=items.get('jastrow-lookup');
   assert(contextual.children[0].title.startsWith('★ '),'the strongest translation match must carry the visible leading star marker');
   assert(!contextual.children[0].title.includes('Recommended'),'the clipped menu label should not rely on a trailing word');
-  assert(contextual.children[0].title.includes('the practical difference'),'show a short phrase from the selected passage as context');
+  assert(contextual.children[0].title.length<70,'keep recommended label short enough to avoid host clipping');
   const choice=contextual.children[0];
   await reader.locator('#menu').evaluate(()=>document.querySelector('button').click());
   await reader.waitForFunction(()=>document.body.dataset.openedWord==='נפקא מינה');
@@ -102,9 +108,12 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   await reader.waitForFunction(()=>document.body.dataset.openedWord==='אבדתא');
   assert.match(await foreground.locator('#entry').innerText(),/hyssop/);
   assert((await foreground.locator('.meaning-source').allTextContents()).some(t=>t.includes('אַבְרָתָא')),'the redirect target must remain credited');
+  await foreground.evaluate(()=>Promise.all((events['reader.context_menu_item_clicked']||[]).map(f=>f({itemId:'jastrow-meaning-fallback',selectedText:'לצפרא',selection:{selectedText:'לצפרא'}}))));
+  await foreground.waitForFunction(()=>document.querySelector('#query').value==='לצפרא');
   await choose('אבגדהוזחטיכלמנסעפצקרשת','אבגדהוזחטיכלמנסעפצקרשת',false);
-  assert.equal(await reader.locator('#menu button').count(),0,'unknown selections should not show the dictionary submenu');
+  assert.equal(await reader.locator('#menu button').count(),1,'unknown selections should retain the full-dictionary fallback');
+  assert.equal(items.get('jastrow-lookup').children[0].id,'jastrow-meaning-fallback');
   assert.deepEqual(errors,[]);
-  console.log('PASS reader selection → native submenu with concise meanings/context → recommended candidate → direct full dictionary entry; offline, derived forms, redirect and unknown-word paths. Host-contract simulation, not a native Otzaria device test.');
+  console.log('PASS reader selection → native submenu capped at four meanings → leading recommendation star → direct full dictionary entry; declarative fallback for inactive background runtime; offline, derived forms, redirect and unknown-word paths. Host-contract simulation, not a native Otzaria device test.');
  }finally{if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -30,6 +30,8 @@ vm.runInContext(fs.readFileSync(__dirname+'/plugin/quick-lookup.js','utf8'),c);
  const noDirectMatch=await c.DictionaryQuick.results('נפקא מינה',selection,{maxCandidates:24});
  assert.equal(mesoresCalls,0,'Mesores must not independently reinterpret linked passages to choose a dictionary meaning');
  assert.equal(noDirectMatch.some(item=>item.recommended),false,'without direct contextual evidence, no meaning should be recommended');
+ assert.equal(c.DictionaryMeanings.synonymKey('at times'),c.DictionaryMeanings.synonymKey('sometimes'),'known exact synonyms should share a deduplication key');
+ assert.notEqual(c.DictionaryMeanings.synonymKey('at times'),c.DictionaryMeanings.synonymKey('time'),'overlapping words must not collapse distinct meanings');
 
  assert.equal(c.DictionaryQuick.message,undefined,'the old message-based quick result is no longer the UI');
  assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,0);

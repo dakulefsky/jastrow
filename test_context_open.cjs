@@ -36,14 +36,14 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   });
   await reader.evaluate(()=>{document.querySelector('#word').oncontextmenu=e=>{
    e.preventDefault();const word=getSelection().toString(),menu=document.querySelector('#menu');menu.replaceChildren();
-   const item=window.item;if(!item||!item.showWhen?.selectionContainsAny?.some(s=>word.includes(s)))return;
+   const item=window.item;if(!item||(item.showWhen?.selectionContainsAny&&!item.showWhen.selectionContainsAny.some(s=>word.includes(s))))return;
    for(const child of item.children||[]){const button=document.createElement('button');button.textContent=child.title;button.onclick=()=>window.openChoice({word,itemId:child.id,param:child.param});menu.append(button);}
   };});
   async function choose(display,source=display,known=true){
    selection={text:source,renderedSelectedText:display,currentRef:'ברכות, דף ב עמוד א:1',currentBook:'ברכות'};
    await reader.evaluate(word=>{const n=document.querySelector('#word');n.textContent=word;const r=document.createRange();r.selectNodeContents(n);getSelection().removeAllRanges();getSelection().addRange(r);},display);
    await bg.evaluate(text=>events['reader.selection_changed'].forEach(f=>f({text})),source);
-   await reader.waitForFunction(({word,known})=>window.registeredWord===word&&Boolean(window.item)===known,{word:display,known});
+   await reader.waitForFunction(({word,known})=>window.registeredWord===word&&Boolean(window.item)===true,{word:display,known});
    await reader.locator('#word').click({button:'right'});
   }
   await choose('מיתיבי');const item=await reader.evaluate(()=>window.item);
@@ -59,7 +59,8 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   await plugin.waitForFunction(()=>document.querySelectorAll('.result').length>0);
   assert.equal(await plugin.locator('#query').inputValue(),'מיתיבי');
   await choose('אבגדהוזחטיכלמנסעפצקרשת','אבגדהוזחטיכלמנסעפצקרשת',false);
-  assert.equal(await reader.locator('#menu button').count(),0);
+  assert.equal(await reader.locator('#menu button').count(),1,'unknown selections should retain the full-dictionary fallback');
+  assert.equal((await reader.evaluate(()=>window.item.children[0].id)),'jastrow-meaning-fallback');
   assert.deepEqual(errors,[]);
   console.log('PASS: cold-start native submenu registration, selection-specific filtering, and direct plugin dictionary entry navigation. Host-contract simulation, not a native Otzaria device test.');
  }finally{await b.close();await new Promise(r=>server.close(r));}

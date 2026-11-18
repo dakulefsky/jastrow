@@ -2,8 +2,8 @@
  'use strict';
  if(!window.Otzaria)return;
  const index=window.JASTROW_INDEX;
- let pending=null,running=false,revision=0,legacyRemoval=null,selectionRemoval=Promise.resolve();
- const MAX_MENU_MEANINGS=8;
+ let pending=null,running=false,revision=0,legacyRemoval=null,selectionRemoval=Promise.resolve(),latestPayload={};
+ const MAX_MENU_MEANINGS=4;
  function compact(value,max){
   const text=String(value||'').replace(/\s+/g,' ').trim();
   return text.length<=max?text:text.slice(0,Math.max(1,max-1)).replace(/[\s,;:.—-]+$/,'')+'…';
@@ -11,11 +11,9 @@
  function childTitle(item,word){
   const selected=item.selectedWord||'',spelling=item.spelling||'';
   const head=selected&&spelling&&JastrowSearch.normalize(selected)!==JastrowSearch.normalize(spelling)?selected+' · '+spelling:(spelling||selected||word);
-  const recommended=item.recommended===true;
-  // Put the recommendation marker first: Otzaria may clip the end of long
-  // native menu labels, so a suffix such as "Recommended" is easy to lose.
-  let label=(recommended?'★ ':'')+head+' — '+compact(item.text,recommended?42:56);
-  if(recommended&&item.translationPhrase)label+=' · “'+compact(item.translationPhrase,22)+'”';
+  // Keep the star and meaning at the very front; no trailing recommendation
+  // text or context quote for the host to clip.
+  const label=(item.recommended===true?'★ ':'')+head+' — '+compact(item.text,40);
   return label.length>100?label.slice(0,99).trimEnd()+'…':label;
  }
  function removeLegacyVotes(){
@@ -24,6 +22,16 @@
    ...[0,1,2].map(i=>Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-vote-'+i}).catch(()=>{}))
   ]);
   return legacyRemoval;
+ }
+ async function registerFallback(payload){
+  const word=JastrowContext.selectionText(payload||{});
+  if(!word)return Promise.resolve();
+  return Otzaria.call('reader.addContextMenuItem',{
+   id:'jastrow-lookup',type:'submenu',title:'Aramaic → Eng.',
+   icon:'book_dictionary_24_regular',
+   contexts:['reader-selection','reader-page-shape-selection'],
+   children:[{id:'jastrow-meaning-fallback',title:'Open full dictionary',openPlugin:true,param:{dictionaryWord:word,showAll:true}}]
+  }).catch(()=>{});
  }
  async function update(){
   if(running)return;running=true;
@@ -42,30 +50,26 @@
      if(job.revision!==revision)continue;
      if(response?.success&&current&&JastrowSearch.splitWords(current).map(JastrowSearch.normalize).join(' ')===JastrowSearch.splitWords(text).map(JastrowSearch.normalize).join(' ')){
       selection=response.data||selection;
-      // The host's follow-up selection can omit niqqud present in the original
-      // selection event. Keep whichever spelling carries more vowel detail;
-      // both spellings remain valid menu-visibility variants below.
       if(!JastrowSearch.hasVowels(text)||JastrowSearch.hasVowels(current))text=current;
      }
     }catch{}
     if(job.revision!==revision)continue;
     const context=await DictionaryQuick.captureReaderContext(selection);
-    const items=await DictionaryQuick.results(text,context,{maxCandidates:16});
+    const items=await DictionaryQuick.results(text,context,{maxCandidates:24});
     if(job.revision!==revision)continue;
-    const choices=items.filter(item=>item.text&&Number.isInteger(item.entryId)).slice(0,MAX_MENU_MEANINGS);
-    if(!choices.length){
-     await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-lookup'}).catch(()=>{});
-     continue;
-    }
+    const available=items.filter(item=>item.text&&Number.isInteger(item.entryId));
+    const hasMore=items.hasMore===true||available.length>MAX_MENU_MEANINGS;
+    // Four visible choices total: reserve the last slot for the full dictionary
+    // whenever there are additional meanings.
+    const choices=available.slice(0,hasMore?MAX_MENU_MEANINGS-1:MAX_MENU_MEANINGS);
+    if(!choices.length)continue;
     const children=choices.map((item,i)=>({
      id:'jastrow-meaning-'+i,
      title:childTitle(item,text),
      openPlugin:true,
      param:{dictionaryWord:text,entryId:item.entryId}
     }));
-    // Mirror Otzaria's own dictionary: keep the native submenu compact, but
-    // never hide additional matches without a direct route to the full list.
-    if(items.hasMore===true||items.length>choices.length)children.push({
+    if(hasMore)children.push({
      id:'jastrow-meaning-more',
      title:'Open full dictionary for more meanings',
      openPlugin:true,
@@ -75,16 +79,14 @@
     const variants=[...new Set([rendered,eventText,text,JastrowSearch.splitWords(text).map(JastrowSearch.normalize).join(' ')])].filter(value=>value&&value.length<=100);
     const title='Aramaic → Eng. — '+compact(text,72);
     const response=await Otzaria.call('reader.addContextMenuItem',{
-     id:'jastrow-lookup',
-     type:'submenu',
+     id:'jastrow-lookup',type:'submenu',
      title:title.length>100?title.slice(0,99).trimEnd()+'…':title,
      icon:'book_dictionary_24_regular',
      contexts:['reader-selection','reader-page-shape-selection'],
-     showWhen:{selectionContainsAny:variants},
-     children
+     showWhen:{selectionContainsAny:variants},children
     });
     if(job.revision!==revision){
-     await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-lookup'}).catch(()=>{});
+     await registerFallback(latestPayload);
      continue;
     }
     await removeLegacyVotes();
@@ -95,7 +97,7 @@
    if(pending)update().catch(()=>console.warn('Dictionary meaning menu unavailable'));
   }
  }
- function offer(payload){pending={payload:payload||{},revision:++revision};selectionRemoval=Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-lookup'}).catch(()=>{});update().catch(()=>console.warn('Dictionary meaning menu unavailable'));}
+ function offer(payload){latestPayload=payload||{};pending={payload:latestPayload,revision:++revision};selectionRemoval=registerFallback(latestPayload);update().catch(()=>console.warn('Dictionary meaning menu unavailable'));}
  Otzaria.on('reader.selection_changed',offer);
  Otzaria.on('plugin.boot',async()=>{
   await removeLegacyVotes();
