@@ -81,7 +81,7 @@
     let catalog=suggestionCatalogs.get(index);
     if(!catalog){
       catalog=index.entries.map((entry,id)=>({key:normalize(entry.h),id})).filter(item=>item.key);
-      catalog.sort((a,b)=>a.key.localeCompare(b.key)||a.id-b.id);
+      catalog.sort((a,b)=>a.key<b.key?-1:a.key>b.key?1:a.id-b.id);
       suggestionCatalogs.set(index,catalog);
     }
     let low=0,high=catalog.length;
