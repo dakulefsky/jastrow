@@ -4,8 +4,11 @@
  const index=window.JASTROW_INDEX;
  let pending=null,running=false,revision=0;
  const MAX_MENU_MEANINGS=8;
- const compact=(value,max)=>String(value||'').replace(/\s+/g,' ').trim().slice(0,max).replace(/[\s,;:.—-]+$/,'');
- function childTitle(item,word,position){
+ function compact(value,max){
+  const text=String(value||'').replace(/\s+/g,' ').trim();
+  return text.length<=max?text:text.slice(0,Math.max(1,max-1)).replace(/[\s,;:.—-]+$/,'')+'…';
+ }
+ function childTitle(item,word){
   const selected=item.selectedWord||'',spelling=item.spelling||'';
   const head=selected&&spelling&&JastrowSearch.normalize(selected)!==JastrowSearch.normalize(spelling)?selected+' · '+spelling:(spelling||selected||word);
   const recommended=item.recommended===true;
@@ -52,7 +55,7 @@
     }
     const children=choices.map((item,i)=>({
      id:'jastrow-meaning-'+i,
-     title:childTitle(item,text,i),
+     title:childTitle(item,text),
      openPlugin:true,
      param:{
       dictionaryWord:text,
