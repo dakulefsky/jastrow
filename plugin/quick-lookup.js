@@ -54,23 +54,16 @@
  async function meanings(word){
   return (await results(word)).map(item=>(item.selectedWord?item.selectedWord+': ':'')+item.text);
  }
- function message(word,items,prefixed=false){
+ function message(word,items){
   const short=s=>s.length>180?s.slice(0,177)+'…':s;
+  // Otzaria's native message surface can inherit RTL from its Hebrew reader.
+  // Isolate each English line so its number, punctuation, and meaning stay LTR.
   const lines=items.slice(0,2).map((item,i)=>{
-   if(typeof item==='string')return (i+1)+'. **'+short(item).replace(/\*/g,'')+'**';
-   const heading=[item.selectedWord,item.spelling,item.label].filter((s,n,a)=>s&&a.indexOf(s)===n).join(' · ');
-   return (i+1)+'. **'+short(item.text).replace(/\*/g,'')+'**'+(heading?'\n'+heading.replace(/\*/g,''):'')+(item.translationMatch&&i===0?'\n— Recommended':'');
+   const meaning=typeof item==='string'?item:item.text;
+   const number=items.length>1?(i+1)+'. ':'';
+   return '\u2066'+number+short(String(meaning||'').replace(/\\*/g,''))+'\u2069';
   });
-  return [word+(prefixed?' — possible '+(typeof prefixed==='string'?prefixed:'prefixed form'):''),...lines,
-   ...(prefixed?['Base-word meanings; check the grammatical form in context.']:[]),
-   items.length>2?'More meanings — click to open dictionary':'Click for full entry and sources'].join('\n');
- }
- function formKind(word){
-  const S=root.JastrowSearch,index=root.JASTROW_INDEX;
-  const analyses=S.segmentWords(index,word).filter(part=>!part.result).map(part=>S.lookup(index,part.word));
-  const prefix=analyses.some(r=>r.kind==='prefixed form');
-  const ending=analyses.some(r=>r.kind==='inflected form'||r.prefixMatches?.some(m=>m.suffix!==undefined));
-  return prefix&&ending?'prefixed form; possible inflected form':ending?'inflected form':prefix?'prefixed form':false;
+  return [word,'',...lines,'','\u2066Tap to open the full dictionary entry.\u2069'].join('\\n');
  }
  async function captureReaderContext(selection){
   if(!selection||typeof selection!=='object')return null;
@@ -105,7 +98,7 @@
     if(!root.JastrowSearch.hasSelectionTranslations(root.JASTROW_INDEX,word))return;
     await root.Otzaria.call('ui.showMessage',{message:word+'\nNo short meaning is available. Click to open the dictionary entry and references.',tapPayload:{dictionaryWord:word,readerContext:context},tapOpenPlugin:true});return;
    }
-   const res=await root.Otzaria.call('ui.showMessage',{message:message(word,items,formKind(word)),tapPayload:{dictionaryWord:word,readerContext:context},tapOpenPlugin:true});
+   const res=await root.Otzaria.call('ui.showMessage',{message:message(word,items),tapPayload:{dictionaryWord:word,readerContext:context},tapOpenPlugin:true});
    if(res?.success===false)console.warn('Quick dictionary lookup unavailable; use Open dictionary.');
   }catch{
    if(current===serial){
