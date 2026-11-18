@@ -30,7 +30,7 @@ function load(pluginPath,{links,passages,preferredByReference={},matchesByRefere
  sandbox.SefariaEvidence={
   compareTranslation:async(word,entries,linkedSelection)=>{
    const reference=linkedSelection?.sourceRange?.ref||'';
-   comparisons.push({word,reference,book:linkedSelection?.currentBook,entries});
+   comparisons.push({word,reference,book:linkedSelection?.currentBook,entries,sourceRange:linkedSelection?.sourceRange});
    if(matchesByReference[reference])return {matches:matchesByReference[reference]};
    const preferred=preferredByReference[reference];
    return {matches:preferred===undefined?[]:[{id:preferred,matchType:'exact'}]};
@@ -62,8 +62,18 @@ const text='סוגיה אחרת כי אמר דאמר לימא הכי ועוד';
   assert.equal(result.preferredEntryId,'1',pluginPath+' should carry one uniquely supported parallel meaning');
   assert.equal(result.occurrences,2);
   assert.deepEqual(loaded.comparisons.map(x=>x.reference),refs,'linked Sefaria references must be passed to offline evidence');
+  assert(loaded.comparisons.every(x=>Object.keys(x.sourceRange||{}).join(',')==='ref'),'Mesores evidence must not depend on surrounding words');
   assert.equal(loaded.calls.filter(x=>x.method==='library.getLinks').length,1);
   assert.equal(loaded.calls.filter(x=>x.method==='library.getLinkContent').length,1);
+  let activeRanks=0,maxConcurrentRanks=0;
+  const parallel=load(pluginPath,{links:[link(refs[0],81),link(refs[1],22)],passages:[text,text]});
+  const parallelResult=await parallel.api.propagatedPreference(selection,'דאמר',entries,async()=>{
+   activeRanks++;maxConcurrentRanks=Math.max(maxConcurrentRanks,activeRanks);
+   await new Promise(resolve=>setTimeout(resolve,5));activeRanks--;
+   return {preferredEntryId:'1',preferenceScope:'contextual'};
+  });
+  assert.equal(parallelResult.preferredEntryId,'1');
+  assert.equal(maxConcurrentRanks,2,'linked passage translation checks should run concurrently');
 
   const conflict=load(pluginPath,{
    links:[link(refs[0],81),link(refs[1],22)],

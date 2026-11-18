@@ -156,10 +156,19 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
    const content=bestCard.querySelector('.meaning-content');
    if(content&&!content.querySelector('.context-recommended'))content.prepend(el('span','Recommended','context-recommended'));
   };
-  if(window.SefariaEvidence?.compareTranslation){
-   const evidence=await SefariaEvidence.compareTranslation(word,candidates,active,{preparedOnly:false});
+  // Recommendations are enrichment: never keep the dictionary panel or its
+  // controls waiting for a first-time offline tractate load or linked-daf fetch.
+  // Start both evidence paths together; shared tractate loads are coalesced.
+  void (async()=>{
+   const sourcePromise=window.SefariaEvidence?.compareTranslation
+    ?SefariaEvidence.compareTranslation(word,candidates,active,{preparedOnly:false})
+    :Promise.resolve({matches:[]});
+   const mesoresPromise=window.MesoresHaShas?.propagatedPreference&&candidates.length
+    ?MesoresHaShas.propagatedPreference(active,word,candidates)
+    :Promise.resolve(null);
+   const [evidence,parallel]=await Promise.all([sourcePromise,mesoresPromise]);
    if(serial!==requestSerial||panelSerial!==entrySerial)return;
-   const matches=new Map((evidence.matches||[]).map(item=>[item.id,item]));
+   const matches=new Map((evidence?.matches||[]).map(item=>[item.id,item]));
    sourceHasEvidence=matches.size>0;
    if(matches.size){
     const score=value=>value.matchType==='exact'?3:value.matchType==='inflected_phrase'?2:1;
@@ -171,13 +180,11 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
      applyRecommendation(sourcePreferredId);
     }
    }
-  }
-  if(window.MesoresHaShas?.propagatedPreference&&candidates.length){
-   const parallel=await MesoresHaShas.propagatedPreference(active,word,candidates);
-   if(serial!==requestSerial||panelSerial!==entrySerial)return;
+   // Linked evidence may reinforce a current-daf choice, but cannot
+   // overrule it or break an unresolved current-daf tie.
    if(parallel?.preferredEntryId&&(!sourceHasEvidence||parallel.preferredEntryId===sourcePreferredId))
     applyRecommendation(parallel.preferredEntryId);
-  }
+  })().catch(()=>{});
  }
 for(const failed of expanded.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
  if(result.total>ids.length){const more=el('button','More matching entries');more.type='button';more.onclick=()=>{limit+=60;search(word,true);};target.append(more);}

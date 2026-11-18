@@ -75,13 +75,13 @@ assert.equal(loaded.api.tokenize('נִפְקָא').join(','),'נפקא','niqqud 
 assert.equal(loaded.api.connectionType,'MESORAT_HASHAS');
 
 const rankedPropagation=await loaded.api.propagatedPreference(selection,'נפקא',[{rid:'KRU1'},{rid:'KRU2'}],async(_word,_entries,context)=>{
- assert(context.sourceRange.beforeText.raw&&context.sourceRange.afterText.raw,'linked occurrence must be ranked using its own surrounding words');
+ assert.deepEqual(Object.keys(context.sourceRange),['ref'],'parallel evidence uses the linked reference, not surrounding words');
  return {preferredEntryId:'krupnik:KRU1',preferenceScope:'contextual'};
 });
 assert.equal(rankedPropagation.preferredEntryId,'krupnik:KRU1','an established contextual meaning propagates from linked exact occurrences');
 assert.equal(rankedPropagation.occurrences,2,'each exact occurrence in the linked passages is checked');
 const conflictingPropagation=await loaded.api.propagatedPreference(selection,'נפקא',[{rid:'KRU1'},{rid:'KRU2'}],async(_word,_entries,context)=>({
- preferredEntryId:context.sourceRange.beforeText.raw.includes('הכא')?'krupnik:KRU2':'krupnik:KRU1',
+ preferredEntryId:context.sourceRange.ref.includes('עירובין')?'krupnik:KRU2':'krupnik:KRU1',
  preferenceScope:'contextual'
 }));
 assert.equal(conflictingPropagation,null,'conflicting linked occurrences must not produce a propagated recommendation');

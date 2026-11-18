@@ -54,7 +54,11 @@
   const source=await sourceLocation(selection);if(!source)return [];
   const sourceId=source.bookUid||source.bookId;
   const key=sourceId+'|'+source.line;
-  if(cache.has(key))return cache.get(key);
+  if(cache.has(key)){
+   const cached=cache.get(key);
+   cache.delete(key);cache.set(key,cached);
+   return cached;
+  }
   const promise=(async()=>{
    const request={startLine:source.line,endLine:source.line,connectionTypes:[CONNECTION_TYPE]};
    if(source.bookUid)request.bookUid=source.bookUid;else request.bookId=source.bookId;
@@ -81,6 +85,7 @@
      title:String(link.targetTitle||''),
      reference:String(link.targetHeRef||''),
      text,
+     tokens:tokenize(text),
      connectionType:CONNECTION_TYPE
     };
    });
@@ -90,9 +95,8 @@
   while(cache.size>32)cache.delete(cache.keys().next().value);
   try{const result=await promise;if(result===null){cache.delete(key);return [];}return result;}catch{cache.delete(key);return [];}
  }
- function containsPhrase(text,word){
+ function containsTokens(tokens,word){
   const query=tokenize(word);if(!query.length)return false;
-  const tokens=tokenize(text);
   for(let i=0;i<=tokens.length-query.length;i++){
    let exact=true;for(let j=0;j<query.length;j++)if(tokens[i+j]!==query[j]){exact=false;break;}
    if(exact)return true;
@@ -102,10 +106,10 @@
  async function find(selection,word){
   if(!word||!tokenize(word).length)return [];
   const passages=await passagesFor(selection);
-  return passages.filter(passage=>containsPhrase(passage.text,word));
+  return passages.filter(passage=>containsTokens(passage.tokens||tokenize(passage.text),word));
  }
  // Use only local translation evidence from a Mesores-linked passage.
- // A parallel clue is accepted only when the selected word occurs once there,
+ // A parallel clue is accepted only when the exact word occurs unambiguously,
  // one candidate is uniquely supported, and every relevant linked passage agrees.
  async function translationRank(word,entries,selection){
   if(!root.SefariaEvidence?.compareTranslation)return null;
@@ -121,31 +125,34 @@
  async function propagatedPreference(selection,word,entries,rank=translationRank){
   if(!selection||!word||!Array.isArray(entries)||!entries.length||typeof rank!=='function')return null;
   const query=tokenize(word);if(!query.length)return null;
-  const passages=await passagesFor(selection),preferences=[];
-  let relevantPassages=0;
+  const passages=await passagesFor(selection),relevant=[];
   for(const passage of passages){
-   const tokens=tokenize(passage.text),positions=[];
+   const tokens=passage.tokens||tokenize(passage.text);
+   let occurrences=0;
    for(let i=0;i<=tokens.length-query.length;i++){
-    let exact=true;for(let j=0;j<query.length;j++)if(tokens[i+j]!==query[j]){exact=false;break;}
-    if(exact)positions.push(i);
+    let exact=true;
+    for(let j=0;j<query.length;j++)if(tokens[i+j]!==query[j]){exact=false;break;}
+    if(exact&&++occurrences>1)return null;
    }
-   if(!positions.length)continue;
-   relevantPassages++;
-   if(positions.length!==1)return null;
-   const at=positions[0],before=tokens.slice(Math.max(0,at-8),at).join(' '),after=tokens.slice(at+query.length,at+query.length+8).join(' ');
-   if(!before||!after)return null;
+   if(occurrences)relevant.push(passage);
+  }
+  if(!relevant.length)return null;
+  // Linked passages are independent. Run their offline translation checks in
+  // parallel; the offline loader coalesces concurrent requests for one tractate.
+  const preferences=await Promise.all(relevant.map(async passage=>{
    const linkedSelection={
     currentBook:passage.title,
-    sourceRange:{ref:passage.reference||passage.title,beforeText:{raw:before},afterText:{raw:after}}
+    sourceRange:{ref:passage.reference||passage.title}
    };
-   let ranked;
-   try{ranked=await rank(word,entries,linkedSelection);}catch{return null;}
-   if(ranked?.preferenceScope!=='contextual'||!ranked.preferredEntryId)return null;
-   preferences.push(String(ranked.preferredEntryId));
-  }
-  if(!relevantPassages||preferences.length!==relevantPassages)return null;
+   try{
+    const ranked=await rank(word,entries,linkedSelection);
+    return ranked?.preferenceScope==='contextual'&&ranked.preferredEntryId
+     ?String(ranked.preferredEntryId):null;
+   }catch{return null;}
+  }));
+  if(preferences.some(id=>!id))return null;
   const winner=preferences[0];
-  return preferences.every(id=>id===winner)?{preferredEntryId:winner,occurrences:relevantPassages}:null;
+  return preferences.every(id=>id===winner)?{preferredEntryId:winner,occurrences:relevant.length}:null;
  }
 
  const api={connectionType:CONNECTION_TYPE,tokenize,find,propagatedPreference};
