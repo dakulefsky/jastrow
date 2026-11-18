@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "com.kulefsky.jastrow",
   "name": "Aramaic → Eng.",
-  "version": "1.11.19",
+  "version": "1.11.20",
   "description": "Offline Aramaic and rabbinic Hebrew to English dictionary, with contextual clues from the bundled English Babylonian Talmud.",
   "author": "DanTheMan",
   "stability": "beta",
