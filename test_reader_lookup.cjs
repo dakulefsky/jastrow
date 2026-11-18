@@ -111,7 +111,8 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   await foreground.evaluate(()=>Promise.all((events['reader.context_menu_item_clicked']||[]).map(f=>f({itemId:'jastrow-meaning-fallback',selectedText:'לצפרא',selection:{selectedText:'לצפרא'}}))));
   await foreground.waitForFunction(()=>document.querySelector('#query').value==='לצפרא');
   await choose('אבגדהוזחטיכלמנסעפצקרשת','אבגדהוזחטיכלמנסעפצקרשת',false);
-  assert.equal(await reader.locator('#menu button').count(),0,'unknown selections should not show the dynamic dictionary submenu');
+  assert.equal(await reader.locator('#menu button').count(),1,'unknown selections should retain the full-dictionary fallback');
+  assert.equal(items.get('jastrow-lookup').children[0].id,'jastrow-meaning-fallback');
   assert.deepEqual(errors,[]);
   console.log('PASS reader selection → native submenu capped at four meanings → leading recommendation star → direct full dictionary entry; declarative fallback for inactive background runtime; offline, derived forms, redirect and unknown-word paths. Host-contract simulation, not a native Otzaria device test.');
  }finally{if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}
