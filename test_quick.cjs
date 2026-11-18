@@ -24,24 +24,14 @@ vm.runInContext(fs.readFileSync(__dirname+'/plugin/quick-lookup.js','utf8'),c);
  assert.equal(contextual[0].recommended,true,'a unique strongest translation match should be marked recommended');
  assert(Number.isInteger(contextual[0].entryId));
  assert.equal(typeof c.DictionaryQuick.captureReaderContext,'function');
- c.SefariaEvidence.compareTranslation=async(word,candidates,context)=>context.currentBook==='linked'
-  ?{matches:[{id:candidates[0].id,matchedPhrase:'linked context',matchType:'exact'}],scope:'paragraph'}
-  :{matches:[],reason:'no_candidate_wording_found',scope:'paragraph'};
- c.MesoresHaShas={propagatedPreference:async(wordSelection,word,candidates,rank)=>{
-  const preference=await rank(word,candidates,{currentBook:'linked',sourceRange:{ref:'linked passage'}});
-  return preference?{preferredEntryId:preference.preferredEntryId}:null;
- }};
- const propagated=await c.DictionaryQuick.results('נפקא מינה',selection,{maxCandidates:24});
- assert.equal(propagated[0].recommended,true,'a unanimous prepared Mesores HaShas link may recommend when the current passage has no direct match');
- assert.equal(propagated[0].translationMatch,undefined,'linked evidence must not be misrepresented as a direct translation match');
- c.SefariaEvidence.compareTranslation=async()=>({matches:[],reason:'not_prepared'});
  let mesoresCalls=0;
  c.MesoresHaShas={propagatedPreference:async()=>{mesoresCalls++;return{preferredEntryId:'0'};}};
- const unprepared=await c.DictionaryQuick.results('נפקא מינה',selection,{maxCandidates:24});
- assert.equal(mesoresCalls,0,'Mesores must not outrank a current passage whose translation evidence is not prepared yet');
- assert.equal(unprepared[0].recommended,undefined);
+ c.SefariaEvidence.compareTranslation=async()=>({matches:[],reason:'no_candidate_wording_found',scope:'paragraph'});
+ const noDirectMatch=await c.DictionaryQuick.results('נפקא מינה',selection,{maxCandidates:24});
+ assert.equal(mesoresCalls,0,'Mesores must not independently reinterpret linked passages to choose a dictionary meaning');
+ assert.equal(noDirectMatch.some(item=>item.recommended),false,'without direct contextual evidence, no meaning should be recommended');
 
  assert.equal(c.DictionaryQuick.message,undefined,'the old message-based quick result is no longer the UI');
  assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,0);
- console.log('PASS: offline phrase meanings, source-entry identity, prepared contextual evidence ranking, and native-menu data (no message popup).');
+ console.log('PASS: offline phrase meanings, source-entry identity, direct prepared contextual evidence ranking, no Mesores-side interpretation, and native-menu data (no message popup).');
 })().catch(e=>{console.error(e);process.exit(1)});
