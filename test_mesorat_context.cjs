@@ -23,7 +23,7 @@ const link=(reference,line,extra={})=>({
  targetSource:'o',
  ...extra
 });
-function load(pluginPath,{links,passages,preferredByReference={},matchesByReference={},truncated=false}={}){
+function load(pluginPath,{links,passages,preferredByReference={},matchesByReference={},truncated=false,contentTruncated=false}={}){
  const calls=[],comparisons=[];
  const sandbox={console};
  sandbox.window=sandbox;sandbox.globalThis=sandbox;
@@ -40,7 +40,7 @@ function load(pluginPath,{links,passages,preferredByReference={},matchesByRefere
   call:async(method,args)=>{
    calls.push({method,args});
    if(method==='library.getLinks')return {success:true,data:{truncated,links:links||[]}};
-   if(method==='library.getLinkContent')return {success:true,data:{items:(passages||[]).map(value=>typeof value==='string'?{content:value}:value)}};
+   if(method==='library.getLinkContent')return {success:true,data:{truncated:contentTruncated,items:(passages||[]).map(value=>typeof value==='string'?{content:value}:value)}};
    throw Error('Unexpected Otzaria call '+method);
   }
  };
@@ -123,21 +123,12 @@ const text='סוגיה אחרת כי אמר דאמר לימא הכי ועוד';
   const contentTruncated=load(pluginPath,{
    links:[link(refs[0],81),link(refs[1],22)],
    passages:[text,text],
-   preferredByReference:{[refs[0]]:'1',[refs[1]]:'1'}
+   preferredByReference:{[refs[0]]:'1',[refs[1]]:'1'},
+   contentTruncated:true
   });
-  contentTruncated.api;
-  contentTruncated.calls.length;
-  const originalCall=contentTruncated.calls;
-  const truncatedContentLoader=load(pluginPath,{
-   links:[link(refs[0],81),link(refs[1],22)],
-   passages:[text,text],
-   preferredByReference:{[refs[0]]:'1',[refs[1]]:'1'}
-  });
-  const originalHost=truncatedContentLoader;
-  // A truncated content batch must not produce a recommendation from a subset.
-  const contentApi=truncatedContentLoader.api;
-  const contentCalls=truncatedContentLoader.calls;
-  const hostCall=contentCalls;
+  assert.equal(await contentTruncated.api.propagatedPreference(selection,'דאמר',entries),null,'truncated linked-content batches must fail closed');
+  assert.equal(contentTruncated.comparisons.length,0);
+
   const truncated=load(pluginPath,{
    links:[link(refs[0],81)],
    passages:[text],
