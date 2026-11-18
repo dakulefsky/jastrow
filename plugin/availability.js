@@ -8,7 +8,7 @@
  function childTitle(item,word,position){
   const selected=item.selectedWord||'',spelling=item.spelling||'';
   const head=selected&&spelling&&JastrowSearch.normalize(selected)!==JastrowSearch.normalize(spelling)?selected+' · '+spelling:(spelling||selected||word);
-  const recommended=position===0&&item.translationMatch===true;
+  const recommended=item.recommended===true;
   let label=head+' — '+compact(item.text,recommended?34:56);
   if(recommended){
    label+=' · Recommended';
