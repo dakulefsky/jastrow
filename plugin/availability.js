@@ -8,14 +8,13 @@
  function childTitle(item,word,position){
   const spelling=[item.selectedWord,item.spelling].filter(Boolean).join(' · ')||word;
   const recommended=position===0&&item.translationMatch===true;
-  let label=spelling+' — '+compact(item.text,recommended?43: sixty());
+  let label=spelling+' — '+compact(item.text,recommended?43:56);
   if(recommended){
    label+=' · Recommended';
    if(item.translationPhrase)label+=' · “'+compact(item.translationPhrase,18)+'”';
   }
   return label.length>100?label.slice(0,99).trimEnd()+'…':label;
  }
- function sixty(){return 56;}
  function removeLegacyVotes(){
   return Promise.all([
    Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-community-votes'}).catch(()=>{}),
