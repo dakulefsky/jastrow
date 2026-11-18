@@ -44,14 +44,19 @@ async function search(q,record=true,preserveReaderContext=false){const serial=++
    (async()=>{
     const evidence=await SefariaEvidence.compareTranslation(q,candidates,active);
     if(serial!==searchSerial)return;
-    const sourceMatch=(evidence.matches||[])[0]||null;
+    const sourceMatches=Array.isArray(evidence.matches)?evidence.matches:[];
+    const score=match=>match.matchType==='exact'?3:match.matchType==='inflected_phrase'?2:1;
+    const highest=sourceMatches.length?Math.max(...sourceMatches.map(score)):0;
+    const sourceWinners=sourceMatches.filter(match=>score(match)===highest);
+    // A tie is uncertainty, not permission to choose the first source row.
+    const sourceMatch=sourceWinners.length===1?sourceWinners[0]:null;
     let parallelMatch=null;
-    if(window.MesoresHaShas?.propagatedPreference){
+    // Parallel evidence may fill a genuine gap, but must not break a tie on the current daf.
+    if(!sourceMatches.length&&window.MesoresHaShas?.propagatedPreference){
      parallelMatch=await MesoresHaShas.propagatedPreference(active,q,candidates);
      if(serial!==searchSerial)return;
     }
-    const preferredId=parallelMatch?.preferredEntryId&&(!sourceMatch||parallelMatch.preferredEntryId===sourceMatch.id)
-     ?parallelMatch.preferredEntryId:sourceMatch?.id;
+    const preferredId=parallelMatch?.preferredEntryId||sourceMatch?.id;
     if(preferredId){
      const card=cardsByGroup.get(preferredId);
      if(card){
