@@ -147,7 +147,7 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
  target.append(DictionaryMeanings.render(records,word,result.kind==='phrase'?index.phraseNotes:{}));
  if(active){
   const candidates=DictionaryMeanings.merge(records,word).map((group,i)=>({id:String(i),text:group.text}));
-  let sourcePreferredId=null;
+  let sourcePreferredId=null,sourceHasEvidence=false;
   const applyRecommendation=id=>{
    const bestCard=[...target.querySelectorAll('.unified-meanings > ol > .meaning-card')][Number(id)];
    if(!bestCard)return;
@@ -160,6 +160,7 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
    const evidence=await SefariaEvidence.compareTranslation(word,candidates,active,{preparedOnly:false});
    if(serial!==requestSerial||panelSerial!==entrySerial)return;
    const matches=new Map((evidence.matches||[]).map(item=>[item.id,item]));
+   sourceHasEvidence=matches.size>0;
    if(matches.size){
     const score=value=>value.matchType==='exact'?3:value.matchType==='inflected_phrase'?2:1;
     const highest=Math.max(...[...matches.values()].map(score));
@@ -174,7 +175,7 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
   if(window.MesoresHaShas?.propagatedPreference&&candidates.length){
    const parallel=await MesoresHaShas.propagatedPreference(active,word,candidates);
    if(serial!==requestSerial||panelSerial!==entrySerial)return;
-   if(parallel?.preferredEntryId&&(!sourcePreferredId||parallel.preferredEntryId===sourcePreferredId))
+   if(parallel?.preferredEntryId&&(!sourceHasEvidence||parallel.preferredEntryId===sourcePreferredId))
     applyRecommendation(parallel.preferredEntryId);
   }
  }
