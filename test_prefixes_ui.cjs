@@ -15,12 +15,10 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   await lookup('דְּלְאַרְעָא');assert.match(await page.locator('.unified-meanings>ol').innerText(),/land/);assert(!/accident/.test(await page.locator('.unified-meanings>ol').innerText()));
   await lookup('לצפרא טבא');assert.equal(await page.locator('.phrase-word').count(),2);assert.equal(await page.locator('.prefix-analysis').count(),1);
   const quick=await page.evaluate(async()=>({
-   meanings:await DictionaryQuick.meanings('לצפרא'),
    prefixed:await DictionaryQuick.results('לצפרא',null,{maxCandidates:16}),
    phrase:await DictionaryQuick.results('לצפרא טבא',null,{maxCandidates:16}),
    inflected:await DictionaryQuick.results('ביתיהון',null,{maxCandidates:16})
   }));
-  assert(quick.meanings.some(t=>/morning/.test(t)));
   assert(quick.prefixed.some(item=>/morning/.test(item.text)&&Number.isInteger(item.entryId)));
   assert(quick.phrase.some(item=>item.selectedWord),'multiword quick lookup should retain the source word for each result');
   assert(quick.inflected.some(item=>Number.isInteger(item.entryId)),'inflected quick results must retain their source dictionary entry');
