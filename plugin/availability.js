@@ -28,7 +28,7 @@
   if(!word)return Promise.resolve();
   return Otzaria.call('reader.addContextMenuItem',{
    id:'jastrow-lookup',type:'submenu',title:'Aramaic → Eng.',
-   icon:'book_dictionary_24_regular',
+   icon:'alef_with_score_24_regular',
    contexts:['reader-selection','reader-page-shape-selection'],
    children:[{id:'jastrow-meaning-fallback',title:'Open full dictionary',openPlugin:true,param:{dictionaryWord:word,showAll:true}}]
   }).catch(()=>{});
@@ -81,7 +81,7 @@
     const response=await Otzaria.call('reader.addContextMenuItem',{
      id:'jastrow-lookup',type:'submenu',
      title:title.length>100?title.slice(0,99).trimEnd()+'…':title,
-     icon:'book_dictionary_24_regular',
+     icon:'alef_with_score_24_regular',
      contexts:['reader-selection','reader-page-shape-selection'],
      showWhen:{selectionContainsAny:variants},children
     });
