@@ -2,7 +2,7 @@
  'use strict';
  if(!window.Otzaria)return;
  const index=window.JASTROW_INDEX;
- let pending=null,running=false,revision=0,legacyRemoval=null;
+ let pending=null,running=false,revision=0,legacyRemoval=null,selectionRemoval=Promise.resolve();
  const MAX_MENU_MEANINGS=8;
  function compact(value,max){
   const text=String(value||'').replace(/\s+/g,' ').trim();
@@ -31,11 +31,10 @@
   try{
    while(pending){
     const job=pending;pending=null;
+    await selectionRemoval;
+    if(job.revision!==revision)continue;
     const text=JastrowContext.selectionText(job.payload);
-    if(!text||text.length>100||!JastrowSearch.hasSelectionTranslations(index,text)){
-     if(job.revision===revision)await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-lookup'}).catch(()=>{});
-     continue;
-    }
+    if(!text||text.length>100||!JastrowSearch.hasSelectionTranslations(index,text))continue;
     let selection=job.payload;
     try{
      const response=await Otzaria.call('reader.getSelection');
@@ -72,7 +71,10 @@
      showWhen:{selectionContainsAny:variants},
      children
     });
-    if(job.revision!==revision)continue;
+    if(job.revision!==revision){
+     await Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-lookup'}).catch(()=>{});
+     continue;
+    }
     await removeLegacyVotes();
     if(response?.success===false&&response.error?.code!=='error.not_found')console.warn('Dictionary meaning menu registration failed',response.error?.code);
    }
@@ -81,7 +83,7 @@
    if(pending)update().catch(()=>console.warn('Dictionary meaning menu unavailable'));
   }
  }
- function offer(payload){pending={payload:payload||{},revision:++revision};update().catch(()=>console.warn('Dictionary meaning menu unavailable'));}
+ function offer(payload){pending={payload:payload||{},revision:++revision};selectionRemoval=Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-lookup'}).catch(()=>{});update().catch(()=>console.warn('Dictionary meaning menu unavailable'));}
  Otzaria.on('reader.selection_changed',offer);
  Otzaria.on('plugin.boot',async()=>{
   await removeLegacyVotes();
