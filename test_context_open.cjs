@@ -10,8 +10,12 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   await reader.setContent('<p id="word" dir="rtl"></p><div id="menu"></div>');
   await bg.exposeBinding('hostRpc',async(_,{method,args})=>{
    if(method==='reader.getSelection')return{success:true,data:selection};
-   if(method==='reader.addContextMenuItem'||method==='reader.removeContextMenuItem'){
-    await reader.evaluate(({args,selection})=>{window.item=args.id==='jastrow-lookup'?args:null;window.registeredWord=selection.renderedSelectedText||selection.text||'';},{args,selection});
+   if(method==='reader.addContextMenuItem'){
+    await reader.evaluate(({args,selection})=>{if(args.id==='jastrow-lookup')window.item=args;window.registeredWord=selection.renderedSelectedText||selection.text||'';},{args,selection});
+    return{success:true};
+   }
+   if(method==='reader.removeContextMenuItem'){
+    if(args.id==='jastrow-lookup')await reader.evaluate(({selection})=>{window.item=null;window.registeredWord=selection.renderedSelectedText||selection.text||'';},{selection});
     return{success:true};
    }
    throw Error(method);
