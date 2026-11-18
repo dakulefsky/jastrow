@@ -85,6 +85,7 @@
      title:String(link.targetTitle||''),
      reference:String(link.targetHeRef||''),
      text,
+     tokens:tokenize(text),
      connectionType:CONNECTION_TYPE
     };
    });
@@ -94,9 +95,8 @@
   while(cache.size>32)cache.delete(cache.keys().next().value);
   try{const result=await promise;if(result===null){cache.delete(key);return [];}return result;}catch{cache.delete(key);return [];}
  }
- function containsPhrase(text,word){
+ function containsTokens(tokens,word){
   const query=tokenize(word);if(!query.length)return false;
-  const tokens=tokenize(text);
   for(let i=0;i<=tokens.length-query.length;i++){
    let exact=true;for(let j=0;j<query.length;j++)if(tokens[i+j]!==query[j]){exact=false;break;}
    if(exact)return true;
@@ -106,7 +106,7 @@
  async function find(selection,word){
   if(!word||!tokenize(word).length)return [];
   const passages=await passagesFor(selection);
-  return passages.filter(passage=>containsPhrase(passage.text,word));
+  return passages.filter(passage=>containsTokens(passage.tokens||tokenize(passage.text),word));
  }
  // Use only local translation evidence from a Mesores-linked passage.
  // A parallel clue is accepted only when the exact word occurs unambiguously,
@@ -127,7 +127,7 @@
   const query=tokenize(word);if(!query.length)return null;
   const passages=await passagesFor(selection),relevant=[];
   for(const passage of passages){
-   const tokens=tokenize(passage.text);
+   const tokens=passage.tokens||tokenize(passage.text);
    let occurrences=0;
    for(let i=0;i<=tokens.length-query.length;i++){
     let exact=true;
