@@ -247,7 +247,7 @@ if(window.Otzaria){
       const permissions=res?.data?.permissions;if(!res?.success||!Array.isArray(permissions))return;
       const required=['app.run_on_startup','app.background_keep_alive','events.subscribe:reader.selection_changed','events.subscribe:reader.current_ref_changed','events.subscribe:navigation.changed','reader.context_menu'];
       const missing=required.some(x=>!permissions.includes(x));$('right-click-state').hidden=!missing;
-      if(missing)$('right-click-state').textContent='For delayed daf preparation and right-click lookup, enable background execution, keep-alive, reading-location/navigation events, and text-selection/context-menu access in Otzaria’s permissions for Aramaic to English Dictionary.';
+      if(missing)$('right-click-state').textContent='To enable the four-meaning quick submenu and delayed daf preparation, enable background execution, keep-alive, reading-location/navigation events, and text-selection/context-menu access in Otzaria’s permissions for Aramaic to English Dictionary. The full-dictionary fallback remains available without background execution.';
     }).catch(()=>{});
     $('selection').onclick=async()=>{
       try{
