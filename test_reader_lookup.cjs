@@ -62,7 +62,7 @@ const {chromium,executablePath}=require('./browser_support.cjs');
    selection={text:source,renderedSelectedText:display,currentRef:'ברכות, דף ב עמוד א:1',currentBook:'ברכות',sourceRange:{ref:'ברכות, דף ב עמוד א:1',beforeText:{raw:'לפני המילה '},afterText:{raw:' אחרי המילה'}}};
    await reader.evaluate(word=>{const n=document.querySelector('#word');n.textContent=word;const range=document.createRange();range.selectNodeContents(n);getSelection().removeAllRanges();getSelection().addRange(range);},display);
    await bg.evaluate(text=>events['reader.selection_changed'].forEach(f=>f({text,currentRef:'ברכות, דף ב עמוד א:1'})),source);
-   await reader.waitForFunction(({word,count})=>window.registeredWord===word&&window.menuItems.length===count,{word:display,count:known?1:0});
+   await reader.waitForFunction(({word,count})=>window.registeredWord===word&&window.menuItems.length===count,{word:display,count:1});
    await reader.locator('#word').click({button:'right'});
   }
   await choose('לצפרא');
