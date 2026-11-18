@@ -34,6 +34,13 @@ vm.runInContext(fs.readFileSync(__dirname+'/plugin/quick-lookup.js','utf8'),c);
  const propagated=await c.DictionaryQuick.results('נפקא מינה',selection,{maxCandidates:24});
  assert.equal(propagated[0].recommended,true,'a unanimous prepared Mesores HaShas link may recommend when the current passage has no direct match');
  assert.equal(propagated[0].translationMatch,undefined,'linked evidence must not be misrepresented as a direct translation match');
+ c.SefariaEvidence.compareTranslation=async()=>({matches:[],reason:'not_prepared'});
+ let mesoresCalls=0;
+ c.MesoresHaShas={propagatedPreference:async()=>{mesoresCalls++;return{preferredEntryId:'0'};}};
+ const unprepared=await c.DictionaryQuick.results('נפקא מינה',selection,{maxCandidates:24});
+ assert.equal(mesoresCalls,0,'Mesores must not outrank a current passage whose translation evidence is not prepared yet');
+ assert.equal(unprepared[0].recommended,undefined);
+
  assert.equal(c.DictionaryQuick.message,undefined,'the old message-based quick result is no longer the UI');
  assert.equal(calls.filter(x=>x.method==='ui.showMessage').length,0);
  console.log('PASS: offline phrase meanings, source-entry identity, prepared contextual evidence ranking, and native-menu data (no message popup).');
