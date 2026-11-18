@@ -54,7 +54,7 @@ const wrongWord=await loaded.api.find(selection,'מנפקא');
 assert.equal(wrongWord.length,0,'substring matches inside a longer word are rejected');
 
 const fallback=await setup({
- links:[{connectionType:'MESORAT_HASHAS',targetTitle:'פסחים',targetLine:5,targetHeRef:'פסחים דף ה'}],
+ links:[{connectionType:'MESORAT_HASHAS',targetTitle:'פסחים',targetLine:5,targetHeRef:'פסחים דף ה',targetIsUserBook:false}],
  items:[{content:'<p>הדין נפקא מינה הכא</p>'}],
  currentRef:{currentBookId:'ברכות',currentIndex:9}
 });
@@ -64,7 +64,7 @@ assert.equal(fallback.calls.find(x=>x.method==='library.getLinks').args.startLin
 
 const unavailable=await setup({
  failMethod:'library.getLinks',
- links:[{connectionType:'MESORAT_HASHAS',targetTitle:'פסחים',targetLine:5,targetHeRef:'פסחים דף ה'}],
+ links:[{connectionType:'MESORAT_HASHAS',targetTitle:'פסחים',targetLine:5,targetHeRef:'פסחים דף ה',targetIsUserBook:false}],
  items:[{content:'<p>הדין נפקא מינה הכא</p>'}]
 });
 assert.equal((await unavailable.api.find(selection,'נפקא')).length,0,'permission and host errors fail closed');
@@ -75,13 +75,13 @@ assert.equal(loaded.api.tokenize('נִפְקָא').join(','),'נפקא','niqqud 
 assert.equal(loaded.api.connectionType,'MESORAT_HASHAS');
 
 const rankedPropagation=await loaded.api.propagatedPreference(selection,'נפקא',[{rid:'KRU1'},{rid:'KRU2'}],async(_word,_entries,context)=>{
- assert(context.sourceRange.beforeText.raw&&context.sourceRange.afterText.raw,'linked occurrence must be ranked using its own surrounding words');
+ assert.deepEqual(Object.keys(context.sourceRange),['ref'],'parallel evidence uses the linked reference, not surrounding words');
  return {preferredEntryId:'krupnik:KRU1',preferenceScope:'contextual'};
 });
 assert.equal(rankedPropagation.preferredEntryId,'krupnik:KRU1','an established contextual meaning propagates from linked exact occurrences');
 assert.equal(rankedPropagation.occurrences,2,'each exact occurrence in the linked passages is checked');
 const conflictingPropagation=await loaded.api.propagatedPreference(selection,'נפקא',[{rid:'KRU1'},{rid:'KRU2'}],async(_word,_entries,context)=>({
- preferredEntryId:context.sourceRange.beforeText.raw.includes('הכא')?'krupnik:KRU2':'krupnik:KRU1',
+ preferredEntryId:context.sourceRange.ref.includes('עירובין')?'krupnik:KRU2':'krupnik:KRU1',
  preferenceScope:'contextual'
 }));
 assert.equal(conflictingPropagation,null,'conflicting linked occurrences must not produce a propagated recommendation');

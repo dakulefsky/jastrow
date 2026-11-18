@@ -14,6 +14,11 @@ for(const [word,expected] of [['איבעיא','בְּעֵי I'],['מיתיבי',
 }
 assert(search.lookup(index,'דאמר').ids.some(i=>index.entries[i].h==='אָמַר I'));
 assert.equal(search.lookup(index,'xyz').total,0);
+for(const query of ['א','אב','אמר','שק']) {
+ const expected=[...index.entries].map((e,i)=>({i,n:search.normalize(e.h)})).filter(e=>e.n.startsWith(search.normalize(query))).map(e=>e.i);
+ assert.deepEqual(search.suggestionMatches(index,search.normalize(query)),expected,'binary prefix index must preserve the prior suggestion set and source order');
+}
+assert.equal(search.suggestionMatches(index,'not-a-headword').length,0);
 assert(search.lookup(index,'תניא').ids.includes(32133));assert(search.lookup(index,'תנן').ids.includes(32133));assert.equal(search.lookup(index,'תניא').kind,'attested form');
 assert.equal(search.lookup(index,'אבגדהוזחטיכלמנסעפצקרשת').total,0);
 assert(search.lookup(index,'שקלא').total>1);

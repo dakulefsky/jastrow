@@ -41,19 +41,33 @@ async function search(q,record=true,preserveReaderContext=false){const serial=++
  if(active&&window.SefariaEvidence?.compareTranslation){
   const candidates=groupList.map((g,i)=>({id:String(i),text:[...new Set(g.items.map(({p})=>p.english||'').filter(Boolean))].join('; ')})).filter(candidate=>candidate.text);
   if(candidates.length){
-   SefariaEvidence.compareTranslation(q,candidates,active).then(evidence=>{
+   (async()=>{
+    // Run current-daf and Mesores evidence concurrently. Definitions are
+    // already rendered; linked evidence only fills a genuine source gap.
+    const sourcePromise=SefariaEvidence.compareTranslation(q,candidates,active);
+    const parallelPromise=window.MesoresHaShas?.propagatedPreference
+     ?MesoresHaShas.propagatedPreference(active,q,candidates)
+     :Promise.resolve(null);
+    const [evidence,parallelMatch]=await Promise.all([sourcePromise,parallelPromise]);
     if(serial!==searchSerial)return;
-    const match=(evidence.matches||[])[0];
-    if(match){
-     const card=cardsByGroup.get(match.id);
+    const sourceMatches=Array.isArray(evidence?.matches)?evidence.matches:[];
+    const score=match=>match.matchType==='exact'?3:match.matchType==='inflected_phrase'?2:1;
+    const highest=sourceMatches.length?Math.max(...sourceMatches.map(score)):0;
+    const sourceWinners=sourceMatches.filter(match=>score(match)===highest);
+    // A tie is uncertainty, not permission to choose the first source row.
+    const sourceMatch=sourceWinners.length===1?sourceWinners[0]:null;
+    // Parallel evidence may fill a genuine gap, but must not break a tie.
+    const preferredId=sourceMatches.length?sourceMatch?.id:parallelMatch?.preferredEntryId;
+    if(preferredId){
+     const card=cardsByGroup.get(preferredId);
      if(card){
-      card.append(el('small','מומלץ','recommended-label'));
+      if(!card.querySelector('.recommended-label'))card.append(el('small','מומלץ','recommended-label'));
       card.classList.add('recommended-meaning');
       out.insertBefore(card,out.querySelector('.meaning-card'));
       out.querySelectorAll('.meaning-card .number').forEach((node,index)=>node.textContent=String(index+1));
      }
     }
-   }).catch(()=>{});
+   })().catch(()=>{});
   }
  }
 }

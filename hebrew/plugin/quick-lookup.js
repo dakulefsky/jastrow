@@ -32,12 +32,16 @@
   return 'מתוך: '+ref;
  }
  async function meanings(word,selection){
-  const records=root.HebrewLookup.lookup(word),seen=new Set(),items=[];
-  for(const entry of records)for(const part of entry.parts){
-   const text=part.meaning||part.text,key=[root.HebrewLookup.normalize(entry.word),part.label.replace(/\b\d+\b/g,''),text].join('|');
-   if(!seen.has(key)){seen.add(key);items.push({text,entry,englishGloss:part.english||''});}
+  let records=root.HebrewLookup.lookup(word),segments=null;
+  if(!records.length&&String(word).trim().includes(' '))segments=root.HebrewLookup.segmentWords(word);
+  const sources=segments?.length?segments.map(segment=>({word:segment.word,records:segment.records})):
+   records.length?[{word:'',records}]:[];
+  const seen=new Set(),items=[];
+  for(const source of sources)for(const entry of source.records)for(const part of entry.parts){
+   const text=part.meaning||part.text,key=[source.word,root.HebrewLookup.normalize(entry.word),part.label.replace(/\b\d+\b/g,''),text].join('|');
+   if(!seen.has(key)){seen.add(key);items.push({text,entry,englishGloss:part.english||'',selectedWord:source.word||undefined});}
   }
-  if(selection&&root.SefariaEvidence?.compareTranslation){
+  if(!segments?.length&&selection&&root.SefariaEvidence?.compareTranslation){
    const candidates=items.map((item,index)=>({id:String(index),text:item.englishGloss||''})).filter(item=>item.text);
    if(candidates.length){
     const evidence=await root.SefariaEvidence.compareTranslation(word,candidates,selection,{preparedOnly:true});
@@ -52,7 +56,7 @@
   const short=s=>s.length>180?s.slice(0,177)+'…':s,first=items[0];
   const form=first?.entry?.matchedForm?'\nצורת המילה במילון: '+first.entry.word+' (זוהתה תחילית או סיומת)':'';
   const lines=[word+form];const origin=sourceLabel(context);if(origin)lines.push(origin);
-  lines.push(...items.slice(0,2).map((x,i)=>(i+1)+'. '+'**'+short(x.text)+'**'+(x.translationMatch?' — מומלץ':'')));
+  lines.push(...items.slice(0,2).map((x,i)=>(i+1)+'. '+(x.selectedWord?x.selectedWord+' · ':'')+'**'+short(x.text)+'**'+(x.translationMatch?' — מומלץ':'')));
   if(items.length>2)lines.push('למשמעויות נוספות — לחצו לפתיחת המילון');
   else lines.push('לחצו לערך המלא ולמקורות');
   return lines.filter(Boolean).join('\n');

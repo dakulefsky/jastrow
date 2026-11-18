@@ -9,15 +9,6 @@
   return (String(value||'').normalize('NFKD').replace(/\p{M}/gu,'').replace(/[ךםןףץ]/g,ch=>finals[ch]).match(/[\u05d0-\u05ea]+/g)||[])
    .map(word=>word.replace(/[ךםןףץ]/g,ch=>finals[ch]));
  }
- function containsPhrase(tokens,query){
-  if(!query.length||query.length>tokens.length)return false;
-  for(let i=0;i<=tokens.length-query.length;i++){
-   let matches=true;
-   for(let j=0;j<query.length;j++)if(tokens[i+j]!==query[j]){matches=false;break;}
-   if(matches)return true;
-  }
-  return false;
- }
  function htmlToText(html){
   const source=String(html||'').replace(/<br\s*\/?>/gi,' ').replace(/<\/(?:p|div|li|section|blockquote|h[1-6])\s*>/gi,' ');
   if(root.document&&typeof root.document.createElement==='function'){
@@ -63,128 +54,108 @@
   const source=await sourceLocation(selection);if(!source)return [];
   const sourceId=source.bookUid||source.bookId;
   const key=sourceId+'|'+source.line;
-  if(cache.has(key))return cache.get(key);
+  if(cache.has(key)){
+   const cached=cache.get(key);
+   cache.delete(key);cache.set(key,cached);
+   return cached;
+  }
   const promise=(async()=>{
    const request={startLine:source.line,endLine:source.line,connectionTypes:[CONNECTION_TYPE]};
    if(source.bookUid)request.bookUid=source.bookUid;else request.bookId=source.bookId;
    const response=await root.Otzaria.call('library.getLinks',request);
-   if(!response?.success||!Array.isArray(response.data?.links))return null;
+   if(!response?.success||response.data?.truncated===true||!Array.isArray(response.data?.links))return null;
    const seen=new Set();
    const links=response.data.links.filter(link=>{
     if(String(link?.connectionType||'').toUpperCase()!==CONNECTION_TYPE)return false;
+    if(link.targetIsUserBook===true||(link.targetSource&&link.targetSource!=='o')||(link.targetIsUserBook!==false&&link.targetSource!=='o'))return false;
     if(!link.targetTitle||!Number.isInteger(link.targetLine))return false;
     const id=[link.targetTitle,link.targetLine,link.targetLineEnd??''].join('|');
     if(seen.has(id))return false;seen.add(id);return true;
-   }).slice(0,MAX_LINKS);
+   });
    if(!links.length)return [];
+   if(links.length>MAX_LINKS)return null;
    const loaded=await root.Otzaria.call('library.getLinkContent',{links:links.map(contentRequest)});
-   if(!loaded?.success||!Array.isArray(loaded.data?.items))return null;
-   return links.map((link,index)=>{
+   if(!loaded?.success||loaded.data?.truncated===true||!Array.isArray(loaded.data?.items)||loaded.data.items.length!==links.length)return null;
+   const passages=links.map((link,index)=>{
     const item=loaded.data.items[index]||{};
-    if(item.error||typeof item.content!=='string')return null;
+    if(item.error||item.forbidden===true||item.restricted===true||item.partial===true||item.isPartial===true||item.truncated===true||typeof item.content!=='string')return null;
     const text=htmlToText(item.content).replace(/\s+/g,' ').trim();
     if(!text)return null;
     return {
      title:String(link.targetTitle||''),
      reference:String(link.targetHeRef||''),
      text,
+     tokens:tokenize(text),
      connectionType:CONNECTION_TYPE
     };
-   }).filter(Boolean);
+   });
+   return passages.some(item=>!item)?null:passages;
   })();
   cache.set(key,promise);
   while(cache.size>32)cache.delete(cache.keys().next().value);
   try{const result=await promise;if(result===null){cache.delete(key);return [];}return result;}catch{cache.delete(key);return [];}
  }
- function makeExcerpt(tokens,index,length){
-  const start=Math.max(0,index-12),end=Math.min(tokens.length,index+length+18);
-  return (start?'…':'')+tokens.slice(start,end).join(' ')+(end<tokens.length?'…':'');
+ function containsTokens(tokens,word){
+  const query=tokenize(word);if(!query.length)return false;
+  for(let i=0;i<=tokens.length-query.length;i++){
+   let exact=true;for(let j=0;j<query.length;j++)if(tokens[i+j]!==query[j]){exact=false;break;}
+   if(exact)return true;
+  }
+  return false;
  }
  async function find(selection,word){
-  const query=tokenize(word);if(!query.length)return [];
-  const passages=await passagesFor(selection),matches=[];
-  for(const passage of passages){
-   const tokens=tokenize(passage.text);let at=-1;
-   for(let i=0;i<=tokens.length-query.length;i++){
-    let ok=true;for(let j=0;j<query.length;j++)if(tokens[i+j]!==query[j]){ok=false;break;}
-    if(ok){at=i;break;}
-   }
-   if(at<0)continue;
-   matches.push({
-    title:passage.title,
-    reference:passage.reference||passage.title,
-    excerpt:makeExcerpt(tokens,at,query.length),
-    connectionType:passage.connectionType
-   });
-  }
-  return matches;
+  if(!word||!tokenize(word).length)return [];
+  const passages=await passagesFor(selection);
+  return passages.filter(passage=>containsTokens(passage.tokens||tokenize(passage.text),word));
  }
- function element(tag,text,className){
-  const node=root.document.createElement(tag);
-  if(text!==undefined)node.textContent=text;
-  if(className)node.className=className;
-  return node;
+ // Use only local translation evidence from a Mesores-linked passage.
+ // A parallel clue is accepted only when the exact word occurs unambiguously,
+ // one candidate is uniquely supported, and every relevant linked passage agrees.
+ async function translationRank(word,entries,selection){
+  if(!root.SefariaEvidence?.compareTranslation)return null;
+  const evidence=await root.SefariaEvidence.compareTranslation(word,entries,selection);
+  const matches=Array.isArray(evidence?.matches)?evidence.matches:[];
+  if(!matches.length)return null;
+  const score=match=>match.matchType==='exact'?3:match.matchType==='inflected_phrase'?2:1;
+  const highest=Math.max(...matches.map(score));
+  const winners=[...new Set(matches.filter(match=>score(match)===highest).map(match=>String(match.id)))];
+  if(winners.length!==1)return null;
+  return {preferredEntryId:winners[0],preferenceScope:'contextual'};
  }
- function clear(target){
-  if(!target?.querySelector)return;
-  const old=target.querySelector('.mesores-parallels');if(old)old.remove();
- }
- function render(target,matches,language='en'){
-  if(!target||!root.document||!matches.length)return null;
-  const hebrew=language==='he',section=element('section',undefined,'mesores-parallels');
-  section.setAttribute('aria-label',hebrew?'מקבילות במסורת הש״ס':'Mesores HaShas parallels');
-  section.append(element('span',hebrew?'מסורת הש״ס':'MESORES HASHAS','mesores-kicker'));
-  section.append(element('h3',hebrew?'סוגיות מקבילות':'Cross-referenced Gemara passages','mesores-title'));
-  section.append(element('p',hebrew
-   ?'ההפניות של מסורת הש״ס שמופיעות כאן מובילות לקטעים שבהם נמצאה המילה או הביטוי שנבחרו. כדאי להשוות את ההקשר; ההפניה לבדה אינה מוכיחה שהמשמעות זהה.'
-   :'These Mesores HaShas links lead to passages where the selected word or phrase also appears. Compare the wording; a cross-reference alone does not prove that the meaning is the same.','mesores-description'));
-  const list=element('div',undefined,'mesores-list');
-  for(const match of matches){
-   const card=element('article',undefined,'mesores-card');
-   card.append(element('strong',match.reference,'mesores-reference'));
-   if(match.title&&match.title!==match.reference)card.append(element('small',match.title,'mesores-book-title'));
-   card.append(element('p',match.excerpt,'mesores-excerpt'));
-   list.append(card);
-  }
-  section.append(list);target.append(section);return section;
- }
- async function attach(target,word,selection,language='en',options={}){
-  clear(target);
-  if(!selection||!word)return [];
-  let matches=[];
-  try{matches=await find(selection,word);}catch{return [];}
-  if(typeof options.isCurrent==='function'&&!options.isCurrent())return matches;
-  if(matches.length)render(target,matches,language);
-  return matches;
- }
-
- // Use an established contextual consensus from a Mesores-linked occurrence
- // only when every exact occurrence agrees. This never creates a vote.
- async function propagatedPreference(selection,word,entries,rank){
+ async function propagatedPreference(selection,word,entries,rank=translationRank){
   if(!selection||!word||!Array.isArray(entries)||!entries.length||typeof rank!=='function')return null;
   const query=tokenize(word);if(!query.length)return null;
-  const passages=await passagesFor(selection),preferences=[];
+  const passages=await passagesFor(selection),relevant=[];
   for(const passage of passages){
-   const tokens=tokenize(passage.text);
+   const tokens=passage.tokens||tokenize(passage.text);
+   let occurrences=0;
    for(let i=0;i<=tokens.length-query.length;i++){
-    let exact=true;for(let j=0;j<query.length;j++)if(tokens[i+j]!==query[j]){exact=false;break;}
-    if(!exact)continue;
-    const before=tokens.slice(Math.max(0,i-8),i).join(' ');
-    const after=tokens.slice(i+query.length,i+query.length+8).join(' ');
-    if(!before||!after)continue;
-    const linkedSelection={sourceRange:{beforeText:{raw:before},afterText:{raw:after}}};
-    let ranked;
-    try{ranked=await rank(word,entries,linkedSelection);}catch{continue;}
-    if(ranked?.preferenceScope!=='contextual'||!ranked.preferredEntryId)continue;
-    preferences.push(ranked.preferredEntryId);
+    let exact=true;
+    for(let j=0;j<query.length;j++)if(tokens[i+j]!==query[j]){exact=false;break;}
+    if(exact&&++occurrences>1)return null;
    }
+   if(occurrences)relevant.push(passage);
   }
-  if(!preferences.length)return null;
+  if(!relevant.length)return null;
+  // Linked passages are independent. Run their offline translation checks in
+  // parallel; the offline loader coalesces concurrent requests for one tractate.
+  const preferences=await Promise.all(relevant.map(async passage=>{
+   const linkedSelection={
+    currentBook:passage.title,
+    sourceRange:{ref:passage.reference||passage.title}
+   };
+   try{
+    const ranked=await rank(word,entries,linkedSelection);
+    return ranked?.preferenceScope==='contextual'&&ranked.preferredEntryId
+     ?String(ranked.preferredEntryId):null;
+   }catch{return null;}
+  }));
+  if(preferences.some(id=>!id))return null;
   const winner=preferences[0];
-  return preferences.every(id=>id===winner)?{preferredEntryId:winner,occurrences:preferences.length}:null;
+  return preferences.every(id=>id===winner)?{preferredEntryId:winner,occurrences:relevant.length}:null;
  }
 
- const api={connectionType:CONNECTION_TYPE,tokenize,containsPhrase,find,attach,clear,propagatedPreference};
+ const api={connectionType:CONNECTION_TYPE,tokenize,find,propagatedPreference};
  root.MesoresHaShas=api;
  if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window==='undefined'?globalThis:window);

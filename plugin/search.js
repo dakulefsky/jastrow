@@ -76,6 +76,25 @@
     choices.sort((a,b)=>vowelRank(entry,a.baseQuery)-vowelRank(entry,b.baseQuery)||a.prefix.length-b.prefix.length);
     return choices[0]?.baseQuery||query;
   }
+  const suggestionCatalogs=new WeakMap();
+  function suggestionMatches(index,prefix){
+    let buckets=suggestionCatalogs.get(index);
+    if(!buckets){
+      buckets=new Map();
+      index.entries.forEach((entry,id)=>{
+        const key=normalize(entry.h);
+        for(let length=1;length<=Math.min(key.length,8);length++){
+          const part=key.slice(0,length);
+          let ids=buckets.get(part);
+          if(!ids){ids=[];buckets.set(part,ids);}
+          ids.push(id);
+        }
+      });
+      suggestionCatalogs.set(index,buckets);
+    }
+    const candidates=buckets.get(prefix.length<=8?prefix:prefix.slice(0,8))||[];
+    return prefix.length<=8?candidates:candidates.filter(id=>normalize(index.entries[id].h).startsWith(prefix));
+  }
   function lookup(index, query, limit=100, order='length',includeJastrow=false){
     if(!validWord(query))return {kind:String(query).trim()?'invalid':'empty',ids:[],total:0};
     let prefixed=[];
@@ -96,7 +115,7 @@
     }
     if(!ids.length){
       // Suggestions are spelling matches, never invented translations or inferred roots.
-      ids=index.entries.map((e,i)=>({i,n:normalize(e.h)})).filter(e=>e.n.startsWith(q)).map(e=>e.i);
+      ids=suggestionMatches(index,q);
     }
     if(kind!=='suggestions'&&order==='length'&&index.entryLengths){
       const tier=id=>{const matches=prefixed.filter(m=>m.id===id);return matches.length?Math.min(...matches.map(m=>(m.suffix!==undefined?20:0)+m.prefix.length*3+((index.direct[m.base]||[]).includes(id)?0:(index.attestedForms?.[m.base]||[]).some(x=>x.id===id)?1:2))):direct.includes(id)?0:attested.includes(id)?1:2;};
@@ -138,7 +157,7 @@
   }
   function hasSelectionTranslations(index,text){const segments=segmentWords(index,text);return !!segments.length&&segments.every(s=>s.result?.ids.length||hasTranslation(index,s.word));}
 
-  const api={hasVowels,vowelRank,markedLetters,prefixMatches,endingMatches,matchingQuery,phraseLookup,segmentWords,hasSelectionTranslations,splitWords,normalize,lookup,hasTranslation,validWord,displayHeadword};
+  const api={suggestionMatches,hasVowels,vowelRank,markedLetters,prefixMatches,endingMatches,matchingQuery,phraseLookup,segmentWords,hasSelectionTranslations,splitWords,normalize,lookup,hasTranslation,validWord,displayHeadword};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.JastrowSearch=api;
 })(typeof window!=='undefined'?window:globalThis);

@@ -20,7 +20,7 @@
   if(!valid(q))return [];
   const d=root.HEBREW_DICTIONARY,key=normalize(q),exact=d.index[key]||[];
   const found=exact.map(i=>({entry:d.entries[i],matchedForm:false,baseWord:d.entries[i].word,prefix:'',suffix:''}));
-  if(!found.length){
+  if(!found.length&&!key.includes(' ')){
    const candidates=formCandidates(q);
    for(const candidate of candidates){
     for(const i of d.index[candidate.base]||[])found.push({entry:d.entries[i],matchedForm:true,baseWord:candidate.base,prefix:candidate.prefix,suffix:candidate.suffix});
@@ -30,6 +30,22 @@
   for(const item of found){const k=item.entry.rid+'|'+item.baseWord;if(!unique.has(k))unique.set(k,item);}
   return [...unique.values()].sort((a,b)=>(a.matchedForm?1:0)-(b.matchedForm?1:0)||rank(a.entry.word,q)-rank(b.entry.word,q)||a.entry.rid.localeCompare(b.entry.rid)).map(item=>({...item.entry,matchedForm:item.matchedForm,baseWord:item.baseWord,prefix:item.prefix,suffix:item.suffix}));
  }
+ function segmentWords(text){
+  const words=normalize(text).split(' ').filter(Boolean),segments=[];
+  if(words.length<2)return segments;
+  for(let start=0;start<words.length;){
+   let match=null;
+   for(let end=words.length;end>start+1;end--){
+    const phrase=words.slice(start,end).join(' ');
+    const records=lookup(phrase);
+    if(records.length){match={word:phrase,records};start=end;break;}
+   }
+   if(match){segments.push(match);continue;}
+   const word=words[start++],records=lookup(word);
+   if(records.length)segments.push({word,records});
+  }
+  return segments;
+ }
  function selectionText(p){const s=p?.selection||{};return s.renderedSelectedText||p?.renderedSelectedText||p?.selectedText||s.text||p?.text||s.normalizedSelectedText||p?.normalizedSelectedText||'';}
- root.HebrewLookup={normalize,lookup,valid,rank,selectionText,formCandidates};
+ root.HebrewLookup={normalize,lookup,valid,rank,selectionText,formCandidates,segmentWords};
 })(typeof window==='undefined'?globalThis:window);
