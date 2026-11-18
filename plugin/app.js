@@ -161,12 +161,14 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
    if(serial!==requestSerial||panelSerial!==entrySerial)return;
    const matches=new Map((evidence.matches||[]).map(item=>[item.id,item]));
    if(matches.size){
-    const ranked=[...matches.entries()].sort((a,b)=>{
-     const score=value=>value.matchType==='exact'?3:value.matchType==='inflected_phrase'?2:1;
-     return score(b[1])-score(a[1])||Number(a[0])-Number(b[0]);
-    });
-    sourcePreferredId=ranked[0][0];
-    applyRecommendation(sourcePreferredId);
+    const score=value=>value.matchType==='exact'?3:value.matchType==='inflected_phrase'?2:1;
+    const highest=Math.max(...[...matches.values()].map(score));
+    const winners=[...matches.entries()].filter(([,value])=>score(value)===highest);
+    // Never break a lexical tie by dictionary ID or source order.
+    if(winners.length===1){
+     sourcePreferredId=winners[0][0];
+     applyRecommendation(sourcePreferredId);
+    }
    }
   }
   if(window.MesoresHaShas?.propagatedPreference&&candidates.length){
