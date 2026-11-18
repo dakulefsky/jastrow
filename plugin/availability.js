@@ -34,7 +34,7 @@
    children:[{id:'jastrow-meaning-fallback',title:'Open full dictionary',openPlugin:true,param:{dictionaryWord:word,showAll:true}}]
   }).catch(()=>{});
  }
- function update(){
+ async function update(){
   if(running)return;running=true;
   try{
    while(pending){
