@@ -57,11 +57,7 @@
      id:'jastrow-meaning-'+i,
      title:childTitle(item,text),
      openPlugin:true,
-     param:{
-      dictionaryWord:text,
-      entryId:item.entryId,
-      ...(item.translationMatch?{recommended:true,translationPhrase:item.translationPhrase||''}:{})
-     }
+     param:{dictionaryWord:text,entryId:item.entryId}
     }));
     const rendered=JastrowContext.selectionText(selection);
     const variants=[...new Set([rendered,text,JastrowSearch.splitWords(text).map(JastrowSearch.normalize).join(' ')])].filter(value=>value&&value.length<=100);
