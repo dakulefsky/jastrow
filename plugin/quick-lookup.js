@@ -20,12 +20,20 @@
   if(!phrase.ids.length&&S.splitWords(word).length>1){
    if(!S.hasSelectionTranslations(index,word))return [];
    const parts=S.segmentWords(index,word),perPart=Math.max(2,Math.ceil(maxCandidates/Math.max(1,parts.length)));
-   const lists=await Promise.all(parts.map(async part=>(await results(part.word,selection,{maxCandidates:perPart})).map(item=>({...item,selectedWord:part.word}))));
-   return lists.flat().slice(0,maxCandidates);
+   const lists=await Promise.all(parts.map(async part=>{
+    const items=await results(part.word,selection,{maxCandidates:perPart});
+    const mapped=items.map(item=>({...item,selectedWord:part.word}));
+    mapped.hasMore=items.hasMore===true;
+    return mapped;
+   }));
+   const combined=lists.flat().slice(0,maxCandidates);
+   combined.hasMore=lists.some(list=>list.hasMore)||lists.reduce((count,list)=>count+list.length,0)>maxCandidates;
+   return combined;
   }
   const result=phrase.ids.length?phrase:S.lookup(index,word,maxCandidates,'length',false);
   if(['suggestions','invalid','empty'].includes(result.kind))return [];
   const ids=result.ids.slice(0,maxCandidates);
+  const hasMore=Number.isFinite(result.total)&&result.total>ids.length;
   const records=(await Promise.all(ids.map(id=>root.JastrowReadingView.records(index,id,load,word,{phrase:phrase.ids.length>0,lookupWord:S.matchingQuery(index,result.prefixMatches,id,word)})))).flat();
   const merged=root.DictionaryMeanings.merge(records,word).map(group=>({
    text:group.text,spelling:group.spelling,
@@ -78,6 +86,9 @@
     if(best>=0){merged[best].recommended=true;if(best>0)merged.unshift(merged.splice(best,1)[0]);}
    }
   }
+  // Preserve the lookup's overflow count even when duplicate source entries
+  // merge into fewer visible meaning groups than the fetched candidate cap.
+  merged.hasMore=hasMore;
   return merged;
  }
  async function previewCandidates(word,result){
