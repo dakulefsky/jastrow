@@ -78,7 +78,7 @@
      id:'jastrow-lookup',
      type:'submenu',
      title:title.length>100?title.slice(0,99).trimEnd()+'…':title,
-     icon:'book_24_regular',
+     icon:'book_dictionary_24_regular',
      contexts:['reader-selection','reader-page-shape-selection'],
      showWhen:{selectionContainsAny:variants},
      children
