@@ -116,6 +116,16 @@ async function searchWords(words,serial){
   await showTranslations(result,word,serial,target,3);
  }));
 }
+function applyRecommendation(id){
+ const numeric=Number(id);if(!Number.isInteger(numeric)||numeric<0)return;
+ const card=document.querySelector('#entry .meaning-card[data-meaning-index="'+numeric+'"]');
+ const content=card?.querySelector('.meaning-content');if(!card||!content)return;
+ document.querySelectorAll('#entry .meaning-recommended').forEach(node=>node.remove());
+ document.querySelectorAll('#entry .context-recommended').forEach(node=>node.classList.remove('context-recommended'));
+ const marker=el('span','Recommended','meaning-recommended');
+ marker.setAttribute('aria-label','Recommended by direct offline translation evidence');
+ content.prepend(marker);card.classList.add('context-recommended');
+}
 function readerOriginLabel(selection){
  const ref=selection?.currentRef||selection?.sourceRange?.ref||selection?.sourceRange?.currentRef||selection?.renderedRange?.ref||selection?.sections?.[0]?.sourceRange?.ref||selection?.currentTitle||selection?.reference||'';
  const parsed=window.SefariaOfflineTranslation?.parseReference?.(ref,selection?.currentBook);
