@@ -163,7 +163,7 @@
   }
   return {
    aligned:compatible&&hasContent,
-   reason:compatible&&hasContent?null:!hasContent?'no_parallel_segments':'segment_count_mismatch',
+   reason:compatible&&hasContent?null:!compatible?'segment_count_mismatch':'no_parallel_segments',
    scope:parsed.line===null?'daf':'paragraph',
    reference:parsed.ref,
    dafReference:meta.title+' '+parsed.daf+(parsed.side||''),
