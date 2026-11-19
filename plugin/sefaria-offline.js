@@ -71,13 +71,16 @@
   if(tractatePromises.has(key))return tractatePromises.get(key);
   const promise=loadScript(meta.file||('texts/'+key+'.js')).then(()=>{
    const data=root.SefariaOfflineTranslationData?.[key];
+   const source=root.SefariaOfflineSourceData?.[key];
    if(!Array.isArray(data?.text))throw Error('Offline translation has no daf structure: '+meta.title);
+   if(!Array.isArray(source?.text))throw Error('Paired Aramaic source text is unavailable: '+meta.title);
    tractateCache.set(key,data);
    while(tractateCache.size>MAX_CACHED_TRACTATES){
     const oldest=tractateCache.keys().next().value;
     tractateCache.delete(oldest);
     for(const dafKey of preparedDafCache.keys())if(dafKey.startsWith(oldest+'|'))preparedDafCache.delete(dafKey);
     if(root.SefariaOfflineTranslationData)delete root.SefariaOfflineTranslationData[oldest];
+    if(root.SefariaOfflineSourceData)delete root.SefariaOfflineSourceData[oldest];
    }
    return data;
   }).finally(()=>tractatePromises.delete(key));
@@ -88,6 +91,11 @@
   const side=data.text[index];
   if(Array.isArray(side))return side.filter(value=>typeof value==='string'&&value.trim());
   return typeof side==='string'&&side.trim()?[side]:[];
+ }
+ function collectSideSlots(data,index){
+  const side=data.text[index];
+  if(Array.isArray(side))return side.map(value=>typeof value==='string'?value:'');
+  return typeof side==='string'?[side]:[];
  }
  function cacheDaf(meta,daf,data){
   const key=(meta.slug||meta.title)+'|'+daf;
@@ -129,6 +137,44 @@
    dafReference:meta.title+' '+parsed.daf+(parsed.side||''),tractate:meta.title,
    versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'};
  }
+ async function getParallelPassage(reference,selection){
+  const parsed=parseReference(reference||selection?.sourceRange?.ref||selection?.currentRef,selection?.currentBook);
+  if(!parsed)return {aligned:false,reason:'unsupported_reference',segments:[]};
+  const manifest=await getManifest(),meta=findTractate(manifest,parsed,selection);
+  if(!meta)return {aligned:false,reason:'tractate_not_in_offline_corpus',segments:[]};
+  const translation=await loadTractate(meta),source=root.SefariaOfflineSourceData?.[meta.slug||meta.title];
+  if(!Array.isArray(source?.text))return {aligned:false,reason:'source_unavailable',segments:[]};
+  const pages=parsed.side? [parsed.dafIndex] : [2*parsed.daf-2,2*parsed.daf-1];
+  const segments=[];let compatible=true,hasContent=false;
+  for(const pageIndex of pages){
+   const original=collectSideSlots(source,pageIndex),translated=collectSideSlots(translation,pageIndex);
+   if(original.length!==translated.length){compatible=false;continue;}
+   const start=parsed.line===null?0:parsed.line-1,end=parsed.line===null?original.length:start+1;
+   if(start<0||start>=original.length){compatible=false;continue;}
+   for(let line=start;line<end;line++){
+    const sourceText=String(original[line]||'').trim(),translationText=String(translated[line]||'').trim();
+    if(!sourceText&&!translationText)continue;
+    if(!sourceText||!translationText){compatible=false;continue;}
+    hasContent=true;
+    segments.push({dafIndex:pageIndex,line:line+1,side:pageIndex%2===0?'a':'b',sourceText,translationText});
+   }
+  }
+  return {
+   aligned:compatible&&hasContent,
+   reason:compatible&&hasContent?null:!hasContent?'no_parallel_segments':'segment_count_mismatch',
+   scope:parsed.line===null?'daf':'paragraph',
+   reference:parsed.ref,
+   dafReference:meta.title+' '+parsed.daf+(parsed.side||''),
+   tractate:meta.title,
+   versionTitle:manifest.edition,
+   sourceVersionTitle:manifest.sourceEdition||'William Davidson Edition - Vocalized Aramaic',
+   license:'CC-BY-NC',
+   sourceLicense:meta.sourceLicense||'CC-BY-NC',
+   segments,
+   sourceText:segments.map(item=>item.sourceText).join(' '),
+   translationText:segments.map(item=>item.translationText).join(' ')
+  };
+ }
  async function prepareDaf(location,shouldContinue){
   const current=()=>typeof shouldContinue!=='function'||shouldContinue();
   const parsed=parseReference(location?.currentRef,location?.currentBook);
@@ -146,8 +192,8 @@
  }
  function clearCache(){
   manifestPromise=null;manifestData=null;tractateCache.clear();tractatePromises.clear();preparedDafCache.clear();
-  delete root.SefariaOfflineTranslationManifest;delete root.SefariaOfflineTranslationData;
+  delete root.SefariaOfflineTranslationManifest;delete root.SefariaOfflineTranslationData;delete root.SefariaOfflineSourceData;
  }
- root.SefariaOfflineTranslation={prepareDaf,getPassage,isDafPrepared,parseReference,clearCache};
+ root.SefariaOfflineTranslation={prepareDaf,getPassage,getParallelPassage,isDafPrepared,parseReference,clearCache};
  if(typeof module!=='undefined'&&module.exports)module.exports=root.SefariaOfflineTranslation;
 })(typeof window==='undefined'?globalThis:window);
