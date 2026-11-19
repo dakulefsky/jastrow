@@ -7,6 +7,7 @@ from pathlib import Path
 from build_sefaria_bavli_corpus import (
     EDITION,
     SOURCE_EDITION,
+    ALTERNATE_SOURCE_EDITION,
     build_archive,
     normalize_license,
     parallel_segment_stats,
@@ -109,6 +110,23 @@ class BavliCorpusBuilderTests(unittest.TestCase):
                     lambda url: english if url.endswith("-en.json") else aramaic,
                 )
             self.assertFalse(output.exists())
+
+    def test_uses_licensed_unvocalized_source_for_chullin_and_menachot(self):
+        english = [
+            {**self.match, "title": "Chullin"},
+            {**self.match, "title": "Menachot"},
+        ]
+        primary = [
+            {**self.source, "title": "Chullin"},
+            {**self.source, "title": "Menachot"},
+        ]
+        alternate = [
+            {**self.source, "title": "Chullin", "versionTitle": ALTERNATE_SOURCE_EDITION},
+            {**self.source, "title": "Menachot", "versionTitle": ALTERNATE_SOURCE_EDITION},
+        ]
+        pairs = selected_bavli_pairs(english + primary + alternate)
+        self.assertEqual(len(pairs), 2)
+        self.assertTrue(all(source["versionTitle"] == ALTERNATE_SOURCE_EDITION for _, source in pairs))
 
     def test_refuses_unpaired_tractate(self):
         with self.assertRaisesRegex(RuntimeError, "matching .* source text is missing"):
