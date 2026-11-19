@@ -57,7 +57,10 @@ vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),{window:r
  const realModel=realRoot.SefariaOfflineWordAlignment;
  assert.equal(realModel.formatVersion,1);
  assert.equal(realModel.license,'CC-BY-NC');
- assert(realModel.trainingPairs>70000,'the model must be trained from the broad matched Shas corpus');
+ assert(realModel.candidatePairs>70000,'the model must scan the broad matched Shas corpus');
+ assert(realModel.trainingPairs<=40000,'the trained model should respect its bounded build-time sample');
+ assert(realModel.sampledTractates===37,'the alignment sample should represent all 37 tractates');
+ assert(realModel.samplingFraction>0&&realModel.samplingFraction<1);
  assert(realModel.sourceWords>1000,'the model should cover a substantial Aramaic vocabulary');
  const realParallel=await realApi.getParallelPassage('ברכות, דף ב עמוד א',{currentBook:'ברכות'});
  assert.equal(realParallel.aligned,true,'Berakhot 2a should expose aligned parallel paragraphs');
