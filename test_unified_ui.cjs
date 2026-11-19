@@ -20,6 +20,21 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   await lookup('נפקא');assert.equal(await page.locator('.meaning-card').count(),2);assert.equal(await page.locator('.meaning-text').filter({hasText:'excrements'}).count(),1);assert.equal(await page.locator('.meaning-text').filter({hasText:'outlet'}).count(),1);for(const card of await page.locator('.meaning-card').all())assert.equal(await card.locator('.meaning-references a').count(),2);
   await lookup('נפקא מינה');assert.equal(await page.locator('#entry h2').count(),1);assert.equal(await page.locator('.translation-label').count(),0);assert(!/Expressions and words|Expression meaning/.test(await page.locator('#entry').innerText()));assert.match(await page.locator('#entry').innerText(),/the practical difference is/);assert(!/to bring out/.test(await page.locator('#entry').innerText()));assert.equal(await page.locator('.meaning-card>.meaning-number').count(),1);
   await lookup('צפרא ספרא');assert.equal(await page.locator('.phrase-word').count(),2);assert.match(await page.locator('#entry').innerText(),/morning/);assert.match(await page.locator('#entry').innerText(),/bird/);assert.match(await page.locator('#entry').innerText(),/book/);
+  // A unique, direct offline translation match is visibly recommended in the full dictionary.
+  await page.evaluate(()=>{
+   activeReaderContext={word:'אַרְעָא',selection:{sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'}};
+   SefariaEvidence.compareTranslation=async(word,candidates)=>{
+    const target=candidates.find(item=>item.text.includes('land'));
+    return {matches:target?[{id:target.id,matchedPhrase:'land',matchType:'exact'}]:[],scope:'paragraph'};
+   };
+  });
+  await lookup('אַרְעָא');
+  assert.equal(await page.locator('.meaning-recommended').count(),1);
+  assert.match(await page.locator('.context-recommended').innerText(),/land/);
+  // Equally strong candidates are ambiguous and must not receive a recommendation.
+  await page.evaluate(()=>{SefariaEvidence.compareTranslation=async(word,candidates)=>({matches:candidates.slice(0,2).map(item=>({id:item.id,matchedPhrase:item.text,matchType:'exact'})),scope:'paragraph'});});
+  await lookup('אַרְעָא');assert.equal(await page.locator('.meaning-recommended').count(),0);
+  await page.evaluate(()=>{activeReaderContext=null;});
   await page.evaluate(()=>{search('צפרא ספרא');search('אַרְעָא');});await page.waitForFunction(()=>document.querySelector('.unified-meanings>ol')?.innerText.includes('land'));assert.equal(await page.locator('.phrase-word').count(),0);
   await page.evaluate(()=>search('אבגדהוזחטיכלמנסעפצקרשת'));assert.match(await page.locator('#entry').innerText(),/No matching entry/);assert.deepEqual(errors,[]);assert.deepEqual(external,[]);
   assert.equal(await page.locator('.community-feedback').count(),0,'voting remains disabled in the learner-facing interface');
