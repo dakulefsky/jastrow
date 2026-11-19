@@ -4,6 +4,7 @@
  const MAX_CACHED_TRACTATES=3,MAX_CACHED_DAFS=12;
  let manifestPromise=null,manifestData=null;
  const tractateCache=new Map(),tractatePromises=new Map(),preparedDafCache=new Map();
+ let wordAlignmentPromise=null;
 
  function normalizeName(value){
   return String(value||'').normalize('NFKD').replace(/\p{M}/gu,'')
@@ -179,6 +180,114 @@
    translationText:translationParts.join(' ')
   };
  }
+ const SOURCE_TOKEN_PATTERN=/[\u05d0-\u05ea\u0591-\u05c7]+/g;
+ const ENGLISH_TOKEN_PATTERN=/[A-Za-z]+(?:['’][A-Za-z]+)*/g;
+ const ENGLISH_JOINERS=new Set(['a','an','the','of','to','is','it','he','she','they','and','or','in','on','at','by','for','with','as','from','that','this','his','her','their','was','were','be','are','has','have','had','do','does','did']);
+ function normalizeAramaicToken(value){
+  return String(value||'').normalize('NFKD').replace(/\p{M}/gu,'')
+   .replace(/[ךםןףץ]/g,char=>({'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'}[char]))
+   .replace(/[^\u05d0-\u05ea]/g,'');
+ }
+ function getWordAlignmentModel(){
+  if(root.SefariaOfflineWordAlignment)return Promise.resolve(root.SefariaOfflineWordAlignment);
+  if(!wordAlignmentPromise){
+   wordAlignmentPromise=loadScript('word-alignments.js').then(()=>{
+    const model=root.SefariaOfflineWordAlignment;
+    if(model?.formatVersion!==1||!model.links||!Array.isArray(model.nullLinks))throw Error('Offline word-alignment model is invalid');
+    return model;
+   }).catch(error=>{wordAlignmentPromise=null;throw error;});
+  }
+  return wordAlignmentPromise;
+ }
+ function tokenPositions(text,pattern,normalize){
+  pattern.lastIndex=0;
+  return [...String(text||'').matchAll(pattern)].map(match=>({
+   raw:match[0],normalized:normalize(match[0]),index:match.index
+  })).filter(item=>item.normalized);
+ }
+ function translationMap(items){
+  return new Map((Array.isArray(items)?items:[]).map(item=>[item.word,Number(item.probability)||0]));
+ }
+ function alignWordInSegment(word,segment,model,modelMaps){
+  const source=tokenPositions(segment.sourceText,SOURCE_TOKEN_PATTERN,normalizeAramaicToken);
+  const target=tokenPositions(segment.translationText,ENGLISH_TOKEN_PATTERN,value=>value.toLowerCase().replace(/[’]/g,"'"));
+  const selected=source.map((token,index)=>token.normalized===word?index:-1).filter(index=>index>=0);
+  if(!selected.length||!target.length)return [];
+  const nullMap=modelMaps.nullMap;
+  const sourceMaps=source.map(token=>{
+   if(!modelMaps.cache.has(token.normalized))modelMaps.cache.set(token.normalized,translationMap(model.links[token.normalized]));
+   return modelMaps.cache.get(token.normalized);
+  });
+  const owners=[],scores=[];
+  for(const english of target){
+   const nullProbability=nullMap.get(english.normalized)||0;
+   let total=nullProbability,bestProbability= nullProbability,bestIndex=-1;
+   for(let index=0;index<sourceMaps.length;index++){
+    const probability=sourceMaps[index].get(english.normalized)||0;
+    total+=probability;
+    if(probability>bestProbability){bestProbability=probability;bestIndex=index;}
+   }
+   owners.push(bestIndex);
+   scores.push(total>0&&bestIndex>=0?bestProbability/total:0);
+  }
+  const results=[];
+  for(const sourceIndex of selected){
+   const assigned=[];
+   for(let index=0;index<owners.length;index++){
+    if(owners[index]===sourceIndex&&scores[index]>=0.12)assigned.push(index);
+   }
+   if(!assigned.length)continue;
+   let start=assigned[0],end=start,confidenceTotal=scores[start],confidenceCount=1;
+   function flush(){
+    const text=target.slice(start,end+1).map(token=>token.raw).join(' ').trim();
+    if(text)results.push({text,confidence:confidenceTotal/confidenceCount,sourceOccurrence:sourceIndex});
+   }
+   for(let i=1;i<assigned.length;i++){
+    const next=assigned[i],gap=next-end;
+    const joinable=gap===1||(gap===2&&owners[end+1]===-1&&ENGLISH_JOINERS.has(target[end+1].normalized));
+    if(joinable){
+     end=next;confidenceTotal+=scores[next];confidenceCount++;
+    }else{
+     flush();start=end=next;confidenceTotal=scores[next];confidenceCount=1;
+    }
+   }
+   flush();
+  }
+  return results;
+ }
+ async function getWordTranslations(word,parallel){
+  if(!parallel?.aligned||!Array.isArray(parallel.segments))return {
+   status:'unaligned',reason:parallel?.reason||'parallel_passage_unavailable',translations:[]
+  };
+  const normalized=normalizeAramaicToken(word);
+  if(!normalized)return {status:'invalid_word',translations:[]};
+  const model=await getWordAlignmentModel();
+  const modelMaps={cache:new Map(),nullMap:translationMap(model.nullLinks)};
+  const translations=[];
+  let occurrences=0;
+  parallel.segments.forEach((segment,segmentIndex)=>{
+   if(!tokenPositions(segment.sourceText,SOURCE_TOKEN_PATTERN,normalizeAramaicToken).some(token=>token.normalized===normalized))return;
+   occurrences++;
+   for(const result of alignWordInSegment(normalized,segment,model,modelMaps)){
+    translations.push({...result,segmentIndex,line:segment.line,side:segment.side});
+   }
+  });
+  const distinct=new Map();
+  for(const item of translations){
+   const key=item.text.toLowerCase();
+   const previous=distinct.get(key);
+   if(!previous||item.confidence>previous.confidence)distinct.set(key,item);
+  }
+  const ranked=[...distinct.values()].sort((a,b)=>b.confidence-a.confidence).slice(0,4);
+  if(!occurrences)return {status:'word_not_in_parallel_passage',word,translations:[]};
+  if(!ranked.length)return {
+   status:'no_confident_alignment',word,occurrences,method:model.method,translations:[]
+  };
+  return {
+   status:'ok',word,method:model.method,license:model.license,attribution:model.attribution,
+   occurrences,translations:ranked
+  };
+ }
  async function prepareDaf(location,shouldContinue){
   const current=()=>typeof shouldContinue!=='function'||shouldContinue();
   const parsed=parseReference(location?.currentRef,location?.currentBook);
@@ -195,9 +304,9 @@
    tractate:meta.title,versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'};
  }
  function clearCache(){
-  manifestPromise=null;manifestData=null;tractateCache.clear();tractatePromises.clear();preparedDafCache.clear();
-  delete root.SefariaOfflineTranslationManifest;delete root.SefariaOfflineTranslationData;delete root.SefariaOfflineSourceData;
+  manifestPromise=null;manifestData=null;tractateCache.clear();tractatePromises.clear();preparedDafCache.clear();wordAlignmentPromise=null;
+  delete root.SefariaOfflineTranslationManifest;delete root.SefariaOfflineTranslationData;delete root.SefariaOfflineSourceData;delete root.SefariaOfflineWordAlignment;
  }
- root.SefariaOfflineTranslation={prepareDaf,getPassage,getParallelPassage,isDafPrepared,parseReference,clearCache};
+ root.SefariaOfflineTranslation={prepareDaf,getPassage,getParallelPassage,getWordTranslations,isDafPrepared,parseReference,clearCache};
  if(typeof module!=='undefined'&&module.exports)module.exports=root.SefariaOfflineTranslation;
 })(typeof window==='undefined'?globalThis:window);
