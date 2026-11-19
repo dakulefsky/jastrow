@@ -81,6 +81,8 @@ class BavliCorpusBuilderTests(unittest.TestCase):
                 lambda url: english if url.endswith("-en.json") else aramaic,
             )
             self.assertEqual(manifest["tractateCount"], 1)
+            self.assertEqual(manifest["parallelAlignmentStats"]["coverage"], 1.0)
+            self.assertEqual(manifest["parallelAlignmentStats"]["alignedSlots"], 2)
             self.assertEqual(manifest["tractates"][0]["license"], "CC-BY-NC")
             self.assertEqual(manifest["tractates"][0]["sourceLicense"], "CC-BY-NC")
             self.assertEqual(manifest["tractates"][0]["sourceVersionTitle"], SOURCE_EDITION)
