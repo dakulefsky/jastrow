@@ -22,6 +22,7 @@ function verify(root){
   assert.equal(meta.license,'CC-BY-NC',meta.title);
   assert.equal(meta.sourceVersionTitle,manifest.sourceEdition,meta.title);
   assert.equal(meta.sourceLicense,'CC-BY-NC',meta.title);
+  assert(meta.parallelSegmentStats&&meta.parallelSegmentStats.totalSides>=meta.parallelSegmentStats.alignedSides,meta.title+' has no alignment coverage report');
   assert(!meta.file.includes('..'));
   assert(meta.file.startsWith('texts/'));
   assert(!titles.has(meta.title),'duplicate tractate '+meta.title);
