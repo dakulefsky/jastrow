@@ -169,7 +169,7 @@
    dafReference:meta.title+' '+parsed.daf+(parsed.side||''),
    tractate:meta.title,
    versionTitle:manifest.edition,
-   sourceVersionTitle:manifest.sourceEdition||'William Davidson Edition - Vocalized Aramaic',
+   sourceVersionTitle:meta.sourceVersionTitle||manifest.sourceEdition||'William Davidson Edition - Vocalized Aramaic',
    license:'CC-BY-NC',
    sourceLicense:meta.sourceLicense||'CC-BY-NC',
    alignmentBasis:'matching-daf-side-and-segment-index',
