@@ -211,7 +211,7 @@
  }
  function alignWordInSegment(word,segment,model,modelMaps){
   const source=tokenPositions(segment.sourceText,SOURCE_TOKEN_PATTERN,normalizeAramaicToken);
-  const target=tokenPositions(segment.translationText,ENGLISH_TOKEN_PATTERN,value=>value.toLowerCase().replace(/[’]/g,"'"));
+  const target=tokenPositions(segment.translationText,ENGLISH_TOKEN_PATTERN,value=>value.toLowerCase().replace(/[’]/g,"'").replace(/[–]/g,'-'));
   const selected=source.map((token,index)=>token.normalized===word?index:-1).filter(index=>index>=0);
   if(!selected.length||!target.length)return [];
   const nullMap=modelMaps.nullMap;
