@@ -14,6 +14,13 @@
   const value=clean(text);
   return synonymGroups.find(group=>group.includes(value))?.[0]||value;
  };
+ // These are reviewed source-gloss pairs, not a general rule that one
+ // dictionary gloss may be swallowed merely because its words occur in another.
+ const reviewedGlossPairs=new Set([
+  ['land, ground','land, earth, ground, field'],
+  ['outlet','outlet, opening']
+ ].map(pair=>pair.map(clean).sort().join(' | ')));
+ const reviewedGlossEquivalent=(a,b)=>reviewedGlossPairs.has([clean(a),clean(b)].sort().join(' | '));
  function compatible(a,b){
   const aa=S.markedLetters(a),bb=S.markedLetters(b);
   if(S.normalize(a)!==S.normalize(b))return false;
@@ -25,9 +32,8 @@
  }
  function sameMeaning(group,item){
   if(group.form!==stem(item.meaning.label)||!group.sources.every(s=>S.normalize(s.spelling)===S.normalize(item.spelling)))return false;
-  if(synonymKey(group.text)===synonymKey(item.meaning.text)||group.sources.some(s=>reviewedEquivalent(s,item)))return true;
-  const a=parts(group.text),b=parts(item.meaning.text);
-  return Math.min(a.length,b.length)>=1&&(a.every(x=>b.includes(x))||b.every(x=>a.includes(x)));
+  return synonymKey(group.text)===synonymKey(item.meaning.text)||
+   group.sources.some(s=>reviewedEquivalent(s,item))||reviewedGlossEquivalent(group.text,item.meaning.text);
  }
  function merge(records,word){
   const groups=[];
@@ -56,8 +62,8 @@
   const citedWordExamples=source.entry.source==='krupnik'?null:root.JastrowReadingView?.renderPassages?.(body,source.lookupWord||source.spelling);
   section.append(body);if(citedWordExamples)section.append(citedWordExamples);return section;
  }
- function card(group,number,notes){
-  const li=element('li',undefined,'meaning-card');li.dataset.vowelRank=group.rank;
+ function card(group,number,notes,meaningIndex){
+  const li=element('li',undefined,'meaning-card');li.dataset.vowelRank=group.rank;li.dataset.meaningIndex=String(meaningIndex);
   const badge=element('span',String(number),'meaning-number');badge.setAttribute('aria-hidden','true');
   const content=element('div',undefined,'meaning-content'),spelling=element('div',group.spelling,'meaning-spelling');spelling.dir='rtl';
   content.append(spelling);
@@ -78,7 +84,7 @@
   const groups=merge(records,word),section=element('section',undefined,'quick-meanings unified-meanings');
   const list=element('ol'),otherList=element('ol');let number=0;
   const hasExact=S.hasVowels(word)&&groups.some(g=>g.rank===0);
-  for(const group of groups){const item=card(group,++number,notes);(hasExact&&group.rank>0?otherList:list).append(item);}
+  groups.forEach((group,index)=>{const item=card(group,++number,notes,index);(hasExact&&group.rank>0?otherList:list).append(item);});
   section.append(list);
   if(otherList.children.length){const alternatives=element('details',undefined,'other-readings');alternatives.append(element('summary','Other possible vowel readings'),otherList);section.append(alternatives);}
   const withoutMeanings=records.filter(r=>!r.meanings.length);
