@@ -63,6 +63,7 @@ vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),{window:r
  assert.equal(parallel.segments.length,1);
  assert.match(parallel.sourceText,/הפסקה הראשונה/);
  assert.match(parallel.translationText,/first paragraph/);
+ assert.doesNotMatch(parallel.translationText,/second paragraph/,'a paragraph reference must not return the entire amud');
  const wholeParallel=await offline.getParallelPassage('ברכות, דף ב',{currentBook:'ברכות'});
  assert.equal(wholeParallel.aligned,true);
  assert.equal(wholeParallel.segments.length,3);
