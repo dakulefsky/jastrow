@@ -84,28 +84,47 @@ def iter_parallel_segments(corpus: Path) -> Iterable[tuple[list[str], list[str]]
 def train_model(
     pairs: Iterable[tuple[list[str], list[str]]],
     *,
-    iterations: int = 4,
+    iterations: int = 3,
     min_source_count: int = 3,
     top_k: int = 16,
+    max_training_pairs: int = 40000,
 ) -> dict:
+    if max_training_pairs < 1:
+        raise ValueError("max_training_pairs must be positive")
+
+    # Deterministic reservoir sampling keeps every tractate represented while
+    # bounding build time and memory. The separate corpus coverage report still
+    # measures all aligned paragraph slots.
+    import random
+    rng = random.Random(20261119)
+    sampled: list[tuple[list[str], list[str]]] = []
+    candidate_pairs = 0
+    for source_tokens, target_tokens in pairs:
+        if not source_tokens or not target_tokens:
+            continue
+        candidate_pairs += 1
+        pair = (source_tokens, target_tokens)
+        if len(sampled) < max_training_pairs:
+            sampled.append(pair)
+        else:
+            replacement_index = rng.randrange(candidate_pairs)
+            if replacement_index < max_training_pairs:
+                sampled[replacement_index] = pair
+
     sentences = []
     source_frequency: Counter[str] = Counter()
     english_frequency: Counter[str] = Counter()
     cooccurrence: dict[str, set[str]] = defaultdict(set)
-    pair_count = 0
 
-    for source_tokens, target_tokens in pairs:
+    for source_tokens, target_tokens in sampled:
         source_counts = Counter(source_tokens)
         source_counts[NULL_TOKEN] = 1
         target_counts = Counter(target_tokens)
-        if not source_tokens or not target_tokens:
-            continue
         sentences.append((source_counts, target_counts))
         source_frequency.update(source_tokens)
         english_frequency.update(target_tokens)
         for source_word in source_counts:
             cooccurrence[source_word].update(target_counts.keys())
-        pair_count += 1
 
     if not sentences:
         raise ValueError("No same-index Aramaic/English segment pairs were available")
@@ -169,14 +188,15 @@ def train_model(
         "license": "CC-BY-NC",
         "attribution": "William Davidson Edition - English, translated by Rabbi Adin Even-Israel Steinsaltz, and William Davidson Edition Aramaic source texts; Koren Publishers; accessed through Sefaria. Non-commercial use only.",
         "iterations": max(1, iterations),
-        "trainingPairs": pair_count,
+        "candidatePairs": candidate_pairs,
+        "trainingPairs": len(sentences),
+        "samplingFraction": round(len(sentences) / candidate_pairs, 4) if candidate_pairs else 0.0,
         "sourceVocabulary": len(source_frequency),
         "englishVocabulary": len(english_frequency),
         "sourceWords": len(links),
         "nullLinks": null_links,
         "links": links,
     }
-
 
 def write_model(model: dict, output: Path) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -193,7 +213,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--corpus", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--iterations", type=int, default=4)
+    parser.add_argument("--iterations", type=int, default=3)
+    parser.add_argument("--max-pairs", type=int, default=40000)
     parser.add_argument("--min-source-count", type=int, default=3)
     parser.add_argument("--top-k", type=int, default=16)
     args = parser.parse_args()
@@ -201,12 +222,13 @@ def main() -> None:
         iter_parallel_segments(args.corpus),
         iterations=args.iterations,
         min_source_count=args.min_source_count,
+        max_training_pairs=args.max_pairs,
         top_k=args.top_k,
     )
     write_model(model, args.output)
     print(
         "Trained lexical alignment model: "
-        f"{model['trainingPairs']:,} segment pairs, "
+        f"{model['trainingPairs']:,}/{model['candidatePairs']:,} sampled segment pairs, "
         f"{model['sourceWords']:,} Aramaic word forms, "
         f"{model['englishVocabulary']:,} English tokens, "
         f"{args.iterations} iterations, {args.output.stat().st_size:,} bytes."
