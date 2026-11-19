@@ -181,7 +181,7 @@
   };
  }
  const SOURCE_TOKEN_PATTERN=/[\u05d0-\u05ea\u0591-\u05c7]+/g;
- const ENGLISH_TOKEN_PATTERN=/[A-Za-z]+(?:['’][A-Za-z]+)*/g;
+ const ENGLISH_TOKEN_PATTERN=/[A-Za-z]+(?:[-–'’][A-Za-z]+)*/g;
  const ENGLISH_JOINERS=new Set(['a','an','the','of','to','is','it','he','she','they','and','or','in','on','at','by','for','with','as','from','that','this','his','her','their','was','were','be','are','has','have','had','do','does','did']);
  function normalizeAramaicToken(value){
   return String(value||'').normalize('NFKD').replace(/\p{M}/gu,'')
