@@ -31,7 +31,7 @@
   return pair[0]==='A03220|accident, occurrence'&&pair[1]==='KRU02095|in accident';
  }
  function sameMeaning(group,item){
-  if(group.form!==stem(item.meaning.label)||!group.sources.every(s=>S.normalize(s.spelling)===S.normalize(item.spelling)))return false;
+  if(group.form!==stem(item.meaning.label)||!group.sources.every(s=>compatible(s.spelling,item.spelling)))return false;
   return synonymKey(group.text)===synonymKey(item.meaning.text)||
    group.sources.some(s=>reviewedEquivalent(s,item))||reviewedGlossEquivalent(group.text,item.meaning.text);
  }
