@@ -155,14 +155,25 @@ def train_model(
                 for target_word, probability in ranked
             ]
 
+    null_links = [
+        {"word": target_word, "probability": round(probability, 6)}
+        for target_word, probability in sorted(
+            probabilities.get(NULL_TOKEN, {}).items(),
+            key=lambda item: item[1],
+            reverse=True,
+        )[:top_k]
+    ]
     return {
         "formatVersion": 1,
         "method": "IBM Model 1 lexical alignment; same-index segment pairs only",
+        "license": "CC-BY-NC",
+        "attribution": "William Davidson Edition - English, translated by Rabbi Adin Even-Israel Steinsaltz, and William Davidson Edition Aramaic source texts; Koren Publishers; accessed through Sefaria. Non-commercial use only.",
         "iterations": max(1, iterations),
         "trainingPairs": pair_count,
         "sourceVocabulary": len(source_frequency),
         "englishVocabulary": len(english_frequency),
         "sourceWords": len(links),
+        "nullLinks": null_links,
         "links": links,
     }
 
@@ -198,7 +209,7 @@ def main() -> None:
         f"{model['trainingPairs']:,} segment pairs, "
         f"{model['sourceWords']:,} Aramaic word forms, "
         f"{model['englishVocabulary']:,} English tokens, "
-        f"{args.iterations} iterations."
+        f"{args.iterations} iterations, {args.output.stat().st_size:,} bytes."
     )
 
 
