@@ -118,7 +118,7 @@
       ids=suggestionMatches(index,q);
     }
     if(kind!=='suggestions'&&order==='length'&&index.entryLengths){
-      const tier=id=>{const matches=prefixed.filter(m=>m.id===id);return matches.length?Math.min(...matches.map(m=>(m.suffix!==undefined?20:0)+m.prefix.length*3+((index.direct[m.base]||[]).includes(id)?0:(index.attestedForms?.[m.base]||[]).some(x=>x.id===id)?1:2))):direct.includes(id)?0:attested.includes(id)?1:2;};
+      const tier=id=>{const matches=prefixed.filter(m=>m.id===id);return matches.length?Math.min(...matches.map(m=>(m.suffix!==undefined?0:20)+m.prefix.length*3+((index.direct[m.base]||[]).includes(id)?0:(index.attestedForms?.[m.base]||[]).some(x=>x.id===id)?1:2))):direct.includes(id)?0:attested.includes(id)?1:2;};
       ids.sort((a,b)=>tier(a)-tier(b)||vowelFit(a)-vowelFit(b)||Number(index.entries[b].source==='krupnik')-Number(index.entries[a].source==='krupnik')||(index.entryLengths[b]||0)-(index.entryLengths[a]||0)||a-b);
     }
     return {kind,ids:ids.slice(0,limit),total:ids.length,...(prefixed.length?{prefixMatches:prefixed.filter(m=>ids.slice(0,limit).includes(m.id))}:{})};
