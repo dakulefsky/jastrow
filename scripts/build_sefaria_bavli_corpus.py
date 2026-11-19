@@ -19,15 +19,20 @@ from typing import Any
 INDEX_URL = "https://raw.githubusercontent.com/Sefaria/Sefaria-Export/master/books.json"
 EDITION = "William Davidson Edition - English"
 SOURCE_EDITION = "William Davidson Edition - Vocalized Aramaic"
+ALTERNATE_SOURCE_EDITION = "William Davidson Edition - Aramaic"
 SOURCE_LANGUAGE = "Hebrew"
+SOURCE_EDITION_OVERRIDES = {"Chullin": ALTERNATE_SOURCE_EDITION, "Menachot": ALTERNATE_SOURCE_EDITION}
 ALLOWED_LICENSES = {"CC-BY-NC", "CC BY-NC"}
 NON_TRACTATE_TITLES = {"Introductions to the Babylonian Talmud"}
 ATTRIBUTION = (
     "William Davidson Edition - English, translated by Rabbi Adin Even-Israel "
-    "Steinsaltz; and the William Davidson Edition - Vocalized Aramaic, "
-    "Koren Publishers; digital texts accessed through Sefaria. Both editions "
-    "are licensed CC BY-NC. Non-commercial use only. Preserve this attribution "
-    "and each source/version license with every redistributed copy."
+    "Steinsaltz; and the William Davidson Edition Aramaic source texts, "
+    "Koren Publishers; digital texts accessed through Sefaria. The Vocalized "
+    "Aramaic edition is used where its license is CC BY-NC; Chullin and Menachot "
+    "use the separately licensed William Davidson Edition - Aramaic. Both "
+    "versions are included only after independent CC BY-NC verification. "
+    "Non-commercial use only. Preserve this attribution and each source/version "
+    "license with every redistributed copy."
 )
 
 
@@ -54,15 +59,19 @@ def selected_bavli_entries(
 def selected_bavli_pairs(entries: list[dict[str, Any]]) -> list[tuple[dict[str, Any], dict[str, Any]]]:
     """Pair English translations with the matching William Davidson Aramaic text."""
     english = selected_bavli_entries(entries)
-    aramaic = selected_bavli_entries(entries, SOURCE_LANGUAGE, SOURCE_EDITION)
-    by_title = {str(item.get("title", "")).strip().casefold(): item for item in aramaic}
+    preferred = selected_bavli_entries(entries, SOURCE_LANGUAGE, SOURCE_EDITION)
+    alternate = selected_bavli_entries(entries, SOURCE_LANGUAGE, ALTERNATE_SOURCE_EDITION)
+    preferred_by_title = {str(item.get("title", "")).strip().casefold(): item for item in preferred}
+    alternate_by_title = {str(item.get("title", "")).strip().casefold(): item for item in alternate}
     pairs = []
     failures = []
     for translated in english:
         title = str(translated.get("title", "")).strip()
-        source = by_title.get(title.casefold())
+        expected_edition = SOURCE_EDITION_OVERRIDES.get(title, SOURCE_EDITION)
+        source_map = alternate_by_title if expected_edition == ALTERNATE_SOURCE_EDITION else preferred_by_title
+        source = source_map.get(title.casefold())
         if source is None:
-            failures.append(f"{title}: matching {SOURCE_EDITION} source text is missing")
+            failures.append(f"{title}: matching {expected_edition} source text is missing")
             continue
         if tuple(translated.get("categories", [])) != tuple(source.get("categories", [])):
             failures.append(f"{title}: English and Aramaic category paths do not match")
@@ -168,8 +177,9 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
             if source_license not in ALLOWED_LICENSES:
                 failures.append(f"{title}: unsupported or missing Aramaic source license {source_data.get('license')!r}")
                 continue
-            if str(source_data.get("versionTitle", "")).strip() != SOURCE_EDITION:
-                failures.append(f"{title}: downloaded Aramaic source version does not match the requested edition")
+            expected_source_edition = str(source_item.get("versionTitle", "")).strip()
+            if str(source_data.get("versionTitle", "")).strip() != expected_source_edition:
+                failures.append(f"{title}: downloaded Aramaic source version does not match {expected_source_edition}")
                 continue
             if not has_text(source_data.get("text")):
                 failures.append(f"{title}: Aramaic source text is empty")
@@ -197,7 +207,7 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
                 "language": "English",
                 "license": license_name,
                 "translationUrl": item["json_url"],
-                "sourceVersionTitle": SOURCE_EDITION,
+                "sourceVersionTitle": expected_source_edition,
                 "sourceLanguage": SOURCE_LANGUAGE,
                 "sourceLicense": source_license,
                 "sourceUrl": source_item["json_url"],
@@ -217,12 +227,13 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
         "edition": EDITION,
         "language": "English",
         "sourceEdition": SOURCE_EDITION,
+        "alternateSourceEdition": ALTERNATE_SOURCE_EDITION,
         "sourceLanguage": SOURCE_LANGUAGE,
         "scope": "Talmud / Bavli",
         "generatedAt": datetime.now(timezone.utc).isoformat(),
         "sourceIndex": INDEX_URL,
         "attribution": ATTRIBUTION,
-        "licensePolicy": "Every included tractate must explicitly declare CC-BY-NC.",
+        "licensePolicy": "Both English translation and selected Aramaic source edition for every tractate must independently declare CC-BY-NC.",
         "tractateCount": len(texts),
         "tractates": [metadata for _, _, metadata in texts],
     }
