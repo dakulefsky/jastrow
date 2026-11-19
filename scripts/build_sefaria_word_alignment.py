@@ -82,7 +82,7 @@ def iter_parallel_segments(corpus: Path) -> Iterable[tuple[str, list[str], list[
 
 
 def train_model(
-    pairs: Iterable[tuple[list[str], list[str]]],
+    pairs: Iterable[tuple[str, list[str], list[str]] | tuple[list[str], list[str]]],
     *,
     iterations: int = 3,
     min_source_count: int = 3,
