@@ -59,7 +59,7 @@ class WordAlignmentTests(unittest.TestCase):
         translations = {item["word"]: item["probability"] for item in model["links"]["אמר"]}
         self.assertIn("said", translations)
         self.assertGreater(translations["said"], translations.get("opened", 0))
-        self.assertIn("__NULL__", model["method"] if False else "__NULL__")
+        self.assertTrue(model["nullLinks"])
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "word-alignments.js"
             write_model(model, output)
