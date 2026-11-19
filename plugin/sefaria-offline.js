@@ -241,7 +241,7 @@
    let start=assigned[0],end=start,confidenceTotal=scores[start],confidenceCount=1;
    function flush(){
     const text=target.slice(start,end+1).map(token=>token.raw).join(' ').trim();
-    if(text)results.push({text,confidence:confidenceTotal/confidenceCount,sourceOccurrence:sourceIndex});
+    if(text)results.push({text,alignmentScore:confidenceTotal/confidenceCount,sourceOccurrence:sourceIndex});
    }
    for(let i=1;i<assigned.length;i++){
     const next=assigned[i],gap=next-end;
@@ -277,15 +277,16 @@
   for(const item of translations){
    const key=item.text.toLowerCase();
    const previous=distinct.get(key);
-   if(!previous||item.confidence>previous.confidence)distinct.set(key,item);
+   if(!previous||item.alignmentScore>previous.alignmentScore)distinct.set(key,item);
   }
-  const ranked=[...distinct.values()].sort((a,b)=>b.confidence-a.confidence).slice(0,4);
+  const ranked=[...distinct.values()].sort((a,b)=>b.alignmentScore-a.alignmentScore).slice(0,4);
   if(!occurrences)return {status:'word_not_in_parallel_passage',word,translations:[]};
   if(!ranked.length)return {
    status:'no_confident_alignment',word,occurrences,method:model.method,translations:[]
   };
   return {
    status:'ok',word,method:model.method,license:model.license,attribution:model.attribution,
+   scoreSemantics:'Mean IBM Model 1 posterior alignment score within this parallel segment; not calibrated translation accuracy.',
    occurrences,translations:ranked
   };
  }
