@@ -18,23 +18,30 @@ from typing import Any
 
 INDEX_URL = "https://raw.githubusercontent.com/Sefaria/Sefaria-Export/master/books.json"
 EDITION = "William Davidson Edition - English"
+SOURCE_EDITION = "William Davidson Edition - Vocalized Aramaic"
+SOURCE_LANGUAGE = "Hebrew"
 ALLOWED_LICENSES = {"CC-BY-NC", "CC BY-NC"}
 NON_TRACTATE_TITLES = {"Introductions to the Babylonian Talmud"}
 ATTRIBUTION = (
     "William Davidson Edition - English, translated by Rabbi Adin Even-Israel "
-    "Steinsaltz; Koren Publishers; digital text accessed through Sefaria. "
-    "Licensed CC BY-NC. Non-commercial use only. Preserve this attribution "
-    "and the source/version license with every redistributed copy."
+    "Steinsaltz; and the William Davidson Edition - Vocalized Aramaic, "
+    "Koren Publishers; digital texts accessed through Sefaria. Both editions "
+    "are licensed CC BY-NC. Non-commercial use only. Preserve this attribution "
+    "and each source/version license with every redistributed copy."
 )
 
 
-def selected_bavli_entries(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def selected_bavli_entries(
+    entries: list[dict[str, Any]],
+    language: str = "English",
+    version_title: str = EDITION,
+) -> list[dict[str, Any]]:
     selected = []
     for item in entries:
         categories = {str(value).strip().casefold() for value in item.get("categories", [])}
         if (
-            str(item.get("language", "")).casefold() == "english"
-            and str(item.get("versionTitle", "")).strip() == EDITION
+            str(item.get("language", "")).casefold() == language.casefold()
+            and str(item.get("versionTitle", "")).strip() == version_title
             and "talmud" in categories
             and "bavli" in categories
             and str(item.get("title", "")).strip() not in NON_TRACTATE_TITLES
@@ -42,6 +49,28 @@ def selected_bavli_entries(entries: list[dict[str, Any]]) -> list[dict[str, Any]
         ):
             selected.append(item)
     return sorted(selected, key=lambda item: str(item.get("title", "")).casefold())
+
+
+def selected_bavli_pairs(entries: list[dict[str, Any]]) -> list[tuple[dict[str, Any], dict[str, Any]]]:
+    """Pair English translations with the matching William Davidson Aramaic text."""
+    english = selected_bavli_entries(entries)
+    aramaic = selected_bavli_entries(entries, SOURCE_LANGUAGE, SOURCE_EDITION)
+    by_title = {str(item.get("title", "")).strip().casefold(): item for item in aramaic}
+    pairs = []
+    failures = []
+    for translated in english:
+        title = str(translated.get("title", "")).strip()
+        source = by_title.get(title.casefold())
+        if source is None:
+            failures.append(f"{title}: matching {SOURCE_EDITION} source text is missing")
+            continue
+        if tuple(translated.get("categories", [])) != tuple(source.get("categories", [])):
+            failures.append(f"{title}: English and Aramaic category paths do not match")
+            continue
+        pairs.append((translated, source))
+    if failures:
+        raise RuntimeError("The bilingual Bavli corpus is incomplete: " + "; ".join(failures))
+    return pairs
 
 
 def normalize_license(value: Any) -> str:
@@ -72,14 +101,14 @@ def safe_slug(value: str) -> str:
 
 
 def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> dict[str, Any]:
-    entries = selected_bavli_entries(index.get("books", []))
-    if not entries:
-        raise RuntimeError("No William Davidson Edition - English Bavli texts were found in books.json.")
+    pairs = selected_bavli_pairs(index.get("books", []))
+    if not pairs:
+        raise RuntimeError("No paired William Davidson English and Aramaic Bavli texts were found in books.json.")
 
     texts: list[tuple[str, bytes, dict[str, Any]]] = []
     seen_titles: set[str] = set()
     failures: list[str] = []
-    for item in entries:
+    for item, source_item in pairs:
         title = str(item.get("title", "")).strip()
         if not title or title.casefold() in seen_titles:
             failures.append(f"{title or '(untitled)'}: missing or duplicate title")
@@ -97,12 +126,27 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
             if not has_text(data.get("text")):
                 failures.append(f"{title}: translation text is empty")
                 continue
+            source_data = fetcher(str(source_item["json_url"]))
+            source_license = normalize_license(source_data.get("license"))
+            if source_license not in ALLOWED_LICENSES:
+                failures.append(f"{title}: unsupported or missing Aramaic source license {source_data.get('license')!r}")
+                continue
+            if str(source_data.get("versionTitle", "")).strip() != SOURCE_EDITION:
+                failures.append(f"{title}: downloaded Aramaic source version does not match the requested edition")
+                continue
+            if not has_text(source_data.get("text")):
+                failures.append(f"{title}: Aramaic source text is empty")
+                continue
             slug = safe_slug(title)
             json_text = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
             json_text = json_text.replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
+            source_json_text = json.dumps(source_data, ensure_ascii=False, separators=(",", ":"))
+            source_json_text = source_json_text.replace("\\u2028", "\\\\u2028").replace("\\u2029", "\\\\u2029")
             payload = (
                 "(function(root){root.SefariaOfflineTranslationData=root.SefariaOfflineTranslationData||{};"
+                + "root.SefariaOfflineSourceData=root.SefariaOfflineSourceData||{};"
                 + "root.SefariaOfflineTranslationData[" + json.dumps(slug) + "]=" + json_text + ";"
+                + "root.SefariaOfflineSourceData[" + json.dumps(slug) + "]=" + source_json_text + ";"
                 + "})(typeof window==='undefined'?globalThis:window);"
             ).encode("utf-8")
             metadata = {
@@ -115,6 +159,10 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
                 "language": "English",
                 "license": license_name,
                 "sourceUrl": item["json_url"],
+                "sourceVersionTitle": SOURCE_EDITION,
+                "sourceLanguage": SOURCE_LANGUAGE,
+                "sourceLicense": source_license,
+                "sourceUrl": source_item["json_url"],
                 "sha256": hashlib.sha256(payload).hexdigest(),
                 "bytes": len(payload),
             }
@@ -129,6 +177,8 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
         "formatVersion": 1,
         "edition": EDITION,
         "language": "English",
+        "sourceEdition": SOURCE_EDITION,
+        "sourceLanguage": SOURCE_LANGUAGE,
         "scope": "Talmud / Bavli",
         "generatedAt": datetime.now(timezone.utc).isoformat(),
         "sourceIndex": INDEX_URL,
