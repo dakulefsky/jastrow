@@ -15,6 +15,9 @@ function verify(root){
  assert.equal(manifest.sourceEdition,'William Davidson Edition - Vocalized Aramaic');
  assert.equal(manifest.alternateSourceEdition,'William Davidson Edition - Aramaic');
  assert.equal(manifest.tractateCount,manifest.tractates.length);
+ assert(manifest.parallelAlignmentStats&&manifest.parallelAlignmentStats.totalSides>0);
+ assert(manifest.parallelAlignmentStats.alignedSides<=manifest.parallelAlignmentStats.totalSides);
+ assert(manifest.parallelAlignmentStats.coverage>=0&&manifest.parallelAlignmentStats.coverage<=1);
  assert.equal(manifest.tractates.length,37,'the Bavli package should contain 37 tractates, excluding Sefaria introductory material');
  assert.match(fs.readFileSync(path.join(base,'ATTRIBUTION.txt'),'utf8'),/CC BY-NC/);
  const titles=new Set();
