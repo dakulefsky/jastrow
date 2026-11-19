@@ -87,6 +87,43 @@ def has_text(value: Any) -> bool:
     return False
 
 
+def side_slots(data: dict[str, Any], index: int) -> list[str]:
+    text = data.get("text", [])
+    side = text[index] if isinstance(text, list) and index < len(text) else None
+    if isinstance(side, list):
+        return [value if isinstance(value, str) else "" for value in side]
+    return [side] if isinstance(side, str) else []
+
+
+def parallel_segment_stats(english: dict[str, Any], aramaic: dict[str, Any]) -> dict[str, int | float]:
+    """Measure safe same-index paragraph pairing without assuming every side aligns."""
+    english_pages = english.get("text", [])
+    aramaic_pages = aramaic.get("text", [])
+    page_count = max(len(english_pages), len(aramaic_pages))
+    total_sides = aligned_sides = candidate_slots = aligned_slots = 0
+    for page_index in range(page_count):
+        en = side_slots(english, page_index)
+        he = side_slots(aramaic, page_index)
+        if not en and not he:
+            continue
+        total_sides += 1
+        candidate_slots += max(len(en), len(he))
+        if len(en) != len(he):
+            continue
+        aligned_sides += 1
+        aligned_slots += sum(
+            1 for source_text, translation_text in zip(he, en)
+            if source_text.strip() and translation_text.strip()
+        )
+    return {
+        "totalSides": total_sides,
+        "alignedSides": aligned_sides,
+        "candidateSlots": candidate_slots,
+        "alignedSlots": aligned_slots,
+        "coverage": round(aligned_slots / candidate_slots, 4) if candidate_slots else 0.0,
+    }
+
+
 def fetch_json(url: str) -> dict[str, Any]:
     request = urllib.request.Request(url, headers={"User-Agent": "DanTheMan-Otzaria-Dictionary/1.0"})
     with urllib.request.urlopen(request, timeout=60) as response:
@@ -137,6 +174,7 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
             if not has_text(source_data.get("text")):
                 failures.append(f"{title}: Aramaic source text is empty")
                 continue
+            parallel_stats = parallel_segment_stats(data, source_data)
             slug = safe_slug(title)
             json_text = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
             json_text = json_text.replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
@@ -163,6 +201,7 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
                 "sourceLanguage": SOURCE_LANGUAGE,
                 "sourceLicense": source_license,
                 "sourceUrl": source_item["json_url"],
+                "parallelSegmentStats": parallel_stats,
                 "sha256": hashlib.sha256(payload).hexdigest(),
                 "bytes": len(payload),
             }
