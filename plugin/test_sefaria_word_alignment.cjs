@@ -32,7 +32,8 @@ vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),{window:r
  const said=await api.getWordTranslations('אָמַר',parallel);
  assert.equal(said.status,'ok');
  assert.equal(said.translations[0].text,'said');
- assert(said.translations[0].confidence>0.8);
+ assert(said.translations[0].alignmentScore>0.8);
+ assert.match(said.scoreSemantics,/not calibrated translation accuracy/);
  const rav=await api.getWordTranslations('רַב',parallel);
  assert.equal(rav.status,'ok');
  assert.equal(rav.translations[0].text,'Rav');
