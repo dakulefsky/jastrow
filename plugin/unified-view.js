@@ -3,6 +3,7 @@
  const S=root.JastrowSearch||(typeof require==='function'?require('./search.js'):null);
  const clean=text=>String(text).normalize('NFKC').toLowerCase().replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
  const stem=label=>/^[—\s]*\d+[).]?\s*$/.test(label||'')?'':clean(label||'');
+ const displayForm=label=>{const value=String(label||'').trim();return /^[—\\s]*\\d+[).]?\\s*$/.test(value)?'':value;};
  const parts=text=>String(text).split(/[,;]/).map(clean).filter(Boolean);
  // Exact, reviewed English gloss equivalents only. Avoid fuzzy token overlap:
  // shared words alone are not enough to collapse distinct dictionary senses.
@@ -24,7 +25,10 @@
   return pair[0]==='A03220|accident, occurrence'&&pair[1]==='KRU02095|in accident';
  }
  function sameMeaning(group,item){
-  if(group.form!==stem(item.meaning.label)||!group.sources.every(s=>S.normalize(s.spelling)===S.normalize(item.spelling)))return false;
+  // A repeated gloss remains one translation card even when the source
+  // presents it under multiple verbal stems. The individual labels and full
+  // entries remain available in the source details below the card.
+  if(!group.sources.every(s=>S.normalize(s.spelling)===S.normalize(item.spelling)))return false;
   if(synonymKey(group.text)===synonymKey(item.meaning.text)||group.sources.some(s=>reviewedEquivalent(s,item)))return true;
   const a=parts(group.text),b=parts(item.meaning.text);
   return Math.min(a.length,b.length)>=1&&(a.every(x=>b.includes(x))||b.every(x=>a.includes(x)));
@@ -35,7 +39,9 @@
    if(!meaning.text?.trim())continue;
    const matchingWord=lookupWord||word,spelling=S.displayHeadword(entry,matchingWord),item={id,entry,meaning,spelling};
    let group=groups.find(g=>sameMeaning(g,item));
-   if(!group){group={text:meaning.text,form:stem(meaning.label),spelling,sources:[],rank:S.vowelRank(entry,matchingWord)};groups.push(group);}
+   if(!group){group={text:meaning.text,form:stem(meaning.label),forms:[],spelling,sources:[],rank:S.vowelRank(entry,matchingWord)};groups.push(group);}
+   const shownForm=displayForm(meaning.label);if(shownForm&&!group.forms.includes(shownForm))group.forms.push(shownForm);
+   group.form=group.forms.map(stem).filter(Boolean).join(' · ');
    if(parts(meaning.text).length>parts(group.text).length)group.text=meaning.text;
    const rank=S.vowelRank(entry,matchingWord);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
    if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label)))group.sources.push(item);
@@ -61,7 +67,7 @@
   const badge=element('span',String(number),'meaning-number');badge.setAttribute('aria-hidden','true');
   const content=element('div',undefined,'meaning-content'),spelling=element('div',group.spelling,'meaning-spelling');spelling.dir='rtl';
   content.append(spelling);
-  if(group.form)content.append(element('div',group.sources[0].meaning.label,'meaning-form'));
+  if(group.forms.length)content.append(element('div',group.forms.join(' · '),'meaning-form'));
   content.append(element('p',group.text,'meaning-text'));
   const refs=element('span',undefined,'meaning-references');refs.setAttribute('aria-label','Source references');
   const details=element('details',undefined,'scholarly-entry');
