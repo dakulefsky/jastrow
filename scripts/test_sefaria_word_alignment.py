@@ -40,8 +40,26 @@ class WordAlignmentTests(unittest.TestCase):
             (corpus / "texts" / "berakhot.js").write_text(asset, encoding="utf-8")
             pairs = list(iter_parallel_segments(corpus))
             self.assertEqual(len(pairs), 1)
-            self.assertIn("אמר", pairs[0][0])
-            self.assertIn("said", pairs[0][1])
+            self.assertEqual(pairs[0][0], "berakhot")
+            self.assertIn("אמר", pairs[0][1])
+            self.assertIn("said", pairs[0][2])
+
+    def test_stratified_sampling_caps_each_tractate(self):
+        pairs = []
+        for tractate in ("a", "b", "c", "d"):
+            for index in range(10):
+                pairs.append((tractate, ["אמר", tractate], ["said", tractate]))
+        model = train_model(
+            pairs,
+            iterations=2,
+            min_source_count=1,
+            max_training_pairs=8,
+            tractate_count=4,
+        )
+        self.assertEqual(model["candidatePairs"], 40)
+        self.assertEqual(model["trainingPairs"], 8)
+        self.assertEqual(model["sampledTractates"], 4)
+        self.assertEqual(model["maxPairsPerTractate"], 2)
 
     def test_trains_probabilities_and_writes_offline_asset(self):
         pairs = []
