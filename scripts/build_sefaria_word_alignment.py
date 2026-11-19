@@ -64,7 +64,7 @@ def side_slots(data: dict, index: int) -> list[str]:
     return [side] if isinstance(side, str) else []
 
 
-def iter_parallel_segments(corpus: Path) -> Iterable[tuple[list[str], list[str]]]:
+def iter_parallel_segments(corpus: Path) -> Iterable[tuple[str, list[str], list[str]]]:
     for path in sorted((corpus / "texts").glob("*.js")):
         translation, source = parse_tractate_js(path)
         en_pages = translation.get("text", [])
@@ -78,7 +78,7 @@ def iter_parallel_segments(corpus: Path) -> Iterable[tuple[list[str], list[str]]
                 source_tokens = tokenize_source(aramaic)
                 target_tokens = tokenize_english(english)
                 if source_tokens and target_tokens:
-                    yield source_tokens, target_tokens
+                    yield path.stem, source_tokens, target_tokens
 
 
 def train_model(
@@ -88,28 +88,46 @@ def train_model(
     min_source_count: int = 3,
     top_k: int = 16,
     max_training_pairs: int = 40000,
+    tractate_count: int = 37,
 ) -> dict:
     if max_training_pairs < 1:
         raise ValueError("max_training_pairs must be positive")
 
-    # Deterministic reservoir sampling keeps every tractate represented while
-    # bounding build time and memory. The separate corpus coverage report still
-    # measures all aligned paragraph slots.
+    # Deterministic per-tractate reservoir sampling prevents the largest
+    # tractates from dominating the training set. The full-corpus alignment
+    # coverage report is calculated separately over every segment slot.
     import random
+    from math import ceil
     rng = random.Random(20261119)
-    sampled: list[tuple[list[str], list[str]]] = []
+    per_tractate_limit = max(1, ceil(max_training_pairs / max(1, tractate_count)))
+    sampled_by_tractate: dict[str, list[tuple[list[str], list[str]]]] = defaultdict(list)
+    counts_by_tractate: Counter[str] = Counter()
     candidate_pairs = 0
-    for source_tokens, target_tokens in pairs:
+    for item in pairs:
+        if len(item) == 3:
+            tractate, source_tokens, target_tokens = item
+        elif len(item) == 2:
+            tractate = "__single_group__"
+            source_tokens, target_tokens = item
+        else:
+            raise ValueError("Each training pair must include source/English tokens and optional tractate ID")
         if not source_tokens or not target_tokens:
             continue
         candidate_pairs += 1
+        counts_by_tractate[tractate] += 1
+        group = sampled_by_tractate[tractate]
         pair = (source_tokens, target_tokens)
-        if len(sampled) < max_training_pairs:
-            sampled.append(pair)
+        if len(group) < per_tractate_limit:
+            group.append(pair)
         else:
-            replacement_index = rng.randrange(candidate_pairs)
-            if replacement_index < max_training_pairs:
-                sampled[replacement_index] = pair
+            replacement_index = rng.randrange(counts_by_tractate[tractate])
+            if replacement_index < per_tractate_limit:
+                group[replacement_index] = pair
+
+    sampled = [pair for tractate in sorted(sampled_by_tractate) for pair in sampled_by_tractate[tractate]]
+    if len(sampled) > max_training_pairs:
+        rng.shuffle(sampled)
+        sampled = sampled[:max_training_pairs]
 
     sentences = []
     source_frequency: Counter[str] = Counter()
@@ -190,6 +208,8 @@ def train_model(
         "iterations": max(1, iterations),
         "candidatePairs": candidate_pairs,
         "trainingPairs": len(sentences),
+        "sampledTractates": sum(1 for group in sampled_by_tractate.values() if group),
+        "maxPairsPerTractate": per_tractate_limit,
         "samplingFraction": round(len(sentences) / candidate_pairs, 4) if candidate_pairs else 0.0,
         "sourceVocabulary": len(source_frequency),
         "englishVocabulary": len(english_frequency),
