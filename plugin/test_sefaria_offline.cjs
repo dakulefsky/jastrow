@@ -4,13 +4,20 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 
 const manifest={
- formatVersion:1,edition:'William Davidson Edition - English',
- tractates:[{title:'Berakhot',heTitle:'ברכות',slug:'berakhot',file:'texts/berakhot.js'}]
+ formatVersion:1,
+ edition:'William Davidson Edition - English',
+ sourceEdition:'William Davidson Edition - Vocalized Aramaic',
+ tractates:[{title:'Berakhot',heTitle:'ברכות',slug:'berakhot',file:'texts/berakhot.js',sourceLicense:'CC-BY-NC'}]
 };
 const tractate={
  title:'Berakhot',heTitle:'ברכות',versionTitle:'William Davidson Edition - English',
  license:'CC-BY-NC',sectionNames:['Daf','Line'],
  text:[[],[],['','The first paragraph discusses the law.','The second paragraph discusses a different subject.'],['The next daf contains another discussion.']]
+};
+const sourceTractate={
+ title:'Berakhot',heTitle:'ברכות',versionTitle:'William Davidson Edition - Vocalized Aramaic',
+ license:'CC-BY-NC',sectionNames:['Daf','Line'],
+ text:[[],[],['','הפסקה הראשונה עוסקת בדין.','הפסקה השנייה עוסקת בנושא אחר.'],['הדף הבא מכיל דיון נוסף.']]
 };
 const calls=[];
 const root={
@@ -19,8 +26,10 @@ const root={
   head:{appendChild(script){
    calls.push(String(script.src));
    if(String(script.src).endsWith('manifest.js'))root.SefariaOfflineTranslationManifest=manifest;
-   else if(String(script.src).endsWith('texts/berakhot.js')){root.SefariaOfflineTranslationData={berakhot:tractate};root.SefariaOfflineSourceData={berakhot:sourceTractate};}
-   else{script.onerror?.();return;}
+   else if(String(script.src).endsWith('texts/berakhot.js')){
+    root.SefariaOfflineTranslationData={berakhot:tractate};
+    root.SefariaOfflineSourceData={berakhot:sourceTractate};
+   }else{script.onerror?.();return;}
    script.onload?.();
   }}
  }
