@@ -145,9 +145,11 @@
   const translation=await loadTractate(meta),source=root.SefariaOfflineSourceData?.[meta.slug||meta.title];
   if(!Array.isArray(source?.text))return {aligned:false,reason:'source_unavailable',segments:[]};
   const pages=parsed.side? [parsed.dafIndex] : [2*parsed.daf-2,2*parsed.daf-1];
-  const segments=[];let compatible=true,hasContent=false;
+  const segments=[],sourceParts=[],translationParts=[];let compatible=true,hasContent=false;
   for(const pageIndex of pages){
    const original=collectSideSlots(source,pageIndex),translated=collectSideSlots(translation,pageIndex);
+   sourceParts.push(...original.filter(value=>String(value||'').trim()));
+   translationParts.push(...translated.filter(value=>String(value||'').trim()));
    if(original.length!==translated.length){compatible=false;continue;}
    const start=parsed.line===null?0:parsed.line-1,end=parsed.line===null?original.length:start+1;
    if(start<0||start>=original.length){compatible=false;continue;}
@@ -170,9 +172,10 @@
    sourceVersionTitle:manifest.sourceEdition||'William Davidson Edition - Vocalized Aramaic',
    license:'CC-BY-NC',
    sourceLicense:meta.sourceLicense||'CC-BY-NC',
+   alignmentBasis:'matching-daf-side-and-segment-index',
    segments,
-   sourceText:segments.map(item=>item.sourceText).join(' '),
-   translationText:segments.map(item=>item.translationText).join(' ')
+   sourceText:sourceParts.join(' '),
+   translationText:translationParts.join(' ')
   };
  }
  async function prepareDaf(location,shouldContinue){
