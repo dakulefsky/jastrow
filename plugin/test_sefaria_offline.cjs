@@ -67,6 +67,13 @@ vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),{window:r
  assert.equal(wholeParallel.aligned,true);
  assert.equal(wholeParallel.segments.length,3);
  assert.match(wholeParallel.sourceText,/הדף הבא/);
+ const originalSegments=sourceTractate.text[2];
+ sourceTractate.text[2]=['הפסקה הראשונה עוסקת בדין.'];
+ const mismatched=await offline.getParallelPassage('ברכות, דף ב עמוד א',{currentBook:'ברכות'});
+ assert.equal(mismatched.aligned,false,'different segment counts must never be presented as word-aligned');
+ assert.equal(mismatched.reason,'segment_count_mismatch');
+ assert(mismatched.sourceText.length>0&&mismatched.translationText.length>0,'parallel text remains available without claiming alignment');
+ sourceTractate.text[2]=originalSegments;
  const wholeDaf=await offline.getPassage('ברכות, דף ב',{currentBook:'ברכות'});
  assert.equal(wholeDaf.scope,'daf');
  assert.match(wholeDaf.text,/first paragraph/);
