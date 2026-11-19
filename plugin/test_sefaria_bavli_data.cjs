@@ -13,6 +13,7 @@ function verify(root){
  assert.equal(manifest.formatVersion,1);
  assert.equal(manifest.edition,'William Davidson Edition - English');
  assert.equal(manifest.sourceEdition,'William Davidson Edition - Vocalized Aramaic');
+ assert.equal(manifest.alternateSourceEdition,'William Davidson Edition - Aramaic');
  assert.equal(manifest.tractateCount,manifest.tractates.length);
  assert.equal(manifest.tractates.length,37,'the Bavli package should contain 37 tractates, excluding Sefaria introductory material');
  assert.match(fs.readFileSync(path.join(base,'ATTRIBUTION.txt'),'utf8'),/CC BY-NC/);
@@ -20,7 +21,7 @@ function verify(root){
  for(const meta of manifest.tractates){
   assert(meta.title&&meta.heTitle&&meta.slug&&meta.file);
   assert.equal(meta.license,'CC-BY-NC',meta.title);
-  assert.equal(meta.sourceVersionTitle,manifest.sourceEdition,meta.title);
+  assert([manifest.sourceEdition,manifest.alternateSourceEdition].includes(meta.sourceVersionTitle),meta.title+' unexpected Aramaic source edition');
   assert.equal(meta.sourceLicense,'CC-BY-NC',meta.title);
   assert(meta.parallelSegmentStats&&meta.parallelSegmentStats.totalSides>=meta.parallelSegmentStats.alignedSides,meta.title+' has no alignment coverage report');
   assert(!meta.file.includes('..'));
@@ -33,8 +34,9 @@ function verify(root){
   assert.equal(data.license,'CC-BY-NC',meta.title);
   assert(Array.isArray(data.text)&&data.text.some(daf=>Array.isArray(daf)&&daf.some(line=>typeof line==='string'&&line.trim())),meta.title+' has no readable daf text');
   const source=context.window.SefariaOfflineSourceData?.[meta.slug];
-  assert.equal(source?.versionTitle,manifest.sourceEdition,meta.title+' source version mismatch');
+  assert.equal(source?.versionTitle,meta.sourceVersionTitle,meta.title+' source version mismatch');
   assert.equal(source?.license,'CC-BY-NC',meta.title+' source license mismatch');
+  if(['Chullin','Menachot'].includes(meta.title))assert.equal(meta.sourceVersionTitle,manifest.alternateSourceEdition,meta.title+' must use the explicitly licensed alternate source');
   assert(Array.isArray(source?.text)&&source.text.some(daf=>Array.isArray(daf)&&daf.some(line=>typeof line==='string'&&line.trim())),meta.title+' has no readable Aramaic source text');
  }
  const expectedTitles=['Arakhin','Avodah Zarah','Bava Batra','Bava Kamma','Bava Metzia','Beitzah','Bekhorot','Berakhot','Chagigah','Chullin','Eruvin','Gittin','Horayot','Keritot','Ketubot','Kiddushin','Makkot','Megillah','Meilah','Menachot','Moed Katan','Nazir','Nedarim','Niddah','Pesachim','Rosh Hashanah','Sanhedrin','Shabbat','Shevuot','Sotah','Sukkah','Taanit','Tamid','Temurah','Yevamot','Yoma','Zevachim'];
