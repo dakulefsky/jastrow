@@ -19,7 +19,7 @@ const root={
   head:{appendChild(script){
    calls.push(String(script.src));
    if(String(script.src).endsWith('manifest.js'))root.SefariaOfflineTranslationManifest=manifest;
-   else if(String(script.src).endsWith('texts/berakhot.js'))root.SefariaOfflineTranslationData={berakhot:tractate};
+   else if(String(script.src).endsWith('texts/berakhot.js')){root.SefariaOfflineTranslationData={berakhot:tractate};root.SefariaOfflineSourceData={berakhot:sourceTractate};}
    else{script.onerror?.();return;}
    script.onload?.();
   }}
@@ -48,6 +48,16 @@ vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),{window:r
  const second=await offline.getPassage('ברכות, דף ב ע״א:3',{currentBook:'ברכות'});
  assert.equal(second.scope,'paragraph');
  assert.match(second.text,/second paragraph/);
+ const parallel=await offline.getParallelPassage('ברכות, דף ב עמוד א:2',{currentBook:'ברכות'});
+ assert.equal(parallel.aligned,true);
+ assert.equal(parallel.scope,'paragraph');
+ assert.equal(parallel.segments.length,1);
+ assert.match(parallel.sourceText,/הפסקה הראשונה/);
+ assert.match(parallel.translationText,/first paragraph/);
+ const wholeParallel=await offline.getParallelPassage('ברכות, דף ב',{currentBook:'ברכות'});
+ assert.equal(wholeParallel.aligned,true);
+ assert.equal(wholeParallel.segments.length,3);
+ assert.match(wholeParallel.sourceText,/הדף הבא/);
  const wholeDaf=await offline.getPassage('ברכות, דף ב',{currentBook:'ברכות'});
  assert.equal(wholeDaf.scope,'daf');
  assert.match(wholeDaf.text,/first paragraph/);
