@@ -29,6 +29,12 @@ const vm=require('node:vm');
   assert.equal(result.scope,'paragraph',pluginRoot);
   assert.equal(result.matches[0].id,'candidate-1',pluginRoot);
   assert.equal(result.matches[0].matchedPhrase,'beginning of tractate',pluginRoot);
+  const parallel=await root.SefariaOfflineTranslation.getParallelPassage(
+   'ברכות, דף ב עמוד א:1',{sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'});
+  assert.equal(typeof parallel.aligned,'boolean',pluginRoot);
+  assert(parallel.sourceText.length>0,pluginRoot+' missing Aramaic source passage');
+  assert(parallel.translationText.length>0,pluginRoot+' missing Steinsaltz English passage');
+  if(parallel.aligned)assert(parallel.segments.length>0,pluginRoot+' marked alignment ready without paired segments');
   assert.deepEqual(fetched,['data/sefaria-bavli/manifest.js','data/sefaria-bavli/texts/berakhot.js']);
  }
  console.log('Full offline Bavli comparison passed in both plugins');
