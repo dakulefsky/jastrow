@@ -151,7 +151,8 @@
    const original=collectSideSlots(source,pageIndex),translated=collectSideSlots(translation,pageIndex);
    const start=parsed.line===null?0:parsed.line-1,end=parsed.line===null?original.length:start+1;
    if(start<0||start>=original.length){compatible=false;continue;}
-   const selectedOriginal=original.slice(start,end),selectedTranslated=translated.slice(start,end);
+   const selectedOriginal=parsed.line===null?original:original.slice(start,end);
+   const selectedTranslated=parsed.line===null?translated:translated.slice(start,end);
    sourceParts.push(...selectedOriginal.filter(value=>String(value||'').trim()));
    translationParts.push(...selectedTranslated.filter(value=>String(value||'').trim()));
    if(original.length!==translated.length){compatible=false;continue;}
