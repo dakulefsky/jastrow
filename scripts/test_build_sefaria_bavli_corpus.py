@@ -9,6 +9,7 @@ from build_sefaria_bavli_corpus import (
     SOURCE_EDITION,
     build_archive,
     normalize_license,
+    parallel_segment_stats,
     selected_bavli_entries,
     selected_bavli_pairs,
 )
@@ -46,6 +47,16 @@ class BavliCorpusBuilderTests(unittest.TestCase):
         self.assertEqual(normalize_license("  CC-BY-NC  "), "CC-BY-NC")
         self.assertEqual(normalize_license("CC   BY-NC"), "CC BY-NC")
 
+    def test_parallel_stats_only_count_same_index_segments(self):
+        english = {"text": [["one", "two"], ["three"]]}
+        aramaic = {"text": [["אחד", "שניים"], ["שלושה", "ארבעה"]]}
+        stats = parallel_segment_stats(english, aramaic)
+        self.assertEqual(stats["totalSides"], 2)
+        self.assertEqual(stats["alignedSides"], 1)
+        self.assertEqual(stats["alignedSlots"], 2)
+        self.assertEqual(stats["candidateSlots"], 4)
+        self.assertEqual(stats["coverage"], 0.5)
+
     def test_builds_archive_with_attribution_and_both_languages(self):
         english = {
             "title": "Shabbat",
@@ -72,6 +83,7 @@ class BavliCorpusBuilderTests(unittest.TestCase):
             self.assertEqual(manifest["tractates"][0]["license"], "CC-BY-NC")
             self.assertEqual(manifest["tractates"][0]["sourceLicense"], "CC-BY-NC")
             self.assertEqual(manifest["tractates"][0]["sourceVersionTitle"], SOURCE_EDITION)
+            self.assertEqual(manifest["tractates"][0]["parallelSegmentStats"]["coverage"], 1.0)
             self.assertEqual(manifest["tractates"][0]["slug"], "shabbat")
             self.assertEqual(manifest["tractates"][0]["file"], "texts/shabbat.js")
             with zipfile.ZipFile(output) as archive:
