@@ -113,8 +113,8 @@ def train_model(
     # IBM Model 1: p(English token | Aramaic token), with a NULL source token.
     probabilities = {
         source_word: {target_word: 1.0 / max(1, len(target_words))
-                      for target_word in target_words}
-        for source_word, target_words in cooccurrence.items()
+                      for target_word in sorted(target_words)}
+        for source_word, target_words in sorted(cooccurrence.items())
     }
 
     for _ in range(max(1, iterations)):
