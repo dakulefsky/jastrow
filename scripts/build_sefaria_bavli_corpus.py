@@ -222,6 +222,17 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
     if failures:
         raise RuntimeError("The offline Bavli corpus is incomplete or not cleared for redistribution:\n- " + "\n- ".join(failures))
 
+    aggregate_sides = sum(meta["parallelSegmentStats"]["totalSides"] for _, _, meta in texts)
+    aggregate_aligned_sides = sum(meta["parallelSegmentStats"]["alignedSides"] for _, _, meta in texts)
+    aggregate_slots = sum(meta["parallelSegmentStats"]["candidateSlots"] for _, _, meta in texts)
+    aggregate_aligned_slots = sum(meta["parallelSegmentStats"]["alignedSlots"] for _, _, meta in texts)
+    aggregate_alignment = {
+        "totalSides": aggregate_sides,
+        "alignedSides": aggregate_aligned_sides,
+        "candidateSlots": aggregate_slots,
+        "alignedSlots": aggregate_aligned_slots,
+        "coverage": round(aggregate_aligned_slots / aggregate_slots, 4) if aggregate_slots else 0.0,
+    }
     manifest = {
         "formatVersion": 1,
         "edition": EDITION,
@@ -234,6 +245,7 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
         "sourceIndex": INDEX_URL,
         "attribution": ATTRIBUTION,
         "licensePolicy": "Both English translation and selected Aramaic source edition for every tractate must independently declare CC-BY-NC.",
+        "parallelAlignmentStats": aggregate_alignment,
         "tractateCount": len(texts),
         "tractates": [metadata for _, _, metadata in texts],
     }
@@ -253,8 +265,10 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=Path("sefaria-bavli-english.zip"))
     args = parser.parse_args()
     manifest = build_archive(fetch_json(INDEX_URL), args.output)
+    stats = manifest["parallelAlignmentStats"]
     print(f"Built {args.output} with {manifest['tractateCount']} tractates.")
-    print(f"Edition: {EDITION}; license: CC-BY-NC; attribution included.")
+    print(f"Same-index segment coverage: {stats['alignedSlots']:,}/{stats['candidateSlots']:,} ({stats['coverage']:.1%}); aligned daf-sides: {stats['alignedSides']:,}/{stats['totalSides']:,}.")
+    print(f"Edition: {EDITION}; licensed paired source editions; attribution included.")
 
 
 if __name__ == "__main__":
