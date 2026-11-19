@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a compact offline corpus of the William Davidson English Bavli.
+"""Build a compact paired offline corpus of the William Davidson Bavli.
 
 The source export licenses each version separately. This builder refuses to
 package the corpus unless every selected tractate explicitly declares CC-BY-NC.
@@ -141,7 +141,7 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
             json_text = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
             json_text = json_text.replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
             source_json_text = json.dumps(source_data, ensure_ascii=False, separators=(",", ":"))
-            source_json_text = source_json_text.replace("\\u2028", "\\\\u2028").replace("\\u2029", "\\\\u2029")
+            source_json_text = source_json_text.replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
             payload = (
                 "(function(root){root.SefariaOfflineTranslationData=root.SefariaOfflineTranslationData||{};"
                 + "root.SefariaOfflineSourceData=root.SefariaOfflineSourceData||{};"
@@ -158,7 +158,7 @@ def build_archive(index: dict[str, Any], output: Path, fetcher=fetch_json) -> di
                 "versionTitle": EDITION,
                 "language": "English",
                 "license": license_name,
-                "sourceUrl": item["json_url"],
+                "translationUrl": item["json_url"],
                 "sourceVersionTitle": SOURCE_EDITION,
                 "sourceLanguage": SOURCE_LANGUAGE,
                 "sourceLicense": source_license,
