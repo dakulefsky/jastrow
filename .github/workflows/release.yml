@@ -56,8 +56,10 @@ jobs:
           mkdir -p plugin/data/sefaria-bavli hebrew/plugin/data
           unzip -q /tmp/sefaria-bavli-english.zip -d plugin/data/sefaria-bavli
           cp -a plugin/data/sefaria-bavli hebrew/plugin/data/
+          python scripts/build_sefaria_word_alignment.py --corpus plugin/data/sefaria-bavli --output plugin/data/sefaria-bavli/word-alignments.js
           node plugin/test_sefaria_bavli_data.cjs
           node plugin/test_sefaria_bavli_integration.cjs
+          node plugin/test_sefaria_word_alignment.cjs
       - name: Check dictionary and selection lookup
         run: |
           python3 build_phrases.py
