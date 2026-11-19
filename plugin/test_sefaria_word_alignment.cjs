@@ -44,14 +44,23 @@ vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),{window:r
  assert.equal(unaligned.reason,'segment_count_mismatch');
  const realRoot={console};
  const realContext={window:realRoot,globalThis:realRoot,console};
- for(const file of [
-  'plugin/data/sefaria-bavli/manifest.js',
-  'plugin/data/sefaria-bavli/texts/berakhot.js',
-  'plugin/data/sefaria-bavli/word-alignments.js',
-  'plugin/sefaria-offline.js',
- ]){
-  vm.runInNewContext(fs.readFileSync(file,'utf8'),realContext,{filename:file});
- }
+ const assetLoads=[];
+ realRoot.document={
+  createElement(){return {src:'',async:false,onload:null,onerror:null,remove(){}};},
+  head:{appendChild(script){
+   const assetPath='plugin/'+String(script.src).replace(/^\\/+/, '');
+   assetLoads.push(assetPath);
+   try{
+    const source=fs.readFileSync(assetPath,'utf8');
+    vm.runInNewContext(source,realContext,{filename:assetPath});
+    script.onload?.();
+   }catch(error){
+    script.onerror?.();
+    throw error;
+   }
+  }}
+ };
+ vm.runInNewContext(fs.readFileSync('plugin/sefaria-offline.js','utf8'),realContext,{filename:'plugin/sefaria-offline.js'});
  const realApi=realRoot.SefariaOfflineTranslation;
  const realManifest=realRoot.SefariaOfflineTranslationManifest;
  const realModel=realRoot.SefariaOfflineWordAlignment;
