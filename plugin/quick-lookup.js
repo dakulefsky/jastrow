@@ -63,7 +63,7 @@
    // one-word collision, even when both are technically exact matches.
    const evidenceScore=match=>{
     const base=match.matchType==='exact'?300:match.matchType==='inflected_phrase'?200:match.matchType==='inflected_word'?100:0;
-    const phrase=String(match.candidatePhrase||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').trim().split(/\\s+/).filter(Boolean);
+    const phrase=String(match.candidatePhrase||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').trim().split(/\s+/).filter(Boolean);
     const stop=new Set('a an the and or of to in on at by for from with as is are was were be been being do does did have has had it this that these those'.split(' '));
     const content=phrase.filter(token=>!stop.has(token));
     return base+Math.min(content.length,8)*12+Math.min(phrase.length,8);
