@@ -58,24 +58,10 @@
    const matches=Array.isArray(evidence?.matches)?evidence.matches:[];
    const matched=new Map(matches.map(item=>[String(item.id),item]));
    merged.forEach(item=>{const match=matched.get(item.candidateId);if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
-   // Rank evidence by match quality AND how much of the gloss is actually
-   // supported. A specific multi-word gloss is stronger than an incidental
-   // one-word collision, even when both are technically exact matches.
-   const evidenceScore=match=>{
-    const base=match.matchType==='exact'?300:match.matchType==='inflected_phrase'?200:match.matchType==='inflected_word'?100:0;
-    const phrase=String(match.candidatePhrase||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').trim().split(/\s+/).filter(Boolean);
-    const stop=new Set('a an the and or of to in on at by for from with as is are was were be been being do does did have has had it this that these those'.split(' '));
-    const content=phrase.filter(token=>!stop.has(token));
-    return base+Math.min(content.length,8)*12+Math.min(phrase.length,8);
-   };
+   // Use the same specificity-aware decision as the full dictionary.
+   const preferred=root.SefariaEvidence?.bestMatch?.(matches);
+   const preferredId=preferred?String(preferred.id):null;
    const score=item=>item.translationMatchType==='exact'?300:item.translationMatchType==='inflected_phrase'?200:item.translationMatchType==='inflected_word'?100:0;
-   const sourceHasEvidence=matches.length>0;
-   let preferredId=null;
-   if(sourceHasEvidence){
-    const ranked=matches.map(match=>({id:String(match.id),score:evidenceScore(match)})).sort((a,b)=>b.score-a.score);
-    // Only suppress the star when the best evidence is genuinely equal.
-    if(ranked[0].score>0&&(ranked.length===1||ranked[0].score>ranked[1].score))preferredId=ranked[0].id;
-   }
    merged.sort((a,b)=>score(b)-score(a));
    if(preferredId){
     const best=merged.findIndex(item=>item.candidateId===preferredId);
