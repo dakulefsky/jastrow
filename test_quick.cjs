@@ -12,7 +12,7 @@ vm.runInContext(fs.readFileSync(__dirname+'/plugin/quick-lookup.js','utf8'),c);
  assert(offline[0].text.includes('the practical difference is'));
  assert(Number.isInteger(offline[0].entryId),'each quick choice must retain its source entry id');
  let comparisonCalled=false;
- c.SefariaEvidence={compareTranslation:async(word,candidates,context,options)=>{
+ c.SefariaEvidence={bestMatch:matches=>matches[0]||null,compareTranslation:async(word,candidates,context,options)=>{
   comparisonCalled=true;assert.equal(word,'נפקא מינה');assert(context.sourceRange?.ref);assert.equal(options.preparedOnly,true);
   assert(candidates.length>0);
   return {matches:[{id:candidates[0].id,matchedPhrase:'the practical difference',matchType:'exact'}],scope:'paragraph',source:'offline'};
