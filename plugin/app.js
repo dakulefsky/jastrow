@@ -165,13 +165,9 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
     ?await SefariaEvidence.compareTranslation(word,candidates,active,{preparedOnly:false})
     :{matches:[]};
    if(serial!==requestSerial||panelSerial!==entrySerial)return;
-   const matches=new Map((evidence?.matches||[]).map(item=>[String(item.id),item]));
-   if(!matches.size)return;
-   const score=value=>value.matchType==='exact'?3:value.matchType==='inflected_phrase'?2:1;
-   const highest=Math.max(...[...matches.values()].map(score));
-   const winners=[...matches.entries()].filter(([,value])=>score(value)===highest);
-   // Never break a lexical tie by dictionary ID or source order.
-   if(winners.length===1)applyRecommendation(winners[0][0]);
+   const best=window.SefariaEvidence?.bestMatch?.(evidence?.matches||[]);
+   // Quick lookup and the full dictionary share one specificity-aware rule.
+   if(best)applyRecommendation(best.id);
   })().catch(()=>{});
  }
 for(const failed of expanded.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}
