@@ -35,7 +35,7 @@ async function main(){
  if(!descriptionResult.success)throw Error('Store description update failed: '+(descriptionResult.error||'unknown error'));
 
  const updated=await (await request()).json();
- const normalizeLineEndings=value=>String(value||'').replace(/\\r\\n?/g,'\\n').trim();
+ const normalizeLineEndings=value=>String(value||'').replace(/\r\n?/g,'\n').trim();
  if(normalizeLineEndings(updated.description)!==normalizeLineEndings(description)){
   console.error('Expected description length:',description.length);
   console.error('Read-back description length:',String(updated.description||'').length);
