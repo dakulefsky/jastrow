@@ -45,9 +45,15 @@
    const candidates=items.map((item,index)=>({id:String(index),text:item.englishGloss||''})).filter(item=>item.text);
    if(candidates.length){
     const evidence=await root.SefariaEvidence.compareTranslation(word,candidates,selection,{preparedOnly:true});
-    const matched=new Map((evidence.matches||[]).map(item=>[item.id,item]));
-    items.forEach((item,index)=>{const match=matched.get(String(index));if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
-    const best=items.findIndex(item=>item.translationMatch);if(best>0)items.unshift(items.splice(best,1)[0]);
+    const best=root.SefariaEvidence.bestContextualMatch?.(evidence);
+    if(best){
+     const index=items.findIndex((item,i)=>String(i)===String(best.id));
+     if(index>=0){
+      const item=items[index];item.translationMatch=true;item.translationPhrase=best.matchedPhrase;
+      item.translationMatchType=best.matchType;item.translationScope=evidence.scope;
+      if(index>0)items.unshift(items.splice(index,1)[0]);
+     }
+    }
    }
   }
   return items;

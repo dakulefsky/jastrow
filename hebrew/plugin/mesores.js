@@ -114,13 +114,9 @@
  async function translationRank(word,entries,selection){
   if(!root.SefariaEvidence?.compareTranslation)return null;
   const evidence=await root.SefariaEvidence.compareTranslation(word,entries,selection);
-  const matches=Array.isArray(evidence?.matches)?evidence.matches:[];
-  if(!matches.length)return null;
-  const score=match=>match.matchType==='exact'?3:match.matchType==='inflected_phrase'?2:1;
-  const highest=Math.max(...matches.map(score));
-  const winners=[...new Set(matches.filter(match=>score(match)===highest).map(match=>String(match.id)))];
-  if(winners.length!==1)return null;
-  return {preferredEntryId:winners[0],preferenceScope:'contextual'};
+  const best=root.SefariaEvidence.bestContextualMatch?.(evidence);
+  if(!best)return null;
+  return {preferredEntryId:String(best.id),preferenceScope:'contextual'};
  }
  async function propagatedPreference(selection,word,entries,rank=translationRank){
   if(!selection||!word||!Array.isArray(entries)||!entries.length||typeof rank!=='function')return null;

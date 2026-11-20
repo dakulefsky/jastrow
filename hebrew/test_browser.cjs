@@ -28,6 +28,13 @@ assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);
   await page.addInitScript(()=>{
    window.__fetchCalls=0;
    window.fetch=async()=>{window.__fetchCalls++;throw new Error('offline browser test: runtime fetch is forbidden');};
+   window.__otzariaHandlers={};
+   window.Otzaria={
+    on:(name,handler)=>{(window.__otzariaHandlers[name]??=[]).push(handler);},
+    call:async method=>method==='reader.getCurrentRef'
+     ?{success:true,data:{currentRef:'ברכות, דף ב עמוד א:1',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:0}}
+     :{success:true,data:{links:[]}}
+   };
   });
   await page.goto('file://'+__dirname+'/plugin/index.html');
   await page.locator('#query').fill('נפקא מינה');
@@ -44,6 +51,35 @@ assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);
   assert.equal(await page.locator('#results .meaning-card').count(),0);
   await page.locator('#query').fill('נפקא מינה');
   await page.locator('button[type=submit]').click();
+
+  const recommendationChecks=await page.evaluate(async()=>{
+   const originalCompare=window.SefariaEvidence.compareTranslation;
+   const handlers=window.__otzariaHandlers['ui.messageClicked']||[];
+   const send=async scope=>{
+    window.__evidenceScope=scope;
+    window.SefariaEvidence.compareTranslation=async(word,candidates)=>({
+     scope:scope==='tie'?'paragraph':scope,
+     matches:candidates.slice(0,scope==='tie'?2:1).map((candidate,index)=>({
+      id:candidate.id,matchType:'exact',matchedPhrase:'supported phrase'
+     }))
+    });
+    for(const handler of handlers)handler({payload:{dictionaryWord:'נפקא',readerContext:{
+     currentBook:'ברכות',currentBookId:'berakhot',
+     sourceRange:{ref:'ברכות, דף ב עמוד א:1'}
+    }}});
+    await new Promise(resolve=>setTimeout(resolve,40));
+    return document.querySelectorAll('.recommended-label').length;
+   };
+   const result={
+    paragraph:await send('paragraph'),
+    wholeDaf:await send('daf'),
+    tie:await send('tie')
+   };
+   window.SefariaEvidence.compareTranslation=originalCompare;
+   return result;
+  });
+  assert.deepEqual(recommendationChecks,{paragraph:1,wholeDaf:0,tie:0},
+   'full Hebrew dictionary should recommend only a unique paragraph-supported meaning');
 
   const evidence=await page.evaluate(async()=>window.SefariaEvidence.compareTranslation('בדיקה',
    [{id:'offline',text:'beginning of tractate'}],
