@@ -53,6 +53,7 @@ assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);
   await page.locator('button[type=submit]').click();
 
   const recommendationChecks=await page.evaluate(async()=>{
+   const originalCompare=window.SefariaEvidence.compareTranslation;
    const handlers=window.__otzariaHandlers['ui.messageClicked']||[];
    const send=async scope=>{
     window.__evidenceScope=scope;
@@ -69,11 +70,13 @@ assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);
     await new Promise(resolve=>setTimeout(resolve,40));
     return document.querySelectorAll('.recommended-label').length;
    };
-   return {
+   const result={
     paragraph:await send('paragraph'),
     wholeDaf:await send('daf'),
     tie:await send('tie')
    };
+   window.SefariaEvidence.compareTranslation=originalCompare;
+   return result;
   });
   assert.deepEqual(recommendationChecks,{paragraph:1,wholeDaf:0,tie:0},
    'full Hebrew dictionary should recommend only a unique paragraph-supported meaning');
