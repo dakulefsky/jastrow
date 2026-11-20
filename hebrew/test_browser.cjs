@@ -57,7 +57,7 @@ assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);
    const send=async scope=>{
     window.__evidenceScope=scope;
     window.SefariaEvidence.compareTranslation=async(word,candidates)=>({
-     scope:window.__evidenceScope,
+     scope:scope==='tie'?'paragraph':scope,
      matches:candidates.slice(0,scope==='tie'?2:1).map((candidate,index)=>({
       id:candidate.id,matchType:'exact',matchedPhrase:'supported phrase'
      }))
