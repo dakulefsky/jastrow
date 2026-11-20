@@ -49,7 +49,14 @@
     const corpus=root.SefariaOfflineTranslation;
     if(typeof corpus?.prepareDaf!=='function')return;
     const result=await corpus.prepareDaf(snapshot,()=>token===generation&&active);
-    if(token===generation&&result?.ready===true)preparedKey=key;
+    if(token===generation&&result?.ready===true){
+     preparedKey=key;
+     // The first right-click may have shown immediate meanings before the
+     // offline English daf finished loading. Rebuild the native submenu now,
+     // using the still-current selected word and the newly prepared passage.
+     try{await root.JastrowRefreshMenu?.({reference:snapshot.currentRef});}
+     catch(error){console.warn('Prepared dictionary menu refresh skipped',error);}
+    }
    }catch(error){
     if(token===generation)console.warn('Offline translation preparation skipped',error);
    }finally{
