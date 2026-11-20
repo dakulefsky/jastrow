@@ -19,6 +19,13 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   });
   assert.equal(glossFraming.verb.matches[0]?.matchedPhrase,'said','infinitive gloss should match an inflected translation verb');
   assert.equal(glossFraming.noun.matches[0]?.matchedPhrase,'land','leading article should not block a direct noun match');
+  const glossVariant=await page.evaluate(async()=>{
+   const original=SefariaOfflineTranslation.getPassage;
+   SefariaOfflineTranslation.getPassage=async()=>({text:'The fertile land was green.',scope:'paragraph'});
+   try{return await SefariaEvidence.compareTranslation('אַרְעָא',[{id:'variant',text:'land; fertile land'}],{sourceRange:{ref:'ברכות, דף ב עמוד א:4'},currentBook:'ברכות'});}
+   finally{SefariaOfflineTranslation.getPassage=original;}
+  });
+  assert.equal(glossVariant.matches[0]?.candidatePhrase,'fertile land','choose the strongest matching alternative gloss, not the first matching variant');
   // Quick lookup should not lose its star merely because background prefetch
   // has not prepared this daf yet; it should fall back to the bundled passage.
   const prefetchFallback=await page.evaluate(async()=>{
@@ -59,7 +66,7 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   assert.equal(await page.locator('.meaning-recommended').count(),1);
   assert.match(await page.locator('.context-recommended').innerText(),/land/);
   // A specific multi-word gloss outranks an incidental one-word collision.
-  await page.evaluate(()=>{SefariaEvidence.compareTranslation=async(word,candidates)=>({matches:candidates.slice(0,2).map((item,i)=>({id:item.id,matchedPhrase:i?'the fertile land':'land',candidatePhrase:i?'the fertile land':'land',matchType:'exact'})),scope:'paragraph'});});
+  await page.evaluate(()=>{SefariaEvidence.compareTranslation=async(word,candidates)=>({matches:candidates.slice(0,2).map((item,i)=>({id:item.id,matchedPhrase:i?'fertile land':'land',candidatePhrase:i?'the fertile land':'land',matchType:i?'inflected_phrase':'exact'})),scope:'paragraph'});});
   await lookup('אַרְעָא');assert.equal(await page.locator('.meaning-recommended').count(),1);
   // Truly equal evidence remains ambiguous and receives no star.
   await page.evaluate(()=>{SefariaEvidence.compareTranslation=async(word,candidates)=>({matches:candidates.slice(0,2).map(item=>({id:item.id,matchedPhrase:'land',candidatePhrase:'land',matchType:'exact'})),scope:'paragraph'});});
