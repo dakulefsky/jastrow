@@ -110,7 +110,18 @@
    return value;
   }catch{return {matches:[],reason:'translation_unavailable'};}
  }
+ function scoreMatch(match){
+  const base=match?.matchType==='exact'?30:match?.matchType==='inflected_phrase'?20:match?.matchType==='inflected_word'?10:0;
+  const phrase=normalizeEnglish(match?.candidatePhrase||'').split(' ').filter(Boolean);
+  const content=phrase.filter(token=>!STOP_WORDS.has(token));
+  return base+Math.min(content.length,8)*12+Math.min(phrase.length,8);
+ }
+ function bestMatch(matches){
+  const ranked=(Array.isArray(matches)?matches:[]).map(match=>({match,score:scoreMatch(match)})).filter(item=>item.score>0).sort((a,b)=>b.score-a.score);
+  if(!ranked.length||ranked.length>1&&ranked[0].score===ranked[1].score)return null;
+  return ranked[0].match;
+ }
  function clearCache(){translationCache.clear();}
- root.SefariaEvidence={compareTranslation,clearCache,normalizeEnglish};
+ root.SefariaEvidence={compareTranslation,clearCache,normalizeEnglish,scoreMatch,bestMatch};
  if(typeof module!=='undefined'&&module.exports)module.exports=root.SefariaEvidence;
 })(typeof window==='undefined'?globalThis:window);
