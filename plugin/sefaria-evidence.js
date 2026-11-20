@@ -98,9 +98,15 @@
    if(!local?.text)return {matches:[],reason:local?.reason||'translation_unavailable'};
    const passage=normalizeEnglish(local.text),matches=[];
    for(const candidate of candidates){
-    const matched=candidatePhrases(candidate.text).map(phrase=>({candidatePhrase:phrase,passagePhrase:findPhraseMatch(phrase,passage)})).find(item=>item.passagePhrase);
-    if(matched)matches.push({id:String(candidate.id),matchedPhrase:matched.passagePhrase,candidatePhrase:matched.candidatePhrase,
-     matchType:matched.candidatePhrase===matched.passagePhrase?'exact':matched.candidatePhrase.includes(' ')?'inflected_phrase':'inflected_word'});
+    const possible=candidatePhrases(candidate.text).map(phrase=>{
+     const passagePhrase=findPhraseMatch(phrase,passage);
+     if(!passagePhrase)return null;
+     return {candidatePhrase:phrase,passagePhrase,
+      matchType:phrase===passagePhrase?'exact':phrase.includes(' ')?'inflected_phrase':'inflected_word'};
+    }).filter(Boolean).sort((a,b)=>scoreMatch(b)-scoreMatch(a));
+    const matched=possible[0];
+    if(matched)matches.push({id:String(candidate.id),matchedPhrase:matched.passagePhrase,
+     candidatePhrase:matched.candidatePhrase,matchType:matched.matchType});
    }
    const value={matches,reason:matches.length?'candidate_wording_found':'no_candidate_wording_found',
     reference:ref,canonicalReference:local.dafReference||ref,versionTitle:local.versionTitle||TRANSLATION_VERSION,
