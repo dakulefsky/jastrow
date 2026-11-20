@@ -8,6 +8,17 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   page.on('pageerror',e=>errors.push(String(e)));page.on('request',r=>{if(!r.url().startsWith(base))external.push(r.url());});await page.goto(base);
   const offlineEvidence=await page.evaluate(async()=>window.SefariaEvidence.compareTranslation('בדיקה',[{id:'offline',text:'beginning of tractate'}],{sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'}));
   assert.equal(offlineEvidence.source,'offline');assert.equal(offlineEvidence.scope,'paragraph');assert.equal(offlineEvidence.matches[0].matchedPhrase,'beginning of tractate');
+  const glossFraming=await page.evaluate(async()=>{
+   const original=SefariaOfflineTranslation.getPassage;
+   SefariaOfflineTranslation.getPassage=async()=>({text:'He said the land was fertile.',scope:'paragraph'});
+   try{
+    const verb=await SefariaEvidence.compareTranslation('אָמַר',[{id:'verb',text:'to say'}],{sourceRange:{ref:'ברכות, דף ב עמוד א:2'},currentBook:'ברכות'});
+    const noun=await SefariaEvidence.compareTranslation('אַרְעָא',[{id:'noun',text:'the land'}],{sourceRange:{ref:'ברכות, דף ב עמוד א:3'},currentBook:'ברכות'});
+    return {verb,noun};
+   }finally{SefariaOfflineTranslation.getPassage=original;}
+  });
+  assert.equal(glossFraming.verb.matches[0]?.matchedPhrase,'said','infinitive gloss should match an inflected translation verb');
+  assert.equal(glossFraming.noun.matches[0]?.matchedPhrase,'land','leading article should not block a direct noun match');
   // Quick lookup should not lose its star merely because background prefetch
   // has not prepared this daf yet; it should fall back to the bundled passage.
   const prefetchFallback=await page.evaluate(async()=>{
