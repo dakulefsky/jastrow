@@ -11,8 +11,6 @@
  function childTitle(item,word){
   const selected=item.selectedWord||'',spelling=item.spelling||'';
   const head=selected&&spelling&&JastrowSearch.normalize(selected)!==JastrowSearch.normalize(spelling)?selected+' · '+spelling:(spelling||selected||word);
-  // Keep the star and meaning at the very front; no trailing recommendation
-  // text or context quote for the host to clip.
   const label=(item.recommended===true?'★ ':'')+head+' — '+compact(item.text,40);
   return label.length>100?label.slice(0,99).trimEnd()+'…':label;
  }
@@ -26,8 +24,6 @@
  function registerFallback(payload,expectedRevision=revision){
   const word=JastrowContext.selectionText(payload||{});
   const task=async()=>{
-   // Serialize fallback writes so a slow response for an older selection can
-   // never overwrite the submenu belonging to a newer selection.
    if(expectedRevision!==revision)return;
    if(!word)return Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-lookup'}).catch(()=>{});
    return Otzaria.call('reader.addContextMenuItem',{
@@ -67,8 +63,6 @@
     if(job.revision!==revision)continue;
     const available=items.filter(item=>item.text&&Number.isInteger(item.entryId));
     const hasMore=items.hasMore===true||available.length>MAX_MENU_MEANINGS;
-    // Four visible choices total: reserve the last slot for the full dictionary
-    // whenever there are additional meanings.
     const choices=available.slice(0,hasMore?MAX_MENU_MEANINGS-1:MAX_MENU_MEANINGS);
     if(!choices.length)continue;
     const children=choices.map((item,i)=>({
@@ -105,7 +99,26 @@
    if(pending)update().catch(()=>console.warn('Dictionary meaning menu unavailable'));
   }
  }
- function offer(payload){latestPayload=payload||{};const current=++revision;pending={payload:latestPayload,revision:current};selectionRemoval=registerFallback(latestPayload,current);update().catch(()=>console.warn('Dictionary meaning menu unavailable'));}
+ function offer(payload){
+  latestPayload=payload||{};
+  const current=++revision;
+  pending={payload:latestPayload,revision:current};
+  selectionRemoval=registerFallback(latestPayload,current);
+  update().catch(()=>console.warn('Dictionary meaning menu unavailable'));
+ }
+ // Called by the background daf-preparation worker after the offline passage
+ // becomes available. Re-read the live selection and rebuild its native menu,
+ // so reopening the same selected word shows the new evidence-backed star
+ // without requiring the user to select the word again.
+ async function refreshPreparedSelection(){
+  try{
+   const response=await Otzaria.call('reader.getSelection');
+   if(!response?.success||!response.data||!JastrowContext.selectionText(response.data))return false;
+   offer(response.data);
+   return true;
+  }catch{return false;}
+ }
+ window.JastrowRefreshMenu=refreshPreparedSelection;
  Otzaria.on('reader.selection_changed',offer);
  Otzaria.on('plugin.boot',async()=>{
   await removeLegacyVotes();
