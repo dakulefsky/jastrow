@@ -1,0 +1,7 @@
+An offline Aramaic and rabbinic Hebrew → English dictionary for learning Gemara in Otzaria.
+
+Right-click a selected word to see up to four concise dictionary meanings. When the selected paragraph directly supports one meaning in the offline English Gemara, that meaning is moved to the top and marked with a ★. If the passage is still preparing, the choices appear immediately and the menu refreshes automatically when the contextual evidence is ready.
+
+Matching handles common prefixes, indexed inflected forms, and listed expressions. Open a result for fuller dictionary entries, source wording, and examples. The dictionary is based on Jastrow and Krupnik & Silbermann. It includes an offline English Babylonian Talmud text for contextual cross-checking.
+
+Recommendations are based on wording found in the selected paragraph. The plugin does not invent translations or use AI-generated meanings. All dictionary lookups and contextual checks work offline after installation.
