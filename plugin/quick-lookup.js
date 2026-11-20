@@ -46,9 +46,15 @@
   if(selection&&merged.length){
    merged.forEach((item,i)=>{item.candidateId=String(i);});
    const candidates=merged.map(item=>({id:item.candidateId,text:item.text}));
-   const evidence=root.SefariaEvidence?.compareTranslation
+   let evidence=root.SefariaEvidence?.compareTranslation
     ?await root.SefariaEvidence.compareTranslation(word,candidates,selection,{preparedOnly:true}).catch(()=>({matches:[]}))
     :{matches:[]};
+   // A selection can arrive before the background daf prefetch finishes.
+   // In that case, load the same bundled offline passage on demand rather
+   // than silently suppressing the recommendation for this lookup.
+   if(evidence?.reason==='not_prepared'&&root.SefariaEvidence?.compareTranslation){
+    evidence=await root.SefariaEvidence.compareTranslation(word,candidates,selection,{preparedOnly:false}).catch(()=>evidence);
+   }
    const matches=Array.isArray(evidence?.matches)?evidence.matches:[];
    const matched=new Map(matches.map(item=>[String(item.id),item]));
    merged.forEach(item=>{const match=matched.get(item.candidateId);if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
