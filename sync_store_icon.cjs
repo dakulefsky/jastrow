@@ -35,12 +35,13 @@ async function main(){
  if(!descriptionResult.success)throw Error('Store description update failed: '+(descriptionResult.error||'unknown error'));
 
  const updated=await (await request()).json();
- if(updated.description!==description){
+ const normalizeLineEndings=value=>String(value||'').replace(/\\r\\n?/g,'\\n').trim();
+ if(normalizeLineEndings(updated.description)!==normalizeLineEndings(description)){
   console.error('Expected description length:',description.length);
   console.error('Read-back description length:',String(updated.description||'').length);
   console.error('Read-back description:',JSON.stringify(updated.description));
   throw Error('Store description verification failed');
  }
- console.log('Store card icon and long description updated and verified. Pending approval: '+Boolean(descriptionResult.pendingApproval));
+ console.log('Store card icon and long description updated and verified (line endings normalized). Pending approval: '+Boolean(descriptionResult.pendingApproval));
 }
 main().catch(e=>{console.error(e.message);process.exitCode=1;});
