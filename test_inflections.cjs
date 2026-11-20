@@ -18,6 +18,7 @@ for(const word of ['ביתיה','וביתיה','ביתך']){
  assert(r.prefixMatches.some(m=>m.suffix&&m.base==='בית'),word+': lost house analysis');
  assert(r.prefixMatches.some(m=>m.suffix===undefined),word+': lost prefix analysis');
  assert(r.ids.some(id=>S.normalize(index.entries[id].h)==='בית'),word);
+ if(word==='ביתיה')assert.equal(S.normalize(index.entries[r.ids[0]].h),'בית','reviewed בית + suffix analysis must outrank a weaker prefix-only homograph');
 }
 for(const word of ['בית','ביתא','אמרינן'])assert.equal(S.lookup(index,word).prefixMatches,undefined,'full-word evidence keeps priority');
 const provenance=JSON.parse(zlib.gunzipSync(fs.readFileSync(__dirname+'/audit/inflection-provenance.json.gz')));

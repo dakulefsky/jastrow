@@ -2,7 +2,7 @@
  'use strict';
  if(!window.Otzaria)return;
  const index=window.JASTROW_INDEX;
- let pending=null,running=false,revision=0,legacyRemoval=null,selectionRemoval=Promise.resolve(),latestPayload={};
+ let pending=null,running=false,revision=0,legacyRemoval=null,selectionRemoval=Promise.resolve(),fallbackQueue=Promise.resolve(),latestPayload={};
  const MAX_MENU_MEANINGS=4;
  function compact(value,max){
   const text=String(value||'').replace(/\s+/g,' ').trim();
@@ -23,15 +23,23 @@
   ]);
   return legacyRemoval;
  }
- async function registerFallback(payload){
+ function registerFallback(payload,expectedRevision=revision){
   const word=JastrowContext.selectionText(payload||{});
-  if(!word)return Promise.resolve();
-  return Otzaria.call('reader.addContextMenuItem',{
-   id:'jastrow-lookup',type:'submenu',title:'Aramaic → Eng.',
-   icon:'alef_with_score_24_regular',
-   contexts:['reader-selection','reader-page-shape-selection'],
-   children:[{id:'jastrow-meaning-fallback',title:'Open full dictionary',openPlugin:true,param:{dictionaryWord:word,showAll:true}}]
-  }).catch(()=>{});
+  const task=async()=>{
+   // Serialize fallback writes so a slow response for an older selection can
+   // never overwrite the submenu belonging to a newer selection.
+   if(expectedRevision!==revision)return;
+   if(!word)return Otzaria.call('reader.removeContextMenuItem',{id:'jastrow-lookup'}).catch(()=>{});
+   return Otzaria.call('reader.addContextMenuItem',{
+    id:'jastrow-lookup',type:'submenu',title:'Aramaic → Eng.',
+    icon:'alef_with_score_24_regular',
+    contexts:['reader-selection','reader-page-shape-selection'],
+    children:[{id:'jastrow-meaning-fallback',title:'Open full dictionary',openPlugin:true,param:{dictionaryWord:word,showAll:true}}]
+   }).catch(()=>{});
+  };
+  const next=fallbackQueue.then(task,task);
+  fallbackQueue=next.catch(()=>{});
+  return next;
  }
  async function update(){
   if(running)return;running=true;
@@ -97,7 +105,7 @@
    if(pending)update().catch(()=>console.warn('Dictionary meaning menu unavailable'));
   }
  }
- function offer(payload){latestPayload=payload||{};pending={payload:latestPayload,revision:++revision};selectionRemoval=registerFallback(latestPayload);update().catch(()=>console.warn('Dictionary meaning menu unavailable'));}
+ function offer(payload){latestPayload=payload||{};const current=++revision;pending={payload:latestPayload,revision:current};selectionRemoval=registerFallback(latestPayload,current);update().catch(()=>console.warn('Dictionary meaning menu unavailable'));}
  Otzaria.on('reader.selection_changed',offer);
  Otzaria.on('plugin.boot',async()=>{
   await removeLegacyVotes();

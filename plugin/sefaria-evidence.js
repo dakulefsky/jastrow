@@ -52,10 +52,20 @@
  }
  function findPhraseMatch(phrase,text){
   if(!phrase||!text)return null;
-  const words=phrase.split(' '),haystack=text.split(' ');
-  if(words.length===1&&(STOP_WORDS.has(words[0])||words[0].length<3))return null;
-  for(let i=0;i+words.length<=haystack.length;i++){
-   if(words.every((word,j)=>tokenMatch(word,haystack[i+j])))return haystack.slice(i,i+words.length).join(' ');
+  const original=phrase.split(' '),variants=[original];
+  // Dictionary glosses commonly use infinitive/article framing that English
+  // translations omit ("to say" -> "said", "the land" -> "land").
+  // Try this narrowly reviewed leading-word normalization only after the
+  // complete phrase, and never reduce a phrase to a stop word.
+  let start=0;
+  while(start<original.length-1&&['to','a','an','the'].includes(original[start]))start++;
+  if(start)variants.push(original.slice(start));
+  const haystack=text.split(' ');
+  for(const words of variants){
+   if(words.length===1&&(STOP_WORDS.has(words[0])||words[0].length<3))continue;
+   for(let i=0;i+words.length<=haystack.length;i++){
+    if(words.every((word,j)=>tokenMatch(word,haystack[i+j])))return haystack.slice(i,i+words.length).join(' ');
+   }
   }
   return null;
  }
@@ -88,9 +98,15 @@
    if(!local?.text)return {matches:[],reason:local?.reason||'translation_unavailable'};
    const passage=normalizeEnglish(local.text),matches=[];
    for(const candidate of candidates){
-    const matched=candidatePhrases(candidate.text).map(phrase=>({candidatePhrase:phrase,passagePhrase:findPhraseMatch(phrase,passage)})).find(item=>item.passagePhrase);
-    if(matched)matches.push({id:String(candidate.id),matchedPhrase:matched.passagePhrase,candidatePhrase:matched.candidatePhrase,
-     matchType:matched.candidatePhrase===matched.passagePhrase?'exact':matched.candidatePhrase.includes(' ')?'inflected_phrase':'inflected_word'});
+    const possible=candidatePhrases(candidate.text).map(phrase=>{
+     const passagePhrase=findPhraseMatch(phrase,passage);
+     if(!passagePhrase)return null;
+     return {candidatePhrase:phrase,passagePhrase,
+      matchType:phrase===passagePhrase?'exact':phrase.includes(' ')?'inflected_phrase':'inflected_word'};
+    }).filter(Boolean).sort((a,b)=>scoreMatch(b)-scoreMatch(a));
+    const matched=possible[0];
+    if(matched)matches.push({id:String(candidate.id),matchedPhrase:matched.passagePhrase,
+     candidatePhrase:matched.candidatePhrase,matchType:matched.matchType});
    }
    const value={matches,reason:matches.length?'candidate_wording_found':'no_candidate_wording_found',
     reference:ref,canonicalReference:local.dafReference||ref,versionTitle:local.versionTitle||TRANSLATION_VERSION,
@@ -100,7 +116,21 @@
    return value;
   }catch{return {matches:[],reason:'translation_unavailable'};}
  }
+ function scoreMatch(match){
+  const base=match?.matchType==='exact'?30:match?.matchType==='inflected_phrase'?20:match?.matchType==='inflected_word'?10:0;
+  const phrase=normalizeEnglish(match?.candidatePhrase||'').split(' ').filter(Boolean);
+  const content=phrase.filter(token=>!STOP_WORDS.has(token));
+  return base+Math.min(content.length,8)*12+Math.min(phrase.length,8);
+ }
+ function bestMatch(matches,scope){
+  // A whole-daf hit is too broad to identify the meaning of one selected word.
+  // Keep those meanings available, but only recommend from the exact paragraph.
+  if(scope!=='paragraph')return null;
+  const ranked=(Array.isArray(matches)?matches:[]).map(match=>({match,score:scoreMatch(match)})).filter(item=>item.score>0).sort((a,b)=>b.score-a.score);
+  if(!ranked.length||ranked.length>1&&ranked[0].score===ranked[1].score)return null;
+  return ranked[0].match;
+ }
  function clearCache(){translationCache.clear();}
- root.SefariaEvidence={compareTranslation,clearCache,normalizeEnglish};
+ root.SefariaEvidence={compareTranslation,clearCache,normalizeEnglish,scoreMatch,bestMatch};
  if(typeof module!=='undefined'&&module.exports)module.exports=root.SefariaEvidence;
 })(typeof window==='undefined'?globalThis:window);

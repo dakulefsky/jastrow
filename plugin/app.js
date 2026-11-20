@@ -116,6 +116,16 @@ async function searchWords(words,serial){
   await showTranslations(result,word,serial,target,3);
  }));
 }
+function applyRecommendation(id){
+ const numeric=Number(id);if(!Number.isInteger(numeric)||numeric<0)return;
+ const card=document.querySelector('#entry .meaning-card[data-meaning-index="'+numeric+'"]');
+ const content=card?.querySelector('.meaning-content');if(!card||!content)return;
+ document.querySelectorAll('#entry .meaning-recommended').forEach(node=>node.remove());
+ document.querySelectorAll('#entry .context-recommended').forEach(node=>node.classList.remove('context-recommended'));
+ const marker=el('span','Recommended','meaning-recommended');
+ marker.setAttribute('aria-label','Recommended by direct offline translation evidence');
+ content.prepend(marker);card.classList.add('context-recommended');
+}
 function readerOriginLabel(selection){
  const ref=selection?.currentRef||selection?.sourceRange?.ref||selection?.sourceRange?.currentRef||selection?.renderedRange?.ref||selection?.sections?.[0]?.sourceRange?.ref||selection?.currentTitle||selection?.reference||'';
  const parsed=window.SefariaOfflineTranslation?.parseReference?.(ref,selection?.currentBook);
@@ -155,13 +165,9 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
     ?await SefariaEvidence.compareTranslation(word,candidates,active,{preparedOnly:false})
     :{matches:[]};
    if(serial!==requestSerial||panelSerial!==entrySerial)return;
-   const matches=new Map((evidence?.matches||[]).map(item=>[String(item.id),item]));
-   if(!matches.size)return;
-   const score=value=>value.matchType==='exact'?3:value.matchType==='inflected_phrase'?2:1;
-   const highest=Math.max(...[...matches.values()].map(score));
-   const winners=[...matches.entries()].filter(([,value])=>score(value)===highest);
-   // Never break a lexical tie by dictionary ID or source order.
-   if(winners.length===1)applyRecommendation(winners[0][0]);
+   const best=window.SefariaEvidence?.bestMatch?.(evidence?.matches||[],evidence?.scope);
+   // Quick lookup and the full dictionary share one specificity-aware rule.
+   if(best)applyRecommendation(best.id);
   })().catch(()=>{});
  }
 for(const failed of expanded.filter(x=>x.error)){const retry=el('button','Retry dictionary entry');retry.type='button';retry.onclick=()=>showTranslations(result,word,requestSerial,target,pageSize);target.append(retry);}

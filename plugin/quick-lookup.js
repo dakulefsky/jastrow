@@ -46,21 +46,22 @@
   if(selection&&merged.length){
    merged.forEach((item,i)=>{item.candidateId=String(i);});
    const candidates=merged.map(item=>({id:item.candidateId,text:item.text}));
-   const evidence=root.SefariaEvidence?.compareTranslation
+   let evidence=root.SefariaEvidence?.compareTranslation
     ?await root.SefariaEvidence.compareTranslation(word,candidates,selection,{preparedOnly:true}).catch(()=>({matches:[]}))
     :{matches:[]};
+   // A selection can arrive before the background daf prefetch finishes.
+   // In that case, load the same bundled offline passage on demand rather
+   // than silently suppressing the recommendation for this lookup.
+   if(evidence?.reason==='not_prepared'&&root.SefariaEvidence?.compareTranslation){
+    evidence=await root.SefariaEvidence.compareTranslation(word,candidates,selection,{preparedOnly:false}).catch(()=>evidence);
+   }
    const matches=Array.isArray(evidence?.matches)?evidence.matches:[];
    const matched=new Map(matches.map(item=>[String(item.id),item]));
    merged.forEach(item=>{const match=matched.get(item.candidateId);if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
-   const matchScore=match=>match.matchType==='exact'?3:match.matchType==='inflected_phrase'?2:1;
-   const score=item=>item.translationMatchType==='exact'?3:item.translationMatchType==='inflected_phrase'?2:item.translationMatchType==='inflected_word'?1:0;
-   const sourceHasEvidence=matches.length>0;
-   let preferredId=null;
-   if(sourceHasEvidence){
-    const highest=Math.max(...matches.map(matchScore));
-    const winners=[...new Set(matches.filter(match=>matchScore(match)===highest).map(match=>String(match.id)))];
-    if(winners.length===1)preferredId=winners[0];
-   }
+   // Use the same specificity-aware decision as the full dictionary.
+   const preferred=root.SefariaEvidence?.bestMatch?.(matches,evidence?.scope);
+   const preferredId=preferred?String(preferred.id):null;
+   const score=item=>item.translationMatchType==='exact'?300:item.translationMatchType==='inflected_phrase'?200:item.translationMatchType==='inflected_word'?100:0;
    merged.sort((a,b)=>score(b)-score(a));
    if(preferredId){
     const best=merged.findIndex(item=>item.candidateId===preferredId);

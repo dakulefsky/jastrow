@@ -18,6 +18,18 @@ global.fetch=async()=>{networkCalls++;throw Error('the dictionary must never use
  const evidence=require(file);
  assert.equal(evidence.lookup,undefined);
  assert.equal(evidence.reorder,undefined);
+ const preferred=evidence.bestMatch([
+  {id:'incidental',candidatePhrase:'land',matchType:'exact'},
+  {id:'specific',candidatePhrase:'the fertile land',matchType:'inflected_phrase'}
+ ],'paragraph');
+ assert.equal(preferred?.id,'specific','specific contextual phrase should outrank an incidental exact word');
+ assert.equal(evidence.bestMatch([
+  {id:'one',candidatePhrase:'land',matchType:'exact'},
+  {id:'two',candidatePhrase:'land',matchType:'exact'}
+ ],'paragraph'),null,'equal evidence must remain unmarked');
+ assert.equal(evidence.bestMatch([
+  {id:'specific',candidatePhrase:'the fertile land',matchType:'inflected_phrase'}
+ ],'daf'),null,'a whole-daf match is not precise enough to recommend a meaning for one selected word');
  const candidates=[{id:'complete',text:'complete'},{id:'law-order',text:'law and order'},{id:'absent',text:'mountain'}];
  const selection={sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'};
  const result=await evidence.compareTranslation('אָמַר',candidates,selection);
