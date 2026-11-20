@@ -100,7 +100,20 @@
    return value;
   }catch{return {matches:[],reason:'translation_unavailable'};}
  }
+ function bestContextualMatch(evidence){
+  // A whole-daf hit is not precise enough to recommend one Hebrew meaning.
+  if(evidence?.scope!=='paragraph'||!Array.isArray(evidence.matches)||!evidence.matches.length)return null;
+  const score=match=>match.matchType==='exact'?3:match.matchType==='inflected_phrase'?2:1;
+  const highest=Math.max(...evidence.matches.map(score));
+  const winners=new Map();
+  for(const match of evidence.matches){
+   if(score(match)!==highest)continue;
+   const id=String(match.id);
+   if(!winners.has(id))winners.set(id,match);
+  }
+  return winners.size===1?[...winners.values()][0]:null;
+ }
  function clearCache(){translationCache.clear();}
- root.SefariaEvidence={compareTranslation,clearCache,normalizeEnglish};
+ root.SefariaEvidence={compareTranslation,clearCache,normalizeEnglish,bestContextualMatch};
  if(typeof module!=='undefined'&&module.exports)module.exports=root.SefariaEvidence;
 })(typeof window==='undefined'?globalThis:window);

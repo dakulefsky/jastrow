@@ -50,14 +50,10 @@ async function search(q,record=true,preserveReaderContext=false){const serial=++
      :Promise.resolve(null);
     const [evidence,parallelMatch]=await Promise.all([sourcePromise,parallelPromise]);
     if(serial!==searchSerial)return;
-    const sourceMatches=Array.isArray(evidence?.matches)?evidence.matches:[];
-    const score=match=>match.matchType==='exact'?3:match.matchType==='inflected_phrase'?2:1;
-    const highest=sourceMatches.length?Math.max(...sourceMatches.map(score)):0;
-    const sourceWinners=sourceMatches.filter(match=>score(match)===highest);
-    // A tie is uncertainty, not permission to choose the first source row.
-    const sourceMatch=sourceWinners.length===1?sourceWinners[0]:null;
-    // Parallel evidence may fill a genuine gap, but must not break a tie.
-    const preferredId=sourceMatches.length?sourceMatch?.id:parallelMatch?.preferredEntryId;
+    const sourceMatch=window.SefariaEvidence?.bestContextualMatch?.(evidence);
+    // Parallel evidence may fill a genuine gap, but must not break a source tie.
+    const preferredId=Array.isArray(evidence?.matches)&&evidence.matches.length
+     ?sourceMatch?.id:parallelMatch?.preferredEntryId;
     if(preferredId){
      const card=cardsByGroup.get(preferredId);
      if(card){
