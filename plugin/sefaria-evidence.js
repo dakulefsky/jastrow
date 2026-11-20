@@ -52,10 +52,20 @@
  }
  function findPhraseMatch(phrase,text){
   if(!phrase||!text)return null;
-  const words=phrase.split(' '),haystack=text.split(' ');
-  if(words.length===1&&(STOP_WORDS.has(words[0])||words[0].length<3))return null;
-  for(let i=0;i+words.length<=haystack.length;i++){
-   if(words.every((word,j)=>tokenMatch(word,haystack[i+j])))return haystack.slice(i,i+words.length).join(' ');
+  const original=phrase.split(' '),variants=[original];
+  // Dictionary glosses commonly use infinitive/article framing that English
+  // translations omit ("to say" -> "said", "the land" -> "land").
+  // Try this narrowly reviewed leading-word normalization only after the
+  // complete phrase, and never reduce a phrase to a stop word.
+  let start=0;
+  while(start<original.length-1&&['to','a','an','the'].includes(original[start]))start++;
+  if(start)variants.push(original.slice(start));
+  const haystack=text.split(' ');
+  for(const words of variants){
+   if(words.length===1&&(STOP_WORDS.has(words[0])||words[0].length<3))continue;
+   for(let i=0;i+words.length<=haystack.length;i++){
+    if(words.every((word,j)=>tokenMatch(word,haystack[i+j])))return haystack.slice(i,i+words.length).join(' ');
+   }
   }
   return null;
  }
