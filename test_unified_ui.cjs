@@ -10,7 +10,7 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   assert.equal(offlineEvidence.source,'offline');assert.equal(offlineEvidence.scope,'paragraph');assert.equal(offlineEvidence.matches[0].matchedPhrase,'beginning of tractate');
   const glossFraming=await page.evaluate(async()=>{
    const original=SefariaOfflineTranslation.getPassage;
-   SefariaOfflineTranslation.getPassage=async()=>({text:'He said the land was fertile.',scope:'paragraph'});
+   SefariaOfflineTranslation.getPassage=async()=>({text:'He said land was fertile.',scope:'paragraph'});
    try{
     const verb=await SefariaEvidence.compareTranslation('אָמַר',[{id:'verb',text:'to say'}],{sourceRange:{ref:'ברכות, דף ב עמוד א:2'},currentBook:'ברכות'});
     const noun=await SefariaEvidence.compareTranslation('אַרְעָא',[{id:'noun',text:'the land'}],{sourceRange:{ref:'ברכות, דף ב עמוד א:3'},currentBook:'ברכות'});
