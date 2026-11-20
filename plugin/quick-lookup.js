@@ -59,7 +59,7 @@
    const matched=new Map(matches.map(item=>[String(item.id),item]));
    merged.forEach(item=>{const match=matched.get(item.candidateId);if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
    // Use the same specificity-aware decision as the full dictionary.
-   const preferred=root.SefariaEvidence?.bestMatch?.(matches);
+   const preferred=root.SefariaEvidence?.bestMatch?.(matches,evidence?.scope);
    const preferredId=preferred?String(preferred.id):null;
    const score=item=>item.translationMatchType==='exact'?300:item.translationMatchType==='inflected_phrase'?200:item.translationMatchType==='inflected_word'?100:0;
    merged.sort((a,b)=>score(b)-score(a));

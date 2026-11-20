@@ -165,7 +165,7 @@ async function showTranslations(result,word,serial,target=$('entry'),pageSize=12
     ?await SefariaEvidence.compareTranslation(word,candidates,active,{preparedOnly:false})
     :{matches:[]};
    if(serial!==requestSerial||panelSerial!==entrySerial)return;
-   const best=window.SefariaEvidence?.bestMatch?.(evidence?.matches||[]);
+   const best=window.SefariaEvidence?.bestMatch?.(evidence?.matches||[],evidence?.scope);
    // Quick lookup and the full dictionary share one specificity-aware rule.
    if(best)applyRecommendation(best.id);
   })().catch(()=>{});

@@ -122,7 +122,10 @@
   const content=phrase.filter(token=>!STOP_WORDS.has(token));
   return base+Math.min(content.length,8)*12+Math.min(phrase.length,8);
  }
- function bestMatch(matches){
+ function bestMatch(matches,scope){
+  // A whole-daf hit is too broad to identify the meaning of one selected word.
+  // Keep those meanings available, but only recommend from the exact paragraph.
+  if(scope!=='paragraph')return null;
   const ranked=(Array.isArray(matches)?matches:[]).map(match=>({match,score:scoreMatch(match)})).filter(item=>item.score>0).sort((a,b)=>b.score-a.score);
   if(!ranked.length||ranked.length>1&&ranked[0].score===ranked[1].score)return null;
   return ranked[0].match;
