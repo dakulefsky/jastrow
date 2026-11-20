@@ -26,8 +26,8 @@ const {chromium,executablePath}=require('./browser_support.cjs');
    finally{SefariaOfflineTranslation.getPassage=original;}
   });
   assert.equal(glossVariant.matches[0]?.candidatePhrase,'fertile land','choose the strongest matching alternative gloss, not the first matching variant');
-  // Quick lookup should not lose its star merely because background prefetch
-  // has not prepared this daf yet; it should fall back to the bundled passage.
+  // Quick lookup must stay immediate while background prefetch is still
+  // preparing the daf. The separate menu-refresh test verifies the later star.
   const prefetchFallback=await page.evaluate(async()=>{
    const original=SefariaEvidence.compareTranslation,calls=[];
    SefariaEvidence.compareTranslation=async(word,candidates,selection,options)=>{
@@ -40,8 +40,8 @@ const {chromium,executablePath}=require('./browser_support.cjs');
     return {calls,items};
    }finally{SefariaEvidence.compareTranslation=original;}
   });
-  assert.deepEqual(prefetchFallback.calls,[true,false],'unprepared daf should trigger one on-demand offline evidence check');
-  assert.equal(prefetchFallback.items.some(item=>item.recommended===true),true,'unique evidence should still mark the quick-lookup recommendation');
+  assert.deepEqual(prefetchFallback.calls,[true],'unprepared daf must not trigger a cold on-demand passage load');
+  assert.equal(prefetchFallback.items.some(item=>item.recommended===true),false,'do not recommend before the contextual passage is prepared');
   const lookup=async word=>{const before=await page.locator('#entry').innerHTML();await page.fill('#query',word);await page.locator('.lookup-button').click();await page.waitForFunction(before=>document.querySelector('#entry')?.innerHTML!==before,before);await page.locator('.unified-meanings').first().waitFor();assert.equal(await page.locator('.community-feedback').count(),0,'offline mode must not show community UI');};
   await lookup('אַרְעָא');let main=page.locator('.unified-meanings>ol>.meaning-card');assert.equal(await main.count(),1);assert.match(await main.first().innerText(),/land/);assert.equal(await main.first().locator('.meaning-text').evaluate(el=>getComputedStyle(el).fontWeight),'700','main English definitions should be bold');assert(!/accident|Jastrow|Krupnik/.test(await page.locator('#entry').innerText()));
   const land=main.first();assert.equal(await land.locator('.meaning-number').innerText(),'1');assert.equal(await land.locator('.meaning-references a').count(),2);
