@@ -8,6 +8,22 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   page.on('pageerror',e=>errors.push(String(e)));page.on('request',r=>{if(!r.url().startsWith(base))external.push(r.url());});await page.goto(base);
   const offlineEvidence=await page.evaluate(async()=>window.SefariaEvidence.compareTranslation('בדיקה',[{id:'offline',text:'beginning of tractate'}],{sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'}));
   assert.equal(offlineEvidence.source,'offline');assert.equal(offlineEvidence.scope,'paragraph');assert.equal(offlineEvidence.matches[0].matchedPhrase,'beginning of tractate');
+  // Quick lookup should not lose its star merely because background prefetch
+  // has not prepared this daf yet; it should fall back to the bundled passage.
+  const prefetchFallback=await page.evaluate(async()=>{
+   const original=SefariaEvidence.compareTranslation,calls=[];
+   SefariaEvidence.compareTranslation=async(word,candidates,selection,options)=>{
+    calls.push(options?.preparedOnly);
+    if(options?.preparedOnly)return {matches:[],reason:'not_prepared'};
+    return {matches:[{id:candidates[0].id,matchedPhrase:'supported phrase',candidatePhrase:candidates[0].text,matchType:'exact'}],source:'offline'};
+   };
+   try{
+    const items=await DictionaryQuick.results('נפקא מינה',{sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'});
+    return {calls,items};
+   }finally{SefariaEvidence.compareTranslation=original;}
+  });
+  assert.deepEqual(prefetchFallback.calls,[true,false],'unprepared daf should trigger one on-demand offline evidence check');
+  assert.equal(prefetchFallback.items.some(item=>item.recommended===true),true,'unique evidence should still mark the quick-lookup recommendation');
   const lookup=async word=>{const before=await page.locator('#entry').innerHTML();await page.fill('#query',word);await page.locator('.lookup-button').click();await page.waitForFunction(before=>document.querySelector('#entry')?.innerHTML!==before,before);await page.locator('.unified-meanings').first().waitFor();assert.equal(await page.locator('.community-feedback').count(),0,'offline mode must not show community UI');};
   await lookup('אַרְעָא');let main=page.locator('.unified-meanings>ol>.meaning-card');assert.equal(await main.count(),1);assert.match(await main.first().innerText(),/land/);assert.equal(await main.first().locator('.meaning-text').evaluate(el=>getComputedStyle(el).fontWeight),'700','main English definitions should be bold');assert(!/accident|Jastrow|Krupnik/.test(await page.locator('#entry').innerText()));
   const land=main.first();assert.equal(await land.locator('.meaning-number').innerText(),'1');assert.equal(await land.locator('.meaning-references a').count(),2);
