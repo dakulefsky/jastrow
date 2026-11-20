@@ -33,7 +33,7 @@ const {chromium,executablePath}=require('./browser_support.cjs');
    SefariaEvidence.compareTranslation=async(word,candidates,selection,options)=>{
     calls.push(options?.preparedOnly);
     if(options?.preparedOnly)return {matches:[],reason:'not_prepared'};
-    return {matches:[{id:candidates[0].id,matchedPhrase:'supported phrase',candidatePhrase:candidates[0].text,matchType:'exact'}],source:'offline'};
+    return {matches:[{id:candidates[0].id,matchedPhrase:'supported phrase',candidatePhrase:candidates[0].text,matchType:'exact'}],scope:'paragraph',source:'offline'};
    };
    try{
     const items=await DictionaryQuick.results('נפקא מינה',{sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'});
