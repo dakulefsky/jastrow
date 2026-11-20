@@ -103,7 +103,12 @@
  function bestContextualMatch(evidence){
   // A whole-daf hit is not precise enough to recommend one Hebrew meaning.
   if(evidence?.scope!=='paragraph'||!Array.isArray(evidence.matches)||!evidence.matches.length)return null;
-  const score=match=>match.matchType==='exact'?3:match.matchType==='inflected_phrase'?2:1;
+  const score=match=>{
+   const base=match.matchType==='exact'?30:match.matchType==='inflected_phrase'?20:10;
+   const words=String(match.candidatePhrase||'').split(' ').filter(Boolean);
+   const content=words.filter(word=>!STOP_WORDS.has(word));
+   return base+Math.min(8,content.length)*12+Math.min(8,words.length);
+  };
   const highest=Math.max(...evidence.matches.map(score));
   const winners=new Map();
   for(const match of evidence.matches){
