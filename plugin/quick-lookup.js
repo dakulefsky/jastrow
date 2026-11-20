@@ -39,26 +39,21 @@
    text:group.text,spelling:group.spelling,
    entryId:group.sources[0]?.id,
    sourceCount:new Set(group.sources.map(source=>source.id)).size,
-   // Retain source metadata for the full dictionary; the quick menu shows the
-   // spelling and concise gloss, not grammatical labels.
    label:group.form?group.sources[0].meaning.label:'',
   }));
   if(selection&&merged.length){
    merged.forEach((item,i)=>{item.candidateId=String(i);});
    const candidates=merged.map(item=>({id:item.candidateId,text:item.text}));
-   let evidence=root.SefariaEvidence?.compareTranslation
+   // Keep the native menu fast: inspect only an already-prepared offline daf.
+   // If the two-second background preparation is still running, show the
+   // dictionary choices immediately without a star. The background worker
+   // refreshes this same menu as soon as the passage is ready.
+   const evidence=root.SefariaEvidence?.compareTranslation
     ?await root.SefariaEvidence.compareTranslation(word,candidates,selection,{preparedOnly:true}).catch(()=>({matches:[]}))
     :{matches:[]};
-   // A selection can arrive before the background daf prefetch finishes.
-   // In that case, load the same bundled offline passage on demand rather
-   // than silently suppressing the recommendation for this lookup.
-   if(evidence?.reason==='not_prepared'&&root.SefariaEvidence?.compareTranslation){
-    evidence=await root.SefariaEvidence.compareTranslation(word,candidates,selection,{preparedOnly:false}).catch(()=>evidence);
-   }
    const matches=Array.isArray(evidence?.matches)?evidence.matches:[];
    const matched=new Map(matches.map(item=>[String(item.id),item]));
    merged.forEach(item=>{const match=matched.get(item.candidateId);if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
-   // Use the same specificity-aware decision as the full dictionary.
    const preferred=root.SefariaEvidence?.bestMatch?.(matches,evidence?.scope);
    const preferredId=preferred?String(preferred.id):null;
    const score=item=>item.translationMatchType==='exact'?300:item.translationMatchType==='inflected_phrase'?200:item.translationMatchType==='inflected_word'?100:0;
@@ -68,8 +63,6 @@
     if(best>=0){merged[best].recommended=true;if(best>0)merged.unshift(merged.splice(best,1)[0]);}
    }
   }
-  // Preserve the lookup's overflow count even when duplicate source entries
-  // merge into fewer visible meaning groups than the fetched candidate cap.
   merged.hasMore=hasMore;
   return merged;
  }

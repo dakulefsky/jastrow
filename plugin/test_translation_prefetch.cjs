@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 
 async function run(path){
- const listeners=new Map(),timers=new Map(),calls=[],prepared=[];
+ const listeners=new Map(),timers=new Map(),calls=[],prepared=[],refreshed=[];
  let prepareReady=true;
  let nextTimer=0,current={currentRef:'בראשית פרק א',currentBook:'בראשית',currentBookId:'genesis',currentIndex:0};
  const host={
@@ -13,6 +13,7 @@ async function run(path){
  };
  const root={
   Otzaria:host,console,
+  JastrowRefreshMenu:async details=>{refreshed.push(details);return true;},
   setTimeout(fn,delay){const id=++nextTimer;timers.set(id,{fn,delay});return id;},
   clearTimeout(id){timers.delete(id);}
  };
@@ -22,16 +23,13 @@ async function run(path){
  const emit=async(name,payload)=>{for(const fn of listeners.get(name)||[])await fn(payload);};
  const fire=async(id)=>{const timer=timers.get(id);assert(timer,'expected timer');timers.delete(id);assert.equal(timer.delay,2000);await timer.fn();};
  const onlyTimer=()=>{assert.equal(timers.size,1);return [...timers.keys()][0];};
+ const expectsRefresh=path==='plugin/translation-prefetch.js';
 
- // The visible dictionary tab must never prepare while the user is
- // looking at the plugin rather than the Gemara reader.
  current={currentRef:'ברכות, דף א',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:1};
  await emit('plugin.boot',{app:{runMode:'foreground'}});
- assert.equal(timers.size,0,'foreground plugin UI must not trigger daf preparation');
+ assert.equal(timers.size,0,'foreground plugin UI must never prepare daf passages');
  assert.equal(prepared.length,0);
 
- // The background worker can start while a daf is already open. It queries
- // the active reader and arms the same two-second delay.
  await emit('plugin.boot',{app:{runMode:'background'}});
  const bootTimer=onlyTimer();
  assert.equal(prepared.length,0);
@@ -39,32 +37,26 @@ async function run(path){
  await emit('navigation.changed',{screen:'library'});
  assert.equal(timers.has(bootTimer),false);
 
- // The background worker waits until Otzaria is actually on the reading screen.
  current={currentRef:'בראשית פרק א',currentBook:'בראשית',currentBookId:'genesis',currentIndex:0};
  await emit('navigation.changed',{screen:'reading'});
  calls.length=0;
- // Non-Bavli locations do not schedule any preparation.
  await emit('reader.current_ref_changed',current);
- assert.equal(timers.size,0);
+ assert.equal(timers.size,0,'non-Bavli locations do not schedule preparation');
 
- // The daf event only arms the timer; no preparation or reader API call yet.
  current={currentRef:'ברכות, דף ב עמוד א',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:10};
  await emit('reader.current_ref_changed',current);
  const first=onlyTimer();
  assert.equal(prepared.length,0);
  assert.equal(calls.length,0);
 
- // Moving to another paragraph on the same amud is still the same daf.
  current={currentRef:'ברכות, דף ב עמוד א:2',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:11};
  await emit('reader.current_ref_changed',current);
  assert.equal(onlyTimer(),first,'moving between paragraphs on the same daf must not restart the wait');
- // Moving from amud aleph to amud bet is also still the same daf.
  current={currentRef:'ברכות, דף ב עמוד ב',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:12};
  await emit('reader.current_ref_changed',current);
- assert.equal(onlyTimer(),first,'switching amudim on the same daf must not restart the two-second wait');
+ assert.equal(onlyTimer(),first,'switching amudim on the same daf must not restart the wait');
  assert.equal(prepared.length,0);
 
- // Moving to the next daf before two seconds cancels the old timer.
  current={currentRef:'ברכות, דף ג',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:12};
  await emit('reader.current_ref_changed',current);
  assert.equal(timers.has(first),false);
@@ -72,19 +64,20 @@ async function run(path){
  await fire(onlyTimer());
  assert.equal(prepared.length,1);
  assert.equal(prepared[0].currentRef,'ברכות, דף ג');
+ assert.equal(refreshed.length,expectsRefresh?1:0,'English menu should refresh immediately after its daf is ready');
+ if(expectsRefresh)assert.equal(refreshed[0].reference,'ברכות, דף ג');
 
- // Returning to the already prepared daf does not redo work in this session.
  await emit('reader.current_ref_changed',current);
  assert.equal(timers.size,0);
  assert.equal(prepared.length,1);
+ assert.equal(refreshed.length,expectsRefresh?1:0,'an already-prepared daf should not cause repeated menu refreshes');
 
- // A mismatched live reader state fails closed.
  current={currentRef:'ברכות, דף ד',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:13};
  await emit('reader.current_ref_changed',{...current,currentRef:'ברכות, דף ה'});
  await fire(onlyTimer());
  assert.equal(prepared.length,1);
+ assert.equal(refreshed.length,expectsRefresh?1:0,'stale reader references must never refresh the menu');
 
- // Navigating away cancels any pending work.
  current={currentRef:'ברכות, דף ו',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:14};
  await emit('reader.current_ref_changed',current);
  const pending=onlyTimer();
@@ -93,21 +86,22 @@ async function run(path){
  assert.equal(prepared.length,1);
  current={currentRef:'ברכות, דף ז',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:15};
  await emit('reader.current_ref_changed',current);
- assert.equal(timers.size,0,'reader location changes outside the reading screen must be ignored');
+ assert.equal(timers.size,0,'reader location changes outside reading screen must be ignored');
 
- // An empty/unsupported daf must not be permanently marked prepared.
  await emit('navigation.changed',{screen:'reading'});
- await new Promise(resolve=>setImmediate(resolve)); // Let the background refresh finish before changing the simulated reader ref.
+ await new Promise(resolve=>setImmediate(resolve));
  current={currentRef:'ברכות, דף ח',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:16};
  prepareReady=false;
  await emit('reader.current_ref_changed',current);
  await fire(onlyTimer());
  assert.equal(prepared.length,2);
+ assert.equal(refreshed.length,expectsRefresh?1:0,'failed preparation must not refresh the menu');
  await emit('reader.current_ref_changed',current);
  assert.equal(timers.size,1,'a daf that failed preparation must be eligible for retry');
  prepareReady=true;
  await fire(onlyTimer());
  assert.equal(prepared.length,3);
+ assert.equal(refreshed.length,expectsRefresh?2:0,'a successful retry must refresh the English menu');
  await emit('reader.current_ref_changed',current);
  assert.equal(timers.size,0,'a successfully prepared retry should be remembered');
 }
@@ -115,5 +109,5 @@ async function run(path){
 (async()=>{
  await run('plugin/translation-prefetch.js');
  await run('hebrew/plugin/translation-prefetch.js');
- console.log('Delayed daf prefetch tests passed');
+ console.log('Delayed daf prefetch and English menu-refresh tests passed');
 })().catch(error=>{console.error(error);process.exitCode=1;});
