@@ -23,7 +23,7 @@ const vm=require('node:vm');
   DictionaryQuick:{captureReaderContext:async p=>p,results:async()=>[{text:'the practical difference is',spelling:'נפקא מינה',entryId:7,recommended:prepared}]}
  };
  root.window=root;
- vm.runInNewContext(fs.readFileSync('plugin/availability.js','utf8'),{window:root,console,Otzaria:host});
+ vm.runInNewContext(fs.readFileSync('plugin/availability.js','utf8'),{window:root,console,Otzaria:host,JastrowContext:root.JastrowContext,JastrowSearch:root.JastrowSearch,DictionaryQuick:root.DictionaryQuick});
  const emit=async(name,payload)=>{for(const fn of events.get(name)||[])await fn(payload);};
  async function waitForMenu(count){
   for(let i=0;i<40;i++){const current=menus.filter(x=>x.id==='jastrow-lookup'&&x.children?.some(c=>c.param?.entryId===7));if(current.length>=count)return current.at(-1);await new Promise(resolve=>setImmediate(resolve));}
