@@ -58,8 +58,11 @@ const {chromium,executablePath}=require('./browser_support.cjs');
   await lookup('אַרְעָא');
   assert.equal(await page.locator('.meaning-recommended').count(),1);
   assert.match(await page.locator('.context-recommended').innerText(),/land/);
-  // Equally strong candidates are ambiguous and must not receive a recommendation.
-  await page.evaluate(()=>{SefariaEvidence.compareTranslation=async(word,candidates)=>({matches:candidates.slice(0,2).map(item=>({id:item.id,matchedPhrase:item.text,matchType:'exact'})),scope:'paragraph'});});
+  // A specific multi-word gloss outranks an incidental one-word collision.
+  await page.evaluate(()=>{SefariaEvidence.compareTranslation=async(word,candidates)=>({matches:candidates.slice(0,2).map((item,i)=>({id:item.id,matchedPhrase:i?'the fertile land':'land',candidatePhrase:i?'the fertile land':'land',matchType:'exact'})),scope:'paragraph'});});
+  await lookup('אַרְעָא');assert.equal(await page.locator('.meaning-recommended').count(),1);
+  // Truly equal evidence remains ambiguous and receives no star.
+  await page.evaluate(()=>{SefariaEvidence.compareTranslation=async(word,candidates)=>({matches:candidates.slice(0,2).map(item=>({id:item.id,matchedPhrase:'land',candidatePhrase:'land',matchType:'exact'})),scope:'paragraph'});});
   await lookup('אַרְעָא');assert.equal(await page.locator('.meaning-recommended').count(),0);
   await page.evaluate(()=>{activeReaderContext=null;});
   await page.evaluate(()=>{search('צפרא ספרא');search('אַרְעָא');});await page.waitForFunction(()=>document.querySelector('.unified-meanings>ol')?.innerText.includes('land'));assert.equal(await page.locator('.phrase-word').count(),0);
