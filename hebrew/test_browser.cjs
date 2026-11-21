@@ -57,12 +57,15 @@ assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);
    const handlers=window.__otzariaHandlers['ui.messageClicked']||[];
    const send=async scope=>{
     window.__evidenceScope=scope;
-    window.SefariaEvidence.compareTranslation=async(word,candidates)=>({
+    window.SefariaEvidence.compareTranslation=async(word,candidates)=>{
+     window.__hebrewCandidates=candidates.every(candidate=>/[א-ת]/.test(candidate.text));
+     return {
      scope:scope==='tie'?'paragraph':scope,
      matches:candidates.slice(0,scope==='tie'?2:1).map(candidate=>({
       id:candidate.id,matchType:'exact',candidatePhrase:'מילה נתמכת',matchedPhrase:'מילה נתמכת'
      }))
-    });
+     };
+    };
     for(const handler of handlers)handler({payload:{dictionaryWord:'נפקא',readerContext:{
      currentBook:'ברכות',currentBookId:'berakhot',
      sourceRange:{ref:'ברכות, דף ב עמוד א:1'}
@@ -73,12 +76,13 @@ assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);
    const result={
     paragraph:await send('paragraph'),
     wholeDaf:await send('daf'),
-    tie:await send('tie')
+    tie:await send('tie'),
+    hebrewCandidates:window.__hebrewCandidates
    };
    window.SefariaEvidence.compareTranslation=originalCompare;
    return result;
   });
-  assert.deepEqual(recommendationChecks,{paragraph:1,wholeDaf:0,tie:0},
+  assert.deepEqual(recommendationChecks,{paragraph:1,wholeDaf:0,tie:0,hebrewCandidates:true},
    'full Hebrew dictionary should recommend only a unique paragraph-supported meaning');
 
   const evidence=await page.evaluate(async()=>{
