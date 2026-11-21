@@ -1,124 +1,44 @@
 (function(root){
  'use strict';
- const TRANSLATION_VERSION='William Davidson Edition - English';
- const CACHE_TTL=30*60*1000,MAX_CACHE=160;
- const translationCache=new Map();
- const IRREGULAR={
-  am:'be',is:'be',are:'be',was:'be',were:'be',been:'be',being:'be',
-  has:'have',had:'have',does:'do',did:'do',done:'do',
-  said:'say',says:'say',went:'go',gone:'go',made:'make',makes:'make',
-  took:'take',taken:'take',takes:'take',came:'come',comes:'come',
-  saw:'see',seen:'see',gave:'give',given:'give',got:'get',
-  ran:'run',written:'write',wrote:'write',thought:'think',
-  brought:'bring',bought:'buy',taught:'teach',caught:'catch',
-  kept:'keep',left:'leave',felt:'feel',found:'find',held:'hold',
-  told:'tell',sold:'sell',spoke:'speak',spoken:'speak',
-  ate:'eat',eaten:'eat',drank:'drink',drunk:'drink',
-  sat:'sit',stood:'stand',understood:'understand',paid:'pay',
-  children:'child',men:'man',women:'woman',people:'person',
-  feet:'foot',teeth:'tooth',mice:'mouse'
- };
- const STOP_WORDS=new Set(('a an the and or of to in on at by for from with without as is are was were be been being do does did have has had it its this that these those he she they we you I his her their our your who which what when where how very more most some any all each every other same such into onto over under up down out off not no yes can could may might must shall should will would').toLowerCase().split(/\s+/));
-
- function stripMarks(value){return String(value||'').normalize('NFKD').replace(/\p{M}/gu,'');}
- function normalizeEnglish(value){
-  return String(value||'').replace(/<[^>]*>/g,' ').replace(/&amp;/gi,' and ')
-   .replace(/&nbsp;/gi,' ').replace(/&#39;|&apos;/gi,"'")
-   .normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase()
-   .replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
+ const TRANSLATION_VERSION='William Davidson Edition - Hebrew';
+ const CACHE_TTL=30*60*1000,MAX_CACHE=160,cache=new Map();
+ const FINAL={'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'};
+ const STOP=new Set('של את על אל עם אם או גם כי לא כן הוא היא הם הן אני אתה אתם אנחנו אשר זה זאת אלה אלו כל מן בין תוך עבור אחרי לפני כאשר'.split(' '));
+ function normalizeHebrew(value){
+  return String(value||'').replace(/<[^>]*>/g,' ').replace(/&nbsp;/gi,' ').normalize('NFKD').replace(/\p{M}/gu,'').replace(/[ךםןףץ]/g,ch=>FINAL[ch]).replace(/[^\u05d0-\u05ea]+/g,' ').replace(/\s+/g,' ').trim();
  }
- function candidatePhrases(value){
-  return [...new Set(String(value||'').split(/[;,/|]+/).map(normalizeEnglish).filter(Boolean))];
- }
- function tokenForms(word){
-  const forms=new Set([word]);
-  if(IRREGULAR[word])forms.add(IRREGULAR[word]);
-  for(const suffix of ['ing','ed']){
-   if(word.endsWith(suffix)&&word.length>suffix.length+2){
-    let stem=word.slice(0,-suffix.length),doubled=false;
-    if(stem.length>2&&stem.at(-1)===stem.at(-2)){stem=stem.slice(0,-1);doubled=true;}
-    forms.add(stem);
-    if(!doubled&&/[bcdfghjklmnpqrstvwxyz]$/.test(stem))forms.add(stem+'e');
-   }
-  }
-  if(word.endsWith('ies')&&word.length>4)forms.add(word.slice(0,-3)+'y');
-  if(word.endsWith('es')&&word.length>4&&/(s|x|z|ch|sh)es$/.test(word))forms.add(word.slice(0,-2));
-  if(word.endsWith('s')&&!/(ss|us|is)$/.test(word)&&word.length>3)forms.add(word.slice(0,-1));
-  return forms;
- }
- function tokenMatch(a,b){
-  const left=tokenForms(a),right=tokenForms(b);
-  return [...left].some(value=>right.has(value));
- }
+ function candidatePhrases(value){return [...new Set(String(value||'').split(/[;|\n]+/).map(normalizeHebrew).filter(Boolean))];}
  function findPhraseMatch(phrase,text){
-  if(!phrase||!text)return null;
-  const words=phrase.split(' '),haystack=text.split(' ');
-  if(words.length===1&&(STOP_WORDS.has(words[0])||words[0].length<3))return null;
-  for(let i=0;i+words.length<=haystack.length;i++){
-   if(words.every((word,j)=>tokenMatch(word,haystack[i+j])))return haystack.slice(i,i+words.length).join(' ');
-  }
-  return null;
+  if(!phrase||!text)return null;const words=phrase.split(' ');if(words.length===1&&(STOP.has(words[0])||words[0].length<2))return null;
+  const haystack=text.split(' ');for(let i=0;i+words.length<=haystack.length;i++)if(words.every((w,j)=>w===haystack[i+j]))return haystack.slice(i,i+words.length).join(' ');return null;
  }
- async function translationReference(selection){
-  const s=selection||{},ranges=[s.sourceRange,s.renderedRange,s.sections?.[0]?.sourceRange,s.sections?.[0]?.renderedRange];
-  for(const range of ranges)for(const value of [range?.ref,range?.currentRef,range?.reference]){
-   if(typeof value==='string'&&value.trim())return value.trim();
-  }
-  for(const value of [s.currentRef,s.currentTitle,s.reference]){
-   if(typeof value==='string'&&value.trim())return value.trim();
-  }
-  try{
-   const result=await root.Otzaria?.call?.('reader.getCurrentRef');
-   if(result?.success){const value=result.data?.currentRef||result.data?.currentTitle;if(typeof value==='string'&&value.trim())return value.trim();}
-  }catch{}
-  return '';
+ async function translationReference(s){
+  s=s||{};const ranges=[s.sourceRange,s.renderedRange,s.sections?.[0]?.sourceRange,s.sections?.[0]?.renderedRange];
+  for(const range of ranges)for(const value of [range?.ref,range?.currentRef,range?.reference])if(typeof value==='string'&&value.trim())return value.trim();
+  for(const value of [s.currentRef,s.currentTitle,s.reference])if(typeof value==='string'&&value.trim())return value.trim();
+  try{const r=await root.Otzaria?.call?.('reader.getCurrentRef');if(r?.success){const v=r.data?.currentRef||r.data?.currentTitle;if(typeof v==='string'&&v.trim())return v.trim();}}catch{}return '';
  }
  async function compareTranslation(word,candidates,selection,options){
   if(!Array.isArray(candidates)||!candidates.length)return {matches:[],reason:'no_candidates'};
-  const ref=await translationReference(selection);
-  if(!ref)return {matches:[],reason:'no_reference'};
-  if(options?.preparedOnly&&!root.SefariaOfflineTranslation?.isDafPrepared?.(ref,selection))
-   return {matches:[],reason:'not_prepared',reference:ref,source:'offline'};
-  const candidateKey=candidates.map(candidate=>String(candidate?.id||'')+'='+String(candidate?.text||'')).join('|');
-  const key=[ref.toLowerCase().replace(/\s+/g,' ').trim(),selection?.currentBookId||'',selection?.currentBook||'',stripMarks(word),candidateKey].join('|');
-  const cached=translationCache.get(key);
-  if(cached&&cached.expires>Date.now())return cached.value;
+  const ref=await translationReference(selection);if(!ref)return {matches:[],reason:'no_reference'};
+  if(options?.preparedOnly&&!root.SefariaOfflineTranslation?.isDafPrepared?.(ref,selection))return {matches:[],reason:'not_prepared',reference:ref,source:'offline'};
+  const candidateKey=candidates.map(c=>String(c?.id||'')+'='+String(c?.text||'')).join('|'),key=[ref.toLowerCase().replace(/\s+/g,' ').trim(),selection?.currentBookId||'',selection?.currentBook||'',normalizeHebrew(word),candidateKey].join('|');
+  const cached=cache.get(key);if(cached&&cached.expires>Date.now())return cached.value;
   try{
-   const local=await root.SefariaOfflineTranslation?.getPassage?.(ref,selection);
-   if(!local?.text)return {matches:[],reason:local?.reason||'translation_unavailable'};
-   const passage=normalizeEnglish(local.text),matches=[];
-   for(const candidate of candidates){
-    const matched=candidatePhrases(candidate.text).map(phrase=>({candidatePhrase:phrase,passagePhrase:findPhraseMatch(phrase,passage)})).find(item=>item.passagePhrase);
-    if(matched)matches.push({id:String(candidate.id),matchedPhrase:matched.passagePhrase,candidatePhrase:matched.candidatePhrase,
-     matchType:matched.candidatePhrase===matched.passagePhrase?'exact':matched.candidatePhrase.includes(' ')?'inflected_phrase':'inflected_word'});
-   }
-   const value={matches,reason:matches.length?'candidate_wording_found':'no_candidate_wording_found',
-    reference:ref,canonicalReference:local.dafReference||ref,versionTitle:local.versionTitle||TRANSLATION_VERSION,
-    license:local.license||'CC-BY-NC',scope:local.scope||'daf',source:'offline'};
-   translationCache.set(key,{value,expires:Date.now()+CACHE_TTL});
-   while(translationCache.size>MAX_CACHE)translationCache.delete(translationCache.keys().next().value);
-   return value;
+   const local=await root.SefariaOfflineTranslation?.getPassage?.(ref,selection);if(!local?.text)return {matches:[],reason:local?.reason||'translation_unavailable'};
+   const passage=normalizeHebrew(local.text),matches=[];
+   for(const candidate of candidates){const matched=candidatePhrases(candidate.text).map(phrase=>({candidatePhrase:phrase,passagePhrase:findPhraseMatch(phrase,passage)})).find(x=>x.passagePhrase);if(matched)matches.push({id:String(candidate.id),matchedPhrase:matched.passagePhrase,candidatePhrase:matched.candidatePhrase,matchType:'exact'});}
+   const value={matches,reason:matches.length?'dictionary_meaning_found_in_translation':'no_dictionary_meaning_found',reference:ref,canonicalReference:local.dafReference||ref,versionTitle:local.versionTitle||TRANSLATION_VERSION,license:local.license||'CC-BY-NC',scope:local.scope||'daf',source:'offline'};
+   cache.set(key,{value,expires:Date.now()+CACHE_TTL});while(cache.size>MAX_CACHE)cache.delete(cache.keys().next().value);return value;
   }catch{return {matches:[],reason:'translation_unavailable'};}
  }
  function bestContextualMatch(evidence){
-  // A whole-daf hit is not precise enough to recommend one Hebrew meaning.
   if(evidence?.scope!=='paragraph'||!Array.isArray(evidence.matches)||!evidence.matches.length)return null;
-  const score=match=>{
-   const base=match.matchType==='exact'?30:match.matchType==='inflected_phrase'?20:10;
-   const words=String(match.candidatePhrase||'').split(' ').filter(Boolean);
-   const content=words.filter(word=>!STOP_WORDS.has(word));
-   return base+Math.min(8,content.length)*12+Math.min(8,words.length);
-  };
-  const highest=Math.max(...evidence.matches.map(score));
-  const winners=new Map();
-  for(const match of evidence.matches){
-   if(score(match)!==highest)continue;
-   const id=String(match.id);
-   if(!winners.has(id))winners.set(id,match);
-  }
+  const score=m=>{const words=String(m.candidatePhrase||'').split(' ').filter(Boolean),content=words.filter(w=>!STOP.has(w));return content.length*100+words.length*10+String(m.candidatePhrase||'').length;};
+  const high=Math.max(...evidence.matches.map(score)),winners=new Map();for(const m of evidence.matches)if(score(m)===high&&!winners.has(String(m.id)))winners.set(String(m.id),m);
   return winners.size===1?[...winners.values()][0]:null;
  }
- function clearCache(){translationCache.clear();}
- root.SefariaEvidence={compareTranslation,clearCache,normalizeEnglish,bestContextualMatch};
+ function clearCache(){cache.clear();}
+ root.SefariaEvidence={compareTranslation,clearCache,normalizeHebrew,bestContextualMatch};
  if(typeof module!=='undefined'&&module.exports)module.exports=root.SefariaEvidence;
 })(typeof window==='undefined'?globalThis:window);
