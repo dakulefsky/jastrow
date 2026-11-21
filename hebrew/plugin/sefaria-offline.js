@@ -47,7 +47,7 @@
   if(!manifestPromise){
    manifestPromise=loadScript('manifest.js').then(()=>{
     const data=root.SefariaOfflineTranslationManifest;
-    if(data?.formatVersion!==1||!Array.isArray(data.tractates))throw Error('Unsupported offline translation manifest');
+    if(data?.formatVersion!==1||data.language!=='Hebrew'||data.edition!=='William Davidson Edition - Hebrew'||!Array.isArray(data.tractates))throw Error('Expected the Hebrew William Davidson / Steinsaltz offline corpus; refusing another language or edition');
     manifestData=data;
     return data;
    }).catch(error=>{manifestPromise=null;throw error;});
@@ -120,14 +120,14 @@
    if(typeof paragraph==='string'&&paragraph.trim())return {
     text:paragraph,scope:'paragraph',reference:parsed.ref,
     dafReference:meta.title+' '+parsed.daf+parsed.side,tractate:meta.title,
-    versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'
+    versionTitle:manifest.edition,license:meta.license||manifest.license||'CC-BY-NC',source:'offline'
    };
   }
   const text=parsed.side==='a'?cached.sideA:parsed.side==='b'?cached.sideB:cached.all;
   if(!text)return {text:'',reason:'empty_daf',reference:parsed.ref};
   return {text,scope:'daf',reference:parsed.ref,
    dafReference:meta.title+' '+parsed.daf+(parsed.side||''),tractate:meta.title,
-   versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'};
+   versionTitle:manifest.edition,license:meta.license||manifest.license||'CC-BY-NC',source:'offline'};
  }
  async function prepareDaf(location,shouldContinue){
   const current=()=>typeof shouldContinue!=='function'||shouldContinue();
