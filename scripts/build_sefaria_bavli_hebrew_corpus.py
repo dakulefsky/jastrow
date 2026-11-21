@@ -25,7 +25,7 @@ ATTRIBUTION = (
 )
 
 def norm_license(value: Any) -> str:
-    return re.sub(r"\\s+", " ", str(value or "").strip()).upper()
+    return re.sub(r"\s+", " ", str(value or "").strip()).upper()
 
 def has_text(value: Any) -> bool:
     if isinstance(value, str): return bool(value.strip())
