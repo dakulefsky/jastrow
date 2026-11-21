@@ -136,6 +136,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+      - name: Test Hebrew Steinsaltz corpus builder
+        run: python scripts/test_build_sefaria_bavli_hebrew_corpus.py
       - name: Build and stage the complete offline Hebrew Steinsaltz Bavli
         run: |
           python scripts/build_sefaria_bavli_hebrew_corpus.py --output /tmp/sefaria-bavli-hebrew.zip
