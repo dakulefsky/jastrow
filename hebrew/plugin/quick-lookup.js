@@ -31,11 +31,15 @@
   }
   return 'מתוך: '+ref;
  }
+ function sameReference(left,right){
+  const normalize=value=>String(value||'').normalize('NFKC').replace(/[״׳]/g,'"').replace(/\\s+/g,' ').trim().toLowerCase();
+  return !!normalize(left)&&normalize(left)===normalize(right);
+ }
  function sameDaf(left,right){
   const a=root.SefariaOfflineTranslation?.parseReference?.(left||'');
   const b=root.SefariaOfflineTranslation?.parseReference?.(right||'');
   if(a&&b)return String(a.book||'').trim().toLowerCase()===String(b.book||'').trim().toLowerCase()&&a.daf===b.daf;
-  return String(left||'').trim()===String(right||'').trim();
+  return sameReference(left,right);
  }
  async function meanings(word,selection){
   let records=root.HebrewLookup.lookup(word),segments=null;
@@ -83,7 +87,7 @@
    else lastPresented={word:root.HebrewLookup.normalize(word),reference:readerReference(readerContext),selectionRevision:selectionRevision};
   }catch{console.warn('Quick dictionary lookup unavailable');}
  }
- async function refreshPreparedSelection(){
+ async function refreshPreparedSelection(options){
   const previous=lastPresented;if(!previous)return false;
   const epoch=selectionRevision;
   try{
@@ -92,7 +96,8 @@
    const word=root.HebrewLookup.selectionText(response.data);
    if(!word||root.HebrewLookup.normalize(word)!==previous.word)return false;
    const context=await captureReaderContext(response.data);
-   if(epoch!==selectionRevision||!context||!sameDaf(readerReference(context),previous.reference))return false;
+   if(epoch!==selectionRevision||!context||!sameReference(readerReference(context),previous.reference))return false;
+   if(options?.reference&&!sameDaf(readerReference(context),options.reference))return false;
    await show(word,response.data);
    return true;
   }catch{return false;}
