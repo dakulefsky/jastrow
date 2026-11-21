@@ -32,7 +32,7 @@
   return 'מתוך: '+ref;
  }
  function sameReference(left,right){
-  const normalize=value=>String(value||'').normalize('NFKC').replace(/[״׳]/g,'"').replace(/\\s+/g,' ').trim().toLowerCase();
+  const normalize=value=>String(value||'').normalize('NFKC').replace(/[״׳]/g,'"').replace(/\s+/g,' ').trim().toLowerCase();
   return !!normalize(left)&&normalize(left)===normalize(right);
  }
  function sameDaf(left,right){
