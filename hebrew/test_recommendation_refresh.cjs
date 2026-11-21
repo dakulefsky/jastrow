@@ -53,7 +53,11 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
 
  selection.selectedText='מילה אחרת';
  const before=messages.length;
- assert.equal(await root.DictionaryQuick.refreshPreparedSelection(),false,'a changed selection must not receive the previous word recommendation');
+ assert.equal(await root.DictionaryQuick.refreshPreparedSelection(),false,'a changed word must not receive the previous recommendation');
  assert.equal(messages.length,before);
- console.log('PASS: Hebrew immediate meanings, two-second background preparation, same-selection refresh, paragraph-only ★ מומלץ, stale-selection protection.');
+ selection.selectedText='נפקא מינה';
+ selection.sourceRange.ref='ברכות, דף ב עמוד א:2';
+ assert.equal(await root.DictionaryQuick.refreshPreparedSelection(),false,'the same word in a different paragraph must not receive stale paragraph evidence');
+ assert.equal(messages.length,before);
+ console.log('PASS: Hebrew immediate meanings, two-second background preparation, exact same-paragraph refresh, paragraph-only ★ מומלץ, stale-selection protection.');
 })().catch(error=>{console.error(error);process.exit(1);});
