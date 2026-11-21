@@ -101,6 +101,6 @@ assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);
   assert.equal(await page.evaluate(()=>window.__fetchCalls),0,'the full Hebrew browser test must run without fetch/network access');
   assert.equal(await page.locator('.community-vote').count(),0);
   if(process.env.HEBREW_STORE_SCREENSHOT)await page.screenshot({path:process.env.HEBREW_STORE_SCREENSHOT,fullPage:true});
-  console.log('PASS: 20,177 Hebrew source records, RTL lookup, source details, offline English-Shas clue, and no community voting.');
+  console.log('PASS: 20,177 Hebrew source records, RTL lookup, source details, offline Hebrew Steinsaltz phrase match, and no community voting.');
  }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exit(1);});
