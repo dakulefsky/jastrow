@@ -59,8 +59,8 @@ assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);
     window.__evidenceScope=scope;
     window.SefariaEvidence.compareTranslation=async(word,candidates)=>({
      scope:scope==='tie'?'paragraph':scope,
-     matches:candidates.slice(0,scope==='tie'?2:1).map((candidate,index)=>({
-      id:candidate.id,matchType:'exact',matchedPhrase:'supported phrase'
+     matches:candidates.slice(0,scope==='tie'?2:1).map(candidate=>({
+      id:candidate.id,matchType:'exact',candidatePhrase:'מילה נתמכת',matchedPhrase:'מילה נתמכת'
      }))
     });
     for(const handler of handlers)handler({payload:{dictionaryWord:'נפקא',readerContext:{
@@ -81,12 +81,19 @@ assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);
   assert.deepEqual(recommendationChecks,{paragraph:1,wholeDaf:0,tie:0},
    'full Hebrew dictionary should recommend only a unique paragraph-supported meaning');
 
-  const evidence=await page.evaluate(async()=>window.SefariaEvidence.compareTranslation('בדיקה',
-   [{id:'offline',text:'beginning of tractate'}],
-   {sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'}));
+  const evidence=await page.evaluate(async()=>{
+   const offline=window.SefariaOfflineTranslation,oldPassage=offline.getPassage,oldPrepared=offline.isDafPrepared;
+   offline.isDafPrepared=()=>true;
+   offline.getPassage=async()=>({text:'היוצא לנו מזה למעשה ברור',scope:'paragraph',dafReference:'ברכות ב א',license:'CC-BY-NC'});
+   const result=await window.SefariaEvidence.compareTranslation('בדיקה',
+    [{id:'offline',text:'היוצא לנו מזה למעשה'}],
+    {sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'});
+   offline.getPassage=oldPassage;offline.isDafPrepared=oldPrepared;
+   return result;
+  });
   assert.equal(evidence.source,'offline');
   assert.equal(evidence.scope,'paragraph');
-  assert.equal(evidence.matches[0].matchedPhrase,'beginning of tractate');
+  assert.equal(evidence.matches[0].matchedPhrase,'היוצא לנו מזה למעשה');
   assert.equal(await page.evaluate(()=>window.__fetchCalls),0,'the full Hebrew browser test must run without fetch/network access');
   assert.equal(await page.locator('.community-vote').count(),0);
   if(process.env.HEBREW_STORE_SCREENSHOT)await page.screenshot({path:process.env.HEBREW_STORE_SCREENSHOT,fullPage:true});
