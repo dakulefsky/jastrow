@@ -26,7 +26,7 @@ async function main(){
  const descriptionResponse=await request({method:'PUT',body:descriptionForm}),descriptionResult=await descriptionResponse.json();
  if(!descriptionResult.success)throw Error('Hebrew store description update failed: '+(descriptionResult.error||'unknown error'));
  const updated=await (await request()).json();
- const normalize=value=>String(value||'').replace(/\\r\\n?/g,'\\n').trim();
+ const normalize=value=>String(value||'').replace(/\r\n?/g,'\n').trim();
  if(normalize(updated.description)!==normalize(description))throw Error('Hebrew store description verification failed');
  console.log('Hebrew store card icon and long description updated and verified. Pending approval: '+Boolean(descriptionResult.pendingApproval));
 }
