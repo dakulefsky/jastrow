@@ -45,10 +45,10 @@
   const seen=new Set(),items=[];
   for(const source of sources)for(const entry of source.records)for(const part of entry.parts){
    const text=part.meaning||part.text,key=[source.word,root.HebrewLookup.normalize(entry.word),part.label.replace(/\b\d+\b/g,''),text].join('|');
-   if(!seen.has(key)){seen.add(key);items.push({text,entry,englishGloss:part.english||'',selectedWord:source.word||undefined});}
+   if(!seen.has(key)){seen.add(key);items.push({text,entry,hebrewMeaning:part.meaning||'',selectedWord:source.word||undefined});}
   }
   if(!segments?.length&&selection&&root.SefariaEvidence?.compareTranslation){
-   const candidates=items.map((item,index)=>({id:String(index),text:item.englishGloss||''})).filter(item=>item.text);
+   const candidates=items.map((item,index)=>({id:String(index),text:item.hebrewMeaning||''})).filter(item=>item.text);
    if(candidates.length){
     const evidence=await root.SefariaEvidence.compareTranslation(word,candidates,selection,{preparedOnly:true});
     const best=root.SefariaEvidence.bestContextualMatch?.(evidence);
