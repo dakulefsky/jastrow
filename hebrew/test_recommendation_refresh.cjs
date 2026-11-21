@@ -20,7 +20,7 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
  const root={Otzaria:host,console,setTimeout(fn,delay){const id=++nextTimer;timers.set(id,{fn,delay});return id;},
   clearTimeout(id){timers.delete(id);}};
  root.window=root;
- const context={window:root,globalThis:root,console,Map,Set,Date,Promise};
+ const context={window:root,globalThis:root,Otzaria:host,console,Map,Set,Date,Promise};
  vm.createContext(context);
  for(const file of ['data.js','lookup.js','sefaria-offline.js','sefaria-evidence.js','quick-lookup.js','availability.js','translation-prefetch.js'])
   vm.runInContext(fs.readFileSync(__dirname+'/plugin/'+file,'utf8'),context);
