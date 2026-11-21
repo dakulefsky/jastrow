@@ -39,21 +39,14 @@ async function search(q,record=true,preserveReaderContext=false){const serial=++
  const details=el('details','');details.append(el('summary','הערך המלא ומקורו'));for(const {e,p} of g.items){details.append(el('p',p.text),el('small','קרופניק וזילברמן · '+e.rid+(p.label?' · '+p.label:'')));}card.append(details);out.append(card);cardsByGroup.set(String(groupIndex),card);}
  // Render definitions immediately; the full page may load its local passage on demand.
  if(active&&window.SefariaEvidence?.compareTranslation){
-  const candidates=groupList.map((g,i)=>({id:String(i),text:[...new Set(g.items.map(({p})=>p.english||'').filter(Boolean))].join('; ')})).filter(candidate=>candidate.text);
+  const candidates=groupList.map((g,i)=>({id:String(i),text:[...new Set(g.items.map(({p})=>p.meaning||'').filter(Boolean))].join('; ')})).filter(candidate=>candidate.text);
   if(candidates.length){
    (async()=>{
-    // Run current-daf and Mesores evidence concurrently. Definitions are
-    // already rendered; linked evidence only fills a genuine source gap.
-    const sourcePromise=SefariaEvidence.compareTranslation(q,candidates,active);
-    const parallelPromise=window.MesoresHaShas?.propagatedPreference
-     ?MesoresHaShas.propagatedPreference(active,q,candidates)
-     :Promise.resolve(null);
-    const [evidence,parallelMatch]=await Promise.all([sourcePromise,parallelPromise]);
+    // Scan dictionary meanings against the Hebrew Steinsaltz translation.
+    const evidence=await SefariaEvidence.compareTranslation(q,candidates,active);
     if(serial!==searchSerial)return;
     const sourceMatch=window.SefariaEvidence?.bestContextualMatch?.(evidence);
-    // Parallel evidence may fill a genuine gap, but must not break a source tie.
-    const preferredId=Array.isArray(evidence?.matches)&&evidence.matches.length
-     ?sourceMatch?.id:parallelMatch?.preferredEntryId;
+    const preferredId=sourceMatch?.id;
     if(preferredId){
      const card=cardsByGroup.get(preferredId);
      if(card){
