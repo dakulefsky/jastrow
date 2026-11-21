@@ -171,7 +171,7 @@ jobs:
           reports-consent: 'true'
           otzaria-user: ${{ secrets.OTZARIA_USER }}
           otzaria-password: ${{ secrets.OTZARIA_PASSWORD }}
-      - name: Update Hebrew store card icon
+      - name: Update Hebrew store card icon and long description
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         env:
           OTZARIA_USER: ${{ secrets.OTZARIA_USER }}
