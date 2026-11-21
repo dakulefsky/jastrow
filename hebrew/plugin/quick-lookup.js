@@ -1,6 +1,6 @@
 (function(root){
  'use strict';
- let requestSerial=0,selectionRevision=0,latestSelection=null,lastPresented=null;
+ let requestSerial=0,selectionRevision=0,lastPresented=null;
  function readerReference(context){
   const s=context||{},ranges=[s.sourceRange,s.renderedRange,s.sections?.[0]?.sourceRange,s.sections?.[0]?.renderedRange];
   for(const range of ranges)for(const value of [range?.ref,range?.currentRef,range?.reference])if(typeof value==='string'&&value.trim())return value.trim();
@@ -69,7 +69,7 @@
   else lines.push('לחצו לערך המלא ולמקורות');
   return lines.filter(Boolean).join('\n');
  }
- async function show(word,context,options={}){
+ async function show(word,context){
   const serial=++requestSerial,epoch=selectionRevision;
   if(String(word).trim().toLowerCase()==='who created this?'){try{await root.Otzaria.call('ui.showMessage',{message:'Daniel Avrahom'});}catch{console.warn('Quick dictionary lookup unavailable');}return;}
   if(!root.HebrewLookup.valid(String(word||'')))return;
@@ -85,23 +85,24 @@
  }
  async function refreshPreparedSelection(){
   const previous=lastPresented;if(!previous)return false;
+  const epoch=selectionRevision;
   try{
    const response=await root.Otzaria.call('reader.getSelection');
-   if(!response?.success||!response.data)return false;
+   if(epoch!==selectionRevision||!response?.success||!response.data)return false;
    const word=root.HebrewLookup.selectionText(response.data);
    if(!word||root.HebrewLookup.normalize(word)!==previous.word)return false;
    const context=await captureReaderContext(response.data);
-   if(!context||!sameDaf(readerReference(context),previous.reference))return false;
-   await show(word,response.data,{preparedRefresh:true});
+   if(epoch!==selectionRevision||!context||!sameDaf(readerReference(context),previous.reference))return false;
+   await show(word,response.data);
    return true;
   }catch{return false;}
  }
  root.DictionaryQuick={meanings,message,show,sourceLabel,captureReaderContext,refreshPreparedSelection};
  if(root.Otzaria){
-  root.Otzaria.on('reader.selection_changed',payload=>{latestSelection=payload||null;selectionRevision++;});
+  root.Otzaria.on('reader.selection_changed',()=>{selectionRevision++;});
   root.Otzaria.on('reader.context_menu_item_clicked',async p=>{
   const word=root.HebrewLookup.selectionText(p);
-  if(p.itemId==='aramaic-hebrew-lookup'){latestSelection=p;await show(word,p);return;}
+  if(p.itemId==='aramaic-hebrew-lookup'){await show(word,p);return;}
   });
  }
 })(typeof window==='undefined'?globalThis:window);
