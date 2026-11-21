@@ -30,7 +30,7 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
  ]:[];
  root.SefariaOfflineTranslation.isDafPrepared=()=>prepared;
  root.SefariaOfflineTranslation.getPassage=async()=>prepared
-  ?{text:'the practical difference is clear',scope:'paragraph',reference:current.currentRef,dafReference:'Berakhot 2a',source:'offline'}
+  ?{text:'היוצא לנו מזה למעשה ברור',scope:'paragraph',reference:current.currentRef,dafReference:'Berakhot 2a',source:'offline'}
   :{text:'',reason:'not_prepared'};
  root.SefariaOfflineTranslation.prepareDaf=async()=>{prepared=true;return {ready:true};};
  const emit=async(name,payload)=>{for(const fn of events.get(name)||[])await fn(payload);};
