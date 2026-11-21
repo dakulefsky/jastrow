@@ -53,7 +53,7 @@ def selected_entries(entries: list[dict[str, Any]]) -> tuple[list[dict[str, Any]
         for x in entries
         if str(x.get("language","")).casefold() in {"english","en"}
         and str(x.get("versionTitle","")).strip()==ENGLISH_EDITION
-        and bavli_category(x) and x.get("json_url")
+        and bavli_category(x) and str(x.get("title","")).strip() not in NON_TRACTATE_TITLES and x.get("json_url")
     }
     selected=[]
     for item in entries:
