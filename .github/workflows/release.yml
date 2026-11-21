@@ -47,6 +47,7 @@ jobs:
               english_changed = before == '0' * 40 or any(not p.startswith('hebrew/') for p in paths)
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
               f.write('hebrew=' + str(changed).lower() + '\n')
+              f.write('english=' + str(english_changed).lower() + '\n')
   release:
     needs: changes
     if: needs.changes.outputs.english == 'true'
