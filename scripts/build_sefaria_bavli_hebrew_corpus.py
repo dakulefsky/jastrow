@@ -105,7 +105,7 @@ def build_archive(index: dict[str,Any], output: Path, fetcher=fetch_json) -> dic
     missing=sorted(expected-found,key=str.casefold)
     if missing: failures.append("Missing Hebrew Steinsaltz tractates: "+", ".join(missing))
     if failures:
-        raise RuntimeError("Hebrew Steinsaltz corpus is incomplete or not cleared for redistribution:\\n- "+"\\n- ".join(failures))
+        raise RuntimeError("Hebrew Steinsaltz corpus is incomplete or not cleared for redistribution:\n- "+"\n- ".join(failures))
     manifest={"formatVersion":1,"edition":EDITION,"language":"Hebrew","scope":"Talmud / Bavli",
         "generatedAt":datetime.now(timezone.utc).isoformat(),"sourceIndex":INDEX_URL,
         "attribution":ATTRIBUTION,"licensePolicy":"Every Hebrew tractate must explicitly declare CC-BY-NC.",
@@ -113,7 +113,7 @@ def build_archive(index: dict[str,Any], output: Path, fetcher=fetch_json) -> dic
     output.parent.mkdir(parents=True,exist_ok=True)
     with zipfile.ZipFile(output,"w",compression=zipfile.ZIP_DEFLATED,compresslevel=9) as archive:
         archive.writestr("manifest.js","(function(root){root.SefariaOfflineTranslationManifest="+json.dumps(manifest,ensure_ascii=False,separators=(",",":"))+";})(typeof window==='undefined'?globalThis:window);")
-        archive.writestr("ATTRIBUTION.txt",ATTRIBUTION+"\\n")
+        archive.writestr("ATTRIBUTION.txt",ATTRIBUTION+"\n")
         for name,payload,_ in texts: archive.writestr(name,payload)
     return manifest
 
