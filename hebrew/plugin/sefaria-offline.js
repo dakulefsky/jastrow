@@ -142,7 +142,7 @@
   if(!current())return {ready:false,reason:'stale'};
   const cached=cacheDaf(meta,parsed.daf,data);
   return {ready:!!cached.all,scope:'daf',reference:parsed.ref,dafReference:meta.title+' '+parsed.daf,
-   tractate:meta.title,versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'};
+   tractate:meta.title,versionTitle:manifest.edition,license:meta.license||manifest.license||'CC-BY-NC',source:'offline'};
  }
  function clearCache(){
   manifestPromise=null;manifestData=null;tractateCache.clear();tractatePromises.clear();preparedDafCache.clear();
