@@ -44,7 +44,8 @@ jobs:
               else:
                   paths = subprocess.check_output(['git', 'diff', '--name-only', before, after], text=True).splitlines()
               changed = before == '0' * 40 or any(p.startswith('hebrew/') for p in paths)
-              english_changed = before == '0' * 40 or any(not p.startswith('hebrew/') for p in paths)
+              hebrew_support = {'scripts/build_sefaria_bavli_hebrew_corpus.py', 'scripts/test_build_sefaria_bavli_hebrew_corpus.py', '.github/workflows/release.yml'}
+              english_changed = before == '0' * 40 or any(not p.startswith('hebrew/') and p not in hebrew_support for p in paths)
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
               f.write('hebrew=' + str(changed).lower() + '\n')
               f.write('english=' + str(english_changed).lower() + '\n')
