@@ -136,11 +136,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Build and stage the complete offline English Bavli
+      - name: Build and stage the complete offline Hebrew Steinsaltz Bavli
         run: |
-          python scripts/build_sefaria_bavli_corpus.py --output /tmp/sefaria-bavli-english.zip
+          python scripts/build_sefaria_bavli_hebrew_corpus.py --output /tmp/sefaria-bavli-hebrew.zip
           mkdir -p hebrew/plugin/data/sefaria-bavli
-          unzip -q /tmp/sefaria-bavli-english.zip -d hebrew/plugin/data/sefaria-bavli
+          unzip -q /tmp/sefaria-bavli-hebrew.zip -d hebrew/plugin/data/sefaria-bavli
       - name: Build Hebrew source data
         run: |
           python3 -c "import gzip,pathlib; p=pathlib.Path('hebrew/source.json.gz'); p.with_suffix('').write_bytes(gzip.decompress(p.read_bytes()))"
