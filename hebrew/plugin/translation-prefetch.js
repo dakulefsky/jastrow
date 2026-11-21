@@ -53,7 +53,7 @@
      preparedKey=key;
      // Hebrew keeps its own compact RTL quick-result flow. Re-open that same
      // selected word only after its offline Hebrew Steinsaltz daf has become available.
-     try{await root.DictionaryQuick?.refreshPreparedSelection?.({reference:snapshot.currentRef});}
+     try{await root.DictionaryQuick?.refreshPreparedSelection?.();}
      catch(error){console.warn('Prepared Hebrew lookup refresh skipped',error);}
     }
    }catch(error){
