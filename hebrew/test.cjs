@@ -1,6 +1,9 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const ctx={};ctx.window=ctx;vm.createContext(ctx);for(const f of ['data.js','lookup.js','sefaria-evidence.js'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/'+f,'utf8'),ctx);
 const best=ctx.SefariaEvidence.bestContextualMatch;
+assert.equal(ctx.SefariaEvidence.normalizeHebrew('הַמִּשְׁנָה, וְהַדִּין!'),'המשנה והדין');
+assert.equal(ctx.SefariaEvidence.normalizeHebrew('מלך ומלכים'),'מלכ ומלכימ');
+assert.equal(ctx.SefariaEvidence.normalizeHebrew('נפקא־מינה'),'נפקא מינה');
 assert.equal(best({scope:'paragraph',matches:[{id:'weak',matchType:'inflected_word'},{id:'strong',matchType:'exact'}]})?.id,'strong','strongest paragraph evidence should win');
 assert.equal(best({scope:'paragraph',matches:[{id:'incidental',candidatePhrase:'land',matchType:'exact'},{id:'specific',candidatePhrase:'the fertile land',matchType:'inflected_phrase'}]})?.id,'specific','a specific multiword contextual gloss should beat an incidental one-word collision');
 assert.equal(best({scope:'paragraph',matches:[{id:'one',matchType:'exact'},{id:'two',matchType:'exact'}]}),null,'equal contextual evidence must remain unmarked');
