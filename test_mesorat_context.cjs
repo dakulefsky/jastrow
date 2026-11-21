@@ -28,19 +28,12 @@ function load(pluginPath,{links,passages,preferredByReference={},matchesByRefere
  const sandbox={console};
  sandbox.window=sandbox;sandbox.globalThis=sandbox;
  sandbox.SefariaEvidence={
-  bestContextualMatch:evidence=>{
-   if(evidence?.scope!=='paragraph'||!Array.isArray(evidence.matches)||!evidence.matches.length)return null;
-   const score=match=>match.matchType==='exact'?3:match.matchType==='inflected_phrase'?2:1;
-   const highest=Math.max(...evidence.matches.map(score));
-   const winners=new Map(evidence.matches.filter(match=>score(match)===highest).map(match=>[String(match.id),match]));
-   return winners.size===1?[...winners.values()][0]:null;
-  },
   compareTranslation:async(word,entries,linkedSelection)=>{
    const reference=linkedSelection?.sourceRange?.ref||'';
    comparisons.push({word,reference,book:linkedSelection?.currentBook,entries,sourceRange:linkedSelection?.sourceRange});
-   if(matchesByReference[reference])return {matches:matchesByReference[reference],scope:'paragraph'};
+   if(matchesByReference[reference])return {matches:matchesByReference[reference]};
    const preferred=preferredByReference[reference];
-   return {matches:preferred===undefined?[]:[{id:preferred,matchType:'exact'}],scope:'paragraph'};
+   return {matches:preferred===undefined?[]:[{id:preferred,matchType:'exact'}]};
   }
  };
  sandbox.Otzaria={
