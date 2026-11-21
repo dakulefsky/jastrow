@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       hebrew: ${{ steps.scope.outputs.hebrew }}
+      english: ${{ steps.scope.outputs.english }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,15 +33,23 @@ jobs:
           kind = os.environ['GITHUB_EVENT_NAME']
           if kind == 'workflow_dispatch':
               changed = True
+              english_changed = True
           else:
               if kind == 'pull_request':
                   before, after = event['pull_request']['base']['sha'], event['pull_request']['head']['sha']
               else:
                   before, after = event['before'], event['after']
-              changed = before == '0' * 40 or bool(subprocess.check_output(['git', 'diff', '--name-only', before, after, '--', 'hebrew/']).strip())
+              if before == '0' * 40:
+                  paths = ['all']
+              else:
+                  paths = subprocess.check_output(['git', 'diff', '--name-only', before, after], text=True).splitlines()
+              changed = before == '0' * 40 or any(p.startswith('hebrew/') for p in paths)
+              english_changed = before == '0' * 40 or any(not p.startswith('hebrew/') for p in paths)
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
               f.write('hebrew=' + str(changed).lower() + '\n')
   release:
+    needs: changes
+    if: needs.changes.outputs.english == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
