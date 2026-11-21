@@ -52,7 +52,7 @@
     if(token===generation&&result?.ready===true){
      preparedKey=key;
      // Hebrew keeps its own compact RTL quick-result flow. Re-open that same
-     // selected word only after its offline English daf has become available.
+     // selected word only after its offline Hebrew Steinsaltz daf has become available.
      try{await root.DictionaryQuick?.refreshPreparedSelection?.({reference:snapshot.currentRef});}
      catch(error){console.warn('Prepared Hebrew lookup refresh skipped',error);}
     }
