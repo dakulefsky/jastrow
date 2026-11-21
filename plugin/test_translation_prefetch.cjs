@@ -13,8 +13,7 @@ async function run(path){
  };
  const root={
   Otzaria:host,console,
-  JastrowRefreshMenu:async details=>{refreshed.push({kind:'english',...details});return true;},
-  DictionaryQuick:{refreshPreparedSelection:async details=>{refreshed.push({kind:'hebrew',...details});return true;}},
+  JastrowRefreshMenu:async details=>{refreshed.push(details);return true;},
   setTimeout(fn,delay){const id=++nextTimer;timers.set(id,{fn,delay});return id;},
   clearTimeout(id){timers.delete(id);}
  };
@@ -25,8 +24,6 @@ async function run(path){
  const fire=async(id)=>{const timer=timers.get(id);assert(timer,'expected timer');timers.delete(id);assert.equal(timer.delay,2000);await timer.fn();};
  const onlyTimer=()=>{assert.equal(timers.size,1);return [...timers.keys()][0];};
  const expectsRefresh=path==='plugin/translation-prefetch.js';
- const expectsHebrewRefresh=path==='hebrew/plugin/translation-prefetch.js';
- const expectedRefreshes=expectsRefresh||expectsHebrewRefresh?1:0;
 
  current={currentRef:'ברכות, דף א',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:1};
  await emit('plugin.boot',{app:{runMode:'foreground'}});
@@ -67,20 +64,19 @@ async function run(path){
  await fire(onlyTimer());
  assert.equal(prepared.length,1);
  assert.equal(prepared[0].currentRef,'ברכות, דף ג');
- assert.equal(refreshed.length,expectedRefreshes,'the matching dictionary quick result should refresh immediately after its daf is ready');
+ assert.equal(refreshed.length,expectsRefresh?1:0,'English menu should refresh immediately after its daf is ready');
  if(expectsRefresh)assert.equal(refreshed[0].reference,'ברכות, דף ג');
- if(expectsHebrewRefresh)assert.equal(refreshed[0].kind,'hebrew');
 
  await emit('reader.current_ref_changed',current);
  assert.equal(timers.size,0);
  assert.equal(prepared.length,1);
- assert.equal(refreshed.length,expectedRefreshes,'an already-prepared daf should not cause repeated menu refreshes');
+ assert.equal(refreshed.length,expectsRefresh?1:0,'an already-prepared daf should not cause repeated menu refreshes');
 
  current={currentRef:'ברכות, דף ד',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:13};
  await emit('reader.current_ref_changed',{...current,currentRef:'ברכות, דף ה'});
  await fire(onlyTimer());
  assert.equal(prepared.length,1);
- assert.equal(refreshed.length,expectedRefreshes,'stale reader references must never refresh the menu');
+ assert.equal(refreshed.length,expectsRefresh?1:0,'stale reader references must never refresh the menu');
 
  current={currentRef:'ברכות, דף ו',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:14};
  await emit('reader.current_ref_changed',current);
@@ -99,13 +95,13 @@ async function run(path){
  await emit('reader.current_ref_changed',current);
  await fire(onlyTimer());
  assert.equal(prepared.length,2);
- assert.equal(refreshed.length,expectedRefreshes,'failed preparation must not refresh the menu');
+ assert.equal(refreshed.length,expectsRefresh?1:0,'failed preparation must not refresh the menu');
  await emit('reader.current_ref_changed',current);
  assert.equal(timers.size,1,'a daf that failed preparation must be eligible for retry');
  prepareReady=true;
  await fire(onlyTimer());
  assert.equal(prepared.length,3);
- assert.equal(refreshed.length,expectedRefreshes+1,'a successful retry must refresh the corresponding dictionary quick result');
+ assert.equal(refreshed.length,expectsRefresh?2:0,'a successful retry must refresh the English menu');
  await emit('reader.current_ref_changed',current);
  assert.equal(timers.size,0,'a successfully prepared retry should be remembered');
 }
