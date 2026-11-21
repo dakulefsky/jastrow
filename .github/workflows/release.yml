@@ -148,6 +148,9 @@ jobs:
           node hebrew/test.cjs
           node hebrew/test_host.cjs
           node hebrew/test_quick.cjs
+          node hebrew/test_recommendation_refresh.cjs
+          node --check hebrew/plugin/quick-lookup.js
+          node --check hebrew/plugin/translation-prefetch.js
           node --check hebrew/plugin/sefaria-offline.js
           node --check hebrew/plugin/sefaria-evidence.js
       - name: Check Hebrew interface in Chromium
