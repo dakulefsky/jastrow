@@ -16,6 +16,7 @@ EDITION = "William Davidson Edition - Hebrew"
 ENGLISH_EDITION = "William Davidson Edition - English"
 ALLOWED_LICENSES = {"CC-BY-NC", "CC BY-NC"}
 PREFIX = "Steinsaltz on "
+NON_TRACTATE_TITLES = {"Introductions to the Babylonian Talmud"}
 ATTRIBUTION = (
     "William Davidson Edition - Hebrew, the Hebrew translation and explanation "
     "of the Talmud Bavli by Rabbi Adin Even-Israel Steinsaltz; Koren Publishers; "
