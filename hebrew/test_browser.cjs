@@ -28,6 +28,13 @@ assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);
   await page.addInitScript(()=>{
    window.__fetchCalls=0;
    window.fetch=async()=>{window.__fetchCalls++;throw new Error('offline browser test: runtime fetch is forbidden');};
+   window.__otzariaHandlers={};
+   window.Otzaria={
+    on:(name,handler)=>{(window.__otzariaHandlers[name]??=[]).push(handler);},
+    call:async method=>method==='reader.getCurrentRef'
+     ?{success:true,data:{currentRef:'ברכות, דף ב עמוד א:1',currentBook:'ברכות',currentBookId:'berakhot',currentIndex:0}}
+     :{success:true,data:{links:[]}}
+   };
   });
   await page.goto('file://'+__dirname+'/plugin/index.html');
   await page.locator('#query').fill('נפקא מינה');
@@ -45,15 +52,55 @@ assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);
   await page.locator('#query').fill('נפקא מינה');
   await page.locator('button[type=submit]').click();
 
-  const evidence=await page.evaluate(async()=>window.SefariaEvidence.compareTranslation('בדיקה',
-   [{id:'offline',text:'beginning of tractate'}],
-   {sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'}));
+  const recommendationChecks=await page.evaluate(async()=>{
+   const originalCompare=window.SefariaEvidence.compareTranslation;
+   const handlers=window.__otzariaHandlers['ui.messageClicked']||[];
+   const send=async scope=>{
+    window.__evidenceScope=scope;
+    window.SefariaEvidence.compareTranslation=async(word,candidates)=>{
+     window.__hebrewCandidates=candidates.every(candidate=>/[א-ת]/.test(candidate.text));
+     return {
+     scope:scope==='tie'?'paragraph':scope,
+     matches:candidates.slice(0,scope==='tie'?2:1).map(candidate=>({
+      id:candidate.id,matchType:'exact',candidatePhrase:'מילה נתמכת',matchedPhrase:'מילה נתמכת'
+     }))
+     };
+    };
+    for(const handler of handlers)handler({payload:{dictionaryWord:'נפקא',readerContext:{
+     currentBook:'ברכות',currentBookId:'berakhot',
+     sourceRange:{ref:'ברכות, דף ב עמוד א:1'}
+    }}});
+    await new Promise(resolve=>setTimeout(resolve,40));
+    return document.querySelectorAll('.recommended-label').length;
+   };
+   const result={
+    paragraph:await send('paragraph'),
+    wholeDaf:await send('daf'),
+    tie:await send('tie'),
+    hebrewCandidates:window.__hebrewCandidates
+   };
+   window.SefariaEvidence.compareTranslation=originalCompare;
+   return result;
+  });
+  assert.deepEqual(recommendationChecks,{paragraph:1,wholeDaf:0,tie:0,hebrewCandidates:true},
+   'full Hebrew dictionary should recommend only a unique paragraph-supported meaning');
+
+  const evidence=await page.evaluate(async()=>{
+   const offline=window.SefariaOfflineTranslation,oldPassage=offline.getPassage,oldPrepared=offline.isDafPrepared;
+   offline.isDafPrepared=()=>true;
+   offline.getPassage=async()=>({text:'היוצא לנו מזה למעשה ברור',scope:'paragraph',dafReference:'ברכות ב א',license:'CC-BY-NC'});
+   const result=await window.SefariaEvidence.compareTranslation('בדיקה',
+    [{id:'offline',text:'היוצא לנו מזה למעשה'}],
+    {sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'});
+   offline.getPassage=oldPassage;offline.isDafPrepared=oldPrepared;
+   return result;
+  });
   assert.equal(evidence.source,'offline');
   assert.equal(evidence.scope,'paragraph');
-  assert.equal(evidence.matches[0].matchedPhrase,'beginning of tractate');
+  assert.equal(evidence.matches[0].matchedPhrase,'היוצא לנו מזה למעשה');
   assert.equal(await page.evaluate(()=>window.__fetchCalls),0,'the full Hebrew browser test must run without fetch/network access');
   assert.equal(await page.locator('.community-vote').count(),0);
   if(process.env.HEBREW_STORE_SCREENSHOT)await page.screenshot({path:process.env.HEBREW_STORE_SCREENSHOT,fullPage:true});
-  console.log('PASS: 20,177 Hebrew source records, RTL lookup, source details, offline English-Shas clue, and no community voting.');
+  console.log('PASS: 20,177 Hebrew source records, RTL lookup, source details, offline Hebrew Steinsaltz phrase match, and no community voting.');
  }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exit(1);});

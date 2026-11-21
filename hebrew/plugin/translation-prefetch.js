@@ -49,7 +49,13 @@
     const corpus=root.SefariaOfflineTranslation;
     if(typeof corpus?.prepareDaf!=='function')return;
     const result=await corpus.prepareDaf(snapshot,()=>token===generation&&active);
-    if(token===generation&&result?.ready===true)preparedKey=key;
+    if(token===generation&&result?.ready===true){
+     preparedKey=key;
+     // Hebrew keeps its own compact RTL quick-result flow. Re-open that same
+     // selected word only after its offline Hebrew Steinsaltz daf has become available.
+     try{await root.DictionaryQuick?.refreshPreparedSelection?.();}
+     catch(error){console.warn('Prepared Hebrew lookup refresh skipped',error);}
+    }
    }catch(error){
     if(token===generation)console.warn('Offline translation preparation skipped',error);
    }finally{
