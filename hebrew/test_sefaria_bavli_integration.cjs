@@ -46,14 +46,15 @@ const vm=require('node:vm');
  const sideBIndexed=await root.SefariaOfflineTranslation.getPassage(secondSide.currentRef,secondSide);
  assert.equal(sideBIndexed.scope,'paragraph','TOC-relative paragraph indices should resolve side 2b');
  assert.equal(sideBIndexed.text,sideBLine.text,'the TOC heading should resolve the first paragraph on side 2b');
- const secondAIndex=berakhot.text[0].findIndex((value,index)=>index>0&&typeof value==='string'&&value.trim());
+ const sideAParagraphs=Array.isArray(berakhot.text[0])?berakhot.text[0]:[berakhot.text[0]];
+ const secondAIndex=sideAParagraphs.findIndex((value,index)=>index>0&&typeof value==='string'&&value.trim());
  if(secondAIndex>=0){
   const explicit=await root.SefariaOfflineTranslation.getPassage('ברכות, דף ב עמוד א:'+(secondAIndex+1),selection);
   const mapped=await root.SefariaOfflineTranslation.getPassage(selection.currentRef,{...selection,currentIndex:secondAIndex,sectionIndex:secondAIndex});
   assert.equal(mapped.scope,'paragraph','TOC-relative index should resolve a later paragraph on side 2a');
   assert.equal(mapped.text,explicit.text,'later side 2a line should map to the matching offline paragraph');
  }
- const sideBData=berakhot.text[1],secondBIndex=sideBData.findIndex((value,index)=>index>0&&typeof value==='string'&&value.trim());
+ const sideBData=Array.isArray(berakhot.text[1])?berakhot.text[1]:[berakhot.text[1]],secondBIndex=sideBData.findIndex((value,index)=>index>0&&typeof value==='string'&&value.trim());
  if(secondBIndex>=0){
   const explicit=await root.SefariaOfflineTranslation.getPassage('ברכות, דף ב עמוד ב:'+(secondBIndex+1),secondSide);
   const mapped=await root.SefariaOfflineTranslation.getPassage(secondSide.currentRef,{...secondSide,currentIndex:100+secondBIndex,sectionIndex:100+secondBIndex});
