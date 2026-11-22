@@ -11,7 +11,7 @@
   if(!event||typeof event!=='object')return null;
   const outer=event,nested=outer.selection&&typeof outer.selection==='object'?outer.selection:outer;
   const context={...nested};
-  for(const key of ['currentRef','currentTitle','currentBook','currentBookId','sourceRange','renderedRange','sections'])
+  for(const key of ['currentRef','currentTitle','currentBook','currentBookId','currentIndex','sectionIndex','sourceRange','renderedRange','sections'])
    if((context[key]===undefined||context[key]===null||context[key]==='')&&outer[key]!==undefined)context[key]=outer[key];
   if(!readerReference(context)){
    try{
