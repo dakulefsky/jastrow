@@ -35,7 +35,7 @@
   const normalize=value=>String(value||'').normalize('NFKC').replace(/[״׳]/g,'"').replace(/\s+/g,' ').trim().toLowerCase();
   return !!normalize(left)&&normalize(left)===normalize(right);
  }
- async function meanings(word,selection){
+ async function meanings(word){
   let records=root.HebrewLookup.lookup(word),segments=null;
   if(!records.length&&String(word).trim().includes(' '))segments=root.HebrewLookup.segmentWords(word);
   const sources=segments?.length?segments.map(segment=>({word:segment.word,records:segment.records})):
@@ -48,18 +48,25 @@
    const key=[root.HebrewLookup.normalize(source.word||word),root.HebrewLookup.normalize(label),root.HebrewLookup.normalize(text)].join('|');
    if(!seen.has(key)){seen.add(key);items.push({text,entry,hebrewMeaning:part.meaning||'',selectedWord:source.word||undefined});}
   }
-  if(!segments?.length&&selection&&root.SefariaEvidence?.compareTranslation){
-   const candidates=items.map((item,index)=>({id:String(index),text:item.hebrewMeaning||''})).filter(item=>item.text);
-   if(candidates.length){
-    const evidence=await root.SefariaEvidence.compareTranslation(word,candidates,selection,{preparedOnly:true});
-    const best=root.SefariaEvidence.bestContextualMatch?.(evidence);
-    if(best){
-     const index=items.findIndex((item,i)=>String(i)===String(best.id));
-     if(index>=0){const item=items[index];item.translationMatch=true;item.translationPhrase=best.matchedPhrase;item.translationMatchType=best.matchType;item.translationScope=evidence.scope;if(index>0)items.unshift(items.splice(index,1)[0]);}
-    }
-   }
-  }
   return items;
+ }
+ async function applyOfflineRecommendation(word,items,selection,serial,epoch){
+  if(!selection||!root.SefariaEvidence?.compareTranslation)return false;
+  const candidates=items.map((item,index)=>({id:String(index),text:item.hebrewMeaning||''})).filter(item=>item.text);
+  if(!candidates.length)return false;
+  // Do not depend on the background webview's in-memory cache. Load the bundled
+  // Hebrew Steinsaltz passage locally in this webview after the instant result.
+  const evidence=await root.SefariaEvidence.compareTranslation(word,candidates,selection);
+  if(serial!==requestSerial||epoch!==selectionRevision)return false;
+  const best=root.SefariaEvidence.bestContextualMatch?.(evidence);
+  if(!best)return false;
+  const index=items.findIndex((item,i)=>String(i)===String(best.id));
+  if(index<0)return false;
+  const item=items[index];
+  item.translationMatch=true;item.translationPhrase=best.matchedPhrase;
+  item.translationMatchType=best.matchType;item.translationScope=evidence.scope;
+  if(index>0)items.unshift(items.splice(index,1)[0]);
+  return true;
  }
  function message(word,items,context){
   const short=s=>s.length>180?s.slice(0,177)+'…':s,first=items[0];
@@ -76,13 +83,22 @@
   if(!root.HebrewLookup.valid(String(word||'')))return;
   const selection=context?.selection&&typeof context.selection==='object'?context.selection:context;
   const readerContext=await captureReaderContext(context);
-  const items=await meanings(word,readerContext||selection);
+  const evidenceContext=readerContext||selection;
+  const items=await meanings(word);
   if(serial!==requestSerial||epoch!==selectionRevision||!items.length)return;
+  const payload={tapPayload:{dictionaryWord:word,readerContext},tapOpenPlugin:true};
   try{
-   const res=await root.Otzaria.call('ui.showMessage',{message:message(word,items,readerContext),tapPayload:{dictionaryWord:word,readerContext},tapOpenPlugin:true});
-   if(res?.success===false)console.warn('Quick dictionary lookup unavailable');
-   else lastPresented={word:root.HebrewLookup.normalize(word),reference:readerReference(readerContext),selectionRevision:selectionRevision};
-  }catch{console.warn('Quick dictionary lookup unavailable');}
+   const res=await root.Otzaria.call('ui.showMessage',{...payload,message:message(word,items,readerContext)});
+   if(res?.success===false){console.warn('Quick dictionary lookup unavailable');return;}
+   lastPresented={word:root.HebrewLookup.normalize(word),reference:readerReference(readerContext),selectionRevision:selectionRevision,context:readerContext||selection};
+  }catch{console.warn('Quick dictionary lookup unavailable');return;}
+  // The first meanings are deliberately sent before loading the local corpus.
+  // This makes right-click responsive even on a cold offline start.
+  try{
+   const recommended=await applyOfflineRecommendation(word,items,evidenceContext,serial,epoch);
+   if(recommended&&serial===requestSerial&&epoch===selectionRevision)
+    await root.Otzaria.call('ui.showMessage',{...payload,message:message(word,items,readerContext)});
+  }catch(error){console.warn('Offline Hebrew recommendation unavailable',error);}
  }
  async function refreshPreparedSelection(){
   const previous=lastPresented;if(!previous)return false;
