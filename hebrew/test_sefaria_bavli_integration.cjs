@@ -41,7 +41,7 @@ const vm=require('node:vm');
  // by the background webview, and right-click must still load the bundled
  // corpus locally after showing the instant dictionary meanings.
  root.HebrewLookup={
-  valid:()=>true,normalize:value=>String(value||'').replace(/\\s+/g,' ').trim(),
+  valid:()=>true,normalize:value=>String(value||'').replace(/\s+/g,' ').trim(),
   lookup:()=>[{word:'בדיקה',rid:'KRU99999',parts:[{meaning:phrase,text:phrase,label:''}]}],
   segmentWords:()=>[]
  };
