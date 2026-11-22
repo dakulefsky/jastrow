@@ -33,7 +33,9 @@
    for(let j=0;j<words.length;j++){
     if(words[j]===haystack[i+j])continue;
     const left=tokenForms(words[j]),right=tokenForms(haystack[i+j]);
-    if(![...left].some(form=>right.has(form))){valid=false;break;}
+    // Only normalize the translated token back to the dictionary's base wording;
+    // never strip morphology from the dictionary gloss itself.
+    if(!right.has(words[j])){valid=false;break;}
     changed=true;
    }
    if(valid&&changed)return {phrase:haystack.slice(i,i+words.length).join(' '),type:'inflected_phrase'};
