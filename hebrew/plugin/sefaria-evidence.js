@@ -9,7 +9,7 @@
  }
  function candidatePhrases(value){return [...new Set(String(value||'').split(/[;,،/|\n]+/).map(normalizeHebrew).filter(Boolean))];}
  const PREFIXES=['ו','ב','כ','ל','מ','ד','ה','ש','וב','וכ','ול','ומ','וד','וה','וש','כש','שה'];
- const SUFFIXES=['יהון','תיהון','יהי','תיהי','יהו','תיהו','תין','תון','נון','יהם','יהן','יכם','יכן','ינו','יה','יו','ין','ון','נן','ימ','יהמ','יהנ','יכמ','יכנ','יות','ות'];
+ const SUFFIXES=['יהון','תיהון','יהי','תיהי','יהו','תיהו','תין','תון','נון','יהם','יהן','יכם','יכן','ינו','יה','יו','ין','ון','נן','ים','יות','ות'].map(value=>value.replace(/[ךםןףץ]/g,ch=>FINAL[ch]));
  function tokenForms(word){
   const forms=new Set([word]);
   for(const prefix of PREFIXES)if(word.startsWith(prefix)&&word.length-prefix.length>=3)forms.add(word.slice(prefix.length));
