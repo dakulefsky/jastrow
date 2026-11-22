@@ -36,7 +36,7 @@ async function search(q,record=true,preserveReaderContext=false){const serial=++
  const active=activeReaderContext&&HebrewLookup.normalize(activeReaderContext.word)===HebrewLookup.normalize(q)?activeReaderContext.selection:null;
  const cardsByGroup=new Map();
  let number=0;for(const [groupIndex,g] of groupList.entries()){const card=el('article','','meaning-card');card.append(el('span',String(++number),'number'),el('h3',g.word));const definition=el('p',g.text,'definition-text');card.append(definition);
- const details=el('details','');details.append(el('summary','הערך המלא ומקורו'));for(const {e,p} of g.items){details.append(el('p',p.text),el('small','קרופניק וזילברמן · '+e.rid+(p.label?' · '+p.label:'')));}card.append(details);out.append(card);cardsByGroup.set(String(groupIndex),card);}
+ const details=el('details','');details.append(el('summary','הערך המלא ומקורו'));const sourceGroups=new Map();for(const {e,p} of g.items){const sourceKey=HebrewLookup.normalize(p.text);if(!sourceGroups.has(sourceKey))sourceGroups.set(sourceKey,{text:p.text,sources:[]});sourceGroups.get(sourceKey).sources.push('קרופניק וזילברמן · '+e.rid+(p.label?' · '+p.label:''));}for(const source of sourceGroups.values()){details.append(el('p',source.text),el('small',[...new Set(source.sources)].join(' · ')));}card.append(details);out.append(card);cardsByGroup.set(String(groupIndex),card);}
  // Render definitions immediately; the full page may load its local passage on demand.
  if(active&&window.SefariaEvidence?.compareTranslation){
   const candidates=groupList.map((g,i)=>({id:String(i),text:[...new Set(g.items.map(({p})=>p.meaning||'').filter(Boolean))].join('; ')})).filter(candidate=>candidate.text);
