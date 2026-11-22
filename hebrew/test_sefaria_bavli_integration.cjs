@@ -26,7 +26,7 @@ const vm=require('node:vm');
  vm.runInNewContext(fs.readFileSync(path.join(pluginPath,'sefaria-offline.js'),'utf8'),context);
  vm.runInNewContext(fs.readFileSync(path.join(pluginPath,'sefaria-evidence.js'),'utf8'),context);
  vm.runInNewContext(fs.readFileSync(path.join(pluginPath,'quick-lookup.js'),'utf8'),context);
- const baseSelection={currentRef:'ברכות, דף ב עמוד א',currentBook:'ברכות',currentBookId:'berakhot'};
+ const baseSelection={currentRef:'ברכות, דף ב עמוד א',currentBook:'ברכות',currentBookId:'ברכות'};
  const passage=await root.SefariaOfflineTranslation.getPassage('ברכות, דף ב עמוד א:1',baseSelection);
  assert.equal(passage.source,'offline','Hebrew offline passage lookup failed: '+JSON.stringify({passage,parsed:root.SefariaOfflineTranslation.parseReference('ברכות, דף ב עמוד א:1',baseSelection.currentBook)}));
  assert.equal(passage.scope,'paragraph');
@@ -40,7 +40,7 @@ const vm=require('node:vm');
  const indexedPassage=await root.SefariaOfflineTranslation.getPassage(selection.currentRef,selection);
  assert.equal(indexedPassage.scope,'paragraph','Otzaria currentIndex should resolve the matching offline paragraph');
  assert.equal(indexedPassage.text,passage.text,'book paragraph index should map to the corresponding Steinsaltz paragraph');
- const secondSide={currentRef:'ברכות, דף ב עמוד ב',currentBook:'ברכות',currentBookId:'berakhot',
+ const secondSide={currentRef:'ברכות, דף ב עמוד ב',currentBook:'ברכות',currentBookId:'ברכות',
   currentIndex:100,sectionIndex:100,sourceRange:{exactText:'מילה בארמית'}};
  const sideBLine=await root.SefariaOfflineTranslation.getPassage('ברכות, דף ב עמוד ב:1',secondSide);
  const sideBIndexed=await root.SefariaOfflineTranslation.getPassage(secondSide.currentRef,secondSide);
