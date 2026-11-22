@@ -99,8 +99,8 @@
  }
  function normalizedAnchorText(value){
   return root.SefariaEvidence?.normalizeHebrew?.(value)||
-   String(value||'').normalize('NFKD').replace(/\\p{M}/gu,'').replace(/[ךםןףץ]/g,ch=>({'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'}[ch]))
-    .replace(/[^\\u05d0-\\u05ea]+/g,' ').replace(/\\s+/g,' ').trim();
+   String(value||'').normalize('NFKD').replace(/\p{M}/gu,'').replace(/[ךםןףץ]/g,ch=>({'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'}[ch]))
+    .replace(/[^\u05d0-\u05ea]+/g,' ').replace(/\s+/g,' ').trim();
  }
  function paragraphAtBookIndex(data,index,expectedSide){
   if(!Number.isInteger(index)||index<0||!Array.isArray(data?.text))return null;
