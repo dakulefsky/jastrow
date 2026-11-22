@@ -4,6 +4,11 @@ const best=ctx.SefariaEvidence.bestContextualMatch;
 assert.equal(ctx.SefariaEvidence.normalizeHebrew('הַמִּשְׁנָה, וְהַדִּין!'),'המשנה והדינ');
 assert.equal(ctx.SefariaEvidence.normalizeHebrew('מלך ומלכים'),'מלכ ומלכימ');
 assert.equal(ctx.SefariaEvidence.normalizeHebrew('נפקא־מינה'),'נפקא מינה');
+assert.deepEqual(Array.from(ctx.SefariaEvidence.candidatePhrases('משמעות ראשונה, משמעות שנייה')),['משמעות ראשונה','משמעות שנייה']);
+assert.equal(ctx.SefariaEvidence.findPhraseMatch('ספר חשוב','הספרים החשובים')?.type,'inflected_phrase','multiword Hebrew glosses should tolerate conservative attached prefixes and plural endings');
+assert.equal(ctx.SefariaEvidence.findPhraseMatch('ספר','הספרים'),null,'single-word inflection collisions must not count as contextual evidence');
+assert.equal(ctx.HebrewLookup.normalize('נפקא־מינה'),'נפקא מינה','maqaf should preserve the phrase boundary in dictionary lookup');
+assert.equal(ctx.HebrewLookup.lookup('נפקא־מינה')[0]?.rid,ctx.HebrewLookup.lookup('נפקא מינה')[0]?.rid,'maqaf and spaces should resolve to the same dictionary phrase');
 assert.equal(best({scope:'paragraph',matches:[{id:'weak',candidatePhrase:'מילה'},{id:'strong',candidatePhrase:'המשמעות המדויקת יותר'}]})?.id,'strong','strongest paragraph evidence should win');
 assert.equal(best({scope:'paragraph',matches:[{id:'incidental',candidatePhrase:'land',matchType:'exact'},{id:'specific',candidatePhrase:'the fertile land',matchType:'inflected_phrase'}]})?.id,'specific','a specific multiword contextual gloss should beat an incidental one-word collision');
 assert.equal(best({scope:'paragraph',matches:[{id:'one',matchType:'exact'},{id:'two',matchType:'exact'}]}),null,'equal contextual evidence must remain unmarked');
@@ -15,4 +20,4 @@ assert.equal(ctx.HebrewLookup.lookup('נפקא מינה דינא').length,0,'a m
 const segments=ctx.HebrewLookup.segmentWords('נפקא מינה נפקא');
 assert.deepEqual(Array.from(segments,x=>x.word),['נפקא מינה','נפקא'],'longest exact phrase should be selected before shorter words');
 assert(segments[0].records.some(e=>e.rid===r[0].rid));
-assert.equal(ctx.HebrewLookup.lookup('abc נפקא').length,0);const prefixed=ctx.HEBREW_DICTIONARY.entries.find(e=>ctx.HebrewLookup.normalize(e.word).length>=2&&!ctx.HebrewLookup.normalize(e.word).startsWith('ו')&&!ctx.HEBREW_DICTIONARY.index['ו'+ctx.HebrewLookup.normalize(e.word)]);assert(prefixed);const prefixedLookup=ctx.HebrewLookup.lookup('ו'+ctx.HebrewLookup.normalize(prefixed.word));assert(prefixedLookup.some(e=>e.matchedForm&&e.rid===prefixed.rid));assert.equal(ctx.HebrewLookup.rank('נַפְקָא','נַפקא'),0);assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);console.log('PASS: data and pointed lookup assertions');
+assert.equal(ctx.HebrewLookup.lookup('abc נפקא').length,0);const prefixed=ctx.HEBREW_DICTIONARY.entries.find(e=>ctx.HebrewLookup.normalize(e.word).length>=3&&!ctx.HebrewLookup.normalize(e.word).startsWith('ו')&&!ctx.HEBREW_DICTIONARY.index['ו'+ctx.HebrewLookup.normalize(e.word)]);assert(prefixed);const prefixedLookup=ctx.HebrewLookup.lookup('ו'+ctx.HebrewLookup.normalize(prefixed.word));assert(prefixedLookup.some(e=>e.matchedForm&&e.rid===prefixed.rid));assert.equal(ctx.HebrewLookup.rank('נַפְקָא','נַפקא'),0);assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);console.log('PASS: data and pointed lookup assertions');
