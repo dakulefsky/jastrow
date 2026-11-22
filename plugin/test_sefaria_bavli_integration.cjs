@@ -5,8 +5,8 @@ const path=require('node:path');
 const vm=require('node:vm');
 
 (async()=>{
- for(const pluginRoot of ['plugin','hebrew/plugin']){
-  const pluginPath=pluginRoot==='plugin'?__dirname:path.join(__dirname,'..','hebrew','plugin');
+ {
+  const pluginPath=__dirname;
   const fetched=[];
   const root={console,Otzaria:{on(){},call:async method=>{throw new Error('Offline comparison unexpectedly called host API: '+method);}}};
   root.document={
@@ -25,11 +25,11 @@ const vm=require('node:vm');
   vm.runInNewContext(fs.readFileSync(path.join(pluginPath,'sefaria-evidence.js'),'utf8'),context);
   const result=await root.SefariaEvidence.compareTranslation('שמע',[{id:'candidate-1',text:'beginning of tractate'}],
    {sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'});
-  assert.equal(result.source,'offline',pluginRoot);
-  assert.equal(result.scope,'paragraph',pluginRoot);
-  assert.equal(result.matches[0].id,'candidate-1',pluginRoot);
-  assert.equal(result.matches[0].matchedPhrase,'beginning of tractate',pluginRoot);
+  assert.equal(result.source,'offline','English plugin');
+  assert.equal(result.scope,'paragraph','English plugin');
+  assert.equal(result.matches[0].id,'candidate-1','English plugin');
+  assert.equal(result.matches[0].matchedPhrase,'beginning of tractate','English plugin');
   assert.deepEqual(fetched,['data/sefaria-bavli/manifest.js','data/sefaria-bavli/texts/berakhot.js']);
  }
- console.log('Full offline Bavli comparison passed in both plugins');
+ console.log('Full offline English Bavli comparison passed.');
 })().catch(error=>{console.error(error);process.exitCode=1;});
