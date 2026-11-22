@@ -19,6 +19,6 @@ c.SefariaEvidence.compareTranslation=async word=>word==='איטי'?new Promise(r
 ];
 const deduped=await c.DictionaryQuick.meanings('בדיקה');
 assert.equal(deduped.length,2,'identical Hebrew glosses across dictionary records should appear only once');
-assert.deepEqual(deduped.map(x=>x.text),['אותה משמעות בדיוק','משמעות שונה']);
+assert.deepEqual(Array.from(deduped,x=>x.text),['אותה משמעות בדיוק','משמעות שונה']);
 c.HebrewLookup.lookup=originalLookup;
 console.log('PASS: Hebrew quick meanings, phrase boundary, only two meanings, unknown exclusion, clickable payload, background menu and direct-open option.');})().catch(e=>{console.error(e);process.exit(1)});
