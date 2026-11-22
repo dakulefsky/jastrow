@@ -1,0 +1,32 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const vm=require('node:vm');
+const base=path.join(__dirname,'plugin','data','sefaria-bavli');
+const context={window:{},console};context.globalThis=context.window;
+vm.runInNewContext(fs.readFileSync(path.join(base,'manifest.js'),'utf8'),context);
+const manifest=context.window.SefariaOfflineTranslationManifest;
+assert.equal(manifest.formatVersion,1);
+assert.equal(manifest.language,'Hebrew');
+assert.equal(manifest.edition,'William Davidson Edition - Hebrew');
+assert.equal(manifest.tractateCount,37);
+assert.equal(manifest.tractates.length,37);
+assert.match(fs.readFileSync(path.join(base,'ATTRIBUTION.txt'),'utf8'),/CC BY-NC/);
+const titles=new Set();
+for(const meta of manifest.tractates){
+ assert(meta.title&&meta.heTitle&&meta.slug&&meta.file);
+ assert.equal(meta.language,'Hebrew',meta.title);
+ assert.equal(meta.versionTitle,manifest.edition,meta.title);
+ assert.equal(meta.license,'CC-BY-NC',meta.title);
+ assert(meta.file.startsWith('texts/')&&!meta.file.includes('..'));
+ assert(!titles.has(meta.title),'duplicate tractate '+meta.title);titles.add(meta.title);
+ vm.runInNewContext(fs.readFileSync(path.join(base,meta.file),'utf8'),context);
+ const data=context.window.SefariaOfflineTranslationData?.[meta.slug];
+ assert.equal(data.versionTitle,manifest.edition,meta.title);
+ assert(['he','hebrew'].includes(String(data.language).toLowerCase()),meta.title+' must contain Hebrew text');
+ assert.equal(data.license,'CC-BY-NC',meta.title);
+ assert(Array.isArray(data.text)&&data.text.some(daf=>Array.isArray(daf)&&daf.some(line=>typeof line==='string'&&line.trim())),meta.title+' has no readable daf text');
+}
+assert(titles.has('Berakhot'));
+console.log('Bundled offline Hebrew Steinsaltz Bavli verified: 37 licensed Hebrew tractates.');
