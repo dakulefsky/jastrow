@@ -36,6 +36,14 @@ const vm=require('node:vm');
  const indexedPassage=await root.SefariaOfflineTranslation.getPassage(selection.currentRef,selection);
  assert.equal(indexedPassage.scope,'paragraph','Otzaria currentIndex should resolve the matching offline paragraph');
  assert.equal(indexedPassage.text,passage.text,'book paragraph index should map to the corresponding Steinsaltz paragraph');
+ const berakhot=root.SefariaOfflineTranslationData.berakhot;
+ const sideA=Array.isArray(berakhot.text[0])?berakhot.text[0]:[berakhot.text[0]];
+ const secondSide={currentRef:'ברכות, דף ב עמוד ב',currentBook:'ברכות',currentBookId:'berakhot',
+  currentIndex:sideA.length,sectionIndex:sideA.length,sourceRange:{exactText:'מילה בארמית'}};
+ const sideBLine=await root.SefariaOfflineTranslation.getPassage('ברכות, דף ב עמוד ב:1',secondSide);
+ const sideBIndexed=await root.SefariaOfflineTranslation.getPassage(secondSide.currentRef,secondSide);
+ assert.equal(sideBIndexed.scope,'paragraph','global paragraph indices should advance across daf sides');
+ assert.equal(sideBIndexed.text,sideBLine.text,'the global book index should resolve the first paragraph on side 2b');
  assert(phrase.split(' ').length>=2);
  const result=await root.SefariaEvidence.compareTranslation('בדיקה',[{id:'hebrew-source',text:phrase}],selection);
  assert.equal(result.source,'offline');
