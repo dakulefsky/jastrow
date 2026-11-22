@@ -20,7 +20,7 @@ const vm=require('node:vm');
  vm.runInNewContext(fs.readFileSync(path.join(pluginPath,'sefaria-evidence.js'),'utf8'),context);
  const selection={sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'};
  const passage=await root.SefariaOfflineTranslation.getPassage(selection.sourceRange.ref,selection);
- assert.equal(passage.source,'offline');
+ assert.equal(passage.source,'offline','Hebrew offline passage lookup failed: '+JSON.stringify({passage,parsed:root.SefariaOfflineTranslation.parseReference(selection.sourceRange.ref,selection.currentBook)}));
  assert.equal(passage.scope,'paragraph');
  assert.equal(passage.versionTitle,'William Davidson Edition - Hebrew');
  assert(passage.text&&/[א-ת]/.test(passage.text),'Hebrew Steinsaltz paragraph should be readable');
