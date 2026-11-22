@@ -58,8 +58,8 @@
   const bookKey=normalizeName(parsed.book),currentBookKey=normalizeName(selection?.currentBook),currentBookIdKey=normalizeName(selection?.currentBookId);
   return manifest.tractates.find(item=>{
    const names=[item.title,item.heTitle,item.slug].map(normalizeName).filter(Boolean);
-   const matches=name=>name===bookKey||name===currentBookKey||name===currentBookIdKey||
-    (bookKey&&bookKey.endsWith(' '+name))||(currentBookKey&&currentBookKey.endsWith(' '+name))||(currentBookIdKey&&currentBookIdKey.endsWith(' '+name));
+   const aliases=[bookKey,currentBookKey,currentBookIdKey].filter(Boolean);
+   const matches=name=>aliases.some(alias=>alias===name||alias.endsWith(' '+name)||name.endsWith(' '+alias));
    return names.some(matches);
   });
  }
