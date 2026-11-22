@@ -18,7 +18,7 @@ const vm=require('node:vm');
  const context={window:root,globalThis:root,console};
  vm.runInNewContext(fs.readFileSync(path.join(pluginPath,'sefaria-offline.js'),'utf8'),context);
  vm.runInNewContext(fs.readFileSync(path.join(pluginPath,'sefaria-evidence.js'),'utf8'),context);
- const selection={sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'};
+ const selection={sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות',currentBookId:'berakhot'};
  const passage=await root.SefariaOfflineTranslation.getPassage(selection.sourceRange.ref,selection);
  assert.equal(passage.source,'offline','Hebrew offline passage lookup failed: '+JSON.stringify({passage,parsed:root.SefariaOfflineTranslation.parseReference(selection.sourceRange.ref,selection.currentBook)}));
  assert.equal(passage.scope,'paragraph');
