@@ -46,6 +46,7 @@ const vm=require('node:vm');
  const sideBIndexed=await root.SefariaOfflineTranslation.getPassage(secondSide.currentRef,secondSide);
  assert.equal(sideBIndexed.scope,'paragraph','TOC-relative paragraph indices should resolve side 2b');
  assert.equal(sideBIndexed.text,sideBLine.text,'the TOC heading should resolve the first paragraph on side 2b');
+ const berakhot=root.SefariaOfflineTranslationData.berakhot;
  const sideAParagraphs=Array.isArray(berakhot.text[0])?berakhot.text[0]:[berakhot.text[0]];
  const secondAIndex=sideAParagraphs.findIndex((value,index)=>index>0&&typeof value==='string'&&value.trim());
  if(secondAIndex>=0){
