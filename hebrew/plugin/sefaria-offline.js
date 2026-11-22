@@ -3,7 +3,7 @@
  const DATA_ROOT='data/sefaria-bavli/';
  const MAX_CACHED_TRACTATES=3,MAX_CACHED_DAFS=12;
  let manifestPromise=null,manifestData=null;
- const tractateCache=new Map(),tractatePromises=new Map(),preparedDafCache=new Map();
+ const tractateCache=new Map(),tractatePromises=new Map(),preparedDafCache=new Map(),tocCache=new Map();
 
  function normalizeName(value){
   return String(value||'').normalize('NFKD').replace(/\p{M}/gu,'')
@@ -102,19 +102,46 @@
    String(value||'').normalize('NFKD').replace(/\p{M}/gu,'').replace(/[ךםןףץ]/g,ch=>({'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'}[ch]))
     .replace(/[^\u05d0-\u05ea]+/g,' ').replace(/\s+/g,' ').trim();
  }
- function paragraphAtBookIndex(data,index,expectedSide){
-  if(!Number.isInteger(index)||index<0||!Array.isArray(data?.text))return null;
-  let offset=0;
-  for(let sideIndex=0;sideIndex<data.text.length;sideIndex++){
-   const raw=data.text[sideIndex],paragraphs=Array.isArray(raw)?raw:(typeof raw==='string'?[raw]:[]);
-   if(index<offset+paragraphs.length){
-    if(sideIndex!==expectedSide)return null;
-    const value=paragraphs[index-offset];
-    return typeof value==='string'&&value.trim()?value:null;
-   }
-   offset+=paragraphs.length;
+ async function getBookToc(bookId){
+  const key=String(bookId||'').trim();
+  if(!key||!root.Otzaria?.call)return null;
+  if(!tocCache.has(key)){
+   const pending=root.Otzaria.call('library.getBookToc',{bookId:key})
+    .then(result=>result?.success&&Array.isArray(result.data)?result.data:null)
+    .catch(()=>null);
+   tocCache.set(key,pending);
   }
-  return null;
+  const result=await tocCache.get(key);
+  if(!result)tocCache.delete(key);
+  return result;
+ }
+ function flattenToc(entries,out=[]){
+  for(const entry of Array.isArray(entries)?entries:[]){
+   out.push(entry);
+   if(Array.isArray(entry.children))flattenToc(entry.children,out);
+  }
+  return out;
+ }
+ async function paragraphForSelection(data,parsed,selection){
+  const currentIndex=Number(selection?.currentIndex??selection?.sectionIndex);
+  if(!Number.isInteger(currentIndex)||currentIndex<0||!parsed.side)return null;
+  const bookId=selection?.currentBookId||selection?.bookId||selection?.currentBook;
+  const toc=flattenToc(await getBookToc(bookId));
+  const sameDaf=toc.map(entry=>({...entry,parsed:parseReference(entry.text,selection?.currentBook)}))
+   .filter(entry=>entry.parsed&&entry.parsed.dafIndex===parsed.dafIndex&&Number.isInteger(Number(entry.index))&&Number(entry.index)<=currentIndex);
+  const exactSide=sameDaf.filter(entry=>entry.parsed.side===parsed.side);
+  const candidates=exactSide.length?exactSide:sameDaf.filter(entry=>!entry.parsed.side||entry.parsed.side==='a');
+  if(!candidates.length)return null;
+  candidates.sort((a,b)=>Number(b.index)-Number(a.index));
+  const heading=candidates[0],side=data.text[parsed.dafIndex];
+  const paragraphs=Array.isArray(side)?side:(typeof side==='string'?[side]:[]);
+  let relativeIndex=currentIndex-Number(heading.index);
+  if(!exactSide.length&&parsed.side==='b'){
+   const sideA=data.text[parsed.dafIndex-1];
+   relativeIndex-=(Array.isArray(sideA)?sideA.length:(typeof sideA==='string'?1:0));
+  }
+  const value=paragraphs[relativeIndex];
+  return typeof value==='string'&&value.trim()?value:null;
  }
  function anchoredParagraph(side,selection){
   const paragraphs=collectSide({text:[side]},0);
@@ -164,12 +191,11 @@
    const side=data.text[parsed.dafIndex];
    const lineParagraph=parsed.line!==null
     ?(Array.isArray(side)?side[parsed.line-1]:(parsed.line===1?side:null)):null;
-   // In Otzaria, currentIndex/sectionIndex is the zero-based paragraph
-   // index in the whole text book. Sefaria's Bavli JSON keeps the same
-   // paragraph sequence flattened across daf sides; map it back to this daf.
-   const bookIndex=selection?.currentIndex??selection?.sectionIndex;
+   // The selection's currentIndex is a line index in the Otzaria book.
+   // Resolve the current daf-side heading through its local TOC, then map the
+   // line's offset within that heading to the matching offline translation segment.
    const indexedParagraph=parsed.line===null
-    ?paragraphAtBookIndex(data,bookIndex,parsed.dafIndex):null;
+    ?await paragraphForSelection(data,parsed,selection):null;
    const paragraph=typeof lineParagraph==='string'&&lineParagraph.trim()
     ?lineParagraph:(indexedParagraph||anchoredParagraph(side,selection));
    if(typeof paragraph==='string'&&paragraph.trim())return {
@@ -200,7 +226,7 @@
    tractate:meta.title,versionTitle:manifest.edition,license:meta.license||manifest.license||'CC-BY-NC',source:'offline'};
  }
  function clearCache(){
-  manifestPromise=null;manifestData=null;tractateCache.clear();tractatePromises.clear();preparedDafCache.clear();
+  manifestPromise=null;manifestData=null;tractateCache.clear();tractatePromises.clear();preparedDafCache.clear();tocCache.clear();
   delete root.SefariaOfflineTranslationManifest;delete root.SefariaOfflineTranslationData;
  }
  root.SefariaOfflineTranslation={prepareDaf,getPassage,isDafPrepared,parseReference,clearCache};
