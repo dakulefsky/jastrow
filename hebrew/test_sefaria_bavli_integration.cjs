@@ -40,6 +40,8 @@ const vm=require('node:vm');
  // Simulate a cold, independent foreground webview: its cache is not prepared
  // by the background webview, and right-click must still load the bundled
  // corpus locally after showing the instant dictionary meanings.
+ root.SefariaOfflineTranslation.clearCache();
+ fetched.length=0;
  root.HebrewLookup={
   valid:()=>true,normalize:value=>String(value||'').replace(/\s+/g,' ').trim(),
   lookup:()=>[{word:'בדיקה',rid:'KRU99999',parts:[{meaning:phrase,text:phrase,label:''}]}],
