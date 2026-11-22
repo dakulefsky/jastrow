@@ -44,8 +44,22 @@ const vm=require('node:vm');
   currentIndex:100,sectionIndex:100,sourceRange:{exactText:'מילה בארמית'}};
  const sideBLine=await root.SefariaOfflineTranslation.getPassage('ברכות, דף ב עמוד ב:1',secondSide);
  const sideBIndexed=await root.SefariaOfflineTranslation.getPassage(secondSide.currentRef,secondSide);
- assert.equal(sideBIndexed.scope,'paragraph','global paragraph indices should advance across daf sides');
- assert.equal(sideBIndexed.text,sideBLine.text,'the global book index should resolve the first paragraph on side 2b');
+ assert.equal(sideBIndexed.scope,'paragraph','TOC-relative paragraph indices should resolve side 2b');
+ assert.equal(sideBIndexed.text,sideBLine.text,'the TOC heading should resolve the first paragraph on side 2b');
+ const secondAIndex=berakhot.text[0].findIndex((value,index)=>index>0&&typeof value==='string'&&value.trim());
+ if(secondAIndex>=0){
+  const explicit=await root.SefariaOfflineTranslation.getPassage('ברכות, דף ב עמוד א:'+(secondAIndex+1),selection);
+  const mapped=await root.SefariaOfflineTranslation.getPassage(selection.currentRef,{...selection,currentIndex:secondAIndex,sectionIndex:secondAIndex});
+  assert.equal(mapped.scope,'paragraph','TOC-relative index should resolve a later paragraph on side 2a');
+  assert.equal(mapped.text,explicit.text,'later side 2a line should map to the matching offline paragraph');
+ }
+ const sideBData=berakhot.text[1],secondBIndex=sideBData.findIndex((value,index)=>index>0&&typeof value==='string'&&value.trim());
+ if(secondBIndex>=0){
+  const explicit=await root.SefariaOfflineTranslation.getPassage('ברכות, דף ב עמוד ב:'+(secondBIndex+1),secondSide);
+  const mapped=await root.SefariaOfflineTranslation.getPassage(secondSide.currentRef,{...secondSide,currentIndex:100+secondBIndex,sectionIndex:100+secondBIndex});
+  assert.equal(mapped.scope,'paragraph','TOC-relative index should resolve a later paragraph on side 2b');
+  assert.equal(mapped.text,explicit.text,'later side 2b line should map to the matching offline paragraph');
+ }
  assert(phrase.split(' ').length>=2);
  const result=await root.SefariaEvidence.compareTranslation('בדיקה',[{id:'hebrew-source',text:phrase}],selection);
  assert.equal(result.source,'offline');
