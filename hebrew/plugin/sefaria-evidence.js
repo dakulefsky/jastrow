@@ -3,7 +3,7 @@
  const TRANSLATION_VERSION='William Davidson Edition - Hebrew';
  const CACHE_TTL=30*60*1000,MAX_CACHE=160,cache=new Map();
  const FINAL={'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'};
- const STOP=new Set('של את על אל עם אם או גם כי לא כן הוא היא הם הן אני אתה אתם אנחנו אשר זה זאת אלה אלו כל מן בין תוך עבור אחרי לפני כאשר'.split(' '));
+ const STOP=new Set('של את על אל עם אם או גם כי לא כן הוא היא הם הן אני אתה אתם אנחנו אשר זה זאת אלה אלו כל מן בין תוך עבור אחרי לפני כאשר'.split(' ').map(word=>word.replace(/[ךםןףץ]/g,ch=>FINAL[ch])));
  function normalizeHebrew(value){
   return String(value||'').replace(/<[^>]*>/g,' ').replace(/&nbsp;/gi,' ').normalize('NFKD').replace(/\p{M}/gu,'').replace(/[ךםןףץ]/g,ch=>FINAL[ch]).replace(/[^\u05d0-\u05ea]+/g,' ').replace(/\s+/g,' ').trim();
  }
