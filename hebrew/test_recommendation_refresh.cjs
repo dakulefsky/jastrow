@@ -46,18 +46,13 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
  timers.delete(timerId);
  await timer.fn();
  assert.equal(prepared,true);
- assert.equal(messages.length,2,'same selected word should refresh after the daf is ready');
- assert(messages[1].message.includes('★ מומלץ'),'prepared paragraph evidence should mark the supported Hebrew meaning');
- assert(messages[1].message.includes('היוצא לנו מזה למעשה'));
- assert.equal(messages[1].tapPayload.dictionaryWord,'נפקא מינה');
-
- selection.selectedText='מילה אחרת';
- const before=messages.length;
- assert.equal(await root.DictionaryQuick.refreshPreparedSelection(),false,'a changed word must not receive the previous recommendation');
- assert.equal(messages.length,before);
- selection.selectedText='נפקא מינה';
- selection.sourceRange.ref='ברכות, דף ב עמוד א:2';
- assert.equal(await root.DictionaryQuick.refreshPreparedSelection(),false,'the same word in a different paragraph must not receive stale paragraph evidence');
- assert.equal(messages.length,before);
- console.log('PASS: Hebrew immediate meanings, two-second background preparation, exact same-paragraph refresh, paragraph-only ★ מומלץ, stale-selection protection.');
+ assert.equal(messages.length,1,'background prefetch must not send a duplicate UI notification from its separate webview');
+ assert.equal(messages[0].tapPayload.dictionaryWord,'נפקא מינה');
+ // A subsequent foreground lookup can use the now-warm local corpus.
+ await emit('reader.context_menu_item_clicked',{itemId:'aramaic-hebrew-lookup',...selection});
+ assert.equal(messages.length,3,'the next lookup sends an immediate result and its evidence-backed refresh');
+ assert(!messages[1].message.includes('★ מומלץ'),'the first result remains immediate');
+ assert(messages[2].message.includes('★ מומלץ'),'the next lookup can use the prepared paragraph evidence');
+ assert(messages[2].message.includes('היוצא לנו מזה למעשה'));
+ console.log('PASS: Hebrew instant result, isolated background cache warming, and later paragraph-supported recommendation.');
 })().catch(error=>{console.error(error);process.exit(1);});
