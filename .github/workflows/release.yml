@@ -65,9 +65,8 @@ jobs:
       - name: Build and stage the complete offline English Bavli
         run: |
           python scripts/build_sefaria_bavli_corpus.py --output /tmp/sefaria-bavli-english.zip
-          mkdir -p plugin/data/sefaria-bavli hebrew/plugin/data
+          mkdir -p plugin/data/sefaria-bavli
           unzip -q /tmp/sefaria-bavli-english.zip -d plugin/data/sefaria-bavli
-          cp -a plugin/data/sefaria-bavli hebrew/plugin/data/
           node plugin/test_sefaria_bavli_data.cjs
           node plugin/test_sefaria_bavli_integration.cjs
       - name: Check dictionary and selection lookup
@@ -155,6 +154,8 @@ jobs:
           python scripts/build_sefaria_bavli_hebrew_corpus.py --output /tmp/sefaria-bavli-hebrew.zip
           mkdir -p hebrew/plugin/data/sefaria-bavli
           unzip -q /tmp/sefaria-bavli-hebrew.zip -d hebrew/plugin/data/sefaria-bavli
+          node hebrew/test_sefaria_bavli_data.cjs
+          node hebrew/test_sefaria_bavli_integration.cjs
       - name: Build Hebrew source data
         run: |
           python3 -c "import gzip,pathlib; p=pathlib.Path('hebrew/source.json.gz'); p.with_suffix('').write_bytes(gzip.decompress(p.read_bytes()))"
