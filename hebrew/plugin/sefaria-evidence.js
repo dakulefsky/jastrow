@@ -32,7 +32,7 @@
    let changed=false,valid=true;
    for(let j=0;j<words.length;j++){
     if(words[j]===haystack[i+j])continue;
-    const left=tokenForms(words[j]),right=tokenForms(haystack[i+j]);
+    const right=tokenForms(haystack[i+j]);
     // Only normalize the translated token back to the dictionary's base wording;
     // never strip morphology from the dictionary gloss itself.
     if(!right.has(words[j])){valid=false;break;}
