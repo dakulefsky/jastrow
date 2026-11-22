@@ -97,6 +97,38 @@
   while(preparedDafCache.size>MAX_CACHED_DAFS)preparedDafCache.delete(preparedDafCache.keys().next().value);
   return value;
  }
+ function normalizedAnchorText(value){
+  return root.SefariaEvidence?.normalizeHebrew?.(value)||
+   String(value||'').normalize('NFKD').replace(/\\p{M}/gu,'').replace(/[ךםןףץ]/g,ch=>({'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'}[ch]))
+    .replace(/[^\\u05d0-\\u05ea]+/g,' ').replace(/\\s+/g,' ').trim();
+ }
+ function anchoredParagraph(side,selection){
+  const paragraphs=collectSide({text:[side]},0);
+  if(!paragraphs.length)return null;
+  const anchors=[selection?.sourceRange,selection?.renderedRange,
+   ...(Array.isArray(selection?.sections)&&selection.sections.length===1?[selection.sections[0]?.sourceRange,selection.sections[0]?.renderedRange]:[])].filter(Boolean);
+  for(const anchor of anchors){
+   const exact=normalizedAnchorText(anchor.exactText||selection?.sourceSelectedText||selection?.text||selection?.selectedText);
+   if(!exact)continue;
+   const before=normalizedAnchorText(anchor.beforeText?.raw||anchor.beforeText?.normalized);
+   const after=normalizedAnchorText(anchor.afterText?.raw||anchor.afterText?.normalized);
+   const matches=paragraphs.map((text,index)=>({text,index,normalized:normalizedAnchorText(text)}))
+    .filter(item=>item.normalized.includes(exact));
+   if(matches.length===1)return matches[0].text;
+   if(matches.length>1){
+    const beforeTail=before.split(' ').filter(Boolean).slice(-4).join(' ');
+    const afterHead=after.split(' ').filter(Boolean).slice(0,4).join(' ');
+    const ranked=matches.map(item=>{
+     let score=0;
+     if(beforeTail&&item.normalized.includes(beforeTail+' '+exact))score++;
+     if(afterHead&&item.normalized.includes(exact+' '+afterHead))score++;
+     return {...item,score};
+    }).sort((a,b)=>b.score-a.score);
+    if(ranked[0]?.score>0&&ranked[0].score>ranked[1]?.score)return ranked[0].text;
+   }
+  }
+  return null;
+ }
  function isDafPrepared(reference,selection){
   const parsed=parseReference(reference||selection?.currentRef,selection?.currentBook);
   if(!parsed||!manifestData)return false;
@@ -114,9 +146,12 @@
   let cached=preparedDafCache.get(cacheKey);
   if(cached){preparedDafCache.delete(cacheKey);preparedDafCache.set(cacheKey,cached);}
   else cached=cacheDaf(meta,parsed.daf,data);
-  if(parsed.side&&parsed.line!==null){
+  if(parsed.side){
    const side=data.text[parsed.dafIndex];
-   const paragraph=Array.isArray(side)?side[parsed.line-1]:(parsed.line===1?side:null);
+   const lineParagraph=parsed.line!==null
+    ?(Array.isArray(side)?side[parsed.line-1]:(parsed.line===1?side:null)):null;
+   const paragraph=typeof lineParagraph==='string'&&lineParagraph.trim()
+    ?lineParagraph:anchoredParagraph(side,selection);
    if(typeof paragraph==='string'&&paragraph.trim())return {
     text:paragraph,scope:'paragraph',reference:parsed.ref,
     dafReference:meta.title+' '+parsed.daf+parsed.side,tractate:meta.title,
