@@ -55,11 +55,11 @@
   return manifestPromise;
  }
  function findTractate(manifest,parsed,selection){
-  const bookKey=normalizeName(parsed.book),currentBookKey=normalizeName(selection?.currentBook);
+  const bookKey=normalizeName(parsed.book),currentBookKey=normalizeName(selection?.currentBook),currentBookIdKey=normalizeName(selection?.currentBookId);
   return manifest.tractates.find(item=>{
    const names=[item.title,item.heTitle,item.slug].map(normalizeName).filter(Boolean);
-   const matches=name=>name===bookKey||name===currentBookKey||
-    (bookKey&&bookKey.endsWith(' '+name))||(currentBookKey&&currentBookKey.endsWith(' '+name));
+   const matches=name=>name===bookKey||name===currentBookKey||name===currentBookIdKey||
+    (bookKey&&bookKey.endsWith(' '+name))||(currentBookKey&&currentBookKey.endsWith(' '+name))||(currentBookIdKey&&currentBookIdKey.endsWith(' '+name));
    return names.some(matches);
   });
  }

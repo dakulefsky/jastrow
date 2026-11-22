@@ -52,6 +52,25 @@ assert.equal(ctx.HebrewLookup.rank('נִפְקָא','נַפקא'),1);
   await page.locator('#query').fill('נפקא מינה');
   await page.locator('button[type=submit]').click();
 
+  await page.evaluate(()=>{
+   window.__originalHebrewLookup=window.HebrewLookup.lookup;
+   window.HebrewLookup.lookup=()=>[
+    {word:'מילה ראשונה',rid:'KRU9101',parts:[{meaning:'אותה משמעות בדיוק',text:'אותה משמעות בדיוק',label:''}]},
+    {word:'מילה שנייה',rid:'KRU9102',parts:[{meaning:'אותה משמעות בדיוק',text:'אותה משמעות בדיוק',label:''}]},
+    {word:'מילה שלישית',rid:'KRU9103',parts:[{meaning:'משמעות שונה',text:'משמעות שונה',label:''}]}
+   ];
+  });
+  await page.locator('#query').fill('בדיקה');
+  await page.locator('button[type=submit]').click();
+  assert.equal(await page.locator('#results .meaning-card').count(),2,'the full Hebrew dictionary should collapse identical meanings across entries');
+  assert.equal(await page.locator('#results .meaning-card').first().locator('details p').count(),1,'identical full source text should appear only once');
+  const retainedSources=await page.locator('#results .meaning-card').first().locator('details small').textContent();
+  assert.match(retainedSources,/KRU9101/);
+  assert.match(retainedSources,/KRU9102/,'the collapsed full meaning must retain both dictionary source references');
+  await page.evaluate(()=>{window.HebrewLookup.lookup=window.__originalHebrewLookup;delete window.__originalHebrewLookup;});
+  await page.locator('#query').fill('נפקא מינה');
+  await page.locator('button[type=submit]').click();
+
   const recommendationChecks=await page.evaluate(async()=>{
    const originalCompare=window.SefariaEvidence.compareTranslation;
    const handlers=window.__otzariaHandlers['ui.messageClicked']||[];
