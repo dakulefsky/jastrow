@@ -28,17 +28,14 @@ const vm=require('node:vm');
  assert.equal(passage.scope,'paragraph');
  assert.equal(passage.versionTitle,'William Davidson Edition - Hebrew');
  assert(passage.text&&/[א-ת]/.test(passage.text),'Hebrew Steinsaltz paragraph should be readable');
- const words=root.SefariaEvidence.normalizeHebrew(passage.text).split(' ');
- const start=Math.max(0,Math.floor(words.length/2)-1);
- const phrase=words.slice(start,start+2).join(' ');
- const selection={...baseSelection,sourceRange:{
-  exactText:phrase,
-  beforeText:{raw:words.slice(Math.max(0,start-4),start).join(' ')},
-  afterText:{raw:words.slice(start+2,start+6).join(' ')}
- }};
- const anchoredPassage=await root.SefariaOfflineTranslation.getPassage(selection.currentRef,selection);
- assert.equal(anchoredPassage.scope,'paragraph','a real Otzaria sourceRange anchor should resolve its exact offline paragraph');
- assert.equal(anchoredPassage.text,passage.text,'selection anchor should resolve the same paragraph as the explicit line fixture');
+ const phrase=root.SefariaEvidence.normalizeHebrew(passage.text).split(' ').slice(0,4).join(' ');
+ // Otzaria selections carry currentIndex/sectionIndex for the paragraph,
+ // while sourceRange.exactText is the selected Aramaic source word—not Hebrew.
+ const selection={...baseSelection,currentIndex:0,sectionIndex:0,text:'מילה בארמית',
+  sourceRange:{exactText:'מילה בארמית',beforeText:{raw:'לפני'},afterText:{raw:'אחרי'}}};
+ const indexedPassage=await root.SefariaOfflineTranslation.getPassage(selection.currentRef,selection);
+ assert.equal(indexedPassage.scope,'paragraph','Otzaria currentIndex should resolve the matching offline paragraph');
+ assert.equal(indexedPassage.text,passage.text,'book paragraph index should map to the corresponding Steinsaltz paragraph');
  assert(phrase.split(' ').length>=2);
  const result=await root.SefariaEvidence.compareTranslation('בדיקה',[{id:'hebrew-source',text:phrase}],selection);
  assert.equal(result.source,'offline');
