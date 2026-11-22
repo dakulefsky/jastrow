@@ -8,6 +8,10 @@ const vm=require('node:vm');
  const pluginPath=path.join(__dirname,'plugin'),fetched=[],messages=[];
  const root={console,Otzaria:{on(){},call:async(method,args)=>{
   if(method==='ui.showMessage'){messages.push(args);return {success:true};}
+  if(method==='library.getBookToc')return {success:true,data:[
+   {text:'דף ב עמוד א',index:0,level:1},
+   {text:'דף ב עמוד ב',index:100,level:1}
+  ]};
   throw new Error('Offline Hebrew comparison unexpectedly called host API: '+method);
  }} };
  root.document={
@@ -36,10 +40,8 @@ const vm=require('node:vm');
  const indexedPassage=await root.SefariaOfflineTranslation.getPassage(selection.currentRef,selection);
  assert.equal(indexedPassage.scope,'paragraph','Otzaria currentIndex should resolve the matching offline paragraph');
  assert.equal(indexedPassage.text,passage.text,'book paragraph index should map to the corresponding Steinsaltz paragraph');
- const berakhot=root.SefariaOfflineTranslationData.berakhot;
- const sideA=Array.isArray(berakhot.text[0])?berakhot.text[0]:[berakhot.text[0]];
  const secondSide={currentRef:'ברכות, דף ב עמוד ב',currentBook:'ברכות',currentBookId:'berakhot',
-  currentIndex:sideA.length,sectionIndex:sideA.length,sourceRange:{exactText:'מילה בארמית'}};
+  currentIndex:100,sectionIndex:100,sourceRange:{exactText:'מילה בארמית'}};
  const sideBLine=await root.SefariaOfflineTranslation.getPassage('ברכות, דף ב עמוד ב:1',secondSide);
  const sideBIndexed=await root.SefariaOfflineTranslation.getPassage(secondSide.currentRef,secondSide);
  assert.equal(sideBIndexed.scope,'paragraph','global paragraph indices should advance across daf sides');
