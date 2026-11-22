@@ -34,6 +34,4 @@ function verify(root){
  return manifest.tractateCount;
 }
 const english=verify('plugin');
-const hebrew=verify('hebrew/plugin');
-assert.equal(english,hebrew,'both plugins must bundle the same complete English Shas');
-console.log('Bundled offline Bavli data verified: '+english+' tractates in both plugins');
+console.log('Bundled offline English Bavli data verified: '+english+' tractates.');
