@@ -102,6 +102,20 @@
    String(value||'').normalize('NFKD').replace(/\\p{M}/gu,'').replace(/[ךםןףץ]/g,ch=>({'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'}[ch]))
     .replace(/[^\\u05d0-\\u05ea]+/g,' ').replace(/\\s+/g,' ').trim();
  }
+ function paragraphAtBookIndex(data,index,expectedSide){
+  if(!Number.isInteger(index)||index<0||!Array.isArray(data?.text))return null;
+  let offset=0;
+  for(let sideIndex=0;sideIndex<data.text.length;sideIndex++){
+   const raw=data.text[sideIndex],paragraphs=Array.isArray(raw)?raw:(typeof raw==='string'?[raw]:[]);
+   if(index<offset+paragraphs.length){
+    if(sideIndex!==expectedSide)return null;
+    const value=paragraphs[index-offset];
+    return typeof value==='string'&&value.trim()?value:null;
+   }
+   offset+=paragraphs.length;
+  }
+  return null;
+ }
  function anchoredParagraph(side,selection){
   const paragraphs=collectSide({text:[side]},0);
   if(!paragraphs.length)return null;
@@ -150,8 +164,14 @@
    const side=data.text[parsed.dafIndex];
    const lineParagraph=parsed.line!==null
     ?(Array.isArray(side)?side[parsed.line-1]:(parsed.line===1?side:null)):null;
+   // In Otzaria, currentIndex/sectionIndex is the zero-based paragraph
+   // index in the whole text book. Sefaria's Bavli JSON keeps the same
+   // paragraph sequence flattened across daf sides; map it back to this daf.
+   const bookIndex=selection?.currentIndex??selection?.sectionIndex;
+   const indexedParagraph=parsed.line===null
+    ?paragraphAtBookIndex(data,bookIndex,parsed.dafIndex):null;
    const paragraph=typeof lineParagraph==='string'&&lineParagraph.trim()
-    ?lineParagraph:anchoredParagraph(side,selection);
+    ?lineParagraph:(indexedParagraph||anchoredParagraph(side,selection));
    if(typeof paragraph==='string'&&paragraph.trim())return {
     text:paragraph,scope:'paragraph',reference:parsed.ref,
     dafReference:meta.title+' '+parsed.daf+parsed.side,tractate:meta.title,
