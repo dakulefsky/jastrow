@@ -22,13 +22,23 @@ const vm=require('node:vm');
  vm.runInNewContext(fs.readFileSync(path.join(pluginPath,'sefaria-offline.js'),'utf8'),context);
  vm.runInNewContext(fs.readFileSync(path.join(pluginPath,'sefaria-evidence.js'),'utf8'),context);
  vm.runInNewContext(fs.readFileSync(path.join(pluginPath,'quick-lookup.js'),'utf8'),context);
- const selection={sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות',currentBookId:'berakhot'};
- const passage=await root.SefariaOfflineTranslation.getPassage(selection.sourceRange.ref,selection);
- assert.equal(passage.source,'offline','Hebrew offline passage lookup failed: '+JSON.stringify({passage,parsed:root.SefariaOfflineTranslation.parseReference(selection.sourceRange.ref,selection.currentBook)}));
+ const baseSelection={currentRef:'ברכות, דף ב עמוד א',currentBook:'ברכות',currentBookId:'berakhot'};
+ const passage=await root.SefariaOfflineTranslation.getPassage('ברכות, דף ב עמוד א:1',baseSelection);
+ assert.equal(passage.source,'offline','Hebrew offline passage lookup failed: '+JSON.stringify({passage,parsed:root.SefariaOfflineTranslation.parseReference('ברכות, דף ב עמוד א:1',baseSelection.currentBook)}));
  assert.equal(passage.scope,'paragraph');
  assert.equal(passage.versionTitle,'William Davidson Edition - Hebrew');
  assert(passage.text&&/[א-ת]/.test(passage.text),'Hebrew Steinsaltz paragraph should be readable');
- const phrase=root.SefariaEvidence.normalizeHebrew(passage.text).split(' ').slice(0,4).join(' ');
+ const words=root.SefariaEvidence.normalizeHebrew(passage.text).split(' ');
+ const start=Math.max(0,Math.floor(words.length/2)-1);
+ const phrase=words.slice(start,start+2).join(' ');
+ const selection={...baseSelection,sourceRange:{
+  exactText:phrase,
+  beforeText:{raw:words.slice(Math.max(0,start-4),start).join(' ')},
+  afterText:{raw:words.slice(start+2,start+6).join(' ')}
+ }};
+ const anchoredPassage=await root.SefariaOfflineTranslation.getPassage(selection.currentRef,selection);
+ assert.equal(anchoredPassage.scope,'paragraph','a real Otzaria sourceRange anchor should resolve its exact offline paragraph');
+ assert.equal(anchoredPassage.text,passage.text,'selection anchor should resolve the same paragraph as the explicit line fixture');
  assert(phrase.split(' ').length>=2);
  const result=await root.SefariaEvidence.compareTranslation('בדיקה',[{id:'hebrew-source',text:phrase}],selection);
  assert.equal(result.source,'offline');
@@ -47,7 +57,7 @@ const vm=require('node:vm');
   lookup:()=>[{word:'בדיקה',rid:'KRU99999',parts:[{meaning:phrase,text:phrase,label:''}]}],
   segmentWords:()=>[]
  };
- assert.equal(root.SefariaOfflineTranslation.isDafPrepared(selection.sourceRange.ref,selection),false,
+ assert.equal(root.SefariaOfflineTranslation.isDafPrepared(selection.currentRef,selection),false,
   'foreground starts with a cold local cache');
  await root.DictionaryQuick.show('בדיקה',selection);
  assert.equal(messages.length,2,'right-click should show an instant result and then an offline recommendation refresh');
