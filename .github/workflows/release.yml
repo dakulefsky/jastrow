@@ -44,7 +44,7 @@ jobs:
               else:
                   paths = subprocess.check_output(['git', 'diff', '--name-only', before, after], text=True).splitlines()
               changed = before == '0' * 40 or any(p.startswith('hebrew/') for p in paths)
-              hebrew_support = {'scripts/build_sefaria_bavli_hebrew_corpus.py', 'scripts/test_build_sefaria_bavli_hebrew_corpus.py', '.github/workflows/release.yml'}
+              hebrew_support = {'scripts/build_sefaria_bavli_hebrew_corpus.py', 'scripts/test_build_sefaria_bavli_hebrew_corpus.py', 'plugin/test_sefaria_bavli_data.cjs', 'plugin/test_sefaria_bavli_integration.cjs', '.github/workflows/release.yml'}
               # Every PR runs the English regression suite as well, so Hebrew-only changes cannot silently regress shared behavior.
               english_changed = kind == 'pull_request' or before == '0' * 40 or any(not p.startswith('hebrew/') and p not in hebrew_support for p in paths)
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
