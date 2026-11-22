@@ -6,6 +6,7 @@ assert.equal(ctx.SefariaEvidence.normalizeHebrew('מלך ומלכים'),'מלכ 
 assert.equal(ctx.SefariaEvidence.normalizeHebrew('נפקא־מינה'),'נפקא מינה');
 assert.deepEqual(Array.from(ctx.SefariaEvidence.candidatePhrases('משמעות ראשונה, משמעות שנייה')),['משמעות ראשונה','משמעות שנייה']);
 assert.equal(ctx.SefariaEvidence.findPhraseMatch(ctx.SefariaEvidence.normalizeHebrew('ספר חשוב'),ctx.SefariaEvidence.normalizeHebrew('הספרים החשובים'))?.type,'inflected_phrase','multiword Hebrew glosses should tolerate conservative attached prefixes and plural endings');
+assert.equal(ctx.SefariaEvidence.findPhraseMatch(ctx.SefariaEvidence.normalizeHebrew('דבר חשוב'),ctx.SefariaEvidence.normalizeHebrew('דבריהם החשובים'))?.type,'inflected_phrase','normalized Aramaic pronominal suffixes should be recognized without semantic guessing');
 assert.equal(ctx.SefariaEvidence.findPhraseMatch('ספר','הספרים'),null,'single-word inflection collisions must not count as contextual evidence');
 assert.equal(ctx.HebrewLookup.normalize('נפקא־מינה'),'נפקא מינה','maqaf should preserve the phrase boundary in dictionary lookup');
 assert.equal(ctx.HebrewLookup.lookup('נפקא־מינה')[0]?.rid,ctx.HebrewLookup.lookup('נפקא מינה')[0]?.rid,'maqaf and spaces should resolve to the same dictionary phrase');
