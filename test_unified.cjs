@@ -39,3 +39,10 @@ const labelConflict=U.merge([
  {id:13,entry:{h:'אָמַר',r:'KRU00002'},meanings:[{text:'to say',label:'Pa.'}]}
 ],'אמר');
 assert.equal(labelConflict.length,2,'explicitly conflicting grammatical labels must remain separate');
+
+const numberedLabelBridge=U.merge([
+ {id:14,entry:{h:'אָמַר',r:'A00003'},meanings:[{text:'to say',label:'Ithpe.'}]},
+ {id:15,entry:{h:'אָמַר',r:'KRU00003'},meanings:[{text:'to say',label:'Ithpe 1'}]}
+],'אמר');
+assert.equal(numberedLabelBridge.length,1,'Krupnik sense numbering must not make an otherwise identical grammatical label look different');
+assert.equal(numberedLabelBridge[0].form,'ithpe.');
