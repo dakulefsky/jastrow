@@ -3,12 +3,13 @@ const assert=require('node:assert/strict');
 const path=require('node:path');
 const file=path.join(__dirname,'sefaria-evidence.js');
 delete require.cache[require.resolve(file)];
-let localReads=0,networkCalls=0,hostCalls=0;
+let localReads=0,networkCalls=0,hostCalls=0,expectedRef='ברכות, דף ב עמוד א:1';
+let passageText='The discussion was completed after the law and order were explained.';
 global.SefariaOfflineTranslation={getPassage:async(ref,selection)=>{
  localReads++;
- assert.equal(ref,'ברכות, דף ב עמוד א:1');
+ assert.equal(ref,expectedRef);
  assert.equal(selection.currentBook,'ברכות');
- return {text:'The discussion was completed after the law and order were explained.',scope:'paragraph',
+ return {text:passageText,scope:'paragraph',
   dafReference:'Berakhot 2a',license:'CC-BY-NC',versionTitle:'William Davidson Edition - English'};
 }};
 global.Otzaria={call:async()=>{hostCalls++;throw Error('host fallback should not be needed');}};
@@ -37,6 +38,15 @@ global.fetch=async()=>{networkCalls++;throw Error('the dictionary must never use
   {id:'near-a',candidatePhrase:'fertile land',matchType:'exact'},
   {id:'near-b',candidatePhrase:'explained law',matchType:'exact'}
  ],'paragraph'),null,'near-equal multiword evidence must remain ambiguous');
+ assert.equal(evidence.bestMatch([
+  {id:'same',evidenceScore:100},{id:'same',evidenceScore:99}
+ ],'paragraph')?.id,'same','multiple phrase hits for one meaning must not create a false tie');
+ assert.equal(evidence.bestMatch([
+  {id:'strong',evidenceScore:100},{id:'near',evidenceScore:83}
+ ],'paragraph'),null,'the shared 18-percent confidence margin must suppress close competitors');
+ assert.equal(evidence.bestMatch([
+  {id:'strong',evidenceScore:100},{id:'weaker',evidenceScore:81}
+ ],'paragraph')?.id,'strong','a sufficiently separated best meaning should be recommended');
  const candidates=[{id:'complete',text:'complete'},{id:'law-order',text:'law and order'},
   {id:'weak-law',text:'law'},{id:'absent',text:'mountain'}];
  const selection={sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'};
@@ -56,6 +66,16 @@ global.fetch=async()=>{networkCalls++;throw Error('the dictionary must never use
  evidence.clearCache();
  await evidence.compareTranslation('אָמַר',candidates,selection);
  assert.equal(localReads,2,'clearCache should invalidate the comparison cache');
+ expectedRef='ברכות, דף ב עמוד א:2';
+ passageText='fertile land fertile fertile';
+ const shifted=await evidence.compareTranslation('אָמַר',[
+  {id:'with-article',text:'the fertile land'},
+  {id:'without-article',text:'fertile land'}
+ ],{sourceRange:{ref:expectedRef},currentBook:'ברכות'});
+ assert.equal(shifted.matches.find(x=>x.id==='with-article')?.rarity,
+  shifted.matches.find(x=>x.id==='without-article')?.rarity,
+  'dropping a leading article must not shift content-word frequency lookup or inflate rarity');
+
  assert.equal(networkCalls,0);
  assert.equal(hostCalls,0);
  console.log('Offline translation evidence tests passed');

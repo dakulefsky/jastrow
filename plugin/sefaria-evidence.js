@@ -61,7 +61,7 @@
    if(words.length===1&&(STOP_WORDS.has(words[0])||words[0].length<3))continue;
    for(let i=0;i+words.length<=haystack.length;i++){
     if(words.every((word,j)=>tokenMatch(word,haystack[i+j])))
-     return {phrase:haystack.slice(i,i+words.length).join(' '),type:words.every((word,j)=>word===haystack[i+j])?'exact':words.length===1?'inflected_word':'inflected_phrase'};
+     return {phrase:haystack.slice(i,i+words.length).join(' '),offset:original.length-words.length,type:words.every((word,j)=>word===haystack[i+j])?'exact':words.length===1?'inflected_word':'inflected_phrase'};
    }
   }
   return null;
@@ -76,7 +76,7 @@
   const content=words.map((word,index)=>({word,index})).filter(item=>!STOP_WORDS.has(item.word)&&item.word.length>=3);
   const matched=normalizeEnglish(match.phrase).split(' ').filter(Boolean);
   const frequencies=content.map(item=>{
-   const actual=matched[item.index]||item.word;
+   const actual=matched[item.index-(match.offset||0)]||item.word;
    return stats.frequencies.get(actual)||stats.frequencies.get(item.word)||0;
   });
   // One generic word is not enough. A lone long, rare word may count, but
@@ -86,8 +86,8 @@
    const frequency=Math.max(1,frequencies[index]||0);
    return sum+Math.log2((stats.tokens.length+1)/(frequency+1));
   },0);
-  const score=eligible?(match.type==='exact'?30:20)+content.length*18+
-   Math.min(rarity,18)*3+Math.min(words.length,8):0;
+  const score=eligible?(match.type==='exact'?30:20)+content.length*20+
+   Math.min(rarity,18)*4+Math.min(words.length,8):0;
   return {score,eligible,contentWordCount:content.length,rarity:Number(rarity.toFixed(3))};
  }
  async function translationReference(selection){
@@ -142,15 +142,22 @@
   const content=words.filter(token=>!STOP_WORDS.has(token)&&token.length>=3);
   if(content.length<2&&!(content.length===1&&content[0].length>=7))return 0;
   const base=match?.matchType==='exact'?30:match?.matchType==='inflected_phrase'?20:match?.matchType==='inflected_word'?20:0;
-  return base+content.length*18+words.length;
+  return base+content.length*20+words.length;
  }
  function bestMatch(matches,scope){
   if(scope!=='paragraph')return null;
-  const ranked=(Array.isArray(matches)?matches:[]).map(match=>({match,score:scoreMatch(match)}))
-   .filter(item=>item.score>0).sort((a,b)=>b.score-a.score);
+  // Multiple gloss phrases can point to one dictionary meaning. Rank that
+  // meaning once, using its strongest phrase, before comparing alternatives.
+  const byMeaning=new Map();
+  for(const match of Array.isArray(matches)?matches:[]){
+   const score=scoreMatch(match);if(score<=0)continue;
+   const id=String(match.id);
+   if(!byMeaning.has(id)||score>byMeaning.get(id).score)byMeaning.set(id,{match,score});
+  }
+  const ranked=[...byMeaning.values()].sort((a,b)=>b.score-a.score);
   if(!ranked.length)return null;
-  // If two meanings have comparable evidence, leave the result unmarked.
-  if(ranked.length>1&&ranked[0].score-ranked[1].score<Math.max(8,ranked[0].score*0.18))return null;
+  // Keep the same conservative confidence margin as the Hebrew edition.
+  if(ranked.length>1&&ranked[0].score-ranked[1].score<Math.max(10,ranked[0].score*0.18))return null;
   return ranked[0].match;
  }
  function clearCache(){translationCache.clear();}
