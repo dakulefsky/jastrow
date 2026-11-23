@@ -191,3 +191,10 @@ const decreeAndRemember=U.merge([
 ],'פקד');
 assert.equal(decreeAndRemember.length,3,'the different senses of the same verb must consolidate one-to-one');
 assert(decreeAndRemember.every(g=>g.sources.length===2),'each verb sense must keep both original dictionary references');
+
+const pressedAndSqueezed=U.merge([
+ {id:140,entry:{h:'רָצַף',r:'KRU18343',source:'krupnik'},meanings:[{text:'to press, to crush',label:''},{text:'to be squeezed',label:''}]},
+ {id:141,entry:{h:'רָצַף',r:'T00995',source:'jastrow'},meanings:[{text:'to press, crush',label:''},{text:'to be squeezed, crushed',label:''}]}
+],'רצף');
+assert.equal(pressedAndSqueezed.length,2,'the active and passive meanings of the same root must stay distinct');
+assert(pressedAndSqueezed.every(g=>g.sources.length===2),'both source records should be preserved for each active/passive sense');
