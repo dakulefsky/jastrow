@@ -84,7 +84,7 @@
   const outer=selection;
   const nested=outer.selection&&typeof outer.selection==='object'?outer.selection:outer;
   const context={...nested};
-  for(const key of ['currentRef','currentTitle','currentBook','currentBookId','sourceRange','renderedRange','sections']){
+  for(const key of ['currentRef','currentTitle','currentBook','currentBookId','currentIndex','sectionIndex','sourceRange','renderedRange','sections']){
    if((context[key]===undefined||context[key]===null||context[key]==='')&&outer[key]!==undefined)context[key]=outer[key];
   }
   const hasReference=!!(context.currentRef||context.sourceRange?.ref||context.sourceRange?.currentRef||
