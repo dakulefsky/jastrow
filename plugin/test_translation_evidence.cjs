@@ -27,7 +27,7 @@ global.fetch=async()=>{networkCalls++;throw Error('no runtime network requests a
  assert.equal(result.scope,'daf');
  assert.deepEqual(result.matches.map(x=>x.id),['law-context','complete']);
  assert.equal(localReads,1);
- const fallback=await evidence.compareTranslation('אָמַר',[{id:'law',text:'law'}],{});
+ const fallback=await evidence.compareTranslation('אָמַר',[{id:'law-context',text:'law is established'}],{});
  assert.equal(fallback.reason,'candidate_wording_found');
  assert.equal(localReads,2,'reader.getCurrentRef should supply the active daf when selection has no reference');
  assert.equal(hostCalls,1);
