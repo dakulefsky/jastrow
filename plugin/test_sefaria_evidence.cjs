@@ -72,8 +72,8 @@ global.fetch=async()=>{networkCalls++;throw Error('the dictionary must never use
   {id:'with-article',text:'the fertile land'},
   {id:'without-article',text:'fertile land'}
  ],{sourceRange:{ref:expectedRef},currentBook:'ברכות'});
- assert.equal(shifted.matches.find(x=>x.id==='with-article')?.evidenceScore,
-  shifted.matches.find(x=>x.id==='without-article')?.evidenceScore,
+ assert.equal(shifted.matches.find(x=>x.id==='with-article')?.rarity,
+  shifted.matches.find(x=>x.id==='without-article')?.rarity,
   'dropping a leading article must not shift content-word frequency lookup or inflate rarity');
 
  assert.equal(networkCalls,0);
