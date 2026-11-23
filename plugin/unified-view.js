@@ -109,7 +109,7 @@
   ['KRU18420','T01149','to be frightened','to shake, be frightened, afraid'],
   ['KRU18424','U00003','to absorb, to imbibe','to draw water; to attract, absorb, imbibe'],
   ['KRU18424','U00003','to draw','to draw water; to attract, absorb, imbibe'],
-  ['KRU18428','U00008','teak-tree','teak']
+  ['KRU18428','U00008','teak-tree','teak'],
   ['KRU15729','Q01325','to be sculptured','to be hewn, sculptured'],
   ['KRU15729','Q01325','to be made unfit','to be disqualified, made unfit, declared unfit'],
   ['KRU15730','Q01325','to chip, to trim','to cut, chip, hew, trim'],
@@ -168,7 +168,7 @@
   ['KRU15828','Q01503','to make known','to let go forth, issue, make known'],
   ['KRU15830','Q01507','coil, clue of thread','coil, clue of thread, of rope'],
   ['KRU15831','Q01508','idleness','hindrance, enforced idleness'],
-  ['KRU15832','Q01511','to loosen','to drive a wedge in; to loosen, shake']
+  ['KRU15832','Q01511','to loosen','to drive a wedge in; to loosen, shake'],
   ['KRU13037','N01308','the office of the Nasi','the office of the Nasi, the house of the Nasi'],
   ['KRU13041','N01312','biting','biting, bite'],
   ['KRU13043','N01313','falling off','falling off, chopping off; dropping'],
@@ -225,7 +225,7 @@
   ['KRU13174','O00166','to become leprous','leprous'],
   ['KRU13185','O00182','head-side','the head-board of a couch, head-side'],
   ['KRU13187','O00189','trunk of a tree','the trunk of the sycamore tree.'],
-  ['KRU13190','O00193','to be split','to be split, cut into']
+  ['KRU13190','O00193','to be split','to be split, cut into'],
   ['KRU11531','M01653','officer, deputy','officer'],
   ['KRU11534','M01655','pestilence','pestilence, death'],
   ['KRU11535','M01656','twisted yarn','twisted yarn, cord'],
@@ -265,7 +265,7 @@
   ['KRU11723','M02006','to hand over','to hand over; to deliver, transmit.'],
   ['KRU11725','M02007','to be surrendered','to be surrendered, transmitted; to surrender one’s self'],
   ['KRU11726','M02009','saw','teeth, file, saw'],
-  ['KRU11732','M02021','melissa','Melissophyllon, melissa']
+  ['KRU11732','M02021','melissa','Melissophyllon, melissa'],
   ['KRU07868','I00257','milt','spleen, milt'],
   ['KRU07876','I00268','grist','grist, meal'],
   ['KRU07887','I00282','to molest','to molest, provoke'],
@@ -320,7 +320,7 @@
   ['KRU08118','I00578','to be jealous','to be jealous, zealous, agitated'],
   ['KRU08121','I00581','to be soiled','soiled, filthy, defiled, polluted'],
   ['KRU08121','I00581','to be soiled','to be soiled, defiled'],
-  ['KRU08123','I00585','plate','foil, plate']
+  ['KRU08123','I00585','plate','foil, plate'],
   ['KRU05674','E00231','to oppose, to argue','dwell upon, to discuss, argue, oppose'],
   ['KRU05681','E00192','anchor','anchor, ballast'],
   ['KRU05682','E00193','appropriately, reasonably','appropriately, reasonably, correspondingly'],
@@ -400,7 +400,7 @@
   ['KRU06117','E00929','kind attention','putting an eye upon, paying kind attention to'],
   ['KRU06119','E00932','rubbing','smoothing, rubbing, finishing by rubbing'],
   ['KRU06125','E00938','looking','the looking down, the use of the verb'],
-  ['KRU06128','E00941','prostration for prayer','prostration']
+  ['KRU06128','E00941','prostration for prayer','prostration'],
   ['KRU02828','B00795','to produce, to mature','to produce, mature'],
   ['KRU02828','B00795','to be dedicated as first-born','to be dedicated as the first-born'],
   ['KRU02842','B00810','rags, fragments','fragments, rags'],
@@ -443,7 +443,7 @@
   ['KRU03057','B01022','casting bubbles','casting bubbles, bulging, bulge.'],
   ['KRU03058','B01023','to cast bubbles','to cast bubbles, to form protuberances, to bulge'],
   ['KRU03058','B01023','to swim','to struggle in the water, swim'],
-  ['KRU03059','B01024','to knock at the door','to ask entrance, knock at the door']
+  ['KRU03059','B01024','to knock at the door','to ask entrance, knock at the door'],
   ['KRU00026','A00023','displeasure','offence, displeasure'],
   ['KRU00027','A00027','of noble descent','noble descent'],
   ['KRU00030','A00030','to commit suicide','to commit suicide wilfully'],
@@ -743,5 +743,5 @@
   if(withoutMeanings.length){const details=element('details',undefined,'scholarly-entry original-only');details.append(element('summary','Additional dictionary references'));withoutMeanings.forEach((r,i)=>details.append(sourceBlock({...r,meaning:{text:'',label:''}},i)));section.append(details);}
   return section;
  }
- const api={merge,render,compatible,synonymKey,reviewedGlossPairs};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.DictionaryMeanings=api;
+ const api={merge,render,compatible,synonymKey,reviewedGlossPairs,reviewedSourceGlossPairCount:reviewedSourceGlossPairs.size};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.DictionaryMeanings=api;
 })(typeof window!=='undefined'?window:globalThis);
