@@ -1,3 +1,7 @@
+# 1.11.24 — more discriminative offline paragraph recommendations
+
+Offline contextual ranking now weighs the number of meaningful words in a matched dictionary gloss, exact versus inflected wording, and how distinctive those words are within the selected paragraph. Short, common one-word coincidences remain visible as lexical evidence but carry no recommendation weight; a lone word must be long and occur only once. Close competing meanings remain unmarked. Recommendations still use only the bundled English Steinsaltz paragraph, never whole-daf matches, network calls, or generated translations. Dictionary source entries and glosses are unchanged.
+
 # 1.11.23 — reliable offline English paragraph recommendations
 
 The English right-click menu now shows dictionary choices immediately, then resolves the selected paragraph in the foreground WebView using Otzaria's local book TOC and selected-line index. This avoids relying on a separately running background WebView's in-memory translation cache. Once the bundled English Steinsaltz translation is loaded locally, the same native submenu refreshes with a ★ only when one meaning is uniquely supported by the selected paragraph. Whole-daf evidence remains insufficient. No network access or speculative translation is used.

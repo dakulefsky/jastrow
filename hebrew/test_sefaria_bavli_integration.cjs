@@ -32,7 +32,15 @@ const vm=require('node:vm');
  assert.equal(passage.scope,'paragraph');
  assert.equal(passage.versionTitle,'William Davidson Edition - Hebrew');
  assert(passage.text&&/[א-ת]/.test(passage.text),'Hebrew Steinsaltz paragraph should be readable');
- const phrase=root.SefariaEvidence.normalizeHebrew(passage.text).split(' ').slice(0,4).join(' ');
+ const passageWords=root.SefariaEvidence.normalizeHebrew(passage.text).split(' ');
+ const common=new Set('של את על אל עם אם או גם כי לא כן הוא היא הם הן אני אתה אתם אנחנו אשר זה זאת אלה אלו כל מן בין תוך עבור אחרי לפני כאשר'.split(' '));
+ let phraseStart=-1;
+ for(let i=0;i+2<passageWords.length;i++){
+  const window=passageWords.slice(i,i+3),content=window.filter(word=>!common.has(word)&&word.length>=2);
+  if(content.length>=2){phraseStart=i;break;}
+ }
+ assert(phraseStart>=0,'real Hebrew paragraph should contain at least two content words in a short phrase');
+ const phrase=passageWords.slice(phraseStart,phraseStart+3).join(' ');
  // Otzaria selections carry currentIndex/sectionIndex for the paragraph,
  // while sourceRange.exactText is the selected Aramaic source word—not Hebrew.
  const selection={...baseSelection,currentIndex:0,sectionIndex:0,text:'מילה בארמית',
@@ -63,12 +71,18 @@ const vm=require('node:vm');
   assert.equal(mapped.text,explicit.text,'later side 2b line should map to the matching offline paragraph');
  }
  assert(phrase.split(' ').length>=2);
- const result=await root.SefariaEvidence.compareTranslation('בדיקה',[{id:'hebrew-source',text:phrase}],selection);
+ const result=await root.SefariaEvidence.compareTranslation('בדיקה',[
+  {id:'hebrew-source',text:phrase},{id:'weak-stop-word',text:'גם'}
+ ],selection);
  assert.equal(result.source,'offline');
  assert.equal(result.scope,'paragraph');
  assert.equal(result.versionTitle,'William Davidson Edition - Hebrew');
  assert.equal(result.matches[0]?.id,'hebrew-source');
  assert.equal(result.matches[0]?.matchedPhrase,phrase);
+ assert.equal(result.matches.some(item=>item.id==='weak-stop-word'),false,
+  'a Hebrew stop-word coincidence must never count as contextual meaning evidence');
+ assert(Number.isFinite(result.matches[0]?.evidenceScore)&&result.matches[0].contentWordCount>=2,
+  'recommendation evidence must expose a weighted multi-content-word score');
  assert.deepEqual(fetched,['data/sefaria-bavli/manifest.js','data/sefaria-bavli/texts/berakhot.js']);
  // Simulate a cold, independent foreground webview: its cache is not prepared
  // by the background webview, and right-click must still load the bundled
