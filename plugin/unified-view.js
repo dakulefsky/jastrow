@@ -743,5 +743,5 @@
   if(withoutMeanings.length){const details=element('details',undefined,'scholarly-entry original-only');details.append(element('summary','Additional dictionary references'));withoutMeanings.forEach((r,i)=>details.append(sourceBlock({...r,meaning:{text:'',label:''}},i)));section.append(details);}
   return section;
  }
- const api={merge,render,compatible,synonymKey,reviewedGlossPairs,reviewedSourceGlossPairCount:reviewedSourceGlossPairs.size};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.DictionaryMeanings=api;
+ const api={merge,render,compatible,synonymKey,reviewedGlossPairs,reviewedSourceGlossPairs,reviewedSourceGlossPairCount:reviewedSourceGlossPairs.size};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.DictionaryMeanings=api;
 })(typeof window!=='undefined'?window:globalThis);
