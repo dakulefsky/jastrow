@@ -85,3 +85,9 @@ const sourcePairWrongGloss=U.merge([
  {id:27,entry:{h:'גִּבְנָא',r:'C00617'},meanings:[{text:'hump',label:''}]}
 ],'גבנא');
 assert.equal(sourcePairWrongGloss.length,2,'a reviewed record pair must not merge unrelated glosses from those records');
+
+const crossHeadwordSourcePair=U.merge([
+ {id:24,entry:{h:'דָּבַר',r:'KRU04099'},meanings:[{text:'to attack, to fight',label:''}]},
+ {id:25,entry:{h:'דָּבָר',r:'C00690'},meanings:[{text:'to attack, fight',label:''}]}
+],'דבר');
+assert.equal(crossHeadwordSourcePair.length,2,'source-ID synonym pairs must not merge when headword spellings differ');
