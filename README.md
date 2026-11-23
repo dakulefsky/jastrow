@@ -1,3 +1,9 @@
+# 1.11.23 — reliable offline English paragraph recommendations
+
+The English right-click menu now shows dictionary choices immediately, then resolves the selected paragraph in the foreground WebView using Otzaria's local book TOC and selected-line index. This avoids relying on a separately running background WebView's in-memory translation cache. Once the bundled English Steinsaltz translation is loaded locally, the same native submenu refreshes with a ★ only when one meaning is uniquely supported by the selected paragraph. Whole-daf evidence remains insufficient. No network access or speculative translation is used.
+
+Regression coverage checks both daf sides, later paragraphs on each side, the real Otzaria selection payload shape, and the immediate-menu-to-recommended-menu refresh. Hebrew plugin behavior is unchanged.
+
 # 1.11.13 / 1.3.1 — scholarly contextual recommendations and Mesores HaShas
 
 The right-click voting submenu in both dictionaries now uses restrained scholarly language and a simple typographic marker. It offers at most three candidate meanings, with no thumbs-up icon, vote counts, or artificial ordering labels. A candidate is marked only when the community service returns a qualified **contextual** preference for the current surrounding words; a general word preference is never presented as the likely meaning in a particular passage. Selecting any candidate still records a contextual vote.
