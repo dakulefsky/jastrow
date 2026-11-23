@@ -177,3 +177,10 @@ const countedAndAppointed=U.merge([
 ],'מני');
 assert.equal(countedAndAppointed.length,3,'counting and appointment senses must remain distinct while their matching source glosses consolidate');
 assert(countedAndAppointed.every(g=>g.sources.length>=2),'each matching sense should retain its source references');
+
+const afflictionSenses=U.merge([
+ {id:120,entry:{h:'סָגַף',r:'KRU13173',source:'krupnik'},meanings:[{text:'to plague, to afflict',label:''},{text:'to suffer',label:''}]},
+ {id:121,entry:{h:'סָגַף',r:'O00163',source:'jastrow'},meanings:[{text:'to plague, afflict',label:''},{text:'to feel privation; to suffer',label:''}]}
+],'סגף');
+assert.equal(afflictionSenses.length,2,'the active afflicting sense and the suffering sense must remain separate');
+assert(afflictionSenses.every(g=>g.sources.length===2),'both sources should be preserved on each matched affliction sense');
