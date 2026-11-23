@@ -70,9 +70,64 @@
   if(S.normalize(a)!==S.normalize(b))return false;
   return aa.every((x,i)=>!x.marks.length||!bb[i].marks.length||x.marks.join('')===bb[i].marks.join(''));
  }
+ const reviewedSourceGlossPairs=new Set([
+  ['KRU03578','C00617','hump, height','hump'],
+  ['KRU03629','C00640','blasphemy','blasphemy, reviling'],
+  ['KRU03783','C00540','cut wool','wool-shearing'],
+  ['KRU03931','C00509','wheat flour of the second course','wheat flour of the second course, dark flour'],
+  ['KRU03950','C00532','circumciser','circumciser, surgeon.'],
+  ['KRU03955','C00537','to be cut, to be shorn, to be trimmed','to be cut, trimmed, shorn.'],
+  ['KRU03956','C00537','to cut, to shear','to cut, shear'],
+  ['KRU03956','C00538','to cross, to pass','to cross, pass'],
+  ['KRU03958','C00541','to go out of one’s way','to pass, go out of one’s way'],
+  ['KRU03985','C00568','to cut branches off, to tap','to cut branches off'],
+  ['KRU03989','C00573','to be decreed','to be decreed, ordained'],
+  ['KRU03990','C00574','to cut, to split','to cut, split'],
+  ['KRU03994','C00578','sheep in folds, flock','sheep in folds, fold, flock'],
+  ['KRU04003','C00590','to laugh, to jest','to laugh, jest'],
+  ['KRU04022','C00610','top, back','back, top'],
+  ['KRU04040','C00629','a bitter herb, worm-wood','worm-wood, bitter herb'],
+  ['KRU04043','C00631','full of incisions','full of incisions, wrinkled'],
+  ['KRU04048','C00638','ravines','valleys, ravines'],
+  ['KRU04055','C00645','one whose hand or fingers are cut off or stumped','one whose hand or fingers are cut off'],
+  ['KRU04058','C00648','flame','flame, light'],
+  ['KRU04059','C00649','pond','cavity, pond'],
+  ['KRU04061','C00652','flame-red','flame-colored'],
+  ['KRU04062','C00654','hell, place of punishment of the wicked in the hereafter','place of punishment of the wicked in the hereafter, hell'],
+  ['KRU04067','C00659','inhabitants of Coptos (Upper Egypt)','inhabitants of Coptos'],
+  ['KRU04080','C00673','haughty, proud','haughty, proud man'],
+  ['KRU04082','C00675','pride','pride, haughtiness'],
+  ['KRU04088','C00682','tapping','cutting, tapping'],
+  ['KRU04099','C00690','to attack, to fight','to attack, fight'],
+  ['KRU04108','C00700','to manifest power, to treat with vigor','to manifest power, treat with rigor'],
+  ['KRU04109','C00701','he who had his arteries opened','he who had his arteries opened, bled to death.'],
+  ['KRU04112','C00708','troop, invaders, robbers','ravaging troop, invaders, robbers'],
+  ['KRU04117','C00714','adultery','adultery, whoredom'],
+  ['KRU04119','C00717','clapper of a bell','ball, clapper of a bell'],
+  ['KRU04132','C00726','the glowing horizon','flashes, the glowing horizon'],
+  ['KRU04145','C00741','the use of letters for their numerical value (in homiletic interpretation)','the use of letters for their numerical value; homiletic interpretation based on the numerical value of letters'],
+  ['KRU04149','C00747','for the sake of, in order that','for the sake of, on account of; in order that'],
+  ['KRU04150','C00746','to cover, to protect','to cover, surround with; to protect'],
+  ['KRU04173','C00777','side, neighbourhood','neighborhood, side'],
+  ['KRU04173','C00777','trnsf. way, manner','way, manner'],
+  ['KRU04174','C00778','agony of death','agony of death, dying stage'],
+  ['KRU04175','C00779','a large vessel which turned out defective','a large vessel which turned out defective or unwieldy'],
+  ['KRU04185','C00791','embracing','embracing, hugging'],
+  ['KRU04186','C00792','rim, railing','railing, rim'],
+  ['KRU04199','C00803','for, as a consequence','as a consequence, for'],
+  ['KRU04200','C00805','lime','lime, plaster.'],
+  ['KRU04200','C00805','froth','froth, foam.'],
+  ['KRU04201','C00806','arrow','projectile, arrow'],
+  ['KRU04203','C00806','projectile','projectile, arrow'],
+  ['KRU04205','C00810','shooter, arrow-maker','arrow-maker'],
+  ['KRU04207','C00814','scraping, rind','rind'],
+  ['KRU04212','C00820','provocation, stirring up','instigation, provocation, stirring up']
+ ].map(([a,b,x,y])=>[a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ')));
  function reviewedEquivalent(source,item){
-  const pair=[source,item].map(s=>s.entry.r+'|'+s.meaning.text).sort();
-  return pair[0]==='A03220|accident, occurrence'&&pair[1]==='KRU02095|in accident';
+  const ids=[source.entry.r,item.entry.r].sort().join('|');
+  const glosses=[clean(source.meaning.text),clean(item.meaning.text)].sort().join(' | ');
+  return (ids==='A03220|KRU02095'&&glosses==='accident, occurrence | in accident')||
+   reviewedSourceGlossPairs.has(ids+'::'+glosses);
  }
  function compatibleForm(a,b){
   // A missing source label is unknown, not evidence of a different grammatical sense.
