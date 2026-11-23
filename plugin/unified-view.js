@@ -121,7 +121,7 @@
   ['KRU04203','C00806','projectile','projectile, arrow'],
   ['KRU04205','C00810','shooter, arrow-maker','arrow-maker'],
   ['KRU04207','C00814','scraping, rind','rind'],
-  ['KRU04212','C00820','provocation, stirring up','instigation, provocation, stirring up']
+  ['KRU04212','C00820','provocation, stirring up','instigation, provocation, stirring up'],
   ['KRU05829','E00659','calculation of proportions','mark; calculation of proportions'],
   ['KRU05838','E00695','banqueting (around the table)','placing the divans around the table;'],
   ['KRU05894','E00559','these, those','these, those, these things'],
@@ -174,7 +174,7 @@
   ['KRU06186','F00056','remnant','rest, remnant'],
   ['KRU06190','F00071','meeting','meeting, appointment'],
   ['KRU06206','F00109','a certain pastry','certain pastry, tart'],
-  ['KRU06207','F00115','to forgive','to be indulgent, forgive']
+  ['KRU06207','F00115','to forgive','to be indulgent, forgive'],
   ['KRU06769','H00347','entrenchment around a well','the entrenchment around a well'],
   ['KRU06769','H00348','something sweet','something sweet, sweetness'],
   ['KRU06797','H00397','one of the five books of Moses','Ḥomesh, one of the five books of Moses'],
