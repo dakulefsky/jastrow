@@ -98,3 +98,25 @@ const auditedCorpusPair=U.merge([
 ],'מסמסה');
 assert.equal(auditedCorpusPair.length,1,'audited same-headword dictionary synonyms should consolidate');
 assert.equal(auditedCorpusPair[0].sources.length,2,'the original sources remain available after consolidation');
+
+
+// Two different senses in the same source records must be consolidated only
+// with their corresponding reviewed gloss, never with each other.
+const sameRecordDistinctSenses=U.merge([
+ {id:28,entry:{h:'כָּלָא',r:'KRU04200',source:'krupnik'},meanings:[
+  {text:'lime',label:''},{text:'froth',label:''}
+ ]},
+ {id:29,entry:{h:'כָּלָא',r:'C00805',source:'jastrow'},meanings:[
+  {text:'lime, plaster.',label:''},{text:'froth, foam.',label:''}
+ ]}
+],'כלא');
+assert.equal(sameRecordDistinctSenses.length,2,'two distinct meanings in the same pair of source records must stay separate');
+assert(sameRecordDistinctSenses.every(group=>group.sources.length===2),'each of the two senses should retain both corresponding source citations');
+
+// A reviewed gloss pair must never override explicit grammatical differences.
+// This exact audited pair contrasts active and passive English glosses.
+const reviewedPairWithVoiceConflict=U.merge([
+ {id:30,entry:{h:'פְּטַר',r:'KRU07593',source:'krupnik'},meanings:[{text:'to set free',label:'Pa.'}]},
+ {id:31,entry:{h:'פְּטַר',r:'H01767',source:'jastrow'},meanings:[{text:'to be set free',label:'Ithpe.'}]}
+],'פטר');
+assert.equal(reviewedPairWithVoiceConflict.length,2,'a reviewed lexical gloss pair must not collapse explicitly different grammatical voices');
