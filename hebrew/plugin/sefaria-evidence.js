@@ -52,7 +52,7 @@
   const frequencies=content.map(item=>stats.frequencies.get(matched[item.index]||item.word)||stats.frequencies.get(item.word)||0);
   // A single short/common Hebrew token is weak evidence; accept it only when
   // it is a longer lexical item occurring exactly once in the selected paragraph.
-  const eligible=content.length>=2||(content.length===1&&content[0].word.length>=3&&frequencies[0]===1);
+  const eligible=content.length>=2||(content.length===1&&content[0].word.length>=4&&frequencies[0]===1);
   const rarity=content.reduce((sum,word,index)=>{
    const frequency=Math.max(1,frequencies[index]||0);
    return sum+Math.log2((stats.tokens.length+1)/(frequency+1));
@@ -95,7 +95,7 @@
  }
  function matchScore(match,phrase){
   const words=normalizeHebrew(phrase).split(' ').filter(Boolean),content=words.filter(word=>!STOP.has(word)&&word.length>=2);
-  if(content.length<2&&!(content.length===1&&content[0].length>=3))return 0;
+  if(content.length<2&&!(content.length===1&&content[0].length>=4))return 0;
   return (match?.type==='exact'?30:20)+content.length*20+words.length;
  }
  function bestContextualMatch(evidence){
