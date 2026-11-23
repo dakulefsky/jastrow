@@ -3,12 +3,12 @@ const assert=require('node:assert/strict');
 const path=require('node:path');
 const file=path.join(__dirname,'sefaria-evidence.js');
 delete require.cache[require.resolve(file)];
-let localReads=0,networkCalls=0,hostCalls=0;
+let localReads=0,networkCalls=0,hostCalls=0,expectedRef='ברכות, דף ב עמוד א:1';\nlet passageText='The discussion was completed after the law and order were explained.';
 global.SefariaOfflineTranslation={getPassage:async(ref,selection)=>{
  localReads++;
- assert.equal(ref,'ברכות, דף ב עמוד א:1');
+ assert.equal(ref,expectedRef);
  assert.equal(selection.currentBook,'ברכות');
- return {text:'The discussion was completed after the law and order were explained.',scope:'paragraph',
+ return {text:passageText,scope:'paragraph',
   dafReference:'Berakhot 2a',license:'CC-BY-NC',versionTitle:'William Davidson Edition - English'};
 }};
 global.Otzaria={call:async()=>{hostCalls++;throw Error('host fallback should not be needed');}};
@@ -65,6 +65,16 @@ global.fetch=async()=>{networkCalls++;throw Error('the dictionary must never use
  evidence.clearCache();
  await evidence.compareTranslation('אָמַר',candidates,selection);
  assert.equal(localReads,2,'clearCache should invalidate the comparison cache');
+ expectedRef='ברכות, דף ב עמוד א:2';
+ passageText='fertile land fertile fertile';
+ const shifted=await evidence.compareTranslation('אָמַר',[
+  {id:'with-article',text:'the fertile land'},
+  {id:'without-article',text:'fertile land'}
+ ],{sourceRange:{ref:expectedRef},currentBook:'ברכות'});
+ assert.equal(shifted.matches.find(x=>x.id==='with-article')?.evidenceScore,
+  shifted.matches.find(x=>x.id==='without-article')?.evidenceScore,
+  'dropping a leading article must not shift content-word frequency lookup or inflate rarity');
+
  assert.equal(networkCalls,0);
  assert.equal(hostCalls,0);
  console.log('Offline translation evidence tests passed');
