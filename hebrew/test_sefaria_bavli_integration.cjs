@@ -77,7 +77,10 @@ const vm=require('node:vm');
  fetched.length=0;
  root.HebrewLookup={
   valid:()=>true,normalize:value=>String(value||'').replace(/\s+/g,' ').trim(),
-  lookup:()=>[{word:'בדיקה',rid:'KRU99999',parts:[{meaning:phrase,text:phrase,label:''}]}],
+  lookup:()=>[{word:'בדיקה',rid:'KRU99999',parts:[
+   {meaning:phrase,text:phrase,label:'meaning supported by this paragraph'},
+   {meaning:'משמעות שאינה מופיעה כלל בפסקה',text:'unrelated gloss',label:'unmatched alternative'}
+  ]}],
   segmentWords:()=>[]
  };
  assert.equal(root.SefariaOfflineTranslation.isDafPrepared(selection.currentRef,selection),false,
@@ -86,6 +89,15 @@ const vm=require('node:vm');
  assert.equal(messages.length,2,'right-click should show an instant result and then an offline recommendation refresh');
  assert(!messages[0].message.includes('★ מומלץ'),'the immediate result must not guess before evidence loads');
  assert(messages[1].message.includes('★ מומלץ'),'the cold foreground webview should find the recommendation from bundled Hebrew text');
+ assert(messages[1].message.indexOf('★ מומלץ')<messages[1].message.indexOf('unrelated gloss'),
+  'the meaning actually found in the selected Hebrew paragraph must be moved to the top and marked');
+ assert(!messages[1].message.includes('unrelated gloss — ★ מומלץ'),
+  'an unsupported alternative must never receive the recommendation marker');
+ const ambiguous=await root.SefariaEvidence.compareTranslation('בדיקה',[
+  {id:'meaning-a',text:phrase},{id:'meaning-b',text:phrase}
+ ],selection);
+ assert.equal(root.SefariaEvidence.bestContextualMatch(ambiguous),null,
+  'equally supported Hebrew meanings must remain unranked rather than guessing');
  assert.deepEqual(fetched,['data/sefaria-bavli/manifest.js','data/sefaria-bavli/texts/berakhot.js'],
   'the recommendation must use only bundled assets, with no network fetch');
  console.log('Full offline Hebrew Steinsaltz paragraph comparison and cold-cache quick recommendation passed.');
