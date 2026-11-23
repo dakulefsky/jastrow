@@ -63,12 +63,18 @@ const vm=require('node:vm');
   assert.equal(mapped.text,explicit.text,'later side 2b line should map to the matching offline paragraph');
  }
  assert(phrase.split(' ').length>=2);
- const result=await root.SefariaEvidence.compareTranslation('בדיקה',[{id:'hebrew-source',text:phrase}],selection);
+ const result=await root.SefariaEvidence.compareTranslation('בדיקה',[
+  {id:'hebrew-source',text:phrase},{id:'weak-stop-word',text:'גם'}
+ ],selection);
  assert.equal(result.source,'offline');
  assert.equal(result.scope,'paragraph');
  assert.equal(result.versionTitle,'William Davidson Edition - Hebrew');
  assert.equal(result.matches[0]?.id,'hebrew-source');
  assert.equal(result.matches[0]?.matchedPhrase,phrase);
+ assert.equal(result.matches.some(item=>item.id==='weak-stop-word'),false,
+  'a Hebrew stop-word coincidence must never count as contextual meaning evidence');
+ assert(Number.isFinite(result.matches[0]?.evidenceScore)&&result.matches[0].contentWordCount>=2,
+  'recommendation evidence must expose a weighted multi-content-word score');
  assert.deepEqual(fetched,['data/sefaria-bavli/manifest.js','data/sefaria-bavli/texts/berakhot.js']);
  // Simulate a cold, independent foreground webview: its cache is not prepared
  // by the background webview, and right-click must still load the bundled
