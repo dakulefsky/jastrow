@@ -81,7 +81,7 @@
   });
   // One generic word is not enough. A lone long, rare word may count, but
   // multiword meanings need at least two content words in the same sequence.
-  const eligible=content.length>=2||(content.length===1&&content[0].word.length>=6&&frequencies[0]===1);
+  const eligible=content.length>=2||(content.length===1&&content[0].word.length>=7&&frequencies[0]===1);
   const rarity=content.reduce((sum,word,index)=>{
    const frequency=Math.max(1,frequencies[index]||0);
    return sum+Math.log2((stats.tokens.length+1)/(frequency+1));
