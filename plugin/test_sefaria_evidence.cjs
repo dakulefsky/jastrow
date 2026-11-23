@@ -30,7 +30,15 @@ global.fetch=async()=>{networkCalls++;throw Error('the dictionary must never use
  assert.equal(evidence.bestMatch([
   {id:'specific',candidatePhrase:'the fertile land',matchType:'inflected_phrase'}
  ],'daf'),null,'a whole-daf match is not precise enough to recommend a meaning for one selected word');
- const candidates=[{id:'complete',text:'complete'},{id:'law-order',text:'law and order'},{id:'absent',text:'mountain'}];
+ assert.equal(evidence.bestMatch([
+  {id:'weak',candidatePhrase:'law',matchType:'exact'}
+ ],'paragraph'),null,'a lone short/common English word must not trigger a recommendation');
+ assert.equal(evidence.bestMatch([
+  {id:'near-a',candidatePhrase:'fertile land',matchType:'exact'},
+  {id:'near-b',candidatePhrase:'explained law',matchType:'exact'}
+ ],'paragraph'),null,'near-equal multiword evidence must remain ambiguous');
+ const candidates=[{id:'complete',text:'complete'},{id:'law-order',text:'law and order'},
+  {id:'weak-law',text:'law'},{id:'absent',text:'mountain'}];
  const selection={sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'};
  const result=await evidence.compareTranslation('אָמַר',candidates,selection);
  assert.equal(result.source,'offline');
@@ -38,6 +46,9 @@ global.fetch=async()=>{networkCalls++;throw Error('the dictionary must never use
  assert.deepEqual(result.matches.map(x=>x.id),['complete','law-order']);
  assert.equal(result.matches[0].matchedPhrase,'completed');
  assert.equal(result.matches[1].matchedPhrase,'law and order');
+ assert.equal(result.matches.some(item=>item.id==='weak-law'),false,'a short one-word coincidence must be filtered out');
+ assert.equal(evidence.bestMatch(result.matches,result.scope)?.id,'law-order',
+  'the two-content-word contextual phrase should outrank a lone inflected word');
  assert.equal(localReads,1);
  await evidence.compareTranslation('אָמַר',candidates,selection);
  assert.equal(localReads,1,'repeat comparison should use the in-memory result cache');
