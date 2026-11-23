@@ -62,8 +62,13 @@ const vm=require('node:vm');
    sourceRange:{exactText:'שמע ישראל'}};
   const actualPassage=await root.SefariaOfflineTranslation.getPassage(selected.currentRef,selected);
   assert.equal(actualPassage.scope,'paragraph','recommendation must use the selected paragraph');
-  const actualPhrase=root.SefariaEvidence.normalizeEnglish(actualPassage.text).split(' ').slice(0,5).join(' ');
-  assert(actualPhrase.length>10,'real paragraph should provide a meaningful English phrase');
+  const actualWords=root.SefariaEvidence.normalizeEnglish(actualPassage.text).split(' ');
+  const common=new Set('a an the and or of to in on at by for from with as is are was were be been'.split(' '));
+  let phraseStart=actualWords.findIndex((word,index)=>actualWords[index+1]&&
+   !common.has(word)&&word.length>=3&&!common.has(actualWords[index+1])&&actualWords[index+1].length>=3);
+  assert(phraseStart>=0,'real paragraph should contain a discriminative two-word phrase');
+  const actualPhrase=actualWords.slice(phraseStart,phraseStart+2).join(' ');
+  assert(actualPhrase.length>5,'real paragraph should provide a meaningful English phrase');
   const choices=[
    {candidateId:'supported',entryId:11,text:actualPhrase},
    {candidateId:'unsupported',entryId:22,text:'a completely unrelated phrase about zebras'}
