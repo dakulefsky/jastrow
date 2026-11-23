@@ -89,9 +89,9 @@ const vm=require('node:vm');
  assert.equal(messages.length,2,'right-click should show an instant result and then an offline recommendation refresh');
  assert(!messages[0].message.includes('★ מומלץ'),'the immediate result must not guess before evidence loads');
  assert(messages[1].message.includes('★ מומלץ'),'the cold foreground webview should find the recommendation from bundled Hebrew text');
- assert(messages[1].message.indexOf('★ מומלץ')<messages[1].message.indexOf('unrelated gloss'),
+ assert(messages[1].message.indexOf('★ מומלץ')<messages[1].message.indexOf('משמעות שאינה מופיעה כלל בפסקה'),
   'the meaning actually found in the selected Hebrew paragraph must be moved to the top and marked');
- assert(!messages[1].message.includes('unrelated gloss — ★ מומלץ'),
+ assert(!messages[1].message.includes('משמעות שאינה מופיעה כלל בפסקה — ★ מומלץ'),
   'an unsupported alternative must never receive the recommendation marker');
  const ambiguous=await root.SefariaEvidence.compareTranslation('בדיקה',[
   {id:'meaning-a',text:phrase},{id:'meaning-b',text:phrase}
