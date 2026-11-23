@@ -45,4 +45,4 @@ const numberedLabelBridge=U.merge([
  {id:15,entry:{h:'אָמַר',r:'KRU00003'},meanings:[{text:'to say',label:'Ithpe 1'}]}
 ],'אמר');
 assert.equal(numberedLabelBridge.length,1,'Krupnik sense numbering must not make an otherwise identical grammatical label look different');
-assert.equal(numberedLabelBridge[0].form,'ithpe.');
+assert.equal(numberedLabelBridge[0].form,'ithpe');
