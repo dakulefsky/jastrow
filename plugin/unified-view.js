@@ -234,7 +234,7 @@
  }
  function sameMeaning(group,item,word){
   const itemForm=stem(item.meaning.label);
-  if(!compatibleForm(group.form,itemForm)||(S.hasVowels(word)&&!group.sources.every(s=>compatible(s.spelling,item.spelling))))return false;
+  if(!compatibleForm(group.form,itemForm)||!group.sources.every(s=>compatible(s.spelling,item.spelling)))return false;
   return synonymKey(group.text)===synonymKey(item.meaning.text)||
    group.sources.some(s=>reviewedEquivalent(s,item)||reviewedGlossEquivalent(s,item));
  }
