@@ -573,7 +573,9 @@
   ['KRU07649','H01868','to feel pain','to feel heavy, feel pain'],
   ['KRU07660','H01881','to put down','to put down, rest'],
   ['KRU01321','A02010','because of','on account of, for the sake of'],
-  ['KRU01323','A02014','balance','balances, scales']
+  ['KRU01323','A02014','balance','balances, scales'],
+  ['KRU04930','D00329','conclusion','evidence by conclusion, exact meaning'],
+  ['KRU04949','D00356','suite','a suite of graded officers']
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  function reviewedEquivalent(source,item){
   if(!compatible(source.spelling,item.spelling))return false;
