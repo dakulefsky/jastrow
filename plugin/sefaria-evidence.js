@@ -139,7 +139,7 @@
   if(Number.isFinite(match?.evidenceScore))return match.evidenceScore;
   const phrase=normalizeEnglish(match?.candidatePhrase||''),words=phrase.split(' ').filter(Boolean);
   const content=words.filter(token=>!STOP_WORDS.has(token)&&token.length>=3);
-  if(content.length<2&&!(content.length===1&&content[0].length>=6))return 0;
+  if(content.length<2&&!(content.length===1&&content[0].length>=7))return 0;
   const base=match?.matchType==='exact'?30:match?.matchType==='inflected_phrase'?20:match?.matchType==='inflected_word'?20:0;
   return base+content.length*18+words.length;
  }
