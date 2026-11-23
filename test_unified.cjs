@@ -184,3 +184,10 @@ const afflictionSenses=U.merge([
 ],'סגף');
 assert.equal(afflictionSenses.length,2,'the active afflicting sense and the suffering sense must remain separate');
 assert(afflictionSenses.every(g=>g.sources.length===2),'both sources should be preserved on each matched affliction sense');
+
+const decreeAndRemember=U.merge([
+ {id:130,entry:{h:'פָּקַד',r:'KRU15801',source:'krupnik'},meanings:[{text:'to give in charge, to deposit',label:''},{text:'to be remembered',label:''},{text:'to be commanded',label:''}]},
+ {id:131,entry:{h:'פָּקַד',r:'Q01449',source:'jastrow'},meanings:[{text:'to give in charge, entrust, deposit',label:''},{text:'to be visited, remembered, decreed upon',label:''},{text:'to be commanded, commissioned',label:''}]}
+],'פקד');
+assert.equal(decreeAndRemember.length,3,'the different senses of the same verb must consolidate one-to-one');
+assert(decreeAndRemember.every(g=>g.sources.length===2),'each verb sense must keep both original dictionary references');
