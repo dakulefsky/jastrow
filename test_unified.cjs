@@ -59,7 +59,7 @@ const qualifiedSynonym=U.merge([
  {id:18,entry:{h:'אַבְדָּן',r:'A00044'},meanings:[{text:'ruin, destruction',label:''}]},
  {id:19,entry:{h:'אַבְדָּן',r:'KRU00036'},meanings:[{text:'destruction',label:''}]}
 ],'אבדן');
-assert.equal(qualifiedSynonym.length,1,'a reviewed concise synonym should join the fuller gloss');
+assert.equal(qualifiedSynonym.length,1,'a reviewed multiword synonym should join the fuller gloss');
 
 const scopedSynonym=U.merge([
  {id:20,entry:{h:'אַבָּא',r:'A00017'},meanings:[{text:'my father',label:''}]},
@@ -68,7 +68,7 @@ const scopedSynonym=U.merge([
 assert.equal(scopedSynonym.length,2,'a reviewed gloss pair must not merge different headwords');
 
 const grammarProtectedSynonym=U.merge([
- {id:22,entry:{h:'גָּעַל',r:'A1'},meanings:[{text:'to be soiled',label:'Ithpa.'}]},
- {id:23,entry:{h:'גָּעַל',r:'K1'},meanings:[{text:'to be darkened through sulphur fumes',label:'Pa.'}]}
+ {id:22,entry:{h:'גָּעַל',r:'A1'},meanings:[{text:'to be attached',label:'Ithpa.'}]},
+ {id:23,entry:{h:'גָּעַל',r:'K1'},meanings:[{text:'to be attached to, cling to',label:'Pa.'}]}
 ],'געל');
 assert.equal(grammarProtectedSynonym.length,2,'synonym review must not override conflicting grammatical labels');
