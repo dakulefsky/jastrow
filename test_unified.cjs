@@ -2,6 +2,30 @@ const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=req
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
 assert.equal(U.reviewedSourceGlossPairCount,592,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+
+const dataDir=__dirname+'/plugin/data';
+c.window.JASTROW_CHUNKS={};
+for(const file of fs.readdirSync(dataDir).filter(n=>/^(?:chunk-\\d+|krupnik-\\d+)\\.js$/.test(n)).sort()){
+ vm.runInContext(fs.readFileSync(dataDir+'/'+file,'utf8'),c);
+}
+const sourceEntries=Object.values(c.window.JASTROW_CHUNKS).flatMap(chunk=>Object.values(chunk));
+const sourceByRef=new Map(sourceEntries.filter(entry=>entry.r).map(entry=>[entry.r,entry]));
+const cleanGloss=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\\s]+$/,'').trim().replace(/\\s+/g,' ');
+const decodeHtml=value=>value.replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#(\\d+);/g,(_,n)=>String.fromCodePoint(Number(n))).replace(/&#x([0-9a-f]+);/gi,(_,n)=>String.fromCodePoint(parseInt(n,16)));
+for(const pair of U.reviewedSourceGlossPairs){
+ const [refs,glossText]=pair.split('::'),[firstRef,secondRef]=refs.split('|'),glosses=glossText.split(' | ');
+ assert.equal(glosses.length,2,'each reviewed mapping must contain exactly two glosses: '+pair);
+ const krupnikRef=[firstRef,secondRef].find(id=>id.startsWith('KRU'));
+ const jastrowRef=[firstRef,secondRef].find(id=>!id.startsWith('KRU'));
+ const krupnik=sourceByRef.get(krupnikRef),jastrow=sourceByRef.get(jastrowRef);
+ assert(krupnik?.source==='krupnik','reviewed Krupnik source record must exist: '+krupnikRef);
+ assert(jastrow?.html,'reviewed Jastrow source record must exist: '+jastrowRef);
+ const krupnikGloss=glosses.find(gloss=>(krupnik.glosses||[]).some(item=>cleanGloss(item.text)===gloss));
+ assert(krupnikGloss,'Krupnik gloss must match source wording for '+krupnikRef+': '+glosses.join(' / '));
+ const italicGlosses=[...jastrow.html.matchAll(/<i\\b[^>]*>([\\s\\S]*?)<\\/i>/gi)].map(match=>cleanGloss(decodeHtml(match[1].replace(/<[^>]*>/g,' '))));
+ const jastrowGloss=glosses.find(gloss=>gloss!==krupnikGloss&&italicGlosses.includes(gloss));
+ assert(jastrowGloss,'Jastrow gloss must occur in an explicit italic source phrase for '+jastrowRef+': '+glosses.join(' / '));
+}
 assert.deepEqual(S.lookup(index,'אַרְעָא').ids.slice(0,2),[33935,3221]);
 assert.deepEqual(S.lookup(index,'אִרְעָא').ids.slice(0,2),[33936,3220]);
 assert.equal(S.vowelRank({h:'אֲרַע²',alt:['אַרְעָא']},'אַרְעָא'),0);
