@@ -20,6 +20,9 @@ for(const pair of U.reviewedSourceGlossPairs){
  const krupnik=sourceByRef.get(krupnikRef),jastrow=sourceByRef.get(jastrowRef);
  assert(krupnik?.source==='krupnik','reviewed Krupnik source record must exist: '+krupnikRef);
  assert(jastrow?.html,'reviewed Jastrow source record must exist: '+jastrowRef);
+ const krupnikHeadwords=[krupnik.h,...(krupnik.alt||[])].map(S.normalize).filter(Boolean);
+ const jastrowHeadwords=[jastrow.h,...(jastrow.alt||[])].map(S.normalize).filter(Boolean);
+ assert(krupnikHeadwords.some(headword=>jastrowHeadwords.includes(headword)),'reviewed source records must share an attested consonantal headword or alias: '+krupnikRef+' / '+jastrowRef);
  const krupnikGloss=glosses.find(gloss=>(krupnik.glosses||[]).some(item=>cleanGloss(item.text)===gloss));
  assert(krupnikGloss,'Krupnik gloss must match source wording for '+krupnikRef+': '+glosses.join(' / '));
  const italicGlosses=[...jastrow.html.matchAll(/<i\b[^>]*>([\s\S]*?)<\/i>/gi)].map(match=>cleanGloss(decodeHtml(match[1].replace(/<[^>]*>/g,' '))));
