@@ -579,8 +579,7 @@
   ['KRU06145','F00013','certainty','certainties'],
   ['KRU06236','G00051','the place in the field where manure is piled up','the place in the field where foliage is piled up'],
   ['KRU07873','I00263','to squeeze','to squeeze into, fasten to'],
-  ['KRU07988','I00414','care-taking','nursing, attendance, care'],
-  ['KRU11553','M01684','something real','something tangible']
+  ['KRU07988','I00414','care-taking','nursing, attendance, care']
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  function reviewedEquivalent(source,item){
   if(!compatible(source.spelling,item.spelling))return false;
