@@ -109,7 +109,7 @@
   }
   const ranked=[...byMeaning.values()].sort((a,b)=>b.score-a.score);
   if(!ranked.length)return null;
-  if(ranked.length>1&&ranked[0].score-ranked[1].score<Math.max(10,ranked[0].score*0.18))return null;
+  if(ranked.length>1&&ranked[0].score-ranked[1].score<Math.max(10,ranked[0].score*0.15))return null;
   return ranked[0].match;
  }
  function clearCache(){cache.clear();}
