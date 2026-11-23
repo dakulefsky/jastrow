@@ -95,7 +95,7 @@
  }
  function matchScore(match,phrase){
   const normalized=normalizeHebrew(phrase),words=normalized.split(' ').filter(Boolean);
-  if(!normalized)return match?.type==='exact'?30:match?.type==='inflected_phrase'?20:0;
+  if(!normalized)return match?.type==='exact'?30:match?.type==='inflected_phrase'?20:match?.type==='inflected_word'?10:0;
   const content=words.filter(word=>!STOP.has(word)&&word.length>=2);
   if(content.length<2&&!(content.length===1&&content[0].length>=4))return 0;
   return (match?.type==='exact'?30:20)+content.length*20+words.length;
