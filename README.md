@@ -1,3 +1,7 @@
+# 1.11.25 — shared evidence-ranking rules across both editions
+
+The English and Hebrew plugins now use the same weighted evidence formula and confidence margin, including deduplicating multiple phrase hits for one meaning before selecting a recommendation. Language-specific tokenization, stop words, and morphology remain adapted to the corresponding Steinsaltz translation. A recommendation still requires one strong unique match in the selected paragraph; whole-daf evidence and close ties remain unmarked. No dictionary glosses or source records were changed.
+
 # 1.11.24 — more discriminative offline paragraph recommendations
 
 Offline contextual ranking now weighs the number of meaningful words in a matched dictionary gloss, exact versus inflected wording, and how distinctive those words are within the selected paragraph. Short, common one-word coincidences remain visible as lexical evidence but carry no recommendation weight; a lone word must be long and occur only once. Close competing meanings remain unmarked. Recommendations still use only the bundled English Steinsaltz paragraph, never whole-daf matches, network calls, or generated translations. Dictionary source entries and glosses are unchanged.
