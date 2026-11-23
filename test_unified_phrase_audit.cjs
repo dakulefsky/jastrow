@@ -32,6 +32,7 @@ for(const pair of U.reviewedSourceGlossPairs){
    return {ref:test.ref,expected:test.expected,extracted,found:extracted.includes(test.expected)};
   }),cases);
   const misses=results.filter(x=>!x.found);
+  if(misses.length)console.error('UNMATCHED_REVIEWED_PAIRS='+JSON.stringify(misses));
   assert.equal(misses.length,0,'Every reviewed Jastrow gloss must be emitted by the real phrase extractor. First misses: '+JSON.stringify(misses.slice(0,15)));
   console.log('PASS: all '+results.length+' reviewed Jastrow glosses are emitted by JastrowReadingView.phrases.');
  }finally{await browser.close();}
