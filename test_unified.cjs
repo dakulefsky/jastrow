@@ -186,7 +186,7 @@ const multiSenseSourcePair=U.merge([
   {text:'carrying out',label:''},{text:'sprouting',label:''},{text:'expenditure, outlay',label:''}
  ]},
  {id:91,entry:{h:'הוֹצָאָה',r:'E00266',source:'jastrow'},meanings:[
-  {text:'carrying out of the house',label:''},{text:'bringing forth, sprouting',label:''},{text:'expenditure, outlay, cost; marketing',label:''}
+  {text:'carrying out',label:''},{text:'bringing forth, sprouting',label:''},{text:'expenditure, outlay, cost; marketing',label:''}
  ]}
 ],'הוצאה');
 assert.equal(multiSenseSourcePair.length,3,'each of three meanings must consolidate only with its own reviewed counterpart');
