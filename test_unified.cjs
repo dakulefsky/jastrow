@@ -91,3 +91,10 @@ const crossHeadwordSourcePair=U.merge([
  {id:25,entry:{h:'אָב',r:'C00690'},meanings:[{text:'to attack, fight',label:''}]}
 ],'דבר');
 assert.equal(crossHeadwordSourcePair.length,2,'source-ID synonym pairs must not merge when headword spellings differ');
+
+const auditedCorpusPair=U.merge([
+ {id:26,entry:{h:'מַסְמָסָה',r:'KRU11703'},meanings:[{text:'softening',label:''}]},
+ {id:27,entry:{h:'מַסְמָסָה',r:'E00635'},meanings:[{text:'melting, softening',label:''}]}
+],'מסמסה');
+assert.equal(auditedCorpusPair.length,1,'audited same-headword dictionary synonyms should consolidate');
+assert.equal(auditedCorpusPair[0].sources.length,2,'the original sources remain available after consolidation');
