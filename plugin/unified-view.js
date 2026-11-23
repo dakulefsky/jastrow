@@ -30,8 +30,14 @@
   const pair=[source,item].map(s=>s.entry.r+'|'+s.meaning.text).sort();
   return pair[0]==='A03220|accident, occurrence'&&pair[1]==='KRU02095|in accident';
  }
+ function compatibleForm(a,b){
+  // A missing source label is unknown, not evidence of a different grammatical sense.
+  // Two explicit, conflicting labels remain separate.
+  return !a||!b||a===b;
+ }
  function sameMeaning(group,item,word){
-  if(group.form!==stem(item.meaning.label)||(S.hasVowels(word)&&!group.sources.every(s=>compatible(s.spelling,item.spelling))))return false;
+  const itemForm=stem(item.meaning.label);
+  if(!compatibleForm(group.form,itemForm)||(S.hasVowels(word)&&!group.sources.every(s=>compatible(s.spelling,item.spelling))))return false;
   return synonymKey(group.text)===synonymKey(item.meaning.text)||
    group.sources.some(s=>reviewedEquivalent(s,item))||reviewedGlossEquivalent(group.text,item.meaning.text);
  }
@@ -42,6 +48,7 @@
    const matchingWord=lookupWord||word,spelling=S.displayHeadword(entry,matchingWord),item={id,entry,meaning,spelling};
    let group=groups.find(g=>sameMeaning(g,item,word));
    if(!group){group={text:meaning.text,form:stem(meaning.label),spelling,sources:[],rank:S.vowelRank(entry,matchingWord)};groups.push(group);}
+   if(!group.form)group.form=stem(meaning.label);
    if(parts(meaning.text).length>parts(group.text).length)group.text=meaning.text;
    const rank=S.vowelRank(entry,matchingWord);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
    if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label)))group.sources.push(item);
@@ -67,7 +74,7 @@
   const badge=element('span',String(number),'meaning-number');badge.setAttribute('aria-hidden','true');
   const content=element('div',undefined,'meaning-content'),spelling=element('div',group.spelling,'meaning-spelling');spelling.dir='rtl';
   content.append(spelling);
-  if(group.form)content.append(element('div',group.sources[0].meaning.label,'meaning-form'));
+  if(group.form)content.append(element('div',group.form,'meaning-form'));
   content.append(element('p',group.text,'meaning-text'));
   const refs=element('span',undefined,'meaning-references');refs.setAttribute('aria-label','Source references');
   const details=element('details',undefined,'scholarly-entry');
