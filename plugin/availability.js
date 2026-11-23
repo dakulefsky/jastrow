@@ -96,7 +96,8 @@
     // Load the bundled translation in this foreground webview, then replace
     // the same menu only if the selected paragraph uniquely supports a meaning.
     try{
-     const ranked=await DictionaryQuick.applyOfflineRecommendation(text,available,context);
+     const ranked=typeof DictionaryQuick.applyOfflineRecommendation==='function'
+      ?await DictionaryQuick.applyOfflineRecommendation(text,available,context):[];
      if(job.revision!==revision)continue;
      if(ranked.some(item=>item.recommended===true)){
       const refreshedChoices=ranked.slice(0,hasMore?MAX_MENU_MEANINGS-1:MAX_MENU_MEANINGS);
