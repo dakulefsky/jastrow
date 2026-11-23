@@ -71,6 +71,7 @@
   return aa.every((x,i)=>!x.marks.length||!bb[i].marks.length||x.marks.join('')===bb[i].marks.join(''));
  }
  const reviewedSourceGlossPairs=new Set([
+  ['KRU11703','E00635','softening','melting, softening'],
   ['KRU03578','C00617','hump, height','hump'],
   ['KRU03629','C00640','blasphemy','blasphemy, reviling'],
   ['KRU03783','C00540','cut wool','wool-shearing'],
