@@ -47,9 +47,9 @@
  }
  function assessPhrase(phrase,match,stats){
   const words=normalizeHebrew(phrase).split(' ').filter(Boolean);
-  const content=words.filter(word=>!STOP.has(word)&&word.length>=2);
+  const content=words.map((word,index)=>({word,index})).filter(item=>!STOP.has(item.word)&&item.word.length>=2);
   const matched=normalizeHebrew(match.phrase).split(' ').filter(Boolean);
-  const frequencies=content.map((word,index)=>stats.frequencies.get(matched[index]||word)||stats.frequencies.get(word)||0);
+  const frequencies=content.map(item=>stats.frequencies.get(matched[item.index]||item.word)||stats.frequencies.get(item.word)||0);
   // A single short/common Hebrew token is weak evidence; accept it only when
   // it is a longer lexical item occurring exactly once in the selected paragraph.
   if(content.length<2&&!(content.length===1&&content[0].length>=3&&frequencies[0]===1))return null;
