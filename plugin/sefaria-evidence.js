@@ -61,7 +61,7 @@
    if(words.length===1&&(STOP_WORDS.has(words[0])||words[0].length<3))continue;
    for(let i=0;i+words.length<=haystack.length;i++){
     if(words.every((word,j)=>tokenMatch(word,haystack[i+j])))
-     return {phrase:haystack.slice(i,i+words.length).join(' '),type:words.every((word,j)=>word===haystack[i+j])?'exact':words.length===1?'inflected_word':'inflected_phrase'};
+     return {phrase:haystack.slice(i,i+words.length).join(' '),offset:original.length-words.length,type:words.every((word,j)=>word===haystack[i+j])?'exact':words.length===1?'inflected_word':'inflected_phrase'};
    }
   }
   return null;
@@ -76,7 +76,7 @@
   const content=words.map((word,index)=>({word,index})).filter(item=>!STOP_WORDS.has(item.word)&&item.word.length>=3);
   const matched=normalizeEnglish(match.phrase).split(' ').filter(Boolean);
   const frequencies=content.map(item=>{
-   const actual=matched[item.index]||item.word;
+   const actual=matched[item.index-(match.offset||0)]||item.word;
    return stats.frequencies.get(actual)||stats.frequencies.get(item.word)||0;
   });
   // One generic word is not enough. A lone long, rare word may count, but
