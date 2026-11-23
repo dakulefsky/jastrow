@@ -43,10 +43,11 @@ global.fetch=async()=>{networkCalls++;throw Error('the dictionary must never use
  const result=await evidence.compareTranslation('אָמַר',candidates,selection);
  assert.equal(result.source,'offline');
  assert.equal(result.scope,'paragraph');
- assert.deepEqual(result.matches.map(x=>x.id),['complete','law-order']);
+ assert.deepEqual(result.matches.map(x=>x.id),['complete','law-order','weak-law']);
  assert.equal(result.matches[0].matchedPhrase,'completed');
  assert.equal(result.matches[1].matchedPhrase,'law and order');
- assert.equal(result.matches.some(item=>item.id==='weak-law'),false,'a short one-word coincidence must be filtered out');
+ assert.equal(result.matches.find(item=>item.id==='weak-law')?.evidenceScore,0,
+  'a short one-word coincidence may be retained as a lexical hit but carries no recommendation weight');
  assert.equal(evidence.bestMatch(result.matches,result.scope)?.id,'law-order',
   'the two-content-word contextual phrase should outrank a lone inflected word');
  assert.equal(localReads,1);
