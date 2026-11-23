@@ -6,10 +6,10 @@
  const STOP=new Set('של את על אל עם אם או גם כי לא כן הוא היא הם הן אני אתה אתם אנחנו אשר זה זאת אלה אלו כל מן בין תוך עבור אחרי לפני כאשר'.split(' ').map(word=>word.replace(/[ךםןףץ]/g,ch=>FINAL[ch])));
  function normalizeHebrew(value){
   return String(value||'').replace(/<[^>]*>/g,' ').replace(/&nbsp;/gi,' ').normalize('NFKD')
-   .replace(/\\p{M}/gu,'').replace(/[ךםןףץ]/g,ch=>FINAL[ch])
-   .replace(/[^\\u05d0-\\u05ea]+/g,' ').replace(/\\s+/g,' ').trim();
+   .replace(/\p{M}/gu,'').replace(/[ךםןףץ]/g,ch=>FINAL[ch])
+   .replace(/[^\u05d0-\u05ea]+/g,' ').replace(/\s+/g,' ').trim();
  }
- function candidatePhrases(value){return [...new Set(String(value||'').split(/[;,،/|\\n]+/).map(normalizeHebrew).filter(Boolean))];}
+ function candidatePhrases(value){return [...new Set(String(value||'').split(/[;,،/|\n]+/).map(normalizeHebrew).filter(Boolean))];}
  const PREFIXES=['ו','ב','כ','ל','מ','ד','ה','ש','וב','וכ','ול','ומ','וד','וה','וש','כש','שה'];
  const SUFFIXES=['יהון','תיהון','יהי','תיהי','יהו','תיהו','תין','תון','נון','יהם','יהן','יכם','יכן','ינו','יה','יו','ין','ון','נן','ים','יות','ות'].map(value=>value.replace(/[ךםןףץ]/g,ch=>FINAL[ch]));
  function tokenForms(word){
@@ -71,7 +71,7 @@
   if(!Array.isArray(candidates)||!candidates.length)return {matches:[],reason:'no_candidates'};
   const ref=await translationReference(selection);if(!ref)return {matches:[],reason:'no_reference'};
   if(options?.preparedOnly&&!root.SefariaOfflineTranslation?.isDafPrepared?.(ref,selection))return {matches:[],reason:'not_prepared',reference:ref,source:'offline'};
-  const candidateKey=candidates.map(c=>String(c?.id||'')+'='+String(c?.text||'')).join('|'),key=[ref.toLowerCase().replace(/\\s+/g,' ').trim(),selection?.currentBookId||'',selection?.currentBook||'',normalizeHebrew(word),candidateKey].join('|');
+  const candidateKey=candidates.map(c=>String(c?.id||'')+'='+String(c?.text||'')).join('|'),key=[ref.toLowerCase().replace(/\s+/g,' ').trim(),selection?.currentBookId||'',selection?.currentBook||'',normalizeHebrew(word),candidateKey].join('|');
   const cached=cache.get(key);if(cached&&cached.expires>Date.now())return cached.value;
   try{
    const local=await root.SefariaOfflineTranslation?.getPassage?.(ref,selection);if(!local?.text)return {matches:[],reason:local?.reason||'translation_unavailable'};
