@@ -56,10 +56,11 @@ assert.equal(synonymBridge[0].sources.length,2,'synonym consolidation must retai
 assert.equal(synonymBridge[0].text,'father, my father','the consolidated display should retain the fuller source gloss');
 
 const qualifiedSynonym=U.merge([
- {id:18,entry:{h:'אַבְדָּן',r:'A00044'},meanings:[{text:'ruin, destruction',label:''}]},
- {id:19,entry:{h:'אַבְדָּן',r:'KRU00036'},meanings:[{text:'destruction',label:''}]}
-],'אבדן');
+ {id:18,entry:{h:'אֲבַק',r:'A00190'},meanings:[{text:'to be attached',label:''}]},
+ {id:19,entry:{h:'אֲבַק',r:'KRU00120'},meanings:[{text:'to be attached to, cling to',label:''}]}
+],'אבק');
 assert.equal(qualifiedSynonym.length,1,'a reviewed multiword synonym should join the fuller gloss');
+assert.equal(qualifiedSynonym[0].text,'to be attached to, cling to');
 
 const scopedSynonym=U.merge([
  {id:20,entry:{h:'אַבָּא',r:'A00017'},meanings:[{text:'my father',label:''}]},
