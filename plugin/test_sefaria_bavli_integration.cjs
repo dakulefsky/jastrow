@@ -41,11 +41,11 @@ const vm=require('node:vm');
   // sourceRange text is not the English translation and cannot be matched
   // directly against the bundled translation.
   const data=root.SefariaOfflineTranslationData?.berakhot;
-  assert(Array.isArray(data?.text?.[0])&&data.text[0].length>1,'Berakhot 2a has multiple English segments');
-  assert(Array.isArray(data?.text?.[1])&&data.text[1].length>1,'Berakhot 2b has multiple English segments');
+  assert(Array.isArray(data?.text?.[0])&&data.text[2].length>1,'Berakhot 2a has multiple English segments');
+  assert(Array.isArray(data?.text?.[1])&&data.text[3].length>1,'Berakhot 2b has multiple English segments');
   for(const [side,index,expected] of [
-   ['a',0,data.text[0][0]],['a',1,data.text[0][1]],
-   ['b',100,data.text[1][0]],['b',101,data.text[1][1]]
+   ['a',0,data.text[2][0]],['a',1,data.text[2][1]],
+   ['b',100,data.text[3][0]],['b',101,data.text[3][1]]
   ]){
    const selected={currentRef:'ברכות, דף ב עמוד '+(side==='a'?'א':'ב'),currentBook:'ברכות',
     currentBookId:'berakhot',currentIndex:index,sectionIndex:index,
