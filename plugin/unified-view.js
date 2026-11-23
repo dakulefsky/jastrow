@@ -575,7 +575,9 @@
   ['KRU01321','A02010','because of','on account of, for the sake of'],
   ['KRU01323','A02014','balance','balances, scales'],
   ['KRU04930','D00329','conclusion','evidence by conclusion, exact meaning'],
-  ['KRU04949','D00356','suite','a suite of graded officers']
+  ['KRU04949','D00356','suite','a suite of graded officers'],
+  ['KRU06145','F00013','certainty','certainties'],
+  ['KRU06236','G00051','the place in the field where manure is piled up','the place in the field where foliage is piled up']
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  function reviewedEquivalent(source,item){
   if(!compatible(source.spelling,item.spelling))return false;
