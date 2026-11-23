@@ -98,6 +98,8 @@ jobs:
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
+      - name: Audit reviewed meanings with the real Jastrow phrase extractor
+        run: node test_unified_phrase_audit.cjs
       - name: Test dictionary consistency in Chromium
         run: node test_consistency_ui.cjs
       - name: Test prefix and inflection lookups in Chromium
