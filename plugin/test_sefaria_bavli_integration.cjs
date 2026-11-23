@@ -79,5 +79,6 @@ const vm=require('node:vm');
   ],selected);
   assert.equal(root.SefariaEvidence.bestMatch(tied,tied.scope),null,
    'equally supported English meanings must not produce an arbitrary recommendation');
-  console.log('Full offline English Bavli comparison and real recommendation ranking passed.');
+ }
+ console.log('Full offline English Bavli comparison and real recommendation ranking passed.');
 })().catch(error=>{console.error(error);process.exitCode=1;});
