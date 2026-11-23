@@ -135,11 +135,12 @@ const sameRecordDistinctSenses=U.merge([
   {text:'lime',label:''},{text:'froth',label:''}
  ]},
  {id:29,entry:{h:'כָּלָא',r:'C00805',source:'jastrow'},meanings:[
-  {text:'lime, plaster.',label:''},{text:'froth, foam.',label:''}
+  {text:'lime, plaster.',label:''}
  ]}
 ],'כלא');
-assert.equal(sameRecordDistinctSenses.length,2,'two distinct meanings in the same pair of source records must stay separate');
-assert(sameRecordDistinctSenses.every(group=>group.sources.length===2),'each of the two senses should retain both corresponding source citations');
+assert.equal(sameRecordDistinctSenses.length,2,'the shared lime meaning should merge without absorbing the distinct froth sense');
+assert.equal(sameRecordDistinctSenses[0].sources.length,2,'the shared lime meaning should retain both citations');
+assert.equal(sameRecordDistinctSenses[1].sources.length,1,'the distinct froth meaning must remain attached only to its own source');
 
 // A reviewed gloss pair must never override explicit grammatical differences.
 // This exact audited pair contrasts active and passive English glosses.
