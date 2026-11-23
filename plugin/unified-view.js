@@ -1,12 +1,12 @@
 (function(root){
  'use strict';
  const S=root.JastrowSearch||(typeof require==='function'?require('./search.js'):null);
- const clean=text=>String(text).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\\s]+$/,'').trim().replace(/\\s+/g,' ');
+ const clean=text=>String(text).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
  const stem=label=>{
   let value=String(label||'').trim();
   // Krupnik often prefixes/suffixes grammatical labels with sense numbers;
   // Jastrow generally records the grammatical label without that numbering.
-  value=value.replace(/^[—\\s]*\\d+[).]?\\s*/,'').replace(/\\s+\\d+[).]?\\s*$/,'');
+  value=value.replace(/^[—\s]*\\d+[).]?\s*/,'').replace(/\s+\\d+[).]?\s*$/,'');
   return clean(value);
  };
  const parts=text=>String(text).split(/[,;]/).map(clean).filter(Boolean);
