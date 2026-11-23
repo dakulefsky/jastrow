@@ -11,7 +11,9 @@ assert.equal(ctx.SefariaEvidence.findPhraseMatch('ספר','הספרים'),null,'
 assert.equal(ctx.HebrewLookup.normalize('נפקא־מינה'),'נפקא מינה','maqaf should preserve the phrase boundary in dictionary lookup');
 assert.equal(ctx.HebrewLookup.lookup('נפקא־מינה')[0]?.rid,ctx.HebrewLookup.lookup('נפקא מינה')[0]?.rid,'maqaf and spaces should resolve to the same dictionary phrase');
 assert.equal(best({scope:'paragraph',matches:[{id:'weak',candidatePhrase:'מילה'},{id:'strong',candidatePhrase:'המשמעות המדויקת יותר'}]})?.id,'strong','strongest paragraph evidence should win');
-assert.equal(best({scope:'paragraph',matches:[{id:'incidental',candidatePhrase:'land',matchType:'exact'},{id:'specific',candidatePhrase:'the fertile land',matchType:'inflected_phrase'}]})?.id,'specific','a specific multiword contextual gloss should beat an incidental one-word collision');
+assert.equal(best({scope:'paragraph',matches:[{id:'incidental',candidatePhrase:'ארץ',matchType:'exact'},{id:'specific',candidatePhrase:'הארץ הפורייה',matchType:'inflected_phrase'}]})?.id,'specific','a specific multiword contextual gloss should beat an incidental one-word collision');
+assert.equal(best({scope:'paragraph',matches:[{id:'weak',candidatePhrase:'גם',matchType:'exact'}]}),null,'a short Hebrew stop-word coincidence must not be recommended');
+assert.equal(best({scope:'paragraph',matches:[{id:'near-a',candidatePhrase:'הארץ הפורייה',matchType:'exact'},{id:'near-b',candidatePhrase:'המשמעות המדויקת',matchType:'exact'}]}),null,'near-equal Hebrew evidence must remain ambiguous');
 assert.equal(best({scope:'paragraph',matches:[{id:'one',matchType:'exact'},{id:'two',matchType:'exact'}]}),null,'equal contextual evidence must remain unmarked');
 assert.equal(best({scope:'daf',matches:[{id:'one',matchType:'exact'}]}),null,'whole-daf evidence must not recommend a Hebrew gloss');
 assert.equal(best({scope:'paragraph',matches:[{id:'one',matchType:'exact'},{id:'one',matchType:'exact'}]})?.id,'one','duplicate evidence for one meaning is not a tie');
