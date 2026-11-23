@@ -33,7 +33,7 @@ const labelBridge=U.merge([
 ],'אמר');
 assert.equal(labelBridge.length,1,'an unlabelled Krupnik sense should not be split from the same explicit Jastrow gloss');
 assert.equal(labelBridge[0].sources.length,2,'both source records must remain available');
-assert.equal(labelBridge[0].form,'ithpe.','retain the explicit grammatical label when the other source omits one');
+assert.equal(labelBridge[0].form,'ithpe','retain the normalized explicit grammatical label when the other source omits one');
 const labelConflict=U.merge([
  {id:12,entry:{h:'אָמַר',r:'A00002'},meanings:[{text:'to say',label:'Ithpe.'}]},
  {id:13,entry:{h:'אָמַר',r:'KRU00002'},meanings:[{text:'to say',label:'Pa.'}]}
