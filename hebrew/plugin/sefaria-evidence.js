@@ -52,14 +52,14 @@
   const frequencies=content.map(item=>stats.frequencies.get(matched[item.index]||item.word)||stats.frequencies.get(item.word)||0);
   // A single short/common Hebrew token is weak evidence; accept it only when
   // it is a longer lexical item occurring exactly once in the selected paragraph.
-  if(content.length<2&&!(content.length===1&&content[0].word.length>=3&&frequencies[0]===1))return null;
+  const eligible=content.length>=2||(content.length===1&&content[0].word.length>=3&&frequencies[0]===1);
   const rarity=content.reduce((sum,word,index)=>{
    const frequency=Math.max(1,frequencies[index]||0);
    return sum+Math.log2((stats.tokens.length+1)/(frequency+1));
   },0);
-  const score=(match.type==='exact'?30:20)+content.length*20+
-   Math.min(rarity,18)*4+Math.min(words.length,8);
-  return {score,contentWordCount:content.length,rarity:Number(rarity.toFixed(3))};
+  const score=eligible?(match.type==='exact'?30:20)+content.length*20+
+   Math.min(rarity,18)*4+Math.min(words.length,8):0;
+  return {score,eligible,contentWordCount:content.length,rarity:Number(rarity.toFixed(3))};
  }
  async function translationReference(s){
   s=s||{};const ranges=[s.sourceRange,s.renderedRange,s.sections?.[0]?.sourceRange,s.sections?.[0]?.renderedRange];
