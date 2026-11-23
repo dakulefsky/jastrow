@@ -88,6 +88,6 @@ assert.equal(sourcePairWrongGloss.length,2,'a reviewed record pair must not merg
 
 const crossHeadwordSourcePair=U.merge([
  {id:24,entry:{h:'דָּבַר',r:'KRU04099'},meanings:[{text:'to attack, to fight',label:''}]},
- {id:25,entry:{h:'דָּבָר',r:'C00690'},meanings:[{text:'to attack, fight',label:''}]}
+ {id:25,entry:{h:'אָב',r:'C00690'},meanings:[{text:'to attack, fight',label:''}]}
 ],'דבר');
 assert.equal(crossHeadwordSourcePair.length,2,'source-ID synonym pairs must not merge when headword spellings differ');
