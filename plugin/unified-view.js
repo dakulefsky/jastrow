@@ -2,7 +2,13 @@
  'use strict';
  const S=root.JastrowSearch||(typeof require==='function'?require('./search.js'):null);
  const clean=text=>String(text).normalize('NFKC').toLowerCase().replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
- const stem=label=>/^[—\s]*\d+[).]?\s*$/.test(label||'')?'':clean(label||'');
+ const stem=label=>{
+  let value=String(label||'').trim();
+  // Krupnik often prefixes/suffixes grammatical labels with sense numbers;
+  // Jastrow generally records the grammatical label without that numbering.
+  value=value.replace(/^[—\s]*\d+[).]?\s*/,'').replace(/\s+\d+[).]?\s*$/,'');
+  return clean(value);
+ };
  const parts=text=>String(text).split(/[,;]/).map(clean).filter(Boolean);
  // Exact, reviewed English gloss equivalents only. Avoid fuzzy token overlap:
  // shared words alone are not enough to collapse distinct dictionary senses.
