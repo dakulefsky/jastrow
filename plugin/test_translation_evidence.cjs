@@ -16,16 +16,16 @@ global.fetch=async()=>{networkCalls++;throw Error('no runtime network requests a
 
 (async()=>{
  const evidence=require(file);
- const cold=await evidence.compareTranslation('אָמַר',[{id:'law',text:'law'}],
+ const cold=await evidence.compareTranslation('אָמַר',[{id:'law-context',text:'law is established'}],
   {currentRef:'ברכות, דף ב',currentBook:'ברכות'},{preparedOnly:true});
  assert.equal(cold.reason,'not_prepared');
  assert.equal(localReads,0,'quick lookup must not trigger a cold tractate load');
  prepared=true;
- const result=await evidence.compareTranslation('אָמַר',[{id:'law',text:'law'},{id:'complete',text:'complete'}],
+ const result=await evidence.compareTranslation('אָמַר',[{id:'law-context',text:'law is established'},{id:'complete',text:'complete'}],
   {currentRef:'ברכות, דף ב',currentBook:'ברכות'});
  assert.equal(result.source,'offline');
  assert.equal(result.scope,'daf');
- assert.deepEqual(result.matches.map(x=>x.id),['law','complete']);
+ assert.deepEqual(result.matches.map(x=>x.id),['law-context','complete']);
  assert.equal(localReads,1);
  const fallback=await evidence.compareTranslation('אָמַר',[{id:'law',text:'law'}],{});
  assert.equal(fallback.reason,'candidate_wording_found');
