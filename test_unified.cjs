@@ -73,3 +73,15 @@ const grammarProtectedSynonym=U.merge([
  {id:23,entry:{h:'גָּעַל',r:'K1'},meanings:[{text:'to be attached to, cling to',label:'Pa.'}]}
 ],'געל');
 assert.equal(grammarProtectedSynonym.length,2,'synonym review must not override conflicting grammatical labels');
+
+const corpusReviewedPair=U.merge([
+ {id:24,entry:{h:'גִּבְנָא',r:'KRU03578',source:'krupnik'},meanings:[{text:'hump, height',label:''}]},
+ {id:25,entry:{h:'גִּבְנָא',r:'C00617',source:'jastrow'},meanings:[{text:'hump',label:''}]}
+],'גבנא');
+assert.equal(corpusReviewedPair.length,1,'a reviewed source-record pair from the corpus audit should consolidate');
+assert.equal(corpusReviewedPair[0].sources.length,2,'both cited source records must remain visible');
+const sourcePairWrongGloss=U.merge([
+ {id:26,entry:{h:'גִּבְנָא',r:'KRU03578'},meanings:[{text:'height',label:''}]},
+ {id:27,entry:{h:'גִּבְנָא',r:'C00617'},meanings:[{text:'hump',label:''}]}
+],'גבנא');
+assert.equal(sourcePairWrongGloss.length,2,'a reviewed record pair must not merge unrelated glosses from those records');
