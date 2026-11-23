@@ -220,6 +220,7 @@
   ['KRU07660','H01881','to put down','to put down, rest']
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  function reviewedEquivalent(source,item){
+  if(S.normalize(source.spelling)!==S.normalize(item.spelling))return false;
   const ids=[source.entry.r,item.entry.r].sort().join('|');
   const glosses=[clean(source.meaning.text),clean(item.meaning.text)].sort().join(' | ');
   return (ids==='A03220|KRU02095'&&glosses==='accident, occurrence | in accident')||
