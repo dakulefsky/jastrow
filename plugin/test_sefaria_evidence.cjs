@@ -3,7 +3,8 @@ const assert=require('node:assert/strict');
 const path=require('node:path');
 const file=path.join(__dirname,'sefaria-evidence.js');
 delete require.cache[require.resolve(file)];
-let localReads=0,networkCalls=0,hostCalls=0,expectedRef='ברכות, דף ב עמוד א:1';\nlet passageText='The discussion was completed after the law and order were explained.';
+let localReads=0,networkCalls=0,hostCalls=0,expectedRef='ברכות, דף ב עמוד א:1';
+let passageText='The discussion was completed after the law and order were explained.';
 global.SefariaOfflineTranslation={getPassage:async(ref,selection)=>{
  localReads++;
  assert.equal(ref,expectedRef);
