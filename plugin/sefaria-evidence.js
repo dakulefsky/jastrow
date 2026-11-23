@@ -73,11 +73,11 @@
  }
  function assessPhrase(phrase,match,stats){
   const words=normalizeEnglish(phrase).split(' ').filter(Boolean);
-  const content=words.filter(word=>!STOP_WORDS.has(word)&&word.length>=3);
+  const content=words.map((word,index)=>({word,index})).filter(item=>!STOP_WORDS.has(item.word)&&item.word.length>=3);
   const matched=normalizeEnglish(match.phrase).split(' ').filter(Boolean);
-  const frequencies=content.map((word,index)=>{
-   const actual=matched[index]||word;
-   return stats.frequencies.get(actual)||stats.frequencies.get(word)||0;
+  const frequencies=content.map(item=>{
+   const actual=matched[item.index]||item.word;
+   return stats.frequencies.get(actual)||stats.frequencies.get(item.word)||0;
   });
   // One generic word is not enough. A lone long, rare word may count, but
   // multiword meanings need at least two content words in the same sequence.
