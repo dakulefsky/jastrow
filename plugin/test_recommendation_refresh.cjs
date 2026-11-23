@@ -20,7 +20,8 @@ const vm=require('node:vm');
  const root={Otzaria:host,console,JASTROW_INDEX:{},
   JastrowSearch:{hasSelectionTranslations:()=>true,normalize:x=>String(x||'').normalize('NFKC'),splitWords:x=>String(x||'').split(/\s+/),hasVowels:()=>false},
   JastrowContext:{selectionText:p=>p?.renderedSelectedText||p?.selectedText||p?.text||''},
-  DictionaryQuick:{captureReaderContext:async p=>p,results:async()=>[{text:'the practical difference is',spelling:'נפקא מינה',entryId:7,recommended:prepared}]}
+  DictionaryQuick:{captureReaderContext:async p=>p,results:async()=>[{text:'the practical difference is',spelling:'נפקא מינה',entryId:7,recommended:false,candidateId:'0'}],
+  applyOfflineRecommendation:async(word,items)=>items.map(item=>({...item,recommended:prepared}))}
  };
  root.window=root;
  vm.runInNewContext(fs.readFileSync('plugin/availability.js','utf8'),{window:root,console,Otzaria:host,JastrowContext:root.JastrowContext,JastrowSearch:root.JastrowSearch,DictionaryQuick:root.DictionaryQuick});
