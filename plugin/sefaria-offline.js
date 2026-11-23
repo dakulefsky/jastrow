@@ -3,7 +3,7 @@
  const DATA_ROOT='data/sefaria-bavli/';
  const MAX_CACHED_TRACTATES=3,MAX_CACHED_DAFS=12;
  let manifestPromise=null,manifestData=null;
- const tractateCache=new Map(),tractatePromises=new Map(),preparedDafCache=new Map();
+ const tractateCache=new Map(),tractatePromises=new Map(),preparedDafCache=new Map(),tocCache=new Map();
 
  function normalizeName(value){
   return String(value||'').normalize('NFKD').replace(/\p{M}/gu,'')
@@ -55,7 +55,7 @@
   return manifestPromise;
  }
  function findTractate(manifest,parsed,selection){
-  const bookKey=normalizeName(parsed.book),currentBookKey=normalizeName(selection?.currentBook);
+  const bookKey=normalizeName(parsed.book),currentBookKey=normalizeName(selection?.currentBook),currentBookIdKey=normalizeName(selection?.currentBookId);
   return manifest.tractates.find(item=>{
    const names=[item.title,item.heTitle,item.slug].map(normalizeName).filter(Boolean);
    const matches=name=>name===bookKey||name===currentBookKey||
@@ -89,6 +89,47 @@
   if(Array.isArray(side))return side.filter(value=>typeof value==='string'&&value.trim());
   return typeof side==='string'&&side.trim()?[side]:[];
  }
+ async function getBookToc(bookId){
+  const key=String(bookId||'').trim();
+  if(!key||!root.Otzaria?.call)return null;
+  if(!tocCache.has(key)){
+   const pending=root.Otzaria.call('library.getBookToc',{bookId:key})
+    .then(result=>result?.success&&Array.isArray(result.data)?result.data:null)
+    .catch(()=>null);
+   tocCache.set(key,pending);
+  }
+  const result=await tocCache.get(key);
+  if(!result)tocCache.delete(key);
+  return result;
+ }
+ function flattenToc(entries,out=[]){
+  for(const entry of Array.isArray(entries)?entries:[]){
+   out.push(entry);
+   if(Array.isArray(entry.children))flattenToc(entry.children,out);
+  }
+  return out;
+ }
+ async function paragraphForSelection(data,parsed,selection){
+  const currentIndex=Number(selection?.currentIndex??selection?.sectionIndex);
+  if(!Number.isInteger(currentIndex)||currentIndex<0||!parsed.side)return null;
+  const bookId=selection?.currentBookId||selection?.bookId||selection?.currentBook;
+  const toc=flattenToc(await getBookToc(bookId));
+  const sameDaf=toc.map(entry=>({...entry,parsed:parseReference(entry.text,selection?.currentBook)}))
+   .filter(entry=>entry.parsed&&entry.parsed.dafIndex===parsed.dafIndex&&Number.isInteger(Number(entry.index))&&Number(entry.index)<=currentIndex);
+  const exactSide=sameDaf.filter(entry=>entry.parsed.side===parsed.side);
+  const candidates=exactSide.length?exactSide:sameDaf.filter(entry=>!entry.parsed.side||entry.parsed.side==='a');
+  if(!candidates.length)return null;
+  candidates.sort((a,b)=>Number(b.index)-Number(a.index));
+  const heading=candidates[0],side=data.text[parsed.dafIndex];
+  const paragraphs=Array.isArray(side)?side:(typeof side==='string'?[side]:[]);
+  let relativeIndex=currentIndex-Number(heading.index);
+  if(!exactSide.length&&parsed.side==='b'){
+   const sideA=data.text[parsed.dafIndex-1];
+   relativeIndex-=(Array.isArray(sideA)?sideA.length:(typeof sideA==='string'?1:0));
+  }
+  const value=paragraphs[relativeIndex];
+  return typeof value==='string'&&value.trim()?value:null;
+ }
  function cacheDaf(meta,daf,data){
   const key=(meta.slug||meta.title)+'|'+daf;
   const sideA=collectSide(data,2*daf-2).join(' '),sideB=collectSide(data,2*daf-1).join(' ');
@@ -114,9 +155,14 @@
   let cached=preparedDafCache.get(cacheKey);
   if(cached){preparedDafCache.delete(cacheKey);preparedDafCache.set(cacheKey,cached);}
   else cached=cacheDaf(meta,parsed.daf,data);
-  if(parsed.side&&parsed.line!==null){
+  if(parsed.side){
    const side=data.text[parsed.dafIndex];
-   const paragraph=Array.isArray(side)?side[parsed.line-1]:(parsed.line===1?side:null);
+   const lineParagraph=parsed.line!==null
+    ?(Array.isArray(side)?side[parsed.line-1]:(parsed.line===1?side:null)):null;
+   const indexedParagraph=parsed.line===null
+    ?await paragraphForSelection(data,parsed,selection):null;
+   const paragraph=typeof lineParagraph==='string'&&lineParagraph.trim()
+    ?lineParagraph:indexedParagraph;
    if(typeof paragraph==='string'&&paragraph.trim())return {
     text:paragraph,scope:'paragraph',reference:parsed.ref,
     dafReference:meta.title+' '+parsed.daf+parsed.side,tractate:meta.title,
@@ -145,7 +191,7 @@
    tractate:meta.title,versionTitle:manifest.edition,license:'CC-BY-NC',source:'offline'};
  }
  function clearCache(){
-  manifestPromise=null;manifestData=null;tractateCache.clear();tractatePromises.clear();preparedDafCache.clear();
+  manifestPromise=null;manifestData=null;tractateCache.clear();tractatePromises.clear();preparedDafCache.clear();tocCache.clear();
   delete root.SefariaOfflineTranslationManifest;delete root.SefariaOfflineTranslationData;
  }
  root.SefariaOfflineTranslation={prepareDaf,getPassage,isDafPrepared,parseReference,clearCache};

@@ -32,16 +32,20 @@ const {chromium,executablePath}=require('./browser_support.cjs');
    const original=SefariaEvidence.compareTranslation,calls=[];
    SefariaEvidence.compareTranslation=async(word,candidates,selection,options)=>{
     calls.push(options?.preparedOnly);
-    if(options?.preparedOnly)return {matches:[],reason:'not_prepared'};
     return {matches:[{id:candidates[0].id,matchedPhrase:'supported phrase',candidatePhrase:candidates[0].text,matchType:'exact'}],scope:'paragraph',source:'offline'};
    };
    try{
-    const items=await DictionaryQuick.results('נפקא מינה',{sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'});
-    return {calls,items};
+    const selection={sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'};
+    const items=await DictionaryQuick.results('נפקא מינה',selection);
+    const immediate={calls:[...calls],recommended:items.some(item=>item.recommended===true)};
+    const contextual=await DictionaryQuick.applyOfflineRecommendation('נפקא מינה',items,selection);
+    return {immediate,calls,contextual};
    }finally{SefariaEvidence.compareTranslation=original;}
   });
-  assert.deepEqual(prefetchFallback.calls,[true],'unprepared daf must not trigger a cold on-demand passage load');
-  assert.equal(prefetchFallback.items.some(item=>item.recommended===true),false,'do not recommend before the contextual passage is prepared');
+  assert.deepEqual(prefetchFallback.immediate.calls,[],'dictionary options must be available before contextual translation work begins');
+  assert.equal(prefetchFallback.immediate.recommended,false,'immediate dictionary options must not be speculatively recommended');
+  assert.deepEqual(prefetchFallback.calls,[undefined],'foreground recommendation must load its own local passage without a background-cache prerequisite');
+  assert.equal(prefetchFallback.contextual.some(item=>item.recommended===true),true,'a uniquely supported paragraph meaning should be recommended after the local passage loads');
   const lookup=async word=>{const before=await page.locator('#entry').innerHTML();await page.fill('#query',word);await page.locator('.lookup-button').click();await page.waitForFunction(before=>document.querySelector('#entry')?.innerHTML!==before,before);await page.locator('.unified-meanings').first().waitFor();assert.equal(await page.locator('.community-feedback').count(),0,'offline mode must not show community UI');};
   await lookup('אַרְעָא');let main=page.locator('.unified-meanings>ol>.meaning-card');assert.equal(await main.count(),1);assert.match(await main.first().innerText(),/land/);assert.equal(await main.first().locator('.meaning-text').evaluate(el=>getComputedStyle(el).fontWeight),'700','main English definitions should be bold');assert(!/accident|Jastrow|Krupnik/.test(await page.locator('#entry').innerText()));
   const land=main.first();assert.equal(await land.locator('.meaning-number').innerText(),'1');assert.equal(await land.locator('.meaning-references a').count(),2);

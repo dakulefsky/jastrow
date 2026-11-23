@@ -92,6 +92,32 @@
      continue;
     }
     await removeLegacyVotes();
+    // The native menu is already populated with immediate dictionary choices.
+    // Load the bundled translation in this foreground webview, then replace
+    // the same menu only if the selected paragraph uniquely supports a meaning.
+    try{
+     const ranked=typeof DictionaryQuick.applyOfflineRecommendation==='function'
+      ?await DictionaryQuick.applyOfflineRecommendation(text,available,context):[];
+     if(job.revision!==revision)continue;
+     if(ranked.some(item=>item.recommended===true)){
+      const refreshedChoices=ranked.slice(0,hasMore?MAX_MENU_MEANINGS-1:MAX_MENU_MEANINGS);
+      const refreshedChildren=refreshedChoices.map((item,i)=>({
+       id:'jastrow-meaning-'+i,title:childTitle(item,text),openPlugin:true,
+       param:{dictionaryWord:text,entryId:item.entryId}
+      }));
+      if(hasMore)refreshedChildren.push({
+       id:'jastrow-meaning-more',title:'Open full dictionary for more meanings',
+       openPlugin:true,param:{dictionaryWord:text,showAll:true}
+      });
+      await Otzaria.call('reader.addContextMenuItem',{
+       id:'jastrow-lookup',type:'submenu',
+       title:title.length>100?title.slice(0,99).trimEnd()+'…':title,
+       icon:'alef_with_score_24_regular',
+       contexts:['reader-selection','reader-page-shape-selection'],
+       showWhen:{selectionContainsAny:variants},children:refreshedChildren
+      });
+     }
+    }catch(error){console.warn('Offline English recommendation refresh skipped',error);}
     if(response?.success===false&&response.error?.code!=='error.not_found')console.warn('Dictionary meaning menu registration failed',response.error?.code);
    }
   }finally{

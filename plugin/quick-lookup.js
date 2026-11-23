@@ -41,30 +41,32 @@
    sourceCount:new Set(group.sources.map(source=>source.id)).size,
    label:group.form?group.sources[0].meaning.label:'',
   }));
-  if(selection&&merged.length){
-   merged.forEach((item,i)=>{item.candidateId=String(i);});
-   const candidates=merged.map(item=>({id:item.candidateId,text:item.text}));
-   // Keep the native menu fast: inspect only an already-prepared offline daf.
-   // If the two-second background preparation is still running, show the
-   // dictionary choices immediately without a star. The background worker
-   // refreshes this same menu as soon as the passage is ready.
-   const evidence=root.SefariaEvidence?.compareTranslation
-    ?await root.SefariaEvidence.compareTranslation(word,candidates,selection,{preparedOnly:true}).catch(()=>({matches:[]}))
-    :{matches:[]};
-   const matches=Array.isArray(evidence?.matches)?evidence.matches:[];
-   const matched=new Map(matches.map(item=>[String(item.id),item]));
-   merged.forEach(item=>{const match=matched.get(item.candidateId);if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}});
-   const preferred=root.SefariaEvidence?.bestMatch?.(matches,evidence?.scope);
-   const preferredId=preferred?String(preferred.id):null;
-   const score=item=>item.translationMatchType==='exact'?300:item.translationMatchType==='inflected_phrase'?200:item.translationMatchType==='inflected_word'?100:0;
-   merged.sort((a,b)=>score(b)-score(a));
-   if(preferredId){
-    const best=merged.findIndex(item=>item.candidateId===preferredId);
-    if(best>=0){merged[best].recommended=true;if(best>0)merged.unshift(merged.splice(best,1)[0]);}
-   }
-  }
+  if(selection&&merged.length)merged.forEach((item,i)=>{item.candidateId=String(i);});
   merged.hasMore=hasMore;
   return merged;
+ }
+ async function applyOfflineRecommendation(word,items,selection){
+  if(!selection||!Array.isArray(items)||!items.length)return items||[];
+  const candidates=items.map((item,i)=>({id:String(item.candidateId??i),text:item.text}));
+  const evidence=root.SefariaEvidence?.compareTranslation
+   ?await root.SefariaEvidence.compareTranslation(word,candidates,selection).catch(()=>({matches:[]}))
+   :{matches:[]};
+  const matches=Array.isArray(evidence?.matches)?evidence.matches:[];
+  const matched=new Map(matches.map(item=>[String(item.id),item]));
+  items.forEach((item,i)=>{
+   item.candidateId=String(item.candidateId??i);
+   const match=matched.get(item.candidateId);
+   if(match){item.translationMatch=true;item.translationPhrase=match.matchedPhrase;item.translationMatchType=match.matchType;item.translationScope=evidence.scope;}
+  });
+  const preferred=root.SefariaEvidence?.bestMatch?.(matches,evidence?.scope);
+  const preferredId=preferred?String(preferred.id):null;
+  const score=item=>item.translationMatchType==='exact'?300:item.translationMatchType==='inflected_phrase'?200:item.translationMatchType==='inflected_word'?100:0;
+  items.sort((a,b)=>score(b)-score(a));
+  if(preferredId){
+   const best=items.findIndex(item=>item.candidateId===preferredId);
+   if(best>=0){items[best].recommended=true;if(best>0)items.unshift(items.splice(best,1)[0]);}
+  }
+  return items;
  }
  async function previewCandidates(word,result){
   const index=root.JASTROW_INDEX,S=root.JastrowSearch;
@@ -82,7 +84,7 @@
   const outer=selection;
   const nested=outer.selection&&typeof outer.selection==='object'?outer.selection:outer;
   const context={...nested};
-  for(const key of ['currentRef','currentTitle','currentBook','currentBookId','sourceRange','renderedRange','sections']){
+  for(const key of ['currentRef','currentTitle','currentBook','currentBookId','currentIndex','sectionIndex','sourceRange','renderedRange','sections']){
    if((context[key]===undefined||context[key]===null||context[key]==='')&&outer[key]!==undefined)context[key]=outer[key];
   }
   const hasReference=!!(context.currentRef||context.sourceRange?.ref||context.sourceRange?.currentRef||
@@ -98,5 +100,5 @@
   return context;
  }
  async function meanings(word,selection){return (await results(word,selection)).map(item=>(item.selectedWord?item.selectedWord+': ':'')+item.text);}
- root.DictionaryQuick={results,meanings,previewCandidates,captureReaderContext};
+ root.DictionaryQuick={results,meanings,previewCandidates,captureReaderContext,applyOfflineRecommendation};
 })(typeof window==='undefined'?globalThis:window);
