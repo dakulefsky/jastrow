@@ -14,6 +14,9 @@ assert.equal(best({scope:'paragraph',matches:[{id:'weak',candidatePhrase:'מיל
 assert.equal(best({scope:'paragraph',matches:[{id:'incidental',candidatePhrase:'ארץ',matchType:'exact'},{id:'specific',candidatePhrase:'הארץ הפורייה',matchType:'inflected_phrase'}]})?.id,'specific','a specific multiword contextual gloss should beat an incidental one-word collision');
 assert.equal(best({scope:'paragraph',matches:[{id:'weak',candidatePhrase:'גם',matchType:'exact'}]}),null,'a short Hebrew stop-word coincidence must not be recommended');
 assert.equal(best({scope:'paragraph',matches:[{id:'near-a',candidatePhrase:'הארץ הפורייה',matchType:'exact'},{id:'near-b',candidatePhrase:'המשמעות המדויקת',matchType:'exact'}]}),null,'near-equal Hebrew evidence must remain ambiguous');
+assert.equal(best({scope:'paragraph',matches:[{id:'same',evidenceScore:100},{id:'same',evidenceScore:99}]})?.id,'same','multiple phrase hits for one meaning must not create a false tie');
+assert.equal(best({scope:'paragraph',matches:[{id:'strong',evidenceScore:100},{id:'near',evidenceScore:83}]}),null,'the shared 18-percent confidence margin must suppress close competitors');
+assert.equal(best({scope:'paragraph',matches:[{id:'strong',evidenceScore:100},{id:'weaker',evidenceScore:81}]})?.id,'strong','a sufficiently separated best meaning should be recommended');
 assert.equal(best({scope:'paragraph',matches:[{id:'one',matchType:'exact'},{id:'two',matchType:'exact'}]}),null,'equal contextual evidence must remain unmarked');
 assert.equal(best({scope:'daf',matches:[{id:'one',matchType:'exact'}]}),null,'whole-daf evidence must not recommend a Hebrew gloss');
 assert.equal(best({scope:'paragraph',matches:[{id:'one',candidatePhrase:'משמעות',matchType:'exact'},{id:'one',candidatePhrase:'משמעות',matchType:'exact'}]})?.id,'one','duplicate evidence for one meaning is not a tie');
