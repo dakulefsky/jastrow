@@ -100,8 +100,14 @@
  }
  function bestContextualMatch(evidence){
   if(evidence?.scope!=='paragraph'||!Array.isArray(evidence.matches)||!evidence.matches.length)return null;
-  const ranked=evidence.matches.map(match=>({match,score:Number.isFinite(match.evidenceScore)?match.evidenceScore:matchScore({type:match.matchType},match.candidatePhrase)}))
-   .filter(item=>item.score>0).sort((a,b)=>b.score-a.score);
+  const byMeaning=new Map();
+  for(const match of evidence.matches){
+   const score=Number.isFinite(match.evidenceScore)?match.evidenceScore:matchScore({type:match.matchType},match.candidatePhrase);
+   if(score<=0)continue;
+   const id=String(match.id);
+   if(!byMeaning.has(id)||score>byMeaning.get(id).score)byMeaning.set(id,{match,score});
+  }
+  const ranked=[...byMeaning.values()].sort((a,b)=>b.score-a.score);
   if(!ranked.length)return null;
   if(ranked.length>1&&ranked[0].score-ranked[1].score<Math.max(10,ranked[0].score*0.18))return null;
   return ranked[0].match;
