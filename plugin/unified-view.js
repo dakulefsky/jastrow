@@ -218,7 +218,7 @@
   ['KRU07649','H01868','to take into consideration','to apprehend, take into consideration'],
   ['KRU07649','H01868','to feel pain','to feel heavy, feel pain'],
   ['KRU07660','H01881','to put down','to put down, rest']
- ].map(([a,b,x,y])=>[a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ')));
+ ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  function reviewedEquivalent(source,item){
   const ids=[source.entry.r,item.entry.r].sort().join('|');
   const glosses=[clean(source.meaning.text),clean(item.meaning.text)].sort().join(' | ');
