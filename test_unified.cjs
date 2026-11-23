@@ -162,3 +162,10 @@ const multiSenseSourcePair=U.merge([
 ],'הוצאה');
 assert.equal(multiSenseSourcePair.length,3,'each of three meanings must consolidate only with its own reviewed counterpart');
 assert(multiSenseSourcePair.every(g=>g.sources.length===2),'all three consolidated meanings must retain both source citations');
+
+const movementSenses=U.merge([
+ {id:100,entry:{h:'טִלְטוּל',r:'KRU08043',source:'krupnik'},meanings:[{text:'moving',label:''},{text:'migration',label:''}]},
+ {id:101,entry:{h:'טִלְטוּל',r:'I00486',source:'jastrow'},meanings:[{text:'moving, handling',label:''},{text:'migration, exile',label:''}]}
+],'טלטול');
+assert.equal(movementSenses.length,2,'separate movement and migration senses should map one-to-one');
+assert(movementSenses.every(g=>g.sources.length===2),'each movement sense must retain both dictionary citations');
