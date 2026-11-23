@@ -151,3 +151,14 @@ const reviewedBinyanAndSensePair=U.merge([
 ],'בלבל');
 assert.equal(reviewedBinyanAndSensePair.length,2,'active and passive meanings must consolidate only with their corresponding source sense');
 assert(reviewedBinyanAndSensePair.every(g=>g.sources.length===2),'both source citations should remain attached to each matching sense');
+
+const multiSenseSourcePair=U.merge([
+ {id:90,entry:{h:'הוֹצָאָה',r:'KRU05716',source:'krupnik'},meanings:[
+  {text:'carrying out',label:''},{text:'sprouting',label:''},{text:'expenditure, outlay',label:''}
+ ]},
+ {id:91,entry:{h:'הוֹצָאָה',r:'E00266',source:'jastrow'},meanings:[
+  {text:'carrying out of the house',label:''},{text:'bringing forth, sprouting',label:''},{text:'expenditure, outlay, cost; marketing',label:''}
+ ]}
+],'הוצאה');
+assert.equal(multiSenseSourcePair.length,3,'each of three meanings must consolidate only with its own reviewed counterpart');
+assert(multiSenseSourcePair.every(g=>g.sources.length===2),'all three consolidated meanings must retain both source citations');
