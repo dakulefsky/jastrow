@@ -46,3 +46,29 @@ const numberedLabelBridge=U.merge([
 ],'אמר');
 assert.equal(numberedLabelBridge.length,1,'Krupnik sense numbering must not make an otherwise identical grammatical label look different');
 assert.equal(numberedLabelBridge[0].form,'ithpe');
+
+const synonymBridge=U.merge([
+ {id:16,entry:{h:'אַבָּא I',r:'A00017',source:'jastrow'},meanings:[{text:'my father',label:''}]},
+ {id:17,entry:{h:'אַבָּא',r:'KRU00021',source:'krupnik'},meanings:[{text:'father, my father',label:'1'}]}
+],'אבא');
+assert.equal(synonymBridge.length,1,'reviewed synonym variants for the same headword should consolidate');
+assert.equal(synonymBridge[0].sources.length,2,'synonym consolidation must retain both original dictionary records');
+assert.equal(synonymBridge[0].text,'father, my father','the consolidated display should retain the fuller source gloss');
+
+const qualifiedSynonym=U.merge([
+ {id:18,entry:{h:'אַבְדָּן',r:'A00044'},meanings:[{text:'ruin, destruction',label:''}]},
+ {id:19,entry:{h:'אַבְדָּן',r:'KRU00036'},meanings:[{text:'destruction',label:''}]}
+],'אבדן');
+assert.equal(qualifiedSynonym.length,1,'a reviewed concise synonym should join the fuller gloss');
+
+const scopedSynonym=U.merge([
+ {id:20,entry:{h:'אַבָּא',r:'A00017'},meanings:[{text:'my father',label:''}]},
+ {id:21,entry:{h:'אַבָּהוּ',r:'KRU00021'},meanings:[{text:'father, my father',label:''}]}
+],'אבא');
+assert.equal(scopedSynonym.length,2,'a reviewed gloss pair must not merge different headwords');
+
+const grammarProtectedSynonym=U.merge([
+ {id:22,entry:{h:'גָּעַל',r:'A1'},meanings:[{text:'to be soiled',label:'Ithpa.'}]},
+ {id:23,entry:{h:'גָּעַל',r:'K1'},meanings:[{text:'to be darkened through sulphur fumes',label:'Pa.'}]}
+],'געל');
+assert.equal(grammarProtectedSynonym.length,2,'synonym review must not override conflicting grammatical labels');
