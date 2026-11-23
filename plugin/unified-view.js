@@ -6,7 +6,7 @@
   let value=String(label||'').trim();
   // Krupnik often prefixes/suffixes grammatical labels with sense numbers;
   // Jastrow generally records the grammatical label without that numbering.
-  value=value.replace(/^[—\s]*\\d+[).]?\s*/,'').replace(/\s+\\d+[).]?\s*$/,'');
+  value=value.replace(/^[—\s]*\d+[).]?\s*/,'').replace(/\s+\d+[).]?\s*$/,'');
   return clean(value);
  };
  const parts=text=>String(text).split(/[,;]/).map(clean).filter(Boolean);
