@@ -65,9 +65,13 @@
   if(S.normalize(a.spelling)!==S.normalize(b.spelling))return false;
   return reviewedGlossPairs.has([clean(a.meaning.text),clean(b.meaning.text)].sort().join(' | '));
  };
- function compatible(a,b){
-  const aa=S.markedLetters(a),bb=S.markedLetters(b);
+ function compatible(a,b,word){
+  // Consonantal identity is required for every lookup. Only enforce vowel
+  // agreement when the user's query supplied vowels; unpointed lookup should
+  // still combine the same consonantal headword across source vocalizations.
   if(S.normalize(a)!==S.normalize(b))return false;
+  if(!S.hasVowels(word))return true;
+  const aa=S.markedLetters(a),bb=S.markedLetters(b);
   return aa.every((x,i)=>!x.marks.length||!bb[i].marks.length||x.marks.join('')===bb[i].marks.join(''));
  }
  const reviewedSourceGlossPairs=new Set([
@@ -234,7 +238,7 @@
  }
  function sameMeaning(group,item,word){
   const itemForm=stem(item.meaning.label);
-  if(!compatibleForm(group.form,itemForm)||!group.sources.every(s=>compatible(s.spelling,item.spelling)))return false;
+  if(!compatibleForm(group.form,itemForm)||!group.sources.every(s=>compatible(s.spelling,item.spelling,word)))return false;
   return synonymKey(group.text)===synonymKey(item.meaning.text)||
    group.sources.some(s=>reviewedEquivalent(s,item)||reviewedGlossEquivalent(s,item));
  }
