@@ -37,6 +37,15 @@ global.fetch=async()=>{networkCalls++;throw Error('the dictionary must never use
   {id:'near-a',candidatePhrase:'fertile land',matchType:'exact'},
   {id:'near-b',candidatePhrase:'explained law',matchType:'exact'}
  ],'paragraph'),null,'near-equal multiword evidence must remain ambiguous');
+ assert.equal(evidence.bestMatch([
+  {id:'same',evidenceScore:100},{id:'same',evidenceScore:99}
+ ],'paragraph')?.id,'same','multiple phrase hits for one meaning must not create a false tie');
+ assert.equal(evidence.bestMatch([
+  {id:'strong',evidenceScore:100},{id:'near',evidenceScore:83}
+ ],'paragraph'),null,'the shared 18-percent confidence margin must suppress close competitors');
+ assert.equal(evidence.bestMatch([
+  {id:'strong',evidenceScore:100},{id:'weaker',evidenceScore:81}
+ ],'paragraph')?.id,'strong','a sufficiently separated best meaning should be recommended');
  const candidates=[{id:'complete',text:'complete'},{id:'law-order',text:'law and order'},
   {id:'weak-law',text:'law'},{id:'absent',text:'mountain'}];
  const selection={sourceRange:{ref:'ברכות, דף ב עמוד א:1'},currentBook:'ברכות'};
