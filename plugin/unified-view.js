@@ -21,7 +21,7 @@
   return out;
  };
  const parts=text=>glossAlternatives(text).map(clean).filter(Boolean);
- const alternativeKey=text=>clean(text).replace(/^(?:a|an|the)\s+/,'').replace(/^to\s+/,'');
+ const alternativeKey=text=>clean(text).replace(/[()[\]{}]/g,' ').replace(/\s+/g,' ').trim().replace(/^(?:a|an|the)\s+/,'').replace(/^to\s+/,'');
  // Canonicalize formatting variants of a complete gloss list. Alternatives
  // may be reordered; word order within each alternative remains significant.
  // Parenthetical explanations stay attached to their phrase. The first "to"
@@ -1672,7 +1672,24 @@
   ["KRU12377","N00174","to bite off","to bite off."],
   ["KRU12413","N00235","moving about","moving about"],
   ["KRU12501","N00390","boughs of a tree","boughs of a tree"],
-  ["KRU12839","N00979","wearing shoes","wearing shoes."]
+  ["KRU12839","N00979","wearing shoes","wearing shoes."],
+  ["KRU12449","N00308","to shake (the head)","to shake the head"],
+  ["KRU12852","N01011","camel’s cry","camel’s cry"],
+  ["KRU12984","N01216","underground passage","underground passage"],
+  ["KRU13000","N01251","to strike against","to strike against"],
+  ["KRU13204","O00208","systematic scholar","systematic scholar"],
+  ["KRU13347","O00452","to press out","to press out"],
+  ["KRU13347","O00452","to wring","wring"],
+  ["KRU13399","O00530","old age","old age"],
+  ["KRU13404","O00530","gray head","gray head"],
+  ["KRU13453","O00619","lime-burner","lime-burner"],
+  ["KRU13453","O00619","worker in lime","worker in lime"],
+  ["KRU13548","O00789","adequate power","adequate power"],
+  ["KRU13620","O00906","ceiling (of twigs)","ceiling of twigs"],
+  ["KRU13692","O01042","to cut chips","to cut chips"],
+  ["KRU13714","O01078","to make blind","to make blind"],
+  ["KRU13841","O01294","to be inflicted upon","to be inflicted upon"],
+  ["KRU13853","O01319","speaker at funerals","speaker at funerals"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
