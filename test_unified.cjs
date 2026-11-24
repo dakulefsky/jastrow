@@ -69,6 +69,11 @@ const sourceAttestedSynonyms=[
 for(const [a,b] of sourceAttestedSynonyms)assert.equal(U.sharesReviewedSynonym(a,b),true,'reviewed synonym group should consolidate: '+a+' / '+b);
 assert.equal(U.sharesReviewedSynonym('to frighten','to scare, to threaten'),false,'an unrelated extra sense must prevent synonym-group consolidation');
 assert.equal(U.sharesReviewedSynonym('heap','pile, accusation'),false,'a synonym must not absorb an unrelated alternative');
+assert.equal(U.sharesReviewedSynonym('to frighten','to frighten, scare'),true,'coordinated infinitives may omit the repeated "to"');
+assert.equal(U.sharesReviewedSynonym('to dwell','to dwell, reside'),true,'the omitted infinitive marker should be restored for matching');
+assert.equal(U.sharesReviewedSynonym('to set on fire','to set on fire, burn'),true,'a coordinated bare verb should match its infinitive synonym');
+assert.equal(U.sharesReviewedSynonym('burn','to burn'),false,'noun and infinitive readings must not be conflated');
+
 
 
 // Alternative-level review: match only the shared sense, keeping the
