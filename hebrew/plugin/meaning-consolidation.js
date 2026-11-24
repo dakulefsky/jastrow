@@ -2,6 +2,10 @@
  'use strict';
  const normalize=value=>root.HebrewLookup.normalize(String(value||''));
  const labelKey=value=>normalize(String(value||'').replace(/\b\d+\b/g,'').trim());
+ // Exact Hebrew alternatives may be listed in a different order by the
+ // source records. Normalize punctuation and order only; preserve word order
+ // within each phrase and never infer synonyms from shared words.
+ const canonicalMeaningKey=value=>[...new Set(String(value||'').split(/[;,]/).map(normalize).filter(Boolean))].sort().join(' | ');
  // Each approved synonym is scoped to exact source records and exact Hebrew glosses.
  // Similar wording alone never merges Hebrew senses.
  const reviewedSynonymPairs=new Set([
@@ -26,7 +30,7 @@
   return ids+'::'+glosses;
  }
  function equivalent(a,b){
-  return normalize(a.p.meaning||a.p.text)===normalize(b.p.meaning||b.p.text)||reviewedSynonymPairs.has(pairKey(a,b));
+  return canonicalMeaningKey(a.p.meaning||a.p.text)===canonicalMeaningKey(b.p.meaning||b.p.text)||reviewedSynonymPairs.has(pairKey(a,b));
  }
  function merge(sources,word){
   const groups=[];
@@ -45,5 +49,5 @@
   }
   return groups;
  }
- root.HebrewMeaningConsolidation={merge,normalize,labelKey,reviewedSynonymPairs,pairKey,equivalent};
+ root.HebrewMeaningConsolidation={merge,normalize,labelKey,canonicalMeaningKey,reviewedSynonymPairs,pairKey,equivalent};
 })(typeof window==='undefined'?globalThis:window);
