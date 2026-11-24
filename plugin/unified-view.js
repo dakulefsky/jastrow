@@ -816,7 +816,25 @@
   ["KRU00510","A00796","too","too, also"],
   ["KRU00821","A01281","but for","were it not, but for"],
   ["KRU01252","A01910","wherefore","why?, wherefore?"],
-  ["KRU06172","F00031","woe, oh!","woe;"]
+  ["KRU06172","F00031","woe, oh!","woe;"],
+  ["KRU11752","M02059","the hollow rim of the capsule of the T’fillin through which the thong is slipped","the hollow rim of the capsule of the T’fillin of the arm through which the thong is slipped"],
+  ["KRU17105","S00873","washing hands and feet prior to a priestly function in the Temple","washing hands and feet prior to a priestly function"],
+  ["KRU04364","C00998","to stammer, to hesitate (to speak with an expression of uncertainty or of scruple)","to hesitate, stammer, to speak with an expression of uncertainty"],
+  ["KRU03201","B01112","to search, to investigate, to find out","to search, investigate, examine, find out"],
+  ["KRU05603","E00046","payment for a thing included in the bargain (and not mentioned)","payment for a thing included in the bargain"],
+  ["KRU12171","M02870","the Messiah, the future redeemer of Israel","the Messiah, the future redeemer of Israel from captivity"],
+  ["KRU14469","P00666","essence, main object, chief","essence, reality, main object, chief"],
+  ["KRU17681","S01948","the skin-like, scaly envelope of reed","the skin-like, scaly envelope of reed, haulm"],
+  ["KRU03599","C00144","heap, pile, mound","heap of stones, pile, mound"],
+  ["KRU04328","C00953","stillness of wind and wave","calm, stillness of wind and wave"],
+  ["KRU04621","C01352","indirect production of an effect","cause, indirect production of an effect"],
+  ["KRU07667","H01893","opening made by digging","breach, opening made by digging"],
+  ["KRU08296","I00812","Tripolitans, residents of Tripolis in Phenicia","Tripolitans, residents of Tripolis"],
+  ["KRU11056","M00873","divided off space","divided off space, compartment"],
+  ["KRU11447","M01511","place for drawing water","place for drawing water, well"],
+  ["KRU12549","N00480","the smooth side of skin","the polished, smooth side of skin"],
+  ["KRU12958","N01179","people gathered from different places","gathered from different places"],
+  ["KRU13313","O00393","metal spike of the spear","metal spike at the butt-end of the spear"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  function reviewedEquivalent(source,item){
   if(!compatible(source.spelling,item.spelling))return false;
