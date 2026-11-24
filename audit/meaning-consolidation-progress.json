@@ -4,7 +4,7 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 628,
+    "reviewedNonIdenticalGlossPairs": 679,
     "reviewedGlossEquivalenceGroups": 38,
     "realReaderPhraseExtractorAudit": "all 589 retained mappings passed the last completed Chromium audit; the latest 24-pair tranche is awaiting validation.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
@@ -66,11 +66,11 @@
     "note": "The first full-corpus run used the real reader phrase extractor and original Krupnik glosses. It is a discovery queue, not an equivalence certification."
   },
   "reviewedTranche": {
-    "addedUniqueSourceGlossPairs": 123,
+    "addedUniqueSourceGlossPairs": 174,
     "attemptedRows": 58,
     "rejectedNotDisplayed": 5,
-    "currentTotal": 628,
-    "note": "Four manually reviewed tranches added 123 unique source-pair mappings after the 505-pair baseline. Five earlier attempted candidates were excluded when the real reader extractor did not emit the proposed phrase. The latest 15-pair tranche is awaiting its CI audit."
+    "currentTotal": 679,
+    "note": "Five manually reviewed tranches added 174 unique source-pair mappings after the 505-pair baseline. Five earlier attempted candidates were excluded when the real reader extractor did not emit the proposed phrase. The latest 51-pair tranche is awaiting its CI audit."
   },
   "hebrewConsolidation": {
     "status": "shared grouping layer added to the Hebrew reader and quick lookup",
