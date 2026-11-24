@@ -78,7 +78,7 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
      const evidence=partEvidence(ja,ka);
      if(evidence&&evidence.overlap>=0.5)partPairs.push(evidence);
     }
-    partPairs.sort((a,b)=>b.jaccard-a.jaccard||b.overlap-a.overlap||b.sharedTerms.length-a.sharedTerms.length);
+    partPairs.sort((a,b)=>(Number(clean(b.jastrow)===clean(b.krupnik))-Number(clean(a.jastrow)===clean(a.krupnik)))||b.jaccard-a.jaccard||b.overlap-a.overlap||b.sharedTerms.length-a.sharedTerms.length);
     if(!partPairs.length)continue;
     const overlap=jt.filter(t=>kt.includes(t));
     const wholeOverlap=overlap.length/Math.min(jt.length,kt.length);
