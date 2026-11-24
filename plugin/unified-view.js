@@ -89,10 +89,10 @@
  // alternative on both sides belongs to that same group. One shared synonym
  // must not drag an unrelated extra sense into the consolidated result.
  const synonymParts=text=>{
-  const values=parts(text),coordinatedVerb=/^to\\s+/.test(values[0]||'');
+  const values=parts(text),coordinatedVerb=/^to\s+/.test(values[0]||'');
   // Dictionary glosses often write "to frighten, scare": the second
   // infinitive marker is understood, not a change to a noun.
-  return values.map(value=>coordinatedVerb&&!/^to\\s+/.test(value)?'to '+value:value);
+  return values.map(value=>coordinatedVerb&&!/^to\s+/.test(value)?'to '+value:value);
  };
  const sharesReviewedSynonym=(a,b)=>{
   const left=synonymParts(a).map(synonymGroupKey),right=synonymParts(b).map(synonymGroupKey);
