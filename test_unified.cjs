@@ -83,7 +83,7 @@ assert.equal(U.sharesReviewedSynonym('burn','to burn'),false,'noun and infinitiv
 // Alternative-level review: match the shared phrase while retaining
 // comma-listed synonyms in the same sense and Jastrow's semicolon-separated
 // second sense separately.
-assert.equal(U.reviewedSourceAlternativePairs.size,63,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,113,'every source-scoped alternative match must be loaded');
 const alternativeScoped=U.merge([
  {id:301,entry:{h:'גָּנַח',r:'KRU04451',source:'krupnik'},meanings:[{text:'to sigh heavily under an attack of angina pectoris, to expectorate',label:''}]},
  {id:302,entry:{h:'גָּנַח',r:'C01128'},meanings:[
@@ -98,6 +98,22 @@ assert.equal(matchedSigh.sources.length,2,'the matched sense must retain both di
 assert(matchedSigh.text.includes('to expectorate'),'the rest of the original comma-listed Krupnik gloss must remain with its sense');
 assert.equal(jastrowOtherSense.sources.length,1,'the second Jastrow sense must remain separate');
 assert.equal(matchedSigh.sources.find(source=>source.entry.r==='KRU04451').meaning.text,'to sigh heavily under an attack of angina pectoris, to expectorate','More detail must retain the full original Krupnik gloss');
+
+// Semicolons mark distinct senses; comma-listed alternatives within each
+// sense stay together and are consolidated against their matching source gloss.
+const semicolonSenses=U.merge([
+ {id:311,entry:{h:'גְּזוּרְתָּא',r:'KRU03954',source:'krupnik'},meanings:[
+  {text:'circumcision, feast of circumcision',label:''},
+  {text:'the circumcised membrum',label:''}
+ ]},
+ {id:312,entry:{h:'גְּזוּרְתָּא',r:'C00536'},meanings:[
+  {text:'circumcision, feast of circumcision; the circumcised membrum',label:''}
+ ]}
+],'גְּזוּרְתָּא');
+assert.equal(semicolonSenses.length,2,'semicolon-separated meanings must remain distinct');
+assert.equal(semicolonSenses.find(group=>group.text.includes('circumcision')).sources.length,2,'the first comma-listed sense must consolidate');
+assert.equal(semicolonSenses.find(group=>group.text==='the circumcised membrum').sources.length,2,'the second semicolon-separated sense must consolidate separately');
+
 
 
 // Exact gloss-list equivalence is normalized for punctuation, ordering,
