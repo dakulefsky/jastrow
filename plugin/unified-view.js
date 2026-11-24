@@ -113,7 +113,7 @@
  ].map(pair=>pair.map(clean).sort().join(' | ')));
  const reviewedGlossEquivalent=(a,b)=>{
   if(S.normalize(a.spelling)!==S.normalize(b.spelling))return false;
-  return reviewedGlossPairs.has([clean(a.meaning.text),clean(b.meaning.text)].sort().join(' | '));
+  return reviewedGlossPairs.has([clean(a.meaning.text),clean((b.sourceMeaning||b.meaning).text)].sort().join(' | '));
  };
  function compatible(a,b,word){
   // Consonantal identity is required for every lookup. Only enforce vowel
@@ -1431,10 +1431,42 @@
   ["KRU12425", "N00261", "granted, admitted", "let it be, granted, admitted"],
   ["KRU12466", "N00341", "to be laid down", "to be laid down, placed"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
+ // Alternative-level matches are narrower than whole-gloss matches:
+ // one shared sense can consolidate without absorbing neighboring meanings.
+ const reviewedSourceAlternativePairRecords=[
+  ["KRU04451","C01128","to sigh heavily under an attack of angina pectoris","to sigh heavily under an attack of angina pectoris"]
+ ];
+ const alternativePairsByRef=new Map();
+ for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
+  const key=[kr,jr].sort().join('|')+'::'+[clean(kg),clean(jg)].sort().join(' | ');
+  for(const [ref,own] of [[kr,kg],[jr,jg]]){
+   if(!alternativePairsByRef.has(ref))alternativePairsByRef.set(ref,[]);
+   alternativePairsByRef.get(ref).push({key,own});
+  }
+ }
+ const reviewedSourceAlternativePairs=new Set(reviewedSourceAlternativePairRecords.map(([kr,jr,kg,jg])=>
+  [kr,jr].sort().join('|')+'::'+[clean(kg),clean(jg)].sort().join(' | ')
+ ));
+ function meaningBuckets(ref,meaning){
+  const alternatives=glossAlternatives(meaning.text),mappings=alternativePairsByRef.get(ref)||[];
+  const matched=mappings.filter(mapping=>alternatives.some(value=>clean(value)===clean(mapping.own)));
+  if(!matched.length)return [{text:meaning.text,bucketId:null}];
+  const consumed=new Set(),buckets=[];
+  for(const mapping of matched){
+   const value=alternatives.find(item=>clean(item)===clean(mapping.own));
+   if(!value)continue;
+   consumed.add(clean(value));
+   buckets.push({text:value,bucketId:'reviewed-alternative:'+mapping.key});
+  }
+  const residual=alternatives.filter(value=>!consumed.has(clean(value)));
+  if(residual.length)buckets.push({text:residual.join(', '),bucketId:'unmatched-alternatives:'+ref+':'+clean(meaning.label)+':'+residual.map(clean).join('|')});
+  return buckets;
+ }
  function reviewedEquivalent(source,item){
   if(!compatible(source.spelling,item.spelling))return false;
+  const otherMeaning=item.sourceMeaning||item.meaning;
   const ids=[source.entry.r,item.entry.r].sort().join('|');
-  const glosses=[clean(source.meaning.text),clean(item.meaning.text)].sort().join(' | ');
+  const glosses=[clean(source.meaning.text),clean(otherMeaning.text)].sort().join(' | ');
   return (ids==='A03220|KRU02095'&&glosses==='accident, occurrence | in accident')||
    reviewedSourceGlossPairs.has(ids+'::'+glosses);
  }
@@ -1455,19 +1487,19 @@
   const groups=[];
   for(const {id,entry,meanings,lookupWord} of records)for(const meaning of meanings){
    if(!meaning.text?.trim())continue;
-   const matchingWord=lookupWord||word,spelling=S.displayHeadword(entry,matchingWord),item={id,entry,meaning,spelling};
-   let group=groups.find(g=>sameMeaning(g,item,word));
-   if(!group){group={text:meaning.text,form:stem(meaning.label),spelling,sources:[],rank:S.vowelRank(entry,matchingWord)};groups.push(group);}
-   if(!group.form)group.form=stem(meaning.label);
-   const rank=S.vowelRank(entry,matchingWord);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
-   if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label))){
-    group.sources.push(item);
-    const display=[],seen=new Set();
-    for(const source of group.sources)for(const alternative of glossAlternatives(source.meaning.text)){
+   const matchingWord=lookupWord||word,spelling=S.displayHeadword(entry,matchingWord),sourceItem={id,entry,meaning,spelling};
+   for(const bucket of meaningBuckets(entry.r,meaning)){
+    const item={...sourceItem,sourceMeaning:meaning,meaning:{...meaning,text:bucket.text},bucketId:bucket.bucketId};
+    let group=groups.find(g=>sameMeaning(g,item,word));
+    if(!group){group={text:bucket.text,form:stem(meaning.label),spelling,sources:[],displayAlternatives:[],rank:S.vowelRank(entry,matchingWord)};groups.push(group);}
+    if(!group.form)group.form=stem(meaning.label);
+    const rank=S.vowelRank(entry,matchingWord);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
+    if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label)))group.sources.push(sourceItem);
+    for(const alternative of glossAlternatives(bucket.text)){
      const key=clean(alternative);
-     if(key&&!seen.has(key)){seen.add(key);display.push(alternative);}
+     if(key&&!group.displayAlternatives.some(value=>clean(value)===key))group.displayAlternatives.push(alternative);
     }
-    group.text=display.join(', ');
+    group.text=group.displayAlternatives.join(', ');
    }
   }
   if(S.hasVowels(word))groups.sort((a,b)=>a.rank-b.rank);
@@ -1515,5 +1547,5 @@
   if(withoutMeanings.length){const details=element('details',undefined,'scholarly-entry original-only');details.append(element('summary','Additional dictionary references'));withoutMeanings.forEach((r,i)=>details.append(sourceBlock({...r,meaning:{text:'',label:''}},i)));section.append(details);}
   return section;
  }
- const api={merge,render,compatible,synonymKey,sharesReviewedSynonym,canonicalGlossKey,reviewedGlossPairs,reviewedSourceGlossPairs,reviewedSourceGlossPairCount:reviewedSourceGlossPairs.size};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.DictionaryMeanings=api;
+ const api={merge,render,compatible,synonymKey,sharesReviewedSynonym,canonicalGlossKey,reviewedGlossPairs,reviewedSourceGlossPairs,reviewedSourceAlternativePairs,reviewedSourceGlossPairCount:reviewedSourceGlossPairs.size};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.DictionaryMeanings=api;
 })(typeof window!=='undefined'?window:globalThis);
