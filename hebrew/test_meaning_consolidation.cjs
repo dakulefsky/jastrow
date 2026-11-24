@@ -13,6 +13,11 @@ const same=merge([{word:'בדיקה',records:[
 assert.equal(same.length,1,'identical Hebrew meanings with equivalent numbered labels should consolidate');
 assert.equal(same[0].items.length,2,'all original source records must be preserved');
 assert.equal(same[0].text,'אותה משמעות בדיוק','the original Hebrew display wording should remain unchanged');
+const unknownLabel=merge([{word:'בדיקה',records:[
+ {word:'א',rid:'KRU9010',parts:[{meaning:'משמעות משותפת',text:'פירוט א',label:'פעל 1'}]},
+ {word:'ב',rid:'KRU9011',parts:[{meaning:'משמעות משותפת',text:'פירוט ב',label:''}]}
+]}],'בדיקה');
+assert.equal(unknownLabel.length,1,'an unknown grammatical label must not block an otherwise exact meaning match');
 const distinctLabels=merge([{word:'בדיקה',records:[
  {word:'א',rid:'KRU9003',parts:[{meaning:'אותה משמעות בדיוק',text:'פירוט א',label:'פעל 1'}]},
  {word:'ב',rid:'KRU9004',parts:[{meaning:'אותה משמעות בדיוק',text:'פירוט ב',label:'אפע 2'}]}
