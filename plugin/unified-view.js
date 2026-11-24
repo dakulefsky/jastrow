@@ -1720,7 +1720,8 @@
   ["KRU15920","Q01677","odd sum","odd sum"],
   ["KRU15920","Q01677","detail number","detail number"],
   ["KRU15965","Q01763","to change money","to change money"],
-  ["KRU15983","Q01791","single pigeon","single pigeon"]
+  ["KRU15983","Q01791","single pigeon","single pigeon"],
+  ["KRU15983","Q01791","a single berry","a single berry"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
