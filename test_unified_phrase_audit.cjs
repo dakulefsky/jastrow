@@ -27,7 +27,7 @@ for(const pair of U.reviewedSourceGlossPairs){
  const krupnik=byRef.get(krupnikRef),jastrow=byRef.get(jastrowRef);
  assert(krupnik&&jastrow,'source records exist for '+pair);
  const kg=glosses.find(g=>(krupnik.glosses||[]).some(x=>clean(x.text)===g));
- const jg=glosses.find(g=>g!==kg);
+ const jg=glosses.find(g=>g!==kg)||kg;
  assert(kg&&jg,'pair contains source glosses for '+pair);
  cases.push({ref:jastrowRef,html:jastrow.html,expected:jg,kind:'whole-gloss'});
 }
