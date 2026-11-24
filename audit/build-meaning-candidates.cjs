@@ -18,6 +18,23 @@ const krupnik=entries.filter(e=>e.source==='krupnik'&&Array.isArray(e.glosses));
 const clean=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
 const stop=new Set(('a an the to of for in on with from by as and or is be are was were being been it its this that these those one some any all which could not have their them they he she his her we you your our who what where when why how into unto over under without before after during through around between while than then also only very more most less such same other another each every'.split(' ')));
 const tokens=value=>[...new Set(clean(value).replace(/[^a-z0-9' -]/g,' ').split(/\s+/).filter(t=>t.length>=3&&!stop.has(t)))];
+const alternatives=value=>{
+ const out=[];let current='',depth=0;
+ for(const ch of String(value||'')){
+  if(ch==='(')depth++;else if(ch===')')depth=Math.max(0,depth-1);
+  if((ch===','||ch===';')&&depth===0){if(clean(current))out.push(current.trim());current='';}
+  else current+=ch;
+ }
+ if(clean(current))out.push(current.trim());
+ return out;
+};
+const partEvidence=(a,b)=>{
+ const left=tokens(a),right=tokens(b),shared=left.filter(t=>right.includes(t));
+ if(!left.length||!right.length||!shared.length)return null;
+ return {jastrow:a,krupnik:b,sharedTerms:shared,
+  overlap:Number((shared.length/Math.min(left.length,right.length)).toFixed(3)),
+  jaccard:Number((shared.length/new Set([...left,...right]).size).toFixed(3))};
+};
 const stem=label=>clean(String(label||'').replace(/^[—\s]*\d+[).]?\s*/,'').replace(/\s+\d+[).]?\s*$/,''));
 const sharedForms=(a,b)=>{const left=[a.h,...(a.alt||[])],right=[b.h,...(b.alt||[])],forms=[];for(const x of left)for(const y of right)if(S.normalize(x)===S.normalize(y)&&S.vowelRank({h:x},y)!==2)forms.push(S.normalize(x));return [...new Set(forms)];};
 const voice=value=>/^to\s+be\s+/i.test(clean(value))?'passive':'active';
@@ -56,24 +73,35 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
     if(stem(jp.label)&&stem(kg.label)&&stem(jp.label)!==stem(kg.label))continue;
     if(!samePartOfSpeech(jp.text,kg.text))continue;
     if(/^to\s+/i.test(clean(jp.text))&&/^to\s+/i.test(clean(kg.text))&&voice(jp.text)!==voice(kg.text))continue;
+    const partPairs=[];
+    for(const ja of alternatives(jp.text))for(const ka of alternatives(kg.text)){
+     const evidence=partEvidence(ja,ka);
+     if(evidence&&evidence.overlap>=0.5)partPairs.push(evidence);
+    }
+    partPairs.sort((a,b)=>b.jaccard-a.jaccard||b.overlap-a.overlap||b.sharedTerms.length-a.sharedTerms.length);
+    if(!partPairs.length)continue;
     const overlap=jt.filter(t=>kt.includes(t));
-    if(!overlap.length)continue;
-    const score=overlap.length/Math.min(jt.length,kt.length);
-    if(score<0.5)continue;
+    const wholeOverlap=overlap.length/Math.min(jt.length,kt.length);
+    const wholeJaccard=overlap.length/new Set([...jt,...kt]).size;
     const ids=[j.r,k.r].sort().join('|');
     const glosses=[clean(jp.text),clean(kg.text)].sort().join(' | ');
     if(U.reviewedSourceGlossPairs.has(ids+'::'+glosses)||U.reviewedGlossPairs.has(glosses))continue;
     if(U.synonymKey(jp.text)===U.synonymKey(kg.text)||U.sharesReviewedSynonym(jp.text,kg.text))continue;
-    const jaccard=overlap.length/new Set([...jt,...kt]).size;
+    const best=partPairs[0];
+    const tier=best.jaccard>=0.75?'strong-alternative-overlap':best.jaccard>=0.5?'moderate-alternative-overlap':'weak-alternative-overlap';
     const key=[j.r,k.r,clean(jp.text),clean(kg.text),clean(jp.label),clean(kg.label)].join('::');
     candidates.set(key,{
      headword:j.h,
      sharedForms:forms,
      jastrow:{ref:j.r,headword:j.h,text:jp.text,label:jp.label,section:jp.section},
      krupnik:{ref:k.r,headword:k.h,text:kg.text,label:kg.label||''},
-     sharedTerms:overlap,
-     overlap:Number(score.toFixed(3)),
-     jaccard:Number(jaccard.toFixed(3)),
+     sharedTerms:best.sharedTerms,
+     overlap:best.overlap,
+     jaccard:best.jaccard,
+     wholeGlossOverlap:Number(wholeOverlap.toFixed(3)),
+     wholeGlossJaccard:Number(wholeJaccard.toFixed(3)),
+     bestAlternativeMatch:best,
+     candidateTier:tier,
      reviewStatus:'pending-human-review'
     });
    }
@@ -87,7 +115,7 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
    headwordMatching:'Jastrow Search.normalize across primary and alternate headword spellings',
    jastrowMeanings:'JastrowReadingView.phrases, the actual reader extractor',
    krupnikMeanings:'Original Krupnik gloss records',
-   candidateRule:'At least one shared content token and overlap coefficient >= 0.5; exact complete gloss lists that differ only by punctuation, alternative ordering, articles, or coordinated infinitive markers are handled by the deterministic canonical matcher and excluded; pointed-headword conflicts, explicit label conflicts, verb/noun mismatches, and active/passive infinitive mismatches are excluded; already-reviewed pairs are excluded; no fuzzy automatic merging',
+   candidateRule:'Compare comma/semicolon-separated alternatives independently (respecting parenthetical commas); retain a candidate when any individual Jastrow/Krupnik alternative pair shares content terms with overlap coefficient >= 0.5; rank by best alternative-level Jaccard rather than whole-gloss overlap; exact complete gloss lists handled by deterministic canonical matching are excluded; pointed-headword conflicts, explicit label conflicts, verb/noun mismatches, and active/passive infinitive mismatches are excluded; already-reviewed pairs are excluded; no fuzzy automatic merging',
    limitations:'Lexical overlap is only a review hint. Shared terms can represent distinct senses; grammatical labels and source context require manual review.'
   },
   totals:{sourceEntries:entries.length,jastrowEntries:jastrow.length,krupnikEntries:krupnik.length,jastrowEntriesWithReaderPhrases:[...phrasesByRef.values()].filter(x=>x.length).length,sharedHeadwordRecordPairs:matchedRecordPairs.size,jastrowHeadwordIndexAssociations:[...byForm.values()].reduce((n,a)=>n+a.length,0),candidates:list.length},
