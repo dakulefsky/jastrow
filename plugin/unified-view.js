@@ -1295,7 +1295,6 @@
   ["KRU02160", "A03321", "setting", "fitting, setting"],
   ["KRU04566", "C01270", "fringe", "that which is combed, fringe"],
   ["KRU04578", "C01320", "to incite, to stir up", "to incite"],
-  ["KRU04694", "D00017", "to flow out", "to flow"],
   ["KRU04712", "D00027", "a species of doves", "doves"],
   ["KRU04721", "D00037", "to overflow", "to drip, overflow"],
   ["KRU04733", "D00052", "bee-hive", "bee-swarm, bee-hive"],
