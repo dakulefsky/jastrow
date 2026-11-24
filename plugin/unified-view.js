@@ -1751,12 +1751,16 @@
    const bucketKeys=[...new Set(mappings.filter(mapping=>alternatives.some(value=>mapping.exact?clean(value)===clean(mapping.own):alternativeKey(value)===alternativeKey(mapping.own))).map(mapping=>mapping.key))];
    return {text:segment,bucketKeys,bucketId:bucketKeys.length?'reviewed-alternative-segment':'unmatched-segment:'+ref+':'+clean(meaning.label)+':'+index};
   });
-  // Split semicolon segments only when every segment has its own distinct
-  // source-attested match. If only part of a phrase matches, keep unmatched
-  // wording attached to the original sense rather than guessing.
+  // Split when every semicolon segment has its own distinct source match,
+  // or when the phrase clearly lists separate verb senses / parts of speech.
+  // For noun-like lists with only one match, keep the remaining wording with
+  // that sense (e.g. "a single berry; a slice") rather than guessing.
   const allMapped=buckets.length>1&&buckets.every(bucket=>bucket.bucketKeys.length);
   const disjoint=allMapped&&buckets.every((bucket,index)=>buckets.slice(0,index).every(other=>!bucket.bucketKeys.some(key=>other.bucketKeys.includes(key))));
-  if(disjoint)return buckets;
+  const hasMapped=buckets.some(bucket=>bucket.bucketKeys.length);
+  const categories=segments.map(segment=>/^to\\s+be\\s+/i.test(clean(segment))?'passive-verb':/^to\\s+/i.test(clean(segment))?'verb':'nonverb');
+  const grammarSplit=hasMapped&&categories.length>1&&(categories.every(category=>category==='verb')||new Set(categories).size>1);
+  if(disjoint||grammarSplit)return buckets;
   const bucketKeys=[...new Set(buckets.flatMap(bucket=>bucket.bucketKeys))];
   return [{text:meaning.text,bucketKeys,bucketId:bucketKeys.length?'reviewed-alternative-phrase':null}];
  }
