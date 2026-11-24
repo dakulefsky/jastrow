@@ -4,6 +4,7 @@ const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const context={};context.window=context;vm.createContext(context);
 vm.runInContext(fs.readFileSync(path.join(__dirname,'plugin/data.js'),'utf8'),context);
 vm.runInContext(fs.readFileSync(path.join(__dirname,'plugin/lookup.js'),'utf8'),context);
+vm.runInContext(fs.readFileSync(path.join(__dirname,'plugin/meaning-consolidation.js'),'utf8'),context);
 const dictionary=context.HEBREW_DICTIONARY,normalize=context.HebrewLookup.normalize;
 const label=value=>normalize(String(value||'').replace(/\b\d+\b/g,'').trim());
 const clean=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[^a-z0-9' -]/g,' ').replace(/\s+/g,' ').trim();
@@ -24,6 +25,8 @@ for(const [key,records] of byWord){
    const ha=pa.meaning||pa.text||'',hb=pb.meaning||pb.text||'';
    if(!normalize(ha)||!normalize(hb)||normalize(ha)===normalize(hb))continue;
    if(label(pa.label)&&label(pb.label)&&label(pa.label)!==label(pb.label))continue;
+   const itemA={e:a,p:pa},itemB={e:b,p:pb};
+   if(context.HebrewMeaningConsolidation.reviewedSynonymPairs.has(context.HebrewMeaningConsolidation.pairKey(itemA,itemB)))continue;
    const ea=clean(pa.english),eb=clean(pb.english);
    const ta=tokens(ea),tb=tokens(eb);
    const overlap=ta.filter(t=>tb.includes(t)),jaccard=ta.length&&tb.length?overlap.length/new Set([...ta,...tb]).size:0;
@@ -47,7 +50,7 @@ const report={
   source:'Original Krupnik and Silbermann Hebrew definitions with their embedded original English gloss metadata',
   headwordMatching:'HebrewLookup.normalize across primary and alternate headwords',
   alignment:'All non-identical Hebrew meaning pairs from repeated normalized headwords are queued; original English gloss overlap is shown as a ranking clue, not a hard filter',
-  safeguards:'Different explicit grammatical labels are excluded; identical Hebrew glosses are already handled by exact grouping',
+  safeguards:'Different explicit grammatical labels are excluded; identical Hebrew glosses are already handled by exact grouping; approved source-scoped synonym pairs are excluded from the queue',
   limitation:'English overlap is only an alignment clue. Reviewers must confirm the Hebrew definitions express the same sense before approving a merge.'
  },
   totals:{sourceRecords:dictionary.entries.length,uniqueHeadwordForms:byWord.size,repeatedHeadwordForms:[...byWord.values()].filter(group=>group.size>1).length,candidates:list.length},
