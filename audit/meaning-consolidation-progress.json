@@ -75,9 +75,9 @@
   "hebrewConsolidation": {
     "status": "shared grouping layer added to the Hebrew reader and quick lookup",
     "sources": "Krupnik/Silbermann Hebrew source records only; the Hebrew plugin does not load Jastrow",
-    "safeguards": "Exact Hebrew meanings consolidate by default; synonym mappings must be explicitly reviewed and source-scoped; grammatical labels and selected-word boundaries are preserved Pointed headword conflicts are excluded from the candidate queue; six real source-scoped synonym pairs are now curated.",
+    "safeguards": "Exact Hebrew meanings consolidate by default; synonym mappings must be explicitly reviewed and source-scoped; grammatical labels and selected-word boundaries are preserved Pointed headword conflicts are excluded from the candidate queue; six real source-scoped synonym pairs are now curated. Four further pairs were added only after checking their shared headword forms, original Hebrew glosses, and grammatical labels.",
     "candidateReview": "The initial English-gloss alignment filter found no pairs. The inventory was broadened to list every non-identical meaning pair across repeated normalized headwords for manual review.",
-    "reviewedSynonymPairs": 6,
+    "reviewedSynonymPairs": 10,
     "reviewedPairs": [
       {
         "records": [
@@ -120,6 +120,34 @@
           "KRU15827"
         ],
         "meaning": "bursting"
+      },
+      {
+        "records": [
+          "KRU02835",
+          "KRU02882"
+        ],
+        "meaning": "wearing out / damaging"
+      },
+      {
+        "records": [
+          "KRU14546",
+          "KRU16290"
+        ],
+        "meaning": "on one's responsibility"
+      },
+      {
+        "records": [
+          "KRU15796",
+          "KRU15797"
+        ],
+        "meaning": "splitting / dividing"
+      },
+      {
+        "records": [
+          "KRU00145",
+          "KRU04650"
+        ],
+        "meaning": "incidentally"
       }
     ]
   }
