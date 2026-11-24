@@ -1566,7 +1566,7 @@
         "KRU01588",
         "A02428",
         "physician",
-        "physician, surgeon"
+        "physician, surgeon;"
       ],
       [
         "KRU01590",
@@ -1668,6 +1668,12 @@
       "before": "the camels) hump",
       "after": "the camel's hump",
       "reason": "The source Hebrew gloss חטוטרת means hump; the parenthetical English gloss clearly intended 'the camel's hump'. Corrected both the structured gloss and HTML source text."
+    },
+    {
+      "source": "A02428",
+      "before": "physician, surgeon",
+      "actualReaderPhrase": "physician, surgeon;",
+      "reason": "The real reader extractor includes a trailing semicolon in this Jastrow gloss. The reviewed mapping now matches the exact emitted phrase rather than weakening the audit."
     }
   ]
 }
