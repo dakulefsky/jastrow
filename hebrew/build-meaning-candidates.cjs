@@ -61,6 +61,10 @@ const evidenceExamples=[
  englishEvidence('','',[],0).level==='missing-gloss'
 ];
 if(evidenceExamples.some(ok=>!ok))throw new Error('Hebrew candidate evidence ranking must distinguish exact, overlapping, unrelated, and missing English glosses');
+const partialA=context.HebrewMeaningConsolidation.splitAlternatives('בתנאי');
+const partialB=context.HebrewMeaningConsolidation.splitAlternatives('בתנאי, בכוונה');
+if(!partialA.some(value=>partialB.map(normalize).includes(normalize(value))))throw new Error('Hebrew candidate ranking must detect exact shared alternatives in fuller glosses');
+if(context.HebrewMeaningConsolidation.canonicalMeaningKey('בית, ביתו')!==context.HebrewMeaningConsolidation.canonicalMeaningKey('ביתו; בית'))throw new Error('Reordered Hebrew synonym lists must be treated as the same full meaning');
 const candidates=new Map();
 for(const [key,records] of byWord){
  const entries=[...records.values()];
@@ -69,7 +73,7 @@ for(const [key,records] of byWord){
   if(!headwordCompatible(a,b))continue;
   for(const pa of a.parts||[])for(const pb of b.parts||[]){
    const ha=pa.meaning||pa.text||'',hb=pb.meaning||pb.text||'';
-   if(!normalize(ha)||!normalize(hb)||normalize(ha)===normalize(hb))continue;
+   if(!normalize(ha)||!normalize(hb)||context.HebrewMeaningConsolidation.canonicalMeaningKey(ha)===context.HebrewMeaningConsolidation.canonicalMeaningKey(hb))continue;
    if(label(pa.label)&&label(pb.label)&&label(pa.label)!==label(pb.label))continue;
    const itemA={e:a,p:pa},itemB={e:b,p:pb};
    if(context.HebrewMeaningConsolidation.reviewedSynonymPairs.has(context.HebrewMeaningConsolidation.pairKey(itemA,itemB)))continue;
@@ -78,6 +82,12 @@ for(const [key,records] of byWord){
    const ta=tokens(ea),tb=tokens(eb);
    const overlap=ta.filter(t=>tb.includes(t)),jaccard=ta.length&&tb.length?overlap.length/new Set([...ta,...tb]).size:0;
    const evidence=englishEvidence(ea,eb,overlap,jaccard);
+   const hebrewA=[...new Set(context.HebrewMeaningConsolidation.splitAlternatives(ha).map(normalize).filter(Boolean))];
+   const hebrewB=[...new Set(context.HebrewMeaningConsolidation.splitAlternatives(hb).map(normalize).filter(Boolean))];
+   const hebrewBSet=new Set(hebrewB);
+   const sharedHebrewAlternatives=hebrewA.filter(value=>hebrewBSet.has(value));
+   const partialHebrewOverlap=sharedHebrewAlternatives.length>0;
+   const hebrewEvidenceScore=partialHebrewOverlap?4+sharedHebrewAlternatives.length:evidence.score;
    const refs=[a.rid,b.rid].sort();
    const glosses=[normalize(ha),normalize(hb)].sort();
    const keyId=[key,...refs,...glosses].join('::');
@@ -87,12 +97,13 @@ for(const [key,records] of byWord){
     sourceB:{rid:b.rid,headword:b.word,label:pb.label||'',hebrew:hb,fullHebrew:pb.text||'',english:pb.english||''},
     sharedEnglishTerms:overlap,jaccard:Number(jaccard.toFixed(3)),englishGlossesIdentical:!!ea&&ea===eb,
     englishEvidence:evidence.level,englishEvidenceScore:Number(evidence.score.toFixed(3)),
+    sharedHebrewAlternatives,partialHebrewOverlap,hebrewEvidenceScore,
     reviewStatus:'pending-human-review'
    });
   }
  }
 }
-const list=[...candidates.values()].sort((a,b)=>b.englishEvidenceScore-a.englishEvidenceScore||b.jaccard-a.jaccard||b.sharedEnglishTerms.length-a.sharedEnglishTerms.length||a.headword.localeCompare(b.headword));
+const list=[...candidates.values()].sort((a,b)=>b.hebrewEvidenceScore-a.hebrewEvidenceScore||b.englishEvidenceScore-a.englishEvidenceScore||b.jaccard-a.jaccard||b.sharedEnglishTerms.length-a.sharedEnglishTerms.length||a.headword.localeCompare(b.headword));
 const report={
  purpose:'Review queue only. No Hebrew definitions are automatically merged or rewritten.',
  method:{
@@ -102,7 +113,7 @@ const report={
   safeguards:'Different explicit grammatical labels are excluded; identical Hebrew glosses are already handled by exact grouping; approved source-scoped synonym pairs are excluded from the queue',
   limitation:'English overlap is only an alignment clue. Reviewers must confirm the Hebrew definitions express the same sense before approving a merge.'
  },
-  totals:{sourceRecords:dictionary.entries.length,uniqueHeadwordForms:byWord.size,repeatedHeadwordForms:[...byWord.values()].filter(group=>group.size>1).length,candidates:list.length,evidenceCounts:Object.fromEntries(['exact-gloss','shared-content-terms','different-glosses','missing-gloss'].map(level=>[level,list.filter(x=>x.englishEvidence===level).length]))},
+  totals:{sourceRecords:dictionary.entries.length,uniqueHeadwordForms:byWord.size,repeatedHeadwordForms:[...byWord.values()].filter(group=>group.size>1).length,candidates:list.length,partialHebrewOverlap:list.filter(x=>x.partialHebrewOverlap).length,evidenceCounts:Object.fromEntries(['exact-gloss','shared-content-terms','different-glosses','missing-gloss'].map(level=>[level,list.filter(x=>x.englishEvidence===level).length]))},
  candidates:list
 };
 const output=path.join(__dirname,'meaning-consolidation-candidates.json');
@@ -114,7 +125,7 @@ const summary=[
  '- Repeated headword forms: '+report.totals.repeatedHeadwordForms,
  '- Candidate pairs for manual Hebrew review: '+list.length,
  '',
- 'English glosses are used only as an alignment clue; exact and shared-content-term evidence is ranked first, unrelated or missing glosses are kept lower in the review queue; no Hebrew meaning is automatically merged.',
+ 'Exact shared Hebrew alternatives are ranked first, so a shared synonym can be consolidated while extra senses remain separate. English glosses are a secondary alignment clue; no Hebrew meaning is automatically merged.',
  '',
  'Top examples:',
  ...list.slice(0,12).map(x=>'- '+x.headword+' ('+x.sourceA.rid+' / '+x.sourceB.rid+'): '+x.sourceA.hebrew+' ↔ '+x.sourceB.hebrew+' [English: '+x.sourceA.english+' / '+x.sourceB.english+']')
