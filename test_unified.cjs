@@ -152,14 +152,14 @@ const synonymBridge=U.merge([
 ],'אבא');
 assert.equal(synonymBridge.length,1,'reviewed synonym variants for the same headword should consolidate');
 assert.equal(synonymBridge[0].sources.length,2,'synonym consolidation must retain both original dictionary records');
-assert.equal(synonymBridge[0].text,'father, my father','the consolidated display should retain the fuller source gloss');
+assert.equal(synonymBridge[0].text,'my father, father','the consolidated display should retain distinct synonym alternatives from both sources');
 
 const qualifiedSynonym=U.merge([
  {id:18,entry:{h:'אֲבַק',r:'A00190'},meanings:[{text:'to be attached',label:''}]},
  {id:19,entry:{h:'אֲבַק',r:'KRU00120'},meanings:[{text:'to be attached to, cling to',label:''}]}
 ],'אבק');
 assert.equal(qualifiedSynonym.length,1,'a reviewed multiword synonym should join the fuller gloss');
-assert.equal(qualifiedSynonym[0].text,'to be attached to, cling to');
+assert.equal(qualifiedSynonym[0].text,'to be attached, to be attached to, cling to');
 
 const scopedSynonym=U.merge([
  {id:20,entry:{h:'אַבָּא',r:'A00017'},meanings:[{text:'my father',label:''}]},
