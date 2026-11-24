@@ -24,11 +24,11 @@
    else current+=ch;
   }
   alternatives.push(current);
-  const first=clean(alternatives[0]||''),verbList=/^to\\s+/.test(first);
+  const first=clean(alternatives[0]||''),verbList=/^to\s+/.test(first);
   const normalized=alternatives.map((part,index)=>{
-   let item=clean(part).replace(/\\bto\\s+to\\b/g,'to').replace(/^(?:a|an|the)\\s+/,'');
-   if(index>0&&verbList)item=item.replace(/^to\\s+/,'');
-   return item.replace(/[.,;:!?()[\\]{}]+/g,' ').replace(/\\s+/g,' ').trim();
+   let item=clean(part).replace(/\bto\s+to\b/g,'to').replace(/^(?:a|an|the)\s+/,'');
+   if(index>0&&verbList)item=item.replace(/^to\s+/,'');
+   return item.replace(/[.,;:!?()[\\]{}]+/g,' ').replace(/\s+/g,' ').trim();
   }).filter(Boolean);
   return [...new Set(normalized)].sort().join(' | ');
  };
