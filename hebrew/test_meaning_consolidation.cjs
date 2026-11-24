@@ -23,6 +23,13 @@ const distinctLabels=merge([{word:'בדיקה',records:[
  {word:'ב',rid:'KRU9004',parts:[{meaning:'אותה משמעות בדיוק',text:'פירוט ב',label:'אפע 2'}]}
 ]}],'בדיקה');
 assert.equal(distinctLabels.length,2,'different explicit grammatical labels must remain separate');
+const reorderedHebrew=merge([{word:'בדיקה',records:[
+ {word:'א',rid:'KRU9050',parts:[{meaning:'בית, ביתו',text:'פירוט א',label:''}]},
+ {word:'ב',rid:'KRU9051',parts:[{meaning:'ביתו; בית',text:'פירוט ב',label:''}]}
+]}],'בדיקה');
+assert.equal(reorderedHebrew.length,1,'the same exact Hebrew alternatives should consolidate when their order and punctuation differ');
+assert.equal(reorderedHebrew[0].items.length,2,'both original Hebrew records must remain available');
+assert.notEqual(ctx.HebrewMeaningConsolidation.canonicalMeaningKey('אח אב'),ctx.HebrewMeaningConsolidation.canonicalMeaningKey('אב אח'),'word order within a Hebrew meaning must remain significant');
 const distinctMeaning=merge([{word:'בדיקה',records:[
  {word:'א',rid:'KRU9005',parts:[{meaning:'הפסד',text:'הפסד',label:''}]},
  {word:'ב',rid:'KRU9006',parts:[{meaning:'אבידה',text:'אבידה',label:''}]}
