@@ -370,7 +370,7 @@ assert.equal(labelBridge[0].form,'ithpe','retain the normalized explicit grammat
 
 const exactAlternativeBridge=U.merge([
  {id:110,entry:{h:'בְּרִי I',r:'KRU03319',source:'krupnik'},meanings:[{text:'to get well',label:''}]},
- {id:111,entry:{h:'בְּרִי I',r:'B01236',source:'jastrow'},meanings:[{text:'to get well, recover; to be strong',label:'Hif.'}]}
+ {id:111,entry:{h:'בְּרִי I',r:'B01236',source:'jastrow'},meanings:[{text:'to get well, recover',label:'Hif.'},{text:'to be strong',label:'Hif.'}]}
 ],'ברי');
 assert.equal(exactAlternativeBridge.length,2,'an unambiguous exact alternative should merge without absorbing a separate semicolon-delimited sense');
 const exactAlternativeShared=exactAlternativeBridge.find(group=>group.sources.length===2);
