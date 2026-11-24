@@ -6,13 +6,13 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1249 retained whole-gloss mappings and all 192 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1249 retained whole-gloss mappings and all 209 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
     "reviewedSourceGlossPairCount": 1249,
-    "reviewedSourceAlternativePairCount": 192,
-    "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
+    "reviewedSourceAlternativePairCount": 209,
+    "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 16,
     "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions.",
     "homonymPolicy": "If both source headwords explicitly carry different Roman or superscript Arabic homonym numbers, they are not compatible for consolidation. A numbered headword may still match an unnumbered counterpart, since one dictionary may omit the numbering."
@@ -1839,8 +1839,8 @@
     "note": "Twenty-five same-sense variants were approved from the next inventory page. The D00017 mapping was checked against the original records: Jastrow's real reader phrase is 'to flow', matching Krupnik sense 1 'to flow'; Krupnik sense 2 'to flow out' remains distinct and is not merged into it."
   },
   "alternativeLevelReview": {
-    "status": "expanded-with-192-source-scoped-alternative-matches",
-    "reviewedSourceAlternativePairs": 192,
+    "status": "expanded-with-209-source-scoped-alternative-matches",
+    "reviewedSourceAlternativePairs": 209,
     "acceptedPairs": [
       [
         "KRU04451",
@@ -3292,6 +3292,139 @@
         "jastrow": "N01011",
         "krupnik": "KRU12852",
         "reason": "Next clear candidate; left for the next tranche rather than expanding this batch."
+      }
+    ]
+  },
+  "seventhAlternativeReviewedTranche": {
+    "attemptedCandidateRows": 15,
+    "acceptedCandidateRows": 15,
+    "addedUniqueSourceAlternativePairs": 17,
+    "status": "accepted-source-attested-alternative-matches",
+    "rationale": "Reviewed the next 15 high-confidence candidates. Exact alternative matches were accepted only after checking the source glosses and grammatical/sense boundaries. Parenthetical punctuation is now ignored for matching when the actual words are identical; the full original source text remains available.",
+    "acceptedPairs": [
+      [
+        "KRU12449",
+        "N00308",
+        "to shake (the head)",
+        "to shake the head"
+      ],
+      [
+        "KRU12852",
+        "N01011",
+        "camel’s cry",
+        "camel’s cry"
+      ],
+      [
+        "KRU12984",
+        "N01216",
+        "underground passage",
+        "underground passage"
+      ],
+      [
+        "KRU13000",
+        "N01251",
+        "to strike against",
+        "to strike against"
+      ],
+      [
+        "KRU13204",
+        "O00208",
+        "systematic scholar",
+        "systematic scholar"
+      ],
+      [
+        "KRU13347",
+        "O00452",
+        "to press out",
+        "to press out"
+      ],
+      [
+        "KRU13347",
+        "O00452",
+        "to wring",
+        "wring"
+      ],
+      [
+        "KRU13399",
+        "O00530",
+        "old age",
+        "old age"
+      ],
+      [
+        "KRU13404",
+        "O00530",
+        "gray head",
+        "gray head"
+      ],
+      [
+        "KRU13453",
+        "O00619",
+        "lime-burner",
+        "lime-burner"
+      ],
+      [
+        "KRU13453",
+        "O00619",
+        "worker in lime",
+        "worker in lime"
+      ],
+      [
+        "KRU13548",
+        "O00789",
+        "adequate power",
+        "adequate power"
+      ],
+      [
+        "KRU13620",
+        "O00906",
+        "ceiling (of twigs)",
+        "ceiling of twigs"
+      ],
+      [
+        "KRU13692",
+        "O01042",
+        "to cut chips",
+        "to cut chips"
+      ],
+      [
+        "KRU13714",
+        "O01078",
+        "to make blind",
+        "to make blind"
+      ],
+      [
+        "KRU13841",
+        "O01294",
+        "to be inflicted upon",
+        "to be inflicted upon"
+      ],
+      [
+        "KRU13853",
+        "O01319",
+        "speaker at funerals",
+        "speaker at funerals"
+      ]
+    ],
+    "deferredCandidates": [
+      {
+        "jastrow": "M02528",
+        "krupnik": "KRU11994",
+        "reason": "Jastrow Hifil label; defer for grammatical/voice review."
+      },
+      {
+        "jastrow": "N00341",
+        "krupnik": "KRU12466",
+        "reason": "Jastrow Afel label; defer for grammatical/voice review."
+      },
+      {
+        "jastrow": "O01573",
+        "krupnik": "KRU13990",
+        "reason": "The same exact alternative occurs in two Jastrow senses; defer until a one-to-one source-sense match is established."
+      },
+      {
+        "jastrow": "O01464",
+        "krupnik": "KRU13933",
+        "reason": "Jastrow phrase includes leading 'also', which is not stripped by exact alternative normalization; defer rather than broaden normalization."
       }
     ]
   }
