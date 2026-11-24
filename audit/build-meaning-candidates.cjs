@@ -59,6 +59,7 @@ const voice=value=>/^to\s+be\s+/i.test(clean(value))?'passive':'active';
     const ids=[j.r,k.r].sort().join('|');
     const glosses=[clean(jp.text),clean(kg.text)].sort().join(' | ');
     if(U.reviewedSourceGlossPairs.has(ids+'::'+glosses)||U.reviewedGlossPairs.has(glosses))continue;
+    if(U.synonymKey(jp.text)===U.synonymKey(kg.text)||U.sharesReviewedSynonym(jp.text,kg.text))continue;
     const jaccard=overlap.length/new Set([...jt,...kt]).size;
     const key=[j.r,k.r,clean(jp.text),clean(kg.text),clean(jp.label),clean(kg.label)].join('::');
     candidates.set(key,{
