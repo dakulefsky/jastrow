@@ -80,8 +80,9 @@ assert.equal(U.sharesReviewedSynonym('burn','to burn'),false,'noun and infinitiv
 
 
 
-// Alternative-level review: match only the shared sense, keeping the
-// unrelated alternative in the Krupnik gloss and Jastrow's second sense apart.
+// Alternative-level review: match the shared phrase while retaining
+// comma-listed synonyms in the same sense and Jastrow's semicolon-separated
+// second sense separately.
 assert.equal(U.reviewedSourceAlternativePairs.size,63,'every source-scoped alternative match must be loaded');
 const alternativeScoped=U.merge([
  {id:301,entry:{h:'גָּנַח',r:'KRU04451',source:'krupnik'},meanings:[{text:'to sigh heavily under an attack of angina pectoris, to expectorate',label:''}]},
@@ -90,12 +91,11 @@ const alternativeScoped=U.merge([
   {text:'to cough and spit blood',label:''}
  ]}
 ],'גָּנַח');
-assert.equal(alternativeScoped.length,3,'only the explicitly matched alternative should consolidate');
-const matchedSigh=alternativeScoped.find(group=>group.text==='to sigh heavily under an attack of angina pectoris');
-const krupnikRemainder=alternativeScoped.find(group=>group.text==='to expectorate');
+assert.equal(alternativeScoped.length,2,'comma-listed gloss alternatives must stay within their semicolon-delimited sense');
+const matchedSigh=alternativeScoped.find(group=>group.text.includes('to sigh heavily under an attack of angina pectoris'));
 const jastrowOtherSense=alternativeScoped.find(group=>group.text==='to cough and spit blood');
-assert.equal(matchedSigh.sources.length,2,'the matched alternative must retain both dictionary sources');
-assert.equal(krupnikRemainder.sources.length,1,'the unmatched Krupnik alternative must remain separate');
+assert.equal(matchedSigh.sources.length,2,'the matched sense must retain both dictionary sources');
+assert(matchedSigh.text.includes('to expectorate'),'the rest of the original comma-listed Krupnik gloss must remain with its sense');
 assert.equal(jastrowOtherSense.sources.length,1,'the second Jastrow sense must remain separate');
 assert.equal(matchedSigh.sources.find(source=>source.entry.r==='KRU04451').meaning.text,'to sigh heavily under an attack of angina pectoris, to expectorate','More detail must retain the full original Krupnik gloss');
 
