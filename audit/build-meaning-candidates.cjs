@@ -48,10 +48,15 @@ const sharedForms=(a,b)=>[...new Set([a.h,...(a.alt||[])].map(S.normalize).filte
    for(const jp of phrasesByRef.get(j.r)||[])for(const kg of k.glosses||[]){
     const jt=tokens(jp.text),kt=tokens(kg.text);
     if(!jt.length||!kt.length||clean(jp.text)===clean(kg.text))continue;
+    if(stem(jp.label)&&stem(kg.label)&&stem(jp.label)!==stem(kg.label))continue;
     const overlap=jt.filter(t=>kt.includes(t));
     if(!overlap.length)continue;
     const score=overlap.length/Math.min(jt.length,kt.length);
     if(score<0.5)continue;
+    const ids=[j.r,k.r].sort().join('|');
+    const glosses=[clean(jp.text),clean(kg.text)].sort().join(' | ');
+    if(U.reviewedSourceGlossPairs.has(ids+'::'+glosses)||U.reviewedGlossPairs.has(glosses))continue;
+    const jaccard=overlap.length/new Set([...jt,...kt]).size;
     const key=[j.r,k.r,clean(jp.text),clean(kg.text),clean(jp.label),clean(kg.label)].join('::');
     candidates.set(key,{
      headword:j.h,
@@ -60,6 +65,7 @@ const sharedForms=(a,b)=>[...new Set([a.h,...(a.alt||[])].map(S.normalize).filte
      krupnik:{ref:k.r,headword:k.h,text:kg.text,label:kg.label||''},
      sharedTerms:overlap,
      overlap:Number(score.toFixed(3)),
+     jaccard:Number(jaccard.toFixed(3)),
      reviewStatus:'pending-human-review'
     });
    }
