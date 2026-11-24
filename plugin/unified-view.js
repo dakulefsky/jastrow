@@ -717,7 +717,23 @@
   ["KRU08586","J00278","young shoot","a young shoot"],
   ["KRU08997","K00082","to withhold, to detain","to withhold, detain"],
   ["KRU08993","K00081","to press, to squeeze","to press, squeeze."],
-  ["KRU09099","K00206","window, aperture","aperture, window"]
+  ["KRU09099","K00206","window, aperture","aperture, window"],
+  // Additional individually checked gloss pairs from the same headword review queue.
+  ["KRU04384","C01035","entire destruction","entire destruction, extermination"],
+  ["KRU04405","C01063","to decide, to determine","to conclude, determine, decide."],
+  ["KRU04644","C01392","to scratch, to scrape","to scratch, scrape, shave"],
+  ["KRU03779","C00339","to carry across, to bring on","to carry across"],
+  ["KRU03779","C00339","to cross","to cross, pass"],
+  ["KRU03512","C00074","to be fined","to be taxed, fined"],
+  ["KRU04407","C01064","to finish","to finish; to consume"],
+  ["KRU04542","C01242","to be excited","to be excited, impatient"],
+  ["KRU07216","H01098","to reverse","to change; to reverse"],
+  ["KRU04644","C01392","to drag, to move without lifting","to drag"],
+  ["KRU08993","K00081","to pave","to pave, grade a road"],
+  ["KRU04405","C01063","to finish, to complete","to complete, end"],
+  ["KRU04308","C00927","to go into exile, to diasppear","to go into exile, go away, disappear"],
+  ["KRU07216","H01098","to change, to exchange","to exchange, barter"],
+  ["KRU04644","C01392","to be dragged, to be pulled","to be dragged, pulled"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  function reviewedEquivalent(source,item){
   if(!compatible(source.spelling,item.spelling))return false;
