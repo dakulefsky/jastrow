@@ -4,9 +4,9 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 539,
+    "reviewedNonIdenticalGlossPairs": 589,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "all 534 retained mappings passed Chromium validation; five attempted mappings were removed because the reader extractor did not emit the proposed Jastrow phrase",
+    "realReaderPhraseExtractorAudit": "all 589 retained mappings are subject to the Chromium phrase-extractor audit; the latest prior checkpoint of 539 passed.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases"
   },
@@ -55,21 +55,21 @@
   "candidateInventory": {
     "generator": "audit/build-meaning-candidates.cjs",
     "workflow": "Build cross-dictionary synonym review inventory",
-    "runId": 45341044818,
-    "artifactId": 14896630080,
-    "candidateGlossPairs": 9771,
+    "runId": 45341714665,
+    "artifactId": 14896975251,
+    "candidateGlossPairs": 5528,
     "sourceEntries": 47919,
     "jastrowEntries": 32508,
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
-    "status": "generated; candidates remain pending human review",
+    "status": "generated; 5,528 candidates remain pending human review after filtering already-reviewed pairs, explicit grammatical-label conflicts, pointed-headword conflicts, and active/passive infinitive mismatches",
     "note": "The first full-corpus run used the real reader phrase extractor and original Krupnik glosses. It is a discovery queue, not an equivalence certification."
   },
   "reviewedTranche": {
-    "addedUniqueSourceGlossPairs": 34,
+    "addedUniqueSourceGlossPairs": 84,
     "attemptedRows": 58,
     "rejectedNotDisplayed": 5,
-    "currentTotal": 539,
-    "note": "The first candidate tranche added 34 unique source-pair mappings. Five attempted candidate rows were excluded because the real reader phrase extractor did not emit the proposed Jastrow phrase; those exclusions did not reduce the unique mapping count because they were duplicates or non-counted proposals."
+    "currentTotal": 589,
+    "note": "Two manually reviewed tranches added 84 unique source-pair mappings after the 505-pair baseline. Five earlier attempted candidates were excluded when the real reader extractor did not emit the proposed phrase. The newest 50-pair tranche is awaiting its CI audit."
   }
 }
