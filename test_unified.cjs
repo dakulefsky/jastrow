@@ -50,7 +50,15 @@ const partSynonym=U.merge([
 ],'קם');
 assert.equal(partSynonym.length,1,'a curated synonym inside a comma-separated gloss should consolidate');
 assert.equal(partSynonym[0].sources.length,2,'part-level synonym consolidation must preserve both sources');
-assert.equal(partSynonym[0].text,'to occur, to take place','the fuller list of alternatives should remain the display gloss');
+assert.equal(partSynonym[0].text,'to happen, to occur, to take place','the consolidated display should preserve all reviewed synonym alternatives from both dictionaries');
+
+const mixedSynonymAndDistinctSense=U.merge([
+ {id:207,entry:{h:'קם'},meanings:[{text:'to happen',label:''}]},
+ {id:208,entry:{h:'קם'},meanings:[{text:'to occur, charge',label:''}]}
+],'קם');
+assert.equal(mixedSynonymAndDistinctSense.length,2,'a shared curated synonym must not merge a gloss that also contains a distinct sense');
+assert.equal(U.sharesReviewedSynonym('to happen','to occur, to take place'),true);
+assert.equal(U.sharesReviewedSynonym('to happen','to occur, charge'),false);
 
 // Exact gloss-list equivalence is normalized for punctuation, ordering,
 // articles, and coordinated infinitive markers without using word overlap.
