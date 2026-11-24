@@ -14,7 +14,8 @@
     "reviewedSourceAlternativePairCount": 1,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 16,
-    "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions."
+    "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions.",
+    "homonymPolicy": "If both source headwords explicitly carry different Roman or superscript Arabic homonym numbers, they are not compatible for consolidation. A numbered headword may still match an unnumbered counterpart, since one dictionary may omit the numbering."
   },
   "historicalCheckpoint": {
     "reportedCompleted": 29,
@@ -2012,5 +2013,24 @@
       "Coordinated infinitive markers are normalized only when the first alternative is an infinitive.",
       "Noun/verb mismatch regression tests included."
     ]
+  },
+  "homonymSafeguards": {
+    "status": "implemented-and-tested",
+    "examples": {
+      "differentNumbers": [
+        "בּוּר I",
+        "בּוּר²"
+      ],
+      "numberedToUnnumbered": [
+        "בּוּר I",
+        "בּוּר"
+      ],
+      "singleNumbered": [
+        "גֵּו ²",
+        "גַּו"
+      ]
+    },
+    "scope": "runtime meaning merge and candidate inventory generation",
+    "rationale": "A shared consonantal spelling is not enough when both dictionaries explicitly distinguish different numbered homonyms."
   }
 }
