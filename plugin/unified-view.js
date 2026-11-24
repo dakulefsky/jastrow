@@ -1804,7 +1804,6 @@
      }
     }
    }
-  }
   const jTargets=new Map(),kTargets=new Map();
   for(const pair of pairs.values())for(const match of pair.matches){
    if(!jTargets.has(match.jSegmentId))jTargets.set(match.jSegmentId,new Set());
