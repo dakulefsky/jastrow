@@ -97,6 +97,7 @@ const vm=require('node:vm');
   ]}],
   segmentWords:()=>[]
  };
+ vm.runInNewContext(fs.readFileSync(path.join(pluginPath,'meaning-consolidation.js'),'utf8'),context);
  assert.equal(root.SefariaOfflineTranslation.isDafPrepared(selection.currentRef,selection),false,
   'foreground starts with a cold local cache');
  await root.DictionaryQuick.show('בדיקה',selection);
