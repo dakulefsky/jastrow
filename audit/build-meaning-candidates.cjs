@@ -127,7 +127,32 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
    }
   }
  }
- const list=[...candidates.values()].sort((a,b)=>b.jaccard-a.jaccard||b.overlap-a.overlap||b.sharedTerms.length-a.sharedTerms.length||a.headword.localeCompare(b.headword));
+ const list=[...candidates.values()];
+ // An exact phrase can still be ambiguous when the same source entry uses it
+ // under multiple distinct senses or explicit grammatical labels. Flag those
+ // collisions for manual review instead of treating literal wording as proof.
+ const exactPairGroups=new Map();
+ for(const candidate of list.filter(item=>item.exactAlternativeMatch)){
+  const matched=candidate.bestAlternativeMatch;
+  const key=[candidate.jastrow.ref,candidate.krupnik.ref].sort().join('|')+'::'+[clean(matched.jastrow),clean(matched.krupnik)].sort().join(' | ');
+  if(!exactPairGroups.has(key))exactPairGroups.set(key,{jastrow:new Set(),krupnik:new Set(),jastrowLabels:new Set(),krupnikLabels:new Set()});
+  const group=exactPairGroups.get(key);
+  group.jastrow.add(clean(candidate.jastrow.text)+'::'+clean(candidate.jastrow.section));
+  group.krupnik.add(clean(candidate.krupnik.text));
+  if(stem(candidate.jastrow.label))group.jastrowLabels.add(stem(candidate.jastrow.label));
+  if(stem(candidate.krupnik.label))group.krupnikLabels.add(stem(candidate.krupnik.label));
+ }
+ for(const candidate of list.filter(item=>item.exactAlternativeMatch)){
+  const matched=candidate.bestAlternativeMatch;
+  const key=[candidate.jastrow.ref,candidate.krupnik.ref].sort().join('|')+'::'+[clean(matched.jastrow),clean(matched.krupnik)].sort().join(' | ');
+  const group=exactPairGroups.get(key),flags=[];
+  if(group.jastrow.size>1)flags.push('multiple-jastrow-senses-share-this-exact-alternative');
+  if(group.krupnik.size>1)flags.push('multiple-krupnik-senses-share-this-exact-alternative');
+  if(group.jastrowLabels.size>1||group.krupnikLabels.size>1)flags.push('conflicting-explicit-grammatical-labels');
+  candidate.reviewFlags=flags;
+  candidate.reviewPriority=flags.length?'manual-ambiguity-review':'exact-alternative-review';
+ }
+ list.sort((a,b)=>b.jaccard-a.jaccard||b.overlap-a.overlap||b.sharedTerms.length-a.sharedTerms.length||a.headword.localeCompare(b.headword));
  const report={
   generatedBy:'audit/build-meaning-candidates.cjs',
   purpose:'Discovery queue only; no candidate is approved for consolidation by this report.',
@@ -136,7 +161,8 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
    jastrowMeanings:'JastrowReadingView.phrases, the actual reader extractor',
    krupnikMeanings:'Original Krupnik gloss records',
    candidateRule:'Compare comma/semicolon-separated alternatives independently (respecting parenthetical commas); retain a candidate when any individual Jastrow/Krupnik alternative pair shares content terms with overlap coefficient >= 0.5; rank exact alternative matches first, then by best alternative-level Jaccard rather than whole-gloss overlap; exact complete gloss lists and individually reviewed source-alternative pairs are excluded; pointed-headword conflicts, explicit label conflicts, verb/noun mismatches, and active/passive infinitive mismatches are excluded; no fuzzy automatic merging',
-   limitations:'Lexical overlap is only a review hint. Shared terms can represent distinct senses; grammatical labels and source context require manual review.'
+   limitations:'Lexical overlap is only a review hint. Shared terms can represent distinct senses; grammatical labels and source context require manual review.',
+   ambiguityFlags:'Exact alternative matches are flagged when the same source pair and exact alternative recur across multiple source senses or explicit grammatical labels. These are not auto-approved.'
   },
   totals:{sourceEntries:entries.length,jastrowEntries:jastrow.length,krupnikEntries:krupnik.length,jastrowEntriesWithReaderPhrases:[...phrasesByRef.values()].filter(x=>x.length).length,sharedHeadwordRecordPairs:matchedRecordPairs.size,jastrowHeadwordIndexAssociations:[...byForm.values()].reduce((n,a)=>n+a.length,0),candidates:list.length},
   candidates:list
@@ -149,6 +175,7 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
   '- Jastrow entries with reader-extracted meanings: '+report.totals.jastrowEntriesWithReaderPhrases,
   '- Krupnik entries: '+report.totals.krupnikEntries,
   '- Candidate gloss pairs requiring human review: '+list.length,
+  '- Exact alternative matches flagged for ambiguity: '+list.filter(x=>x.exactAlternativeMatch&&x.reviewFlags.length).length,
   '',
   'This is a discovery queue only. Nothing is automatically merged or approved.',
   '',
