@@ -38,7 +38,7 @@
     "A-entry and D-entry follow-up batches"
   ],
   "nextPhase": {
-    "status": "continue-systematic-review-of-generated-candidates",
+    "status": "continue-systematic-review-of-regenerated-candidate-inventory",
     "rules": [
       "Generate candidates only where Jastrow and Krupnik records share an attested consonantal headword or alias.",
       "Use only phrases emitted by JastrowReadingView.phrases for Jastrow-side meanings.",
@@ -56,16 +56,16 @@
   "candidateInventory": {
     "generator": "audit/build-meaning-candidates.cjs",
     "workflow": "Build cross-dictionary synonym review inventory",
-    "runId": 45386190909,
-    "artifactId": 14915758070,
-    "candidateGlossPairs": 5114,
+    "runId": 45397550450,
+    "artifactId": 14920219633,
+    "candidateGlossPairs": 4737,
     "sourceEntries": 47919,
     "jastrowEntries": 32508,
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16911,
-    "status": "The 5,114-row inventory predates the 74 newly reviewed candidate rows; the workflow regenerates it on each current validation run and will provide the updated pending count.",
-    "note": "This is a regenerated inventory from the current PR branch and current source data. It is a review queue, not a synonym certification; lexical overlap only ranks candidates and never triggers automatic fuzzy merging."
+    "status": "regenerated after the 74 candidate rows reviewed in the two latest tranches; 4,737 conservative candidate gloss pairs remain pending human review",
+    "note": "Generated from current branch a0c797? inventory artifact belongs to commit 278bbbb010f1aaf83d48479bed7cba5123c706aa. Review queue only: token overlap ranks candidates; no fuzzy automatic merging."
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 16,
