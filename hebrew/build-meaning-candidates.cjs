@@ -11,7 +11,7 @@ const pointed=value=>{
  const out=[];
  for(const ch of String(value||'').normalize('NFD')){
   if(/[א-ת]/.test(ch))out.push({letter:ch,marks:[]});
-  else if(/[\\u05b0-\\u05bc\\u05c1\\u05c2\\u05c7]/.test(ch)&&out.length)out[out.length-1].marks.push(ch);
+  else if(/[\u05b0-\u05bc\u05c1\u05c2\u05c7]/.test(ch)&&out.length)out[out.length-1].marks.push(ch);
  }
  return out;
 };
