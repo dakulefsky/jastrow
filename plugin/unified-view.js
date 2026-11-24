@@ -1277,7 +1277,7 @@
   ["KRU01527", "A02316", "wife", "woman, wife"],
   ["KRU01542", "A02346", "station", "resting station"],
   ["KRU01551", "A02376", "garment", "robe, garment"],
-  ["KRU01588", "A02428", "physician", "physician, surgeon"],
+  ["KRU01588", "A02428", "physician", "physician, surgeon;"],
   ["KRU01590", "A02432", "recovery", "cure, recovery"],
   ["KRU01598", "A02444", "gathering", "gathering, assembly"],
   ["KRU01607", "A02457", "consent", "consent, agreement"],
