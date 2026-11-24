@@ -51,38 +51,80 @@ if(sharedForms({h:'בּוּר I'},{h:'בּוּר²'}).length)throw new Error('Ca
 if(!sharedForms({h:'בּוּר I'},{h:'בּוּר'}).length)throw new Error('An unnumbered counterpart remains eligible for review');
 const voice=value=>/^to\s+be\s+/i.test(clean(value))?'passive':'active';
 const samePartOfSpeech=(a,b)=>/^to\s+/i.test(clean(a))===/^to\s+/i.test(clean(b));
-const annotateExactPairRisks=list=>{
- const groups=new Map();
- for(const candidate of list.filter(item=>item.exactAlternativeMatch)){
-  const matched=candidate.bestAlternativeMatch;
-  const key=[candidate.jastrow.ref,candidate.krupnik.ref].sort().join('|')+'::'+[clean(matched.jastrow),clean(matched.krupnik)].sort().join(' | ');
-  if(!groups.has(key))groups.set(key,{jastrow:new Set(),krupnik:new Set(),jastrowLabels:new Set(),krupnikLabels:new Set()});
-  const group=groups.get(key);
-  group.jastrow.add(clean(candidate.jastrow.text)+'::'+clean(candidate.jastrow.section));
-  group.krupnik.add(clean(candidate.krupnik.text));
-  if(stem(candidate.jastrow.label))group.jastrowLabels.add(stem(candidate.jastrow.label));
-  if(stem(candidate.krupnik.label))group.krupnikLabels.add(stem(candidate.krupnik.label));
+const senseSegments=value=>{
+ const out=[];let current='',depth=0;
+ for(const ch of String(value||'')){
+  if(ch==='(')depth++;else if(ch===')')depth=Math.max(0,depth-1);
+  if(ch===';'&&depth===0){if(clean(current))out.push(current.trim());current='';}
+  else current+=ch;
  }
- for(const candidate of list.filter(item=>item.exactAlternativeMatch)){
-  const matched=candidate.bestAlternativeMatch;
+ if(clean(current))out.push(current.trim());
+ return out;
+};
+const segmentIds=(ref,text,label,section,alternative,side)=>{
+ const segments=senseSegments(text),out=[];
+ for(let i=0;i<segments.length;i++)if(alternatives(segments[i]).some(value=>clean(value)===clean(alternative))){
+  out.push(side==='j'?[ref,clean(text),stem(label),clean(section),i,clean(segments[i])].join('::'):[ref,clean(text),stem(label),i,clean(segments[i])].join('::'));
+ }
+ return out;
+};
+const annotateExactPairRisks=list=>{
+ const pairs=new Map(),candidateFlags=new Map();
+ const exactMatches=candidate=>candidate.exactAlternativeMatches|| (candidate.exactAlternativeMatch?[candidate.bestAlternativeMatch]:[]);
+ for(const candidate of list)for(const matched of exactMatches(candidate)){
   const key=[candidate.jastrow.ref,candidate.krupnik.ref].sort().join('|')+'::'+[clean(matched.jastrow),clean(matched.krupnik)].sort().join(' | ');
-  const group=groups.get(key),flags=[];
-  if(group.jastrow.size>1)flags.push('multiple-jastrow-senses-share-this-exact-alternative');
-  if(group.krupnik.size>1)flags.push('multiple-krupnik-senses-share-this-exact-alternative');
-  if(group.jastrowLabels.size>1||group.krupnikLabels.size>1)flags.push('conflicting-explicit-grammatical-labels');
+  if(!pairs.has(key))pairs.set(key,{jSegments:new Set(),kSegments:new Set(),jLabels:new Set(),kLabels:new Set(),matches:[]});
+  const group=pairs.get(key);
+  const jIds=segmentIds(candidate.jastrow.ref,candidate.jastrow.text,candidate.jastrow.label,candidate.jastrow.section,matched.jastrow,'j');
+  const kIds=segmentIds(candidate.krupnik.ref,candidate.krupnik.text,candidate.krupnik.label,'',matched.krupnik,'k');
+  for(const id of jIds)group.jSegments.add(id);
+  for(const id of kIds)group.kSegments.add(id);
+  if(stem(candidate.jastrow.label))group.jLabels.add(stem(candidate.jastrow.label));
+  if(stem(candidate.krupnik.label))group.kLabels.add(stem(candidate.krupnik.label));
+  group.matches.push({candidate,jIds,kIds});
+ }
+ const jTargets=new Map(),kTargets=new Map();
+ for(const group of pairs.values())for(const match of group.matches)for(const jId of match.jIds)for(const kId of match.kIds){
+  if(!jTargets.has(jId))jTargets.set(jId,new Set());
+  if(!kTargets.has(kId))kTargets.set(kId,new Set());
+  jTargets.get(jId).add(kId);kTargets.get(kId).add(jId);
+ }
+ for(const group of pairs.values()){
+  const flags=[];
+  if(group.jSegments.size>1)flags.push('multiple-jastrow-senses-share-this-exact-alternative');
+  if(group.kSegments.size>1)flags.push('multiple-krupnik-senses-share-this-exact-alternative');
+  if(group.jLabels.size>1||group.kLabels.size>1)flags.push('conflicting-explicit-grammatical-labels');
+  for(const match of group.matches){
+   if(match.jIds.some(id=>jTargets.get(id)?.size>1))flags.push('one-jastrow-sense-matches-multiple-krupnik-senses');
+   if(match.kIds.some(id=>kTargets.get(id)?.size>1))flags.push('one-krupnik-sense-matches-multiple-jastrow-senses');
+  }
+  for(const match of group.matches){
+   if(!candidateFlags.has(match.candidate))candidateFlags.set(match.candidate,new Set());
+   for(const flag of flags)candidateFlags.get(match.candidate).add(flag);
+  }
+ }
+ for(const candidate of list){
+  const matches=exactMatches(candidate),flags=[...(candidateFlags.get(candidate)||[])];
   candidate.reviewFlags=flags;
-  candidate.reviewPriority=flags.length?'manual-ambiguity-review':'exact-alternative-review';
+  candidate.reviewPriority=flags.length?'manual-ambiguity-review':matches.length?'handled-by-runtime-exact-alternative-rule':'semantic-review';
+  candidate.reviewStatus=flags.length||!matches.length?'pending-human-review':'handled-by-runtime-rule';
  }
  return list;
 };
 const riskFixture=[
- {exactAlternativeMatch:true,bestAlternativeMatch:{jastrow:'to smell badly',krupnik:'to smell badly'},jastrow:{ref:'J1',text:'to decay, to smell badly',label:'',section:'verb'},krupnik:{ref:'K1',text:'to smell badly',label:''}},
- {exactAlternativeMatch:true,bestAlternativeMatch:{jastrow:'to smell badly',krupnik:'to smell badly'},jastrow:{ref:'J1',text:'to become putrid; to smell badly',label:'Hif.',section:'verb'},krupnik:{ref:'K1',text:'to smell badly',label:''}},
- {exactAlternativeMatch:true,bestAlternativeMatch:{jastrow:'to smell badly',krupnik:'to smell badly'},jastrow:{ref:'J1',text:'to smell badly',label:'Pael.',section:'verb'},krupnik:{ref:'K1',text:'to smell badly',label:''}}
+ {exactAlternativeMatch:true,bestAlternativeMatch:{jastrow:'to smell badly',krupnik:'to smell badly'},exactAlternativeMatches:[{jastrow:'to smell badly',krupnik:'to smell badly'}],jastrow:{ref:'J1',text:'to decay, to smell badly',label:'',section:'verb'},krupnik:{ref:'K1',text:'to smell badly',label:''}},
+ {exactAlternativeMatch:true,bestAlternativeMatch:{jastrow:'to smell badly',krupnik:'to smell badly'},exactAlternativeMatches:[{jastrow:'to smell badly',krupnik:'to smell badly'}],jastrow:{ref:'J1',text:'to become putrid; to smell badly',label:'Hif.',section:'verb'},krupnik:{ref:'K1',text:'to smell badly',label:''}},
+ {exactAlternativeMatch:true,bestAlternativeMatch:{jastrow:'to smell badly',krupnik:'to smell badly'},exactAlternativeMatches:[{jastrow:'to smell badly',krupnik:'to smell badly'}],jastrow:{ref:'J1',text:'to smell badly',label:'Pael.',section:'verb'},krupnik:{ref:'K1',text:'to smell badly',label:''}}
 ];
 annotateExactPairRisks(riskFixture);
 assert(riskFixture.every(item=>item.reviewFlags.includes('multiple-jastrow-senses-share-this-exact-alternative')),'repeated exact alternatives across distinct Jastrow senses must be flagged');
 assert(riskFixture.every(item=>item.reviewFlags.includes('conflicting-explicit-grammatical-labels')),'conflicting explicit grammatical labels must be flagged');
+const oneToManyFixture=[
+ {exactAlternativeMatch:true,bestAlternativeMatch:{jastrow:'to say',krupnik:'to say'},exactAlternativeMatches:[{jastrow:'to say',krupnik:'to say'}],jastrow:{ref:'J2',text:'to say, to speak',label:'',section:'verb'},krupnik:{ref:'K2',text:'to say',label:''}},
+ {exactAlternativeMatch:true,bestAlternativeMatch:{jastrow:'to speak',krupnik:'to speak'},exactAlternativeMatches:[{jastrow:'to speak',krupnik:'to speak'}],jastrow:{ref:'J2',text:'to say, to speak',label:'',section:'verb'},krupnik:{ref:'K2',text:'to speak',label:''}}
+];
+annotateExactPairRisks(oneToManyFixture);
+assert(oneToManyFixture.every(item=>item.reviewFlags.includes('one-jastrow-sense-matches-multiple-krupnik-senses')),'one source phrase must not bridge two separate counterpart senses');
 
 if(samePartOfSpeech('to lament','lament'))throw new Error('Candidate queue must preserve verb/noun distinctions');
 if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speech synonyms should remain reviewable');
@@ -153,6 +195,7 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
      wholeGlossJaccard:Number(wholeJaccard.toFixed(3)),
      bestAlternativeMatch:best,
      alternativeMatches:alternativeMatches.slice(0,10),
+     exactAlternativeMatches:alternativeMatches.filter(match=>clean(match.jastrow)===clean(match.krupnik)),
      alternativePairCount:alternativeMatches.length,
      exactAlternativeMatch,
      candidateTier:tier,
