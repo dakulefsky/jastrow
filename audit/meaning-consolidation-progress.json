@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Durable progress record for the Jastrow/Krupnik meaning-equivalence audit.",
+  "branch": "improve-meaning-consolidation-and-evaluation",
+  "pullRequest": 48,
+  "baseline": {
+    "reviewedNonIdenticalGlossPairs": 505,
+    "reviewedGlossEquivalenceGroups": 38,
+    "realReaderPhraseExtractorAudit": "all 505 retained mappings passed Chromium validation",
+    "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
+    "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases"
+  },
+  "historicalCheckpoint": {
+    "reportedCompleted": 29,
+    "reportedTotal": 43,
+    "remainingReported": 14,
+    "identifiersPreserved": false,
+    "note": "The earlier 29/43 checkpoint did not record the 43 candidate identifiers or the 29 completed identifiers. Do not infer completion from the number of data shards or from the reviewed-pair count."
+  },
+  "reconstruction": {
+    "sourceDataFiles": {
+      "jastrowShards": 82,
+      "krupnikShards": 39
+    },
+    "note": "These physical shard counts do not equal the historical 43 audit batches. The candidate inventory must be regenerated from shared consonantal headwords, original glosses, and the real reader phrase extractor."
+  },
+  "commitHistoryEvidence": [
+    "early-alphabet cross-dictionary audit",
+    "Bet dictionary entries",
+    "He dictionary entries",
+    "Tet dictionary entries",
+    "Mem dictionary entries",
+    "Nun and Samekh dictionary entries",
+    "Pe dictionary entries",
+    "Resh and Shin dictionary entries",
+    "Vav-Zayin dictionary entries",
+    "A-entry and D-entry follow-up batches"
+  ],
+  "nextPhase": {
+    "status": "rebuild-candidate-inventory",
+    "rules": [
+      "Generate candidates only where Jastrow and Krupnik records share an attested consonantal headword or alias.",
+      "Use only phrases emitted by JastrowReadingView.phrases for Jastrow-side meanings.",
+      "Compare individual senses, not whole-entry summaries.",
+      "Exclude exact-identical glosses already handled by ordinary exact matching.",
+      "Record every candidate as pending, accepted, rejected-distinct-sense, or rejected-not-displayed.",
+      "Keep original source references and exact source wording for every decision."
+    ]
+  },
+  "publishing": {
+    "merged": false,
+    "published": false
+  }
+}
