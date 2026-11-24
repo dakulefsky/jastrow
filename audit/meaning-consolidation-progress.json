@@ -4,7 +4,7 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 613,
+    "reviewedNonIdenticalGlossPairs": 628,
     "reviewedGlossEquivalenceGroups": 38,
     "realReaderPhraseExtractorAudit": "all 589 retained mappings passed the last completed Chromium audit; the latest 24-pair tranche is awaiting validation.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
@@ -66,10 +66,16 @@
     "note": "The first full-corpus run used the real reader phrase extractor and original Krupnik glosses. It is a discovery queue, not an equivalence certification."
   },
   "reviewedTranche": {
-    "addedUniqueSourceGlossPairs": 108,
+    "addedUniqueSourceGlossPairs": 123,
     "attemptedRows": 58,
     "rejectedNotDisplayed": 5,
-    "currentTotal": 613,
-    "note": "Three manually reviewed tranches added 108 unique source-pair mappings after the 505-pair baseline. Five earlier attempted candidates were excluded when the real reader extractor did not emit the proposed phrase. The latest 24-pair tranche is awaiting its CI audit."
+    "currentTotal": 628,
+    "note": "Four manually reviewed tranches added 123 unique source-pair mappings after the 505-pair baseline. Five earlier attempted candidates were excluded when the real reader extractor did not emit the proposed phrase. The latest 15-pair tranche is awaiting its CI audit."
+  },
+  "hebrewConsolidation": {
+    "status": "shared grouping layer added to the Hebrew reader and quick lookup",
+    "sources": "Krupnik/Silbermann Hebrew source records only; the Hebrew plugin does not load Jastrow",
+    "safeguards": "Exact Hebrew meanings consolidate by default; synonym mappings must be explicitly reviewed and source-scoped; grammatical labels and selected-word boundaries are preserved",
+    "candidateReview": "The initial English-gloss alignment filter found no pairs. The inventory was broadened to list every non-identical meaning pair across repeated normalized headwords for manual review."
   }
 }
