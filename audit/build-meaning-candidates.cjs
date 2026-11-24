@@ -6,6 +6,7 @@ const path=require('node:path');
 const vm=require('node:vm');
 const {chromium,executablePath}=require('../browser_support.cjs');
 const S=require('../plugin/search.js');
+const U=require('../plugin/unified-view.js');
 const dataDir=path.join(__dirname,'../plugin/data');
 const files=fs.readdirSync(dataDir).filter(n=>/^(?:chunk-\d+|krupnik-\d+)\.js$/.test(n)).sort();
 const context={window:{JASTROW_CHUNKS:{}}};
@@ -15,8 +16,9 @@ const entries=Object.values(context.window.JASTROW_CHUNKS).flatMap(chunk=>Object
 const jastrow=entries.filter(e=>e.source!=='krupnik'&&e.html);
 const krupnik=entries.filter(e=>e.source==='krupnik'&&Array.isArray(e.glosses));
 const clean=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
-const stop=new Set(('a an the to of for in on with from by as and or is be are was were being been it its this that these those one some any all'.split(' ')));
+const stop=new Set(('a an the to of for in on with from by as and or is be are was were being been it its this that these those one some any all which could not have their them they he she his her we you your our who what where when why how into unto over under without before after during through around between while than then also only very more most less such same other another each every'.split(' ')));
 const tokens=value=>[...new Set(clean(value).replace(/[^a-z0-9' -]/g,' ').split(/\s+/).filter(t=>t.length>=3&&!stop.has(t)))];
+const stem=label=>clean(String(label||'').replace(/^[—\\s]*\\d+[).]?\\s*/,'').replace(/\\s+\\d+[).]?\\s*$/,''));
 const sharedForms=(a,b)=>[...new Set([a.h,...(a.alt||[])].map(S.normalize).filter(Boolean))].filter(form=>[b.h,...(b.alt||[])].map(S.normalize).filter(Boolean).includes(form));
 (async()=>{
  const browser=await chromium.launch({executablePath,args:['--no-sandbox']});
@@ -63,7 +65,7 @@ const sharedForms=(a,b)=>[...new Set([a.h,...(a.alt||[])].map(S.normalize).filte
    }
   }
  }
- const list=[...candidates.values()].sort((a,b)=>b.overlap-a.overlap||b.sharedTerms.length-a.sharedTerms.length||a.headword.localeCompare(b.headword));
+ const list=[...candidates.values()].sort((a,b)=>b.jaccard-a.jaccard||b.overlap-a.overlap||b.sharedTerms.length-a.sharedTerms.length||a.headword.localeCompare(b.headword));
  const report={
   generatedBy:'audit/build-meaning-candidates.cjs',
   purpose:'Discovery queue only; no candidate is approved for consolidation by this report.',
@@ -71,7 +73,7 @@ const sharedForms=(a,b)=>[...new Set([a.h,...(a.alt||[])].map(S.normalize).filte
    headwordMatching:'Jastrow Search.normalize across primary and alternate headword spellings',
    jastrowMeanings:'JastrowReadingView.phrases, the actual reader extractor',
    krupnikMeanings:'Original Krupnik gloss records',
-   candidateRule:'At least one shared content token and overlap coefficient >= 0.5; no automatic merging or synonym inference',
+   candidateRule:'At least one shared content token and overlap coefficient >= 0.5; conflicting explicit grammatical labels are excluded; already-reviewed source pairs are excluded; no automatic merging or synonym inference',
    limitations:'Lexical overlap is only a review hint. Shared terms can represent distinct senses; grammatical labels and source context require manual review.'
   },
   totals:{sourceEntries:entries.length,jastrowEntries:jastrow.length,krupnikEntries:krupnik.length,jastrowEntriesWithReaderPhrases:[...phrasesByRef.values()].filter(x=>x.length).length,sharedHeadwordRecordPairs:[...byForm.values()].reduce((n,a)=>n+a.length,0),candidates:list.length},
