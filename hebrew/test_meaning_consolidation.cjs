@@ -30,6 +30,19 @@ const reorderedHebrew=merge([{word:'בדיקה',records:[
 assert.equal(reorderedHebrew.length,1,'the same exact Hebrew alternatives should consolidate when their order and punctuation differ');
 assert.equal(reorderedHebrew[0].items.length,2,'both original Hebrew records must remain available');
 assert.notEqual(ctx.HebrewMeaningConsolidation.canonicalMeaningKey('אח אב'),ctx.HebrewMeaningConsolidation.canonicalMeaningKey('אב אח'),'word order within a Hebrew meaning must remain significant');
+const partialHebrewSense=merge([{word:'בדיקה',records:[
+ {word:'א',rid:'KRU9101',parts:[{meaning:'בתנאי',text:'פירוט א',label:''}]},
+ {word:'ב',rid:'KRU9102',parts:[{meaning:'בתנאי, בכוונה',text:'פירוט ב',label:''}]}
+]}],'בדיקה');
+assert.equal(partialHebrewSense.length,2,'an exact shared Hebrew alternative should consolidate without absorbing an extra sense');
+const sharedCondition=partialHebrewSense.find(group=>group.text==='בתנאי');
+const separateIntention=partialHebrewSense.find(group=>group.text==='בכוונה');
+assert(sharedCondition&&separateIntention,'the shared condition and additional intention should remain independently visible');
+assert.equal(sharedCondition.items.length,2,'the exact shared alternative should retain both source records');
+assert.equal(separateIntention.items.length,1,'the additional intention sense should remain on its own');
+assert.equal(separateIntention.items[0].p.meaning,'בתנאי, בכוונה','the original complete Hebrew source wording must remain accessible');
+assert.deepEqual(Array.from(ctx.HebrewMeaningConsolidation.splitAlternatives('תנאי (כך, וכך), דבר נוסף')),['תנאי (כך, וכך)','דבר נוסף'],'commas inside parenthetical explanations must not split Hebrew alternatives');
+
 const distinctMeaning=merge([{word:'בדיקה',records:[
  {word:'א',rid:'KRU9005',parts:[{meaning:'הפסד',text:'הפסד',label:''}]},
  {word:'ב',rid:'KRU9006',parts:[{meaning:'אבידה',text:'אבידה',label:''}]}
