@@ -1758,7 +1758,7 @@
   const allMapped=buckets.length>1&&buckets.every(bucket=>bucket.bucketKeys.length);
   const disjoint=allMapped&&buckets.every((bucket,index)=>buckets.slice(0,index).every(other=>!bucket.bucketKeys.some(key=>other.bucketKeys.includes(key))));
   const hasMapped=buckets.some(bucket=>bucket.bucketKeys.length);
-  const categories=segments.map(segment=>/^to\\s+be\\s+/i.test(clean(segment))?'passive-verb':/^to\\s+/i.test(clean(segment))?'verb':'nonverb');
+  const categories=segments.map(segment=>/^to\s+be\s+/i.test(clean(segment))?'passive-verb':/^to\s+/i.test(clean(segment))?'verb':'nonverb');
   const grammarSplit=hasMapped&&categories.length>1&&(categories.every(category=>category==='verb')||new Set(categories).size>1);
   if(disjoint||grammarSplit)return buckets;
   const bucketKeys=[...new Set(buckets.flatMap(bucket=>bucket.bucketKeys))];
