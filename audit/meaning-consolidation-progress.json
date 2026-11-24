@@ -4,9 +4,9 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 589,
+    "reviewedNonIdenticalGlossPairs": 613,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "all 589 retained mappings are subject to the Chromium phrase-extractor audit; the latest prior checkpoint of 539 passed.",
+    "realReaderPhraseExtractorAudit": "all 589 retained mappings passed the last completed Chromium audit; the latest 24-pair tranche is awaiting validation.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases"
   },
@@ -66,10 +66,10 @@
     "note": "The first full-corpus run used the real reader phrase extractor and original Krupnik glosses. It is a discovery queue, not an equivalence certification."
   },
   "reviewedTranche": {
-    "addedUniqueSourceGlossPairs": 84,
+    "addedUniqueSourceGlossPairs": 108,
     "attemptedRows": 58,
     "rejectedNotDisplayed": 5,
-    "currentTotal": 589,
-    "note": "Two manually reviewed tranches added 84 unique source-pair mappings after the 505-pair baseline. Five earlier attempted candidates were excluded when the real reader extractor did not emit the proposed phrase. The newest 50-pair tranche is awaiting its CI audit."
+    "currentTotal": 613,
+    "note": "Three manually reviewed tranches added 108 unique source-pair mappings after the 505-pair baseline. Five earlier attempted candidates were excluded when the real reader extractor did not emit the proposed phrase. The latest 24-pair tranche is awaiting its CI audit."
   }
 }
