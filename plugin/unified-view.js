@@ -1745,16 +1745,13 @@
   return out;
  };
  function meaningBuckets(ref,meaning,dynamicPairsByRef){
-  const segments=senseSegments(meaning.text),mappings=[...(alternativePairsByRef.get(ref)||[]),...(dynamicPairsByRef?.get(ref)||[])];
-  const buckets=segments.map((segment,index)=>{
-   const alternatives=glossAlternatives(segment);
-   const bucketKeys=mappings.filter(mapping=>alternatives.some(value=>mapping.exact?clean(value)===clean(mapping.own):alternativeKey(value)===alternativeKey(mapping.own))).map(mapping=>mapping.key);
-   return {text:segment,bucketKeys:[...new Set(bucketKeys)],bucketId:bucketKeys.length?'reviewed-alternative-segment':'unmatched-segment:'+ref+':'+clean(meaning.label)+':'+index};
-  });
-  // Without an explicit cross-dictionary match, preserve the original source
-  // phrase exactly as it was presented by the reader.
-  if(!buckets.some(bucket=>bucket.bucketKeys.length))return [{text:meaning.text,bucketKeys:[],bucketId:null}];
-  return buckets;
+  // The reader supplies one meaning object per source phrase. Keep every
+  // alternative within that phrase together; punctuation inside the phrase
+  // is not a reliable substitute for the reader's actual sense boundaries.
+  const mappings=[...(alternativePairsByRef.get(ref)||[]),...(dynamicPairsByRef?.get(ref)||[])];
+  const alternatives=glossAlternatives(meaning.text);
+  const bucketKeys=mappings.filter(mapping=>alternatives.some(value=>mapping.exact?clean(value)===clean(mapping.own):alternativeKey(value)===alternativeKey(mapping.own))).map(mapping=>mapping.key);
+  return [{text:meaning.text,bucketKeys:[...new Set(bucketKeys)],bucketId:bucketKeys.length?'reviewed-alternative-phrase':null}];
  }
  function reviewedEquivalent(source,item){
   if(!compatible(source.spelling,item.spelling))return false;
@@ -1792,11 +1789,9 @@
    if(!compatible(k.spelling,jastrow.spelling,word))continue;
    for(const jm of jastrow.meanings)for(const km of k.meanings){
     if(!compatibleForm(stem(jm.label),stem(km.label)))continue;
-    const jSegments=senseSegments(jm.text),kSegments=senseSegments(km.text);
-    for(let ji=0;ji<jSegments.length;ji++)for(let ki=0;ki<kSegments.length;ki++){
-     const jSegment=jSegments[ji],kSegment=kSegments[ki];
-     const jSegmentId=[jastrow.entry.r,clean(jm.text),stem(jm.label),clean(jm.section),ji,clean(jSegment)].join('::');
-     const kSegmentId=[k.entry.r,clean(km.text),stem(km.label),ki,clean(kSegment)].join('::');
+    const jSegment=jm.text,kSegment=km.text;
+    const jSegmentId=[jastrow.entry.r,clean(jm.text),stem(jm.label),clean(jm.section)].join('::');
+    const kSegmentId=[k.entry.r,clean(km.text),stem(km.label)].join('::');
      for(const ja of glossAlternatives(jSegment))for(const ka of glossAlternatives(kSegment)){
       const jAlt=clean(ja),kAlt=clean(ka);
       if(!jAlt||jAlt!==kAlt||/^to\s+/i.test(jAlt)!==/^to\s+/i.test(kAlt))continue;
