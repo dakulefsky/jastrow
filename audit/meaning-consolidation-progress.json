@@ -4,11 +4,12 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 679,
+    "reviewedNonIdenticalGlossPairs": 686,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "all 589 retained mappings passed the last completed Chromium audit; the latest 24-pair tranche is awaiting validation.",
+    "realReaderPhraseExtractorAudit": "All 686 retained source-scoped mappings passed the Chromium audit against JastrowReadingView.phrases on 2026-11-24.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
-    "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases"
+    "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
+    "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant."
   },
   "historicalCheckpoint": {
     "reportedCompleted": 29,
@@ -55,27 +56,72 @@
   "candidateInventory": {
     "generator": "audit/build-meaning-candidates.cjs",
     "workflow": "Build cross-dictionary synonym review inventory",
-    "runId": 45341714665,
-    "artifactId": 14896975251,
-    "candidateGlossPairs": 5528,
+    "runId": 45386190909,
+    "artifactId": 14915758070,
+    "candidateGlossPairs": 5114,
     "sourceEntries": 47919,
     "jastrowEntries": 32508,
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
-    "status": "generated; 5,528 candidates remain pending human review after filtering already-reviewed pairs, explicit grammatical-label conflicts, pointed-headword conflicts, and active/passive infinitive mismatches",
-    "note": "The first full-corpus run used the real reader phrase extractor and original Krupnik glosses. It is a discovery queue, not an equivalence certification."
+    "sharedHeadwordRecordPairs": 16911,
+    "status": "generated; 5,114 conservative candidate gloss pairs remain pending human review after excluding deterministic exact-gloss formatting variants, previously reviewed source pairs, explicit grammatical conflicts, pointed-headword conflicts, and active/passive mismatches",
+    "note": "This is a regenerated inventory from the current PR branch and current source data. It is a review queue, not a synonym certification; lexical overlap only ranks candidates and never triggers automatic fuzzy merging."
   },
   "reviewedTranche": {
-    "addedUniqueSourceGlossPairs": 174,
-    "attemptedRows": 58,
-    "rejectedNotDisplayed": 5,
-    "currentTotal": 679,
-    "note": "Five manually reviewed tranches added 174 unique source-pair mappings after the 505-pair baseline. Five earlier attempted candidates were excluded when the real reader extractor did not emit the proposed phrase. The latest 51-pair tranche is awaiting its CI audit."
+    "addedUniqueSourceGlossPairs": 7,
+    "attemptedRows": 7,
+    "rejectedNotDisplayed": 0,
+    "currentTotal": 686,
+    "acceptedPairs": [
+      [
+        "KRU13714",
+        "O01078",
+        "to make blind",
+        "to blind, make blind"
+      ],
+      [
+        "KRU13938",
+        "O01471",
+        "execution by stoning",
+        "stoning, execution by stoning"
+      ],
+      [
+        "KRU16734",
+        "S00188",
+        "cedar wood",
+        "of cedar, cedar wood"
+      ],
+      [
+        "KRU00510",
+        "A00796",
+        "too",
+        "too, also"
+      ],
+      [
+        "KRU00821",
+        "A01281",
+        "but for",
+        "were it not, but for"
+      ],
+      [
+        "KRU01252",
+        "A01910",
+        "wherefore",
+        "why?, wherefore?"
+      ],
+      [
+        "KRU06172",
+        "F00031",
+        "woe, oh!",
+        "woe;"
+      ]
+    ],
+    "note": "Seven additional candidate pairs were checked against their shared headwords, source glosses, and real reader-extracted Jastrow phrases. All seven passed the full source/provenance and phrase-extractor tests."
   },
   "hebrewConsolidation": {
-    "status": "shared grouping layer added to the Hebrew reader and quick lookup",
+    "status": "shared grouping layer in Hebrew reader and quick lookup; exact Hebrew alternative lists now consolidate despite punctuation/order differences",
     "sources": "Krupnik/Silbermann Hebrew source records only; the Hebrew plugin does not load Jastrow",
-    "safeguards": "Exact Hebrew meanings consolidate by default; synonym mappings must be explicitly reviewed and source-scoped; grammatical labels and selected-word boundaries are preserved Pointed headword conflicts are excluded from the candidate queue; six real source-scoped synonym pairs are now curated. Four further pairs were added only after checking their shared headword forms, original Hebrew glosses, and grammatical labels.",
+    "safeguards": "Original Krupnik/Silbermann Hebrew wording is authoritative. Exact Hebrew glosses and exact alternative-list variants consolidate; word order within each phrase, explicit grammatical label conflicts, and unreviewed synonyms remain separate. Source-scoped synonym pairs require manual review.",
     "candidateReview": "The initial English-gloss alignment filter found no pairs. The inventory was broadened to list every non-identical meaning pair across repeated normalized headwords for manual review.",
     "reviewedSynonymPairs": 10,
     "reviewedPairs": [
@@ -149,6 +195,7 @@
         ],
         "meaning": "incidentally"
       }
-    ]
+    ],
+    "note": "Added deterministic normalization for exact Hebrew alternative lists: punctuation and alternative order are normalized, while phrase word order is preserved. Regression tests verify that unreviewed synonyms remain separate."
   }
 }
