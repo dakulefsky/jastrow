@@ -6,12 +6,12 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1249 retained whole-gloss mappings and all 240 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1249 retained whole-gloss mappings and all 241 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
     "reviewedSourceGlossPairCount": 1249,
-    "reviewedSourceAlternativePairCount": 240,
+    "reviewedSourceAlternativePairCount": 241,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 16,
     "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions.",
@@ -1839,8 +1839,8 @@
     "note": "Twenty-five same-sense variants were approved from the next inventory page. The D00017 mapping was checked against the original records: Jastrow's real reader phrase is 'to flow', matching Krupnik sense 1 'to flow'; Krupnik sense 2 'to flow out' remains distinct and is not merged into it."
   },
   "alternativeLevelReview": {
-    "status": "expanded-with-240-source-scoped-alternative-matches",
-    "reviewedSourceAlternativePairs": 240,
+    "status": "expanded-with-241-source-scoped-alternative-matches",
+    "reviewedSourceAlternativePairs": 241,
     "acceptedPairs": [
       [
         "KRU04451",
@@ -3550,9 +3550,9 @@
     "regression": "Jastrow O00530 'gray head, old age' joins the two individually matched Krupnik records KRU13399 and KRU13404 into one result while retaining all three source records."
   },
   "ninthAlternativeReviewedTranche": {
-    "attemptedCandidateRows": 15,
-    "acceptedCandidateRows": 15,
-    "addedUniqueSourceAlternativePairs": 16,
+    "attemptedCandidateRows": 16,
+    "acceptedCandidateRows": 16,
+    "addedUniqueSourceAlternativePairs": 17,
     "status": "accepted-source-attested-alternative-matches",
     "rationale": "Reviewed 15 further candidates with exact or punctuation/infinitive-normalized alternatives. Multiple distinct senses under the same headword were mapped separately, and tests assert they remain separate. The two alternatives in the numerical gloss are retained as one source-attested sense.",
     "acceptedPairs": [
@@ -3651,6 +3651,12 @@
         "Q01791",
         "single pigeon",
         "single pigeon"
+      ],
+      [
+        "KRU15983",
+        "Q01791",
+        "a single berry",
+        "a single berry"
       ]
     ],
     "deferredCandidates": [
@@ -3698,11 +3704,6 @@
         "jastrow": "O01573",
         "krupnik": "KRU13990",
         "reason": "One Krupnik sense maps to two Jastrow senses; preserve ambiguity."
-      },
-      {
-        "jastrow": "P01417/P01418",
-        "krupnik": "KRU14890",
-        "reason": "Reviewed as separate meanings and accepted separately in this tranche."
       },
       {
         "jastrow": "Q01325",
