@@ -21,7 +21,7 @@ const tokens=value=>[...new Set(clean(value).replace(/[^a-z0-9' -]/g,' ').split(
 const stem=label=>clean(String(label||'').replace(/^[—\s]*\d+[).]?\s*/,'').replace(/\s+\d+[).]?\s*$/,''));
 const sharedForms=(a,b)=>{const left=[a.h,...(a.alt||[])],right=[b.h,...(b.alt||[])],forms=[];for(const x of left)for(const y of right)if(S.normalize(x)===S.normalize(y)&&S.vowelRank({h:x},y)!==2)forms.push(S.normalize(x));return [...new Set(forms)];};
 const voice=value=>/^to\s+be\s+/i.test(clean(value))?'passive':'active';
-const samePartOfSpeech=(a,b)=>/^to\\s+/i.test(clean(a))===/^to\\s+/i.test(clean(b));
+const samePartOfSpeech=(a,b)=>/^to\s+/i.test(clean(a))===/^to\s+/i.test(clean(b));
 if(samePartOfSpeech('to lament','lament'))throw new Error('Candidate queue must preserve verb/noun distinctions');
 if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speech synonyms should remain reviewable');
 (async()=>{
