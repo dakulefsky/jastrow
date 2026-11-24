@@ -83,7 +83,7 @@ assert.equal(U.sharesReviewedSynonym('burn','to burn'),false,'noun and infinitiv
 // Alternative-level review: match the shared phrase while retaining
 // comma-listed synonyms in the same sense and Jastrow's semicolon-separated
 // second sense separately.
-assert.equal(U.reviewedSourceAlternativePairs.size,209,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,224,'every source-scoped alternative match must be loaded');
 const alternativeScoped=U.merge([
  {id:301,entry:{h:'גָּנַח',r:'KRU04451',source:'krupnik'},meanings:[{text:'to sigh heavily under an attack of angina pectoris, to expectorate',label:''}]},
  {id:302,entry:{h:'גָּנַח',r:'C01128'},meanings:[
@@ -295,6 +295,24 @@ const oldAgeAndGreyHead=U.merge([
 ],'סיבו');
 assert.equal(oldAgeAndGreyHead.length,1,'the two source-attested alternatives in one Jastrow sense should consolidate together');
 assert.equal(oldAgeAndGreyHead[0].sources.length,3,'both Krupnik entries and the Jastrow entry must remain cited');
+
+
+const parentheticalCovering=U.merge([
+ {id:431,entry:{h:'עִיטּוּף',r:'KRU14375',source:'krupnik'},meanings:[{text:'covering (the head)',label:''}]},
+ {id:432,entry:{h:'עִיטּוּף',r:'P00532',source:'jastrow'},meanings:[{text:'putting a cloak on, covering the head',label:''}]}
+],'עיטוף');
+assert.equal(parentheticalCovering.length,1,'parenthetical object clarification should match its unparenthesized form');
+assert.equal(parentheticalCovering[0].sources.length,2,'the covering sense should retain both dictionary sources');
+assert(parentheticalCovering[0].text.includes('putting a cloak on'),'the additional original gloss alternative should remain visible');
+
+const turbidSenseBoundaries=U.merge([
+ {id:433,entry:{h:'עָכַר',r:'KRU14534',source:'krupnik'},meanings:[{text:'to make turbid',label:''}]},
+ {id:434,entry:{h:'עָכַר',r:'P00749',source:'jastrow'},meanings:[{text:'to stir up, disturb; to trouble, make turbid; to sadden',label:''}]}
+],'עכר');
+assert.equal(turbidSenseBoundaries.length,3,'the exact turbid sense must merge without absorbing either semicolon-separated sense');
+const turbid=turbidSenseBoundaries.find(group=>group.sources.length===2);
+assert(turbid&&turbid.text.includes('to trouble'),'the matched semicolon-delimited sense should retain its other alternative');
+assert.equal(turbidSenseBoundaries.filter(group=>group.sources.length===1).length,2,'the other two senses must remain separate');
 
 console.log('PASS: real alternate-headword vowel matches, partial pointing, cantillation, conservative synonym consolidation, complete source references, and distinct stem/qualified senses.');
 assert.equal(U.merge([{id:1,entry:{h:'חוב'},meanings:[{text:'charge',label:''}]},{id:2,entry:{h:'חוב'},meanings:[{text:'charge, accusation',label:''}]}],'חוב').length,2,'a one-word overlap must not erase a distinct qualified sense');
