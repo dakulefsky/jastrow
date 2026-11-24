@@ -19,8 +19,9 @@
    const text=part.meaning||part.text||'',label=labelKey(part.label),scope=normalize(source.word||word);
    if(!normalize(text))continue;
    const item={e:entry,p:part,selectedWord:source.word||undefined};
-   let group=groups.find(g=>g.scope===scope&&g.label===label&&g.items.some(existing=>equivalent(existing,item)));
+   let group=groups.find(g=>g.scope===scope&&(!g.label||!label||g.label===label)&&g.items.some(existing=>equivalent(existing,item)));
    if(!group){group={word:entry.word,text,scope,label,items:[]};groups.push(group);}
+   if(!group.label)group.label=label;
    if(!group.items.some(x=>x.e.rid===entry.rid&&x.p===part))group.items.push(item);
   }
   return groups;
