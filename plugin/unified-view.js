@@ -849,7 +849,26 @@
   ["KRU01594","A02437","uncoined metal","uncoined metal, bulion"],
   ["KRU02386","B00269","ravenous hunger","ravenous hunger, bulimy"],
   ["KRU02510","B00579","useless talk","vain, useless talk"],
-  ["KRU03035","B01003","to be sweet, pleasant","to be sweet, pleasant, pleasing"]
+  ["KRU03035","B01003","to be sweet, pleasant","to be sweet, pleasant, pleasing"],
+  ["KRU05269","D00770","levitical cleanness","purity, levitical cleanness"],
+  ["KRU05472","D01078","to winnow, to scatter","to scatter, strew; to winnow"],
+  ["KRU06437","G00452","privilege, benefit","advantage, privilege, benefit"],
+  ["KRU06543","G00649","to be accounted, to be converted into a loan","to be converted into a loan"],
+  ["KRU06557","G00671","coat of mail","coat of mail, armour"],
+  ["KRU06650","H00125","to be the cause of prohibition","to be the cause of prohibition as Kilayim"],
+  ["KRU06756","H00319","to come in turn","to come in turn, to occur"],
+  ["KRU06828","H00444","to make evident","to make evident, to prove"],
+  ["KRU07210","H01091","yolk of an egg","yolk, yellow of an egg"],
+  ["KRU07397","H01406","fragment of a vessel","fragment of a vessel, potsherd"],
+  ["KRU07455","H01516","to pick the teeth","to pick one’s teeth"],
+  ["KRU07517","H01625","charred meat","burned, charred meat"],
+  ["KRU07731","I00078","to mention explicitly","to specify, mention explicitly"],
+  ["KRU07751","I00103","real surface","the pure, real surface"],
+  ["KRU07798","I00156","roasted meat","roast, roasted meat."],
+  ["KRU07816","I00183","secret place","secret, hiding place"],
+  ["KRU08187","I00662","of secondary import","attachment, of secondary import"],
+  ["KRU08257","I00759","a head cover","t’ratin, a head cover."],
+  ["KRU08366","J00013","nice, right","fitting, right, nice"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  function reviewedEquivalent(source,item){
   if(!compatible(source.spelling,item.spelling))return false;
