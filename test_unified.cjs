@@ -320,8 +320,9 @@ const twoArarSenses=U.merge([
  {id:442,entry:{h:'עִרְעֵר',r:'P01417',source:'jastrow'},meanings:[{text:'to stir up, excite to lamentation',label:''}]},
  {id:443,entry:{h:'עִרְעֵר II',r:'P01418',source:'jastrow'},meanings:[{text:'to lay bare, strip, denude; to make lonely',label:''}]}
 ],'ערער');
-assert.equal(twoArarSenses.length,2,'two separately attested senses under the same root must remain distinct');
-assert(twoArarSenses.every(group=>group.sources.length===2),'each distinct arar sense should consolidate only with its own source gloss');
+assert.equal(twoArarSenses.length,3,'two matched senses and the unmatched semicolon-separated Jastrow sense must remain distinct');
+assert.equal(twoArarSenses.filter(group=>group.sources.length===2).length,2,'each matched arar sense should consolidate only with its corresponding source gloss');
+assert(twoArarSenses.some(group=>group.sources.length===1&&group.text.includes('to make lonely')),'the unmatched Jastrow sense must remain available separately');
 
 const twoAtakSenses=U.merge([
  {id:444,entry:{h:'עֲתַק',r:'KRU14959',source:'krupnik'},meanings:[{text:'to be worn out',label:''},{text:'to remain long',label:''}]},
