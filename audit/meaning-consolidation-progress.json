@@ -6,12 +6,12 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1249 retained whole-gloss mappings and all 209 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1249 retained whole-gloss mappings and all 224 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
     "reviewedSourceGlossPairCount": 1249,
-    "reviewedSourceAlternativePairCount": 209,
+    "reviewedSourceAlternativePairCount": 224,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 16,
     "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions.",
@@ -1839,8 +1839,8 @@
     "note": "Twenty-five same-sense variants were approved from the next inventory page. The D00017 mapping was checked against the original records: Jastrow's real reader phrase is 'to flow', matching Krupnik sense 1 'to flow'; Krupnik sense 2 'to flow out' remains distinct and is not merged into it."
   },
   "alternativeLevelReview": {
-    "status": "expanded-with-209-source-scoped-alternative-matches",
-    "reviewedSourceAlternativePairs": 209,
+    "status": "expanded-with-224-source-scoped-alternative-matches",
+    "reviewedSourceAlternativePairs": 224,
     "acceptedPairs": [
       [
         "KRU04451",
@@ -3425,6 +3425,122 @@
         "jastrow": "O01464",
         "krupnik": "KRU13933",
         "reason": "Jastrow phrase includes leading 'also', which is not stripped by exact alternative normalization; defer rather than broaden normalization."
+      }
+    ]
+  },
+  "eighthAlternativeReviewedTranche": {
+    "attemptedCandidateRows": 15,
+    "acceptedCandidateRows": 15,
+    "addedUniqueSourceAlternativePairs": 15,
+    "status": "accepted-source-attested-alternative-matches",
+    "rationale": "Reviewed 15 further exact-alternative candidates under the same headword. Parenthetical punctuation is normalized only for matching while the full source gloss remains intact. Semicolon-delimited senses remain separate, and unmatched alternatives within a matched sense are retained.",
+    "acceptedPairs": [
+      [
+        "KRU13868",
+        "O01349",
+        "to give to eat",
+        "give to eat"
+      ],
+      [
+        "KRU13949",
+        "O01497",
+        "to paint red",
+        "to paint red"
+      ],
+      [
+        "KRU14015",
+        "O01635",
+        "to hold fast",
+        "hold fast"
+      ],
+      [
+        "KRU14052",
+        "O01713",
+        "to tear down",
+        "tear down"
+      ],
+      [
+        "KRU14077",
+        "P00029",
+        "thick with leaves",
+        "thick with leaves"
+      ],
+      [
+        "KRU14321",
+        "P00450",
+        "upper garment",
+        "upper garment"
+      ],
+      [
+        "KRU14344",
+        "P00490",
+        "dressing hides",
+        "dressing hides"
+      ],
+      [
+        "KRU14354",
+        "P00500",
+        "disability to remarry",
+        "disability to remarry"
+      ],
+      [
+        "KRU14375",
+        "P00532",
+        "covering (the head)",
+        "covering the head"
+      ],
+      [
+        "KRU14403",
+        "P00582",
+        "upper chamber",
+        "upper chamber"
+      ],
+      [
+        "KRU14408",
+        "P00592",
+        "using as a slave",
+        "using as a slave"
+      ],
+      [
+        "KRU14485",
+        "P00687",
+        "exciting to lamentation",
+        "exciting to lamentation"
+      ],
+      [
+        "KRU14534",
+        "P00749",
+        "to make turbid",
+        "make turbid"
+      ],
+      [
+        "KRU14686",
+        "P01052",
+        "to do one thing while intending to do another thing",
+        "to do one thing while intending to do another thing"
+      ],
+      [
+        "KRU14772",
+        "P01188",
+        "removal from place",
+        "removal from place"
+      ]
+    ],
+    "deferredCandidates": [
+      {
+        "jastrow": "O01573",
+        "krupnik": "KRU13990",
+        "reason": "The same exact alternative occurs in two Jastrow senses; defer until a one-to-one source-sense match is established."
+      },
+      {
+        "jastrow": "O01464",
+        "krupnik": "KRU13933",
+        "reason": "Jastrow phrase includes leading 'also', which is not stripped by exact alternative normalization; defer rather than broaden normalization."
+      },
+      {
+        "jastrow": "Q00398",
+        "krupnik": "KRU15181",
+        "reason": "Next-ranked candidate; held for next review tranche."
       }
     ]
   }
