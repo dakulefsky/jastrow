@@ -128,7 +128,12 @@ for(const [key,records] of byWord){
   }
  }
 }
-const list=[...candidates.values()].sort((a,b)=>b.hebrewEvidenceScore-a.hebrewEvidenceScore||b.englishEvidenceScore-a.englishEvidenceScore||b.jaccard-a.jaccard||b.sharedEnglishTerms.length-a.sharedEnglishTerms.length||a.headword.localeCompare(b.headword));
+const list=[...candidates.values()];
+for(const candidate of list)if(candidate.partialHebrewOverlap){
+ candidate.reviewStatus='handled-by-runtime-exact-Hebrew-alternative-rule';
+ candidate.reviewReason='The Hebrew merger already splits and consolidates exact shared alternatives while retaining unmatched wording.';
+}
+list.sort((a,b)=>b.hebrewEvidenceScore-a.hebrewEvidenceScore||b.englishEvidenceScore-a.englishEvidenceScore||b.jaccard-a.jaccard||b.sharedEnglishTerms.length-a.sharedEnglishTerms.length||a.headword.localeCompare(b.headword));
 const report={
  purpose:'Review queue only. No Hebrew definitions are automatically merged or rewritten.',
  method:{
@@ -138,7 +143,7 @@ const report={
   safeguards:'Different explicit grammatical labels are excluded; identical Hebrew glosses are already handled by exact grouping; approved source-scoped synonym pairs are excluded from the queue',
   limitation:'English overlap is only an alignment clue. Reviewers must confirm the Hebrew definitions express the same sense before approving a merge.'
  },
-  totals:{sourceRecords:dictionary.entries.length,uniqueHeadwordForms:byWord.size,repeatedHeadwordForms:[...byWord.values()].filter(group=>group.size>1).length,candidates:list.length,partialHebrewOverlap:list.filter(x=>x.partialHebrewOverlap).length,evidenceCounts:Object.fromEntries(['exact-gloss','shared-content-terms','different-glosses','missing-gloss'].map(level=>[level,list.filter(x=>x.englishEvidence===level).length]))},
+  totals:{sourceRecords:dictionary.entries.length,uniqueHeadwordForms:byWord.size,repeatedHeadwordForms:[...byWord.values()].filter(group=>group.size>1).length,candidates:list.length,partialHebrewOverlap:list.filter(x=>x.partialHebrewOverlap).length,runtimeRuleHandledCandidates:list.filter(x=>x.reviewStatus==='handled-by-runtime-exact-Hebrew-alternative-rule').length,manualReviewCandidates:list.filter(x=>x.reviewStatus==='pending-human-review').length,evidenceCounts:Object.fromEntries(['exact-gloss','shared-content-terms','different-glosses','missing-gloss'].map(level=>[level,list.filter(x=>x.englishEvidence===level).length]))},
  candidates:list
 };
 const output=path.join(__dirname,'meaning-consolidation-candidates.json');
