@@ -11,6 +11,16 @@ for(const file of fs.readdirSync(dataDir).filter(n=>/^(?:chunk-\d+|krupnik-\d+)\
 const byRef=new Map(Object.values(context.window.JASTROW_CHUNKS).flatMap(chunk=>Object.values(chunk)).filter(e=>e.r).map(e=>[e.r,e]));
 const clean=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
 const cases=[];
+const splitAlternatives=value=>{
+ const out=[];let current='',depth=0;
+ for(const ch of String(value||'')){
+  if(ch==='(')depth++;else if(ch===')')depth=Math.max(0,depth-1);
+  if((ch===','||ch===';')&&depth===0){if(clean(current))out.push(clean(current));current='';}
+  else current+=ch;
+ }
+ if(clean(current))out.push(clean(current));
+ return out;
+};
 for(const pair of U.reviewedSourceGlossPairs){
  const [refs,glossText]=pair.split('::'),[a,b]=refs.split('|'),glosses=glossText.split(' | ');
  const krupnikRef=[a,b].find(x=>x.startsWith('KRU')),jastrowRef=[a,b].find(x=>!x.startsWith('KRU'));
@@ -19,7 +29,18 @@ for(const pair of U.reviewedSourceGlossPairs){
  const kg=glosses.find(g=>(krupnik.glosses||[]).some(x=>clean(x.text)===g));
  const jg=glosses.find(g=>g!==kg);
  assert(kg&&jg,'pair contains source glosses for '+pair);
- cases.push({ref:jastrowRef,html:jastrow.html,expected:jg});
+ cases.push({ref:jastrowRef,html:jastrow.html,expected:jg,kind:'whole-gloss'});
+}
+for(const pair of U.reviewedSourceAlternativePairs){
+ const [refs,glossText]=pair.split('::'),[a,b]=refs.split('|'),alternatives=glossText.split(' | ');
+ const krupnikRef=[a,b].find(x=>x.startsWith('KRU')),jastrowRef=[a,b].find(x=>!x.startsWith('KRU'));
+ const krupnik=byRef.get(krupnikRef),jastrow=byRef.get(jastrowRef);
+ assert(krupnik&&jastrow,'alternative source records exist for '+pair);
+ assert((krupnik.glosses||[]).some(g=>splitAlternatives(g.text).some(value=>alternatives.includes(value))),
+  'reviewed Krupnik alternative must occur inside its original gloss for '+pair);
+ const jastrowAlternative=alternatives.find(value=>value);
+ assert(jastrowAlternative,'reviewed alternative pair must contain an exact phrase');
+ cases.push({ref:jastrowRef,html:jastrow.html,expected:jastrowAlternative,kind:'alternative'});
 }
 (async()=>{
  const browser=await chromium.launch({executablePath,args:['--no-sandbox']});
@@ -34,6 +55,6 @@ for(const pair of U.reviewedSourceGlossPairs){
   const misses=results.filter(x=>!x.found);
   if(misses.length)console.error('UNMATCHED_REVIEWED_PAIRS='+JSON.stringify(misses));
   assert.equal(misses.length,0,'Every reviewed Jastrow gloss must be emitted by the real phrase extractor. First misses: '+JSON.stringify(misses.slice(0,15)));
-  console.log('PASS: all '+results.length+' reviewed Jastrow glosses are emitted by JastrowReadingView.phrases.');
+  console.log('PASS: all '+results.length+' reviewed whole-gloss and alternative-level Jastrow phrases are emitted by JastrowReadingView.phrases.');
  }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1});
