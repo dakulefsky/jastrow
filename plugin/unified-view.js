@@ -834,7 +834,22 @@
   ["KRU11447","M01511","place for drawing water","place for drawing water, well"],
   ["KRU12549","N00480","the smooth side of skin","the polished, smooth side of skin"],
   ["KRU12958","N01179","people gathered from different places","gathered from different places"],
-  ["KRU13313","O00393","metal spike of the spear","metal spike at the butt-end of the spear"]
+  ["KRU13313","O00393","metal spike of the spear","metal spike at the butt-end of the spear"],
+  ["KRU15157","Q00363","large baking oven","a stationary, large baking oven"],
+  ["KRU15686","Q01241","unfit, defective, disqualified","defective, blemished, unfit, disqualified"],
+  ["KRU19917","V00683","pillars of the framework of a lantern","the pillars supporting the framework of a lantern"],
+  ["KRU08159","I00630","knocker, one who by rapping at the wall discovers the hidden treasure","knocker, one who by rapping at the wall discovers hidden treasures"],
+  ["KRU19309","U01649","the seven letters which require crownlets in the Pentateuch scrolls","the seven letters which require crownlets"],
+  ["KRU03864","C00435","spiral form, writing in spiral form","spiral form"],
+  ["KRU09831","K01231","a row of vines","a row of vines in a vineyard"],
+  ["KRU00419","A00635","air, space","empty space, air"],
+  ["KRU01195","A01811","born in month of Elul","born in Elul."],
+  ["KRU01468","A02237","of cast metal","made of cast metal"],
+  ["KRU01580","A02415","military commander","military commander, general"],
+  ["KRU01594","A02437","uncoined metal","uncoined metal, bulion"],
+  ["KRU02386","B00269","ravenous hunger","ravenous hunger, bulimy"],
+  ["KRU02510","B00579","useless talk","vain, useless talk"],
+  ["KRU03035","B01003","to be sweet, pleasant","to be sweet, pleasant, pleasing"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  function reviewedEquivalent(source,item){
   if(!compatible(source.spelling,item.spelling))return false;
