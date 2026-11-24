@@ -20,15 +20,15 @@ for(const [key,records] of byWord){
  const entries=[...records.values()];
  for(let i=0;i<entries.length;i++)for(let j=i+1;j<entries.length;j++){
   const a=entries[i],b=entries[j];
-  for(const pa of a.parts||[])for(const pb of (i===j?a.parts||[]:b.parts||[])){
-   if(a.rid===b.rid&&pa===pb)continue;
+  for(const pa of a.parts||[])for(const pb of b.parts||[]){
    const ha=pa.meaning||pa.text||'',hb=pb.meaning||pb.text||'';
    if(!normalize(ha)||!normalize(hb)||normalize(ha)===normalize(hb))continue;
    if(label(pa.label)&&label(pb.label)&&label(pa.label)!==label(pb.label))continue;
-   const ea=clean(pa.english),eb=clean(pb.english);if(!ea||!eb||ea===eb)continue;
+   const ea=clean(pa.english),eb=clean(pb.english);
+   const ta=tokens(ea),tb=tokens(eb);
+   const overlap=ta.filter(t=>tb.includes(t)),jaccard=ta.length&&tb.length?overlap.length/new Set([...ta,...tb]).size:0;
    const ta=tokens(ea),tb=tokens(eb);if(!ta.length||!tb.length)continue;
    const overlap=ta.filter(t=>tb.includes(t)),jaccard=overlap.length/new Set([...ta,...tb]).size;
-   if(jaccard<0.75||overlap.length<2)continue;
    const refs=[a.rid,b.rid].sort();
    const glosses=[normalize(ha),normalize(hb)].sort();
    const keyId=[key,...refs,...glosses].join('::');
@@ -52,7 +52,7 @@ const report={
   safeguards:'Different explicit grammatical labels are excluded; identical Hebrew glosses are already handled by exact grouping',
   limitation:'English overlap is only an alignment clue. Reviewers must confirm the Hebrew definitions express the same sense before approving a merge.'
  },
- totals:{sourceRecords:dictionary.entries.length,uniqueHeadwordForms:byWord.size,candidates:list.length},
+  totals:{sourceRecords:dictionary.entries.length,uniqueHeadwordForms:byWord.size,repeatedHeadwordForms:[...byWord.values()].filter(group=>group.size>1).length,candidates:list.length},
  candidates:list
 };
 const output=path.join(__dirname,'meaning-consolidation-candidates.json');
