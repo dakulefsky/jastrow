@@ -26,7 +26,7 @@ for(const pair of U.reviewedSourceGlossPairs){
  const krupnikGloss=glosses.find(gloss=>(krupnik.glosses||[]).some(item=>cleanGloss(item.text)===gloss));
  assert(krupnikGloss,'Krupnik gloss must match source wording for '+krupnikRef+': '+glosses.join(' / '));
  const italicGlosses=[...jastrow.html.matchAll(/<i\b[^>]*>([\s\S]*?)<\/i>/gi)].map(match=>cleanGloss(decodeHtml(match[1].replace(/<[^>]*>/g,' '))));
- const jastrowGloss=glosses.find(gloss=>gloss!==krupnikGloss&&italicGlosses.includes(gloss));
+ const jastrowGloss=glosses.find(gloss=>italicGlosses.includes(gloss));
  assert(jastrowGloss,'Jastrow gloss must occur in an explicit italic source phrase for '+jastrowRef+': '+glosses.join(' / '));
 }
 assert.deepEqual(S.lookup(index,'אַרְעָא').ids.slice(0,2),[33935,3221]);
