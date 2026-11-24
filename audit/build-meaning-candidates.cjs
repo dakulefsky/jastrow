@@ -7,16 +7,16 @@ const vm=require('node:vm');
 const {chromium,executablePath}=require('../browser_support.cjs');
 const S=require('../plugin/search.js');
 const dataDir=path.join(__dirname,'../plugin/data');
-const files=fs.readdirSync(dataDir).filter(n=>/^(?:chunk-\\d+|krupnik-\\d+)\\.js$/.test(n)).sort();
+const files=fs.readdirSync(dataDir).filter(n=>/^(?:chunk-\d+|krupnik-\d+)\.js$/.test(n)).sort();
 const context={window:{JASTROW_CHUNKS:{}}};
 vm.createContext(context);
 for(const file of files)vm.runInContext(fs.readFileSync(path.join(dataDir,file),'utf8'),context);
 const entries=Object.values(context.window.JASTROW_CHUNKS).flatMap(chunk=>Object.values(chunk)).filter(e=>e.r);
 const jastrow=entries.filter(e=>e.source!=='krupnik'&&e.html);
 const krupnik=entries.filter(e=>e.source==='krupnik'&&Array.isArray(e.glosses));
-const clean=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\\s]+$/,'').trim().replace(/\\s+/g,' ');
+const clean=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
 const stop=new Set(('a an the to of for in on with from by as and or is be are was were being been it its this that these those one some any all'.split(' ')));
-const tokens=value=>[...new Set(clean(value).replace(/[^a-z0-9' -]/g,' ').split(/\\s+/).filter(t=>t.length>=3&&!stop.has(t)))];
+const tokens=value=>[...new Set(clean(value).replace(/[^a-z0-9' -]/g,' ').split(/\s+/).filter(t=>t.length>=3&&!stop.has(t)))];
 const sharedForms=(a,b)=>[...new Set([a.h,...(a.alt||[])].map(S.normalize).filter(Boolean))].filter(form=>[b.h,...(b.alt||[])].map(S.normalize).filter(Boolean).includes(form));
 (async()=>{
  const browser=await chromium.launch({executablePath,args:['--no-sandbox']});
@@ -78,7 +78,7 @@ const sharedForms=(a,b)=>[...new Set([a.h,...(a.alt||[])].map(S.normalize).filte
   candidates:list
  };
  const output=path.join(__dirname,'meaning-consolidation-candidates.json');
- fs.writeFileSync(output,JSON.stringify(report,null,2)+'\\n');
+ fs.writeFileSync(output,JSON.stringify(report,null,2)+'\n');
  const summary=[
   '## Cross-dictionary synonym candidate inventory',
   '',
@@ -90,8 +90,8 @@ const sharedForms=(a,b)=>[...new Set([a.h,...(a.alt||[])].map(S.normalize).filte
   '',
   'Top candidate examples:',
   ...list.slice(0,15).map(x=>'- '+x.headword+' ('+x.jastrow.ref+' / '+x.krupnik.ref+'): “'+x.jastrow.text+'” ↔ “'+x.krupnik.text+'” ['+x.sharedTerms.join(', ')+']')
- ].join('\\n');
- if(process.env.GITHUB_STEP_SUMMARY)fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,summary+'\\n');
+ ].join('\n');
+ if(process.env.GITHUB_STEP_SUMMARY)fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,summary+'\n');
  console.log(JSON.stringify(report.totals));
  console.log('Wrote '+output);
 })().catch(error=>{console.error(error);process.exitCode=1});
