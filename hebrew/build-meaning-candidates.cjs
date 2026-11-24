@@ -23,7 +23,32 @@ const vowelCompatible=(a,b)=>{
  }
  return true;
 };
-const headwordCompatible=(a,b)=>[a.word,...(a.alt||[])].some(x=>[b.word,...(b.alt||[])].some(y=>normalize(x)===normalize(y)&&vowelCompatible(x,y)));
+const homonymNumber=value=>{
+ const text=String(value||'').trim(),sup=text.match(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+$/);
+ if(sup)return Number([...sup[0]].map(ch=>'⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join(''));
+ const arabic=text.match(/(?:^|\\s)(\\d+)$/);
+ if(arabic)return Number(arabic[1]);
+ const roman=text.match(/(?:^|\\s)(I{1,3}|IV|V|VI|VII|VIII|IX|X)$/i);
+ if(roman)return ({I:1,II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8,IX:9,X:10})[roman[1].toUpperCase()]||null;
+ return null;
+};
+const homonymNumbersByForm=new Map();
+for(const entry of dictionary.entries)for(const form of [entry.word,...(entry.alt||[])]){
+ const key=normalize(form),number=homonymNumber(form);
+ if(!key||number===null)continue;
+ if(!homonymNumbersByForm.has(key))homonymNumbersByForm.set(key,new Set());
+ homonymNumbersByForm.get(key).add(number);
+}
+const headwordCompatible=(a,b)=>[a.word,...(a.alt||[])].some(x=>[b.word,...(b.alt||[])].some(y=>{
+ const key=normalize(x),nx=homonymNumber(x),ny=homonymNumber(y),known=homonymNumbersByForm.get(key)||new Set();
+ if(key!==normalize(y)||!vowelCompatible(x,y))return false;
+ if(nx!==null&&ny!==null&&nx!==ny)return false;
+ if((nx===null||ny===null)&&known.size>1)return false;
+ return true;
+}));
+if(headwordCompatible({word:'בְּרָא²'},{word:'בְּרָא³'}))throw new Error('Candidate inventory must reject explicitly different Hebrew homonyms');
+if(headwordCompatible({word:'בְּרָא'},{word:'בְּרָא³'})&&homonymNumbersByForm.get(normalize('בְּרָא'))?.size>1)throw new Error('An unnumbered Hebrew headword must not be assigned arbitrarily among multiple numbered homonyms');
+if(!headwordCompatible({word:'בְּרָא³'},{word:'בְּרָא'}))throw new Error('A numbered Hebrew headword may match an unnumbered counterpart when unambiguous');
 if(vowelCompatible('כָּבַשׁ','כְּבַשׁ'))throw new Error('Candidate inventory must reject conflicting pointed Hebrew readings');
 if(!vowelCompatible('כבש','כָּבַשׁ'))throw new Error('Unpointed headwords must remain eligible for review');
 const clean=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[^a-z0-9' -]/g,' ').replace(/\s+/g,' ').trim();
