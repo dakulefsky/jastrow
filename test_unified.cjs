@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1103,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1104,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -94,6 +94,15 @@ for(const [kr,jr,kg,jg] of thirdReviewedEquivalences){
  const ids=[kr,jr].sort().join('|');
  const glosses=[normalizeReviewed(kg),normalizeReviewed(jg)].sort().join(' | ');
  assert(U.reviewedSourceGlossPairs.has(ids+'::'+glosses),'third-tranche mapping missing: '+jr+' / '+kr);
+}
+
+
+// Fourth reviewed tranche: the letter name is a spelling/transliteration variant.
+const fourthReviewedEquivalences=[["KRU14410","P00548","the letter Ayin","the letter ʿAyin"]];
+for(const [kr,jr,kg,jg] of fourthReviewedEquivalences){
+ const ids=[kr,jr].sort().join('|');
+ const glosses=[normalizeReviewed(kg),normalizeReviewed(jg)].sort().join(' | ');
+ assert(U.reviewedSourceGlossPairs.has(ids+'::'+glosses),'fourth-tranche mapping missing: '+jr+' / '+kr);
 }
 
 // Second manually reviewed candidate tranche: equivalent source senses only.
