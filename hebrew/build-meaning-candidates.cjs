@@ -27,8 +27,6 @@ for(const [key,records] of byWord){
    const ea=clean(pa.english),eb=clean(pb.english);
    const ta=tokens(ea),tb=tokens(eb);
    const overlap=ta.filter(t=>tb.includes(t)),jaccard=ta.length&&tb.length?overlap.length/new Set([...ta,...tb]).size:0;
-   const ta=tokens(ea),tb=tokens(eb);if(!ta.length||!tb.length)continue;
-   const overlap=ta.filter(t=>tb.includes(t)),jaccard=overlap.length/new Set([...ta,...tb]).size;
    const refs=[a.rid,b.rid].sort();
    const glosses=[normalize(ha),normalize(hb)].sort();
    const keyId=[key,...refs,...glosses].join('::');
@@ -61,7 +59,8 @@ const summary=[
  '## Hebrew dictionary meaning-consolidation candidates',
  '',
  '- Original Hebrew source records: '+dictionary.entries.length,
- '- Repeated headword forms: '+report.totals.repeatedHeadwordForms,\n '- Candidate pairs for manual Hebrew review: '+list.length,
+ '- Repeated headword forms: '+report.totals.repeatedHeadwordForms,
+ '- Candidate pairs for manual Hebrew review: '+list.length,
  '',
  'English glosses are used only as an alignment clue; no Hebrew meaning is automatically merged.',
  '',
