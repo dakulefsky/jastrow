@@ -6,6 +6,18 @@
  // source records. Normalize punctuation and order only; preserve word order
  // within each phrase and never infer synonyms from shared words.
  const canonicalMeaningKey=value=>[...new Set(String(value||'').split(/[;,]/).map(normalize).filter(Boolean))].sort().join(' | ');
+ const splitAlternatives=value=>{
+  const out=[];let current='',depth=0;
+  for(const ch of String(value||'')){
+   if(ch==='(')depth++;
+   else if(ch===')')depth=Math.max(0,depth-1);
+   if((ch===','||ch===';')&&depth===0){if(normalize(current))out.push(current.trim());current='';}
+   else current+=ch;
+  }
+  if(normalize(current))out.push(current.trim());
+  return out;
+ };
+ const itemMeaning=item=>item.displayMeaning||item.p.meaning||item.p.text||'';
  // Each approved synonym is scoped to exact source records and exact Hebrew glosses.
  // Similar wording alone never merges Hebrew senses.
  const reviewedSynonymPairs=new Set([
@@ -27,28 +39,46 @@
  }));
  function pairKey(a,b){
   const ids=[a.e.rid,b.e.rid].sort().join('|');
-  const glosses=[normalize(a.p.meaning||a.p.text),normalize(b.p.meaning||b.p.text)].sort().join(' | ');
+  const glosses=[normalize(itemMeaning(a)),normalize(itemMeaning(b))].sort().join(' | ');
   return ids+'::'+glosses;
  }
  function equivalent(a,b){
-  return canonicalMeaningKey(a.p.meaning||a.p.text)===canonicalMeaningKey(b.p.meaning||b.p.text)||reviewedSynonymPairs.has(pairKey(a,b));
+  return canonicalMeaningKey(itemMeaning(a))===canonicalMeaningKey(itemMeaning(b))||reviewedSynonymPairs.has(pairKey(a,b));
  }
  function merge(sources,word){
-  const groups=[];
+  const groups=[],prepared=[];
   for(const source of sources||[])for(const entry of source.records||[])for(const part of entry.parts||[]){
    const text=part.meaning||part.text||'',label=labelKey(part.label),scope=normalize(source.word||word);
    if(!normalize(text))continue;
-   const item={e:entry,p:part,selectedWord:source.word||undefined};
-   let group=groups.find(g=>g.scope===scope&&(!g.label||!label||g.label===label)&&g.items.some(existing=>equivalent(existing,item)));
-   if(!group){group={word:entry.word,text,scope,label,items:[]};groups.push(group);}
-   if(!group.label)group.label=label;
-   if(!group.items.some(x=>x.e.rid===entry.rid&&x.p===part)){
-    group.items.push(item);
-    group.displayTexts=[...new Set(group.items.map(x=>String(x.p.meaning||x.p.text||'').trim()).filter(Boolean))];
-    group.text=group.displayTexts.join(' / ');
+   prepared.push({source,entry,part,text,label,scope,alternatives:splitAlternatives(text)});
+  }
+  // If two source parts share an exact Hebrew alternative, split those parts
+  // into their individual alternatives for display. This allows a common
+  // meaning to consolidate while an extra sense in the fuller gloss stays
+  // separate. Original full parts remain attached to every resulting item.
+  const splitParts=new Set();
+  for(let i=0;i<prepared.length;i++)for(let j=i+1;j<prepared.length;j++){
+   const a=prepared[i],b=prepared[j];
+   if(a.scope!==b.scope||(a.label&&b.label&&a.label!==b.label))continue;
+   const right=new Set(b.alternatives.map(normalize));
+   if(a.alternatives.some(value=>right.has(normalize(value)))){splitParts.add(i);splitParts.add(j);}
+  }
+  for(let index=0;index<prepared.length;index++){
+   const {source,entry,part,text,label,scope,alternatives}=prepared[index];
+   const displayMeanings=splitParts.has(index)?alternatives:[text];
+   for(const displayMeaning of displayMeanings){
+    const item={e:entry,p:part,selectedWord:source.word||undefined,displayMeaning};
+    let group=groups.find(g=>g.scope===scope&&(!g.label||!label||g.label===label)&&g.items.some(existing=>equivalent(existing,item)));
+    if(!group){group={word:entry.word,text:displayMeaning,scope,label,items:[]};groups.push(group);}
+    if(!group.label)group.label=label;
+    if(!group.items.some(x=>x.e.rid===entry.rid&&x.p===part&&normalize(itemMeaning(x))===normalize(displayMeaning))){
+     group.items.push(item);
+     group.displayTexts=[...new Set(group.items.map(x=>String(itemMeaning(x)).trim()).filter(Boolean))];
+     group.text=group.displayTexts.join(' / ');
+    }
    }
   }
   return groups;
  }
- root.HebrewMeaningConsolidation={merge,normalize,labelKey,canonicalMeaningKey,reviewedSynonymPairs,pairKey,equivalent};
+ root.HebrewMeaningConsolidation={merge,normalize,labelKey,canonicalMeaningKey,splitAlternatives,reviewedSynonymPairs,pairKey,equivalent};
 })(typeof window==='undefined'?globalThis:window);
