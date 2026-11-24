@@ -4,7 +4,18 @@
  const labelKey=value=>normalize(String(value||'').replace(/\b\d+\b/g,'').trim());
  // Each approved synonym is scoped to exact source records and exact Hebrew glosses.
  // Similar wording alone never merges Hebrew senses.
- const reviewedSynonymPairs=new Set();
+ const reviewedSynonymPairs=new Set([
+  // These are source-specific equivalences reviewed against the original Hebrew definitions.
+  ['KRU03116','KRU15803','מי שמפקידין אצלו','נאמן, שומר'],
+  ['KRU03661','KRU03664','קלע וסבך חוטים או שערות וכדומה','עשה מעשה גדיל, קלע'],
+  ['KRU06890','KRU06892','שנה, עשה שוב','שב ועשה'],
+  ['KRU07618','KRU07619','כהה','תרג׳ עמ׳ ה׳ כ׳ (חושך יום ה׳): חשוך יומא דעתיד למיתי.'],
+  ['KRU15532','KRU15533','העריץ ועבד לאלהות','עבד לאלהות'],
+  ['KRU15825','KRU15827','נבקע','נפקע']
+ ].map(([a,b,x,y])=>{
+  const ids=[a,b].sort().join('|'),glosses=[normalize(x),normalize(y)].sort().join(' | ');
+  return ids+'::'+glosses;
+ }));
  function pairKey(a,b){
   const ids=[a.e.rid,b.e.rid].sort().join('|');
   const glosses=[normalize(a.p.meaning||a.p.text),normalize(b.p.meaning||b.p.text)].sort().join(' | ');
