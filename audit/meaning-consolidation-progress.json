@@ -3543,5 +3543,10 @@
         "reason": "Next-ranked candidate; held for next review tranche."
       }
     ]
+  },
+  "multiTargetSenseGrouping": {
+    "status": "implemented-and-tested",
+    "rationale": "A single semicolon-delimited source sense can contain multiple reviewed alternatives that map one-to-one to separate records in the other dictionary. The merger now joins those groups only when each bridge uses a distinct reviewed key, explicit grammatical labels agree, and source headwords remain compatible. Duplicate-target ambiguity and distinct semicolon senses remain separate.",
+    "regression": "Jastrow O00530 'gray head, old age' joins the two individually matched Krupnik records KRU13399 and KRU13404 into one result while retaining all three source records."
   }
 }
