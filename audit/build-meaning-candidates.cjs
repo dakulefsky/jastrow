@@ -18,7 +18,7 @@ const krupnik=entries.filter(e=>e.source==='krupnik'&&Array.isArray(e.glosses));
 const clean=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
 const stop=new Set(('a an the to of for in on with from by as and or is be are was were being been it its this that these those one some any all which could not have their them they he she his her we you your our who what where when why how into unto over under without before after during through around between while than then also only very more most less such same other another each every'.split(' ')));
 const tokens=value=>[...new Set(clean(value).replace(/[^a-z0-9' -]/g,' ').split(/\s+/).filter(t=>t.length>=3&&!stop.has(t)))];
-const stem=label=>clean(String(label||'').replace(/^[—\\s]*\\d+[).]?\\s*/,'').replace(/\\s+\\d+[).]?\\s*$/,''));
+const stem=label=>clean(String(label||'').replace(/^[—\s]*\d+[).]?\s*/,'').replace(/\s+\d+[).]?\s*$/,''));
 const sharedForms=(a,b)=>[...new Set([a.h,...(a.alt||[])].map(S.normalize).filter(Boolean))].filter(form=>[b.h,...(b.alt||[])].map(S.normalize).filter(Boolean).includes(form));
 (async()=>{
  const browser=await chromium.launch({executablePath,args:['--no-sandbox']});
