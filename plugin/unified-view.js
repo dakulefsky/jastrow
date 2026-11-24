@@ -48,7 +48,7 @@
  // Small exact synonym groups; no token-overlap or stemming heuristics.
  const synonymGroups=[
   ['sometimes','at times','from time to time','occasionally'],
-  ['happen','to happen','occur','to occur','take place']
+  ['happen','to happen','occur','to occur','take place','to take place']
  ];
  const synonymKey=text=>{
   const value=clean(text);
