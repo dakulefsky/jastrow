@@ -1699,7 +1699,7 @@
   const segments=senseSegments(meaning.text),mappings=[...(alternativePairsByRef.get(ref)||[]),...(dynamicPairsByRef?.get(ref)||[])];
   const buckets=segments.map((segment,index)=>{
    const alternatives=glossAlternatives(segment);
-   const bucketKeys=mappings.filter(mapping=>alternatives.some(value=>alternativeKey(value)===alternativeKey(mapping.own))).map(mapping=>mapping.key);
+   const bucketKeys=mappings.filter(mapping=>alternatives.some(value=>mapping.exact?clean(value)===clean(mapping.own):alternativeKey(value)===alternativeKey(mapping.own))).map(mapping=>mapping.key);
    return {text:segment,bucketKeys:[...new Set(bucketKeys)],bucketId:bucketKeys.length?'reviewed-alternative-segment':'unmatched-segment:'+ref+':'+clean(meaning.label)+':'+index};
   });
   // Without an explicit cross-dictionary match, preserve the original source
@@ -1776,7 +1776,7 @@
    if(ambiguous)continue;
    for(const match of pair.matches)for(const [ref,own] of [[match.jRef,match.jAlt],[match.kRef,match.kAlt]]){
     if(!byRef.has(ref))byRef.set(ref,[]);
-    byRef.get(ref).push({key:pair.key,own});
+    byRef.get(ref).push({key:pair.key,own,exact:true});
    }
   }
   return byRef;
