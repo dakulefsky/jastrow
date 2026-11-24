@@ -62,11 +62,8 @@ const senseSegments=value=>{
  return out;
 };
 const segmentIds=(ref,text,label,section,alternative,side)=>{
- const segments=senseSegments(text),out=[];
- for(let i=0;i<segments.length;i++)if(alternatives(segments[i]).some(value=>clean(value)===clean(alternative))){
-  out.push(side==='j'?[ref,clean(text),stem(label),clean(section),i,clean(segments[i])].join('::'):[ref,clean(text),stem(label),i,clean(segments[i])].join('::'));
- }
- return out;
+ if(!alternatives(text).some(value=>clean(value)===clean(alternative)))return [];
+ return [side==='j'?[ref,clean(text),stem(label),clean(section)].join('::'):[ref,clean(text),stem(label)].join('::')];
 };
 const annotateExactPairRisks=list=>{
  const pairs=new Map(),candidateFlags=new Map();
