@@ -88,7 +88,10 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
     if(U.reviewedSourceGlossPairs.has(ids+'::'+glosses)||U.reviewedGlossPairs.has(glosses))continue;
     if(U.synonymKey(jp.text)===U.synonymKey(kg.text)||U.sharesReviewedSynonym(jp.text,kg.text))continue;
     const best=partPairs[0];
-    const tier=best.jaccard>=0.75?'strong-alternative-overlap':best.jaccard>=0.5?'moderate-alternative-overlap':'weak-alternative-overlap';
+    const bestPairKey=ids+'::'+[clean(best.jastrow),clean(best.krupnik)].sort().join(' | ');
+    if(U.reviewedSourceAlternativePairs?.has(bestPairKey))continue;
+    const exactAlternativeMatch=clean(best.jastrow)===clean(best.krupnik);
+    const tier=exactAlternativeMatch?'exact-alternative-match':best.jaccard>=0.75?'strong-alternative-overlap':best.jaccard>=0.5?'moderate-alternative-overlap':'weak-alternative-overlap';
     const key=[j.r,k.r,clean(jp.text),clean(kg.text),clean(jp.label),clean(kg.label)].join('::');
     candidates.set(key,{
      headword:j.h,
@@ -101,6 +104,7 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
      wholeGlossOverlap:Number(wholeOverlap.toFixed(3)),
      wholeGlossJaccard:Number(wholeJaccard.toFixed(3)),
      bestAlternativeMatch:best,
+     exactAlternativeMatch,
      candidateTier:tier,
      reviewStatus:'pending-human-review'
     });
@@ -115,7 +119,7 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
    headwordMatching:'Jastrow Search.normalize across primary and alternate headword spellings',
    jastrowMeanings:'JastrowReadingView.phrases, the actual reader extractor',
    krupnikMeanings:'Original Krupnik gloss records',
-   candidateRule:'Compare comma/semicolon-separated alternatives independently (respecting parenthetical commas); retain a candidate when any individual Jastrow/Krupnik alternative pair shares content terms with overlap coefficient >= 0.5; rank by best alternative-level Jaccard rather than whole-gloss overlap; exact complete gloss lists handled by deterministic canonical matching are excluded; pointed-headword conflicts, explicit label conflicts, verb/noun mismatches, and active/passive infinitive mismatches are excluded; already-reviewed pairs are excluded; no fuzzy automatic merging',
+   candidateRule:'Compare comma/semicolon-separated alternatives independently (respecting parenthetical commas); retain a candidate when any individual Jastrow/Krupnik alternative pair shares content terms with overlap coefficient >= 0.5; rank exact alternative matches first, then by best alternative-level Jaccard rather than whole-gloss overlap; exact complete gloss lists and individually reviewed source-alternative pairs are excluded; pointed-headword conflicts, explicit label conflicts, verb/noun mismatches, and active/passive infinitive mismatches are excluded; no fuzzy automatic merging',
    limitations:'Lexical overlap is only a review hint. Shared terms can represent distinct senses; grammatical labels and source context require manual review.'
   },
   totals:{sourceEntries:entries.length,jastrowEntries:jastrow.length,krupnikEntries:krupnik.length,jastrowEntriesWithReaderPhrases:[...phrasesByRef.values()].filter(x=>x.length).length,sharedHeadwordRecordPairs:matchedRecordPairs.size,jastrowHeadwordIndexAssociations:[...byForm.values()].reduce((n,a)=>n+a.length,0),candidates:list.length},
