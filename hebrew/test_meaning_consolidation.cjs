@@ -70,6 +70,26 @@ const unambiguousUnnumberedHomonym=merge([{word:'בדיקה',records:[
 ]}],'בדיקה');
 assert.equal(unambiguousUnnumberedHomonym.length,1,'a numbered Hebrew record may consolidate with one unnumbered counterpart when no competing homonym exists');
 
+const distinctNumericSenseLabels=merge([{word:'בדיקה',records:[
+ {word:'בדיקה',rid:'KRU9030',parts:[{meaning:'משמעות',text:'משמעות',label:'1'}]},
+ {word:'בדיקה',rid:'KRU9031',parts:[{meaning:'משמעות',text:'משמעות',label:'2'}]}
+]}],'בדיקה');
+assert.equal(distinctNumericSenseLabels.length,2,'explicitly different numeric Hebrew sense labels must remain separate');
+
+const ambiguousUnlabelledNumericSense=merge([{word:'בדיקה',records:[
+ {word:'בדיקה',rid:'KRU9032',parts:[{meaning:'משמעות',text:'משמעות',label:'1'}]},
+ {word:'בדיקה',rid:'KRU9033',parts:[{meaning:'משמעות',text:'משמעות',label:'2'}]},
+ {word:'בדיקה',rid:'KRU9034',parts:[{meaning:'משמעות',text:'משמעות',label:''}]}
+]}],'בדיקה');
+assert.equal(ambiguousUnlabelledNumericSense.length,3,'an unlabelled Hebrew meaning must not attach arbitrarily when multiple numeric sense labels exist');
+
+const singleNumericSenseCounterpart=merge([{word:'בדיקה',records:[
+ {word:'בדיקה',rid:'KRU9035',parts:[{meaning:'משמעות',text:'משמעות',label:'1'}]},
+ {word:'בדיקה',rid:'KRU9036',parts:[{meaning:'משמעות',text:'משמעות',label:''}]}
+]}],'בדיקה');
+assert.equal(singleNumericSenseCounterpart.length,1,'one numeric Hebrew sense may match an unlabelled counterpart when unambiguous');
+
+
 const distinctMeaning=merge([{word:'בדיקה',records:[
  {word:'א',rid:'KRU9005',parts:[{meaning:'הפסד',text:'הפסד',label:''}]},
  {word:'ב',rid:'KRU9006',parts:[{meaning:'אבידה',text:'אבידה',label:''}]}
