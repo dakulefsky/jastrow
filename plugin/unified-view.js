@@ -898,7 +898,22 @@
   ["KRU15393","Q00751","separation, interruption","separation, interruption, pause"],
   ["KRU15468","Q00879","stretching forth","spreading, stretching forth"],
   ["KRU15536","Q00997","to tear off","to tear off, detach"],
-  ["KRU15559","Q01045","sheet, blanket","sheet, blanket; mantle"]
+  ["KRU15559","Q01045","sheet, blanket","sheet, blanket; mantle"],
+  ["KRU18204","T00698","formation of an embryo in an egg","formation of an embryo"],
+  ["KRU18250","T00803","hint, intimation","gesture, hint, intimation."],
+  ["KRU18267","T00839","in the evening; last night","last night"],
+  ["KRU18317","T00952","to be trodden upon","to be trodden, stamped upon"],
+  ["KRU18322","T00959","lattice work","loose lattice work"],
+  ["KRU18328","T00973","to lie in wait","to lie in wait, watch"],
+  ["KRU18487","U00096","to grow in value","to improve, grow in value"],
+  ["KRU18716","U00498","cap of the hip-bone","protuberance, cap of the hip-bone"],
+  ["KRU18768","U00593","to wash, to rinse","to cleanse, wash, rinse"],
+  ["KRU18770","U00600","thread, cord","twisted thread, cord"],
+  ["KRU18779","U00617","with a dislocated hip","an animal with a dislocated hip"],
+  ["KRU18780","U00618","metal shavings","metal shavings, filings"],
+  ["KRU18804","U00677","to light a fire","to heat, light a fire"],
+  ["KRU18826","U00720","to set free","to set free, emancipate"],
+  ["KRU18839","U00749","spread, mat","spread, rug, mat"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  function reviewedEquivalent(source,item){
   if(!compatible(source.spelling,item.spelling))return false;
