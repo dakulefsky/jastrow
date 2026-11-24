@@ -4,13 +4,13 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 915,
+    "reviewedNonIdenticalGlossPairs": 914,
     "reviewedGlossEquivalenceGroups": 38,
     "realReaderPhraseExtractorAudit": "All retained source-scoped mappings are required to pass the Chromium audit against JastrowReadingView.phrases; the previous transcription typo in M01377 was corrected in source data.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1249
+    "reviewedSourceGlossPairCount": 1248
   },
   "historicalCheckpoint": {
     "reportedCompleted": 29,
@@ -1677,9 +1677,9 @@
     }
   ],
   "tenthReviewedTranche": {
-    "attemptedRows": 25,
-    "addedUniqueSourceGlossPairs": 25,
-    "currentTotal": 915,
+    "attemptedRows": 24,
+    "addedUniqueSourceGlossPairs": 24,
+    "currentTotal": 914,
     "acceptedPairs": [
       [
         "KRU04566",
@@ -1692,12 +1692,6 @@
         "C01320",
         "to incite, to stir up",
         "to incite"
-      ],
-      [
-        "KRU04694",
-        "D00017",
-        "to flow out",
-        "to flow"
       ],
       [
         "KRU04712",
@@ -1832,6 +1826,6 @@
         "flux, gonorrhoea"
       ]
     ],
-    "note": "Twenty-five further same-sense variants were approved from the next inventory page. These include synonymic gloss expansions, grammatical equivalents, and explanatory variants; distinct senses remain separate."
+    "note": "Twenty-four further same-sense variants were approved from the next inventory page. One proposed pair was rejected after the real reader extractor showed that the Jastrow phrase is 'to flow', not 'to flow out'; it was removed from the reviewed mapping and audit."
   }
 }
