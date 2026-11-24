@@ -87,9 +87,12 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
     const glosses=[clean(jp.text),clean(kg.text)].sort().join(' | ');
     if(U.reviewedSourceGlossPairs.has(ids+'::'+glosses)||U.reviewedGlossPairs.has(glosses))continue;
     if(U.synonymKey(jp.text)===U.synonymKey(kg.text)||U.sharesReviewedSynonym(jp.text,kg.text))continue;
-    const best=partPairs[0];
-    const bestPairKey=ids+'::'+[clean(best.jastrow),clean(best.krupnik)].sort().join(' | ');
-    if(U.reviewedSourceAlternativePairs?.has(bestPairKey))continue;
+    const alternativeMatches=partPairs.filter(match=>{
+     const key=ids+'::'+[clean(match.jastrow),clean(match.krupnik)].sort().join(' | ');
+     return !U.reviewedSourceAlternativePairs?.has(key);
+    });
+    if(!alternativeMatches.length)continue;
+    const best=alternativeMatches[0];
     const exactAlternativeMatch=clean(best.jastrow)===clean(best.krupnik);
     const tier=exactAlternativeMatch?'exact-alternative-match':best.jaccard>=0.75?'strong-alternative-overlap':best.jaccard>=0.5?'moderate-alternative-overlap':'weak-alternative-overlap';
     const key=[j.r,k.r,clean(jp.text),clean(kg.text),clean(jp.label),clean(kg.label)].join('::');
@@ -104,6 +107,8 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
      wholeGlossOverlap:Number(wholeOverlap.toFixed(3)),
      wholeGlossJaccard:Number(wholeJaccard.toFixed(3)),
      bestAlternativeMatch:best,
+     alternativeMatches:alternativeMatches.slice(0,10),
+     alternativePairCount:alternativeMatches.length,
      exactAlternativeMatch,
      candidateTier:tier,
      reviewStatus:'pending-human-review'
