@@ -1704,7 +1704,23 @@
   ["KRU14485","P00687","exciting to lamentation","exciting to lamentation"],
   ["KRU14534","P00749","to make turbid","make turbid"],
   ["KRU14686","P01052","to do one thing while intending to do another thing","to do one thing while intending to do another thing"],
-  ["KRU14772","P01188","removal from place","removal from place"]
+  ["KRU14772","P01188","removal from place","removal from place"],
+  ["KRU14890","P01417","to excite to lamentation","excite to lamentation"],
+  ["KRU14890","P01418","to lay bare","to lay bare"],
+  ["KRU14959","P01545","to be worn out","worn out"],
+  ["KRU14959","P01545","to remain long","to remain long"],
+  ["KRU15181","Q00398","to grow larger","grow larger"],
+  ["KRU15276","Q00555","a puny lamb","a puny lamb"],
+  ["KRU15457","Q00860","spasmodic movement","spasmodic movement"],
+  ["KRU15590","Q01099","to pick to pieces","pick to pieces"],
+  ["KRU15630","Q01158","the shepherd’s pipe","the shepherd’s pipe"],
+  ["KRU15689","Q01247","worthless matter","worthless matter"],
+  ["KRU15875","Q01593","a chest in the wall","a chest in the wall"],
+  ["KRU15912","Q01665","flying hair","flying hair"],
+  ["KRU15920","Q01677","odd sum","odd sum"],
+  ["KRU15920","Q01677","detail number","detail number"],
+  ["KRU15965","Q01763","to change money","to change money"],
+  ["KRU15983","Q01791","single pigeon","single pigeon"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
