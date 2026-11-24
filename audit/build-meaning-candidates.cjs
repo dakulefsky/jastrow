@@ -19,7 +19,8 @@ const clean=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’�
 const stop=new Set(('a an the to of for in on with from by as and or is be are was were being been it its this that these those one some any all which could not have their them they he she his her we you your our who what where when why how into unto over under without before after during through around between while than then also only very more most less such same other another each every'.split(' ')));
 const tokens=value=>[...new Set(clean(value).replace(/[^a-z0-9' -]/g,' ').split(/\s+/).filter(t=>t.length>=3&&!stop.has(t)))];
 const stem=label=>clean(String(label||'').replace(/^[—\s]*\d+[).]?\s*/,'').replace(/\s+\d+[).]?\s*$/,''));
-const sharedForms=(a,b)=>[...new Set([a.h,...(a.alt||[])].map(S.normalize).filter(Boolean))].filter(form=>[b.h,...(b.alt||[])].map(S.normalize).filter(Boolean).includes(form));
+const sharedForms=(a,b)=>{const left=[a.h,...(a.alt||[])],right=[b.h,...(b.alt||[])],forms=[];for(const x of left)for(const y of right)if(S.normalize(x)===S.normalize(y)&&S.vowelRank({h:x},y)!==2)forms.push(S.normalize(x));return [...new Set(forms)];};
+const voice=value=>/^to\\s+be\\s+/i.test(clean(value))?'passive':/^to\\s+(?:get|become)\\s+/i.test(clean(value))?'passive':'active';
 (async()=>{
  const browser=await chromium.launch({executablePath,args:['--no-sandbox']});
  let phrasesByRef=new Map();
@@ -43,12 +44,13 @@ const sharedForms=(a,b)=>[...new Set([a.h,...(a.alt||[])].map(S.normalize).filte
  const candidates=new Map();
  for(const k of krupnik){
   const matches=new Map();
-  for(const form of [k.h,...(k.alt||[])].map(S.normalize).filter(Boolean))for(const j of byForm.get(form)||[])matches.set(j.r,{entry:j,forms:sharedForms(j,k)});
+  for(const form of [k.h,...(k.alt||[])].map(S.normalize).filter(Boolean))for(const j of byForm.get(form)||[]){const forms=sharedForms(j,k);if(forms.length)matches.set(j.r,{entry:j,forms});}
   for(const {entry:j,forms} of matches.values()){
    for(const jp of phrasesByRef.get(j.r)||[])for(const kg of k.glosses||[]){
     const jt=tokens(jp.text),kt=tokens(kg.text);
     if(!jt.length||!kt.length||clean(jp.text)===clean(kg.text))continue;
     if(stem(jp.label)&&stem(kg.label)&&stem(jp.label)!==stem(kg.label))continue;
+    if(voice(jp.text)!==voice(kg.text)&&/^to\\s+(?:be|get|become)\\s+/i.test(clean(jp.text))&&/^to\\s+(?:be|get|become)\\s+/i.test(clean(kg.text)))continue;
     const overlap=jt.filter(t=>kt.includes(t));
     if(!overlap.length)continue;
     const score=overlap.length/Math.min(jt.length,kt.length);
