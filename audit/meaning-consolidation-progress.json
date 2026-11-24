@@ -4,7 +4,7 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 769,
+    "reviewedNonIdenticalGlossPairs": 770,
     "reviewedGlossEquivalenceGroups": 38,
     "realReaderPhraseExtractorAudit": "All retained source-scoped mappings are required to pass the Chromium audit against JastrowReadingView.phrases; the previous transcription typo in M01377 was corrected in source data.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
@@ -859,5 +859,18 @@
       ]
     ],
     "note": "Forty additional high-confidence candidate pairs were reviewed individually against the exact Jastrow and Krupnik glosses. Distinct extra senses, homographs, and grammatical contrasts were not approved. Real-reader phrase and source validation are running."
+  },
+  "fourthReviewedTranche": {
+    "attemptedRows": 1,
+    "addedUniqueSourceGlossPairs": 1,
+    "acceptedPairs": [
+      [
+        "KRU14410",
+        "P00548",
+        "the letter Ayin",
+        "the letter ʿAyin"
+      ]
+    ],
+    "note": "Approved exact same letter-name gloss with a transliteration/diacritic spelling variant. This is a source-scoped match, not a global text heuristic."
   }
 }
