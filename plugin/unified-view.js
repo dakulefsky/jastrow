@@ -1150,7 +1150,7 @@
   ["KRU18780","U00618","metal shavings","metal shavings, filings"],
   ["KRU18804","U00677","to light a fire","to heat, light a fire"],
   ["KRU18826","U00720","to set free","to set free, emancipate"],
-  ["KRU18839","U00749","spread, mat","spread, rug, mat"]
+  ["KRU18839","U00749","spread, mat","spread, rug, mat"],
   ["KRU08934", "J00748", "a person having an additional limb", "additional, a person having an additional limb"],
   ["KRU09509", "K00789", "how! how many! how much!", "how much?, how many?"],
   ["KRU16068", "Q01943", "to collect payment", "to collect payment from"],
