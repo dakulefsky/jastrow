@@ -7,10 +7,6 @@ vm.runInContext(fs.readFileSync(path.join(__dirname,'plugin/lookup.js'),'utf8'),
 vm.runInContext(fs.readFileSync(path.join(__dirname,'plugin/meaning-consolidation.js'),'utf8'),context);
 const dictionary=context.HEBREW_DICTIONARY,normalize=context.HebrewLookup.normalize;
 const label=value=>normalize(String(value||'').replace(/\b\d+\b/g,'').trim());
- const raw=String(value||'').trim();
- if(/^\d+$/.test(raw))return '#'+raw;
- return normalize(raw.replace(/\b\d+\b/g,'').trim());
-};
 
 const pointed=value=>{
  const out=[];
