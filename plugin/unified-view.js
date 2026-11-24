@@ -809,7 +809,14 @@
   ["KRU04542","C01242","to incite, to stir up","to incite, stir up"],
   ["KRU04613","C01346","involving, carrying with","carrying with, involving"],
   ["KRU04676","C01426","to touch, to feel","to feel, touch"],
-  ["KRU04677","C01427","touch, feeling","feeling, touch"]
+  ["KRU04677","C01427","touch, feeling","feeling, touch"],
+  ["KRU13714","O01078","to make blind","to blind, make blind"],
+  ["KRU13938","O01471","execution by stoning","stoning, execution by stoning"],
+  ["KRU16734","S00188","cedar wood","of cedar, cedar wood"],
+  ["KRU00510","A00796","too","too, also"],
+  ["KRU00821","A01281","but for","were it not, but for"],
+  ["KRU01252","A01910","wherefore","why?, wherefore?"],
+  ["KRU06172","F00031","woe, oh!","woe;"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  function reviewedEquivalent(source,item){
   if(!compatible(source.spelling,item.spelling))return false;
