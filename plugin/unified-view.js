@@ -1820,8 +1820,35 @@
    const matchingWord=lookupWord||word,spelling=S.displayHeadword(entry,matchingWord),sourceItem={id,entry,meaning,spelling};
    for(const bucket of meaningBuckets(entry.r,meaning,dynamicPairsByRef)){
     const item={...sourceItem,sourceMeaning:meaning,meaning:{...meaning,text:bucket.text},bucketKeys:bucket.bucketKeys||[]};
-    let group=groups.find(g=>sameMeaning(g,item,word));
+    const matchingGroups=groups.filter(g=>sameMeaning(g,item,word));
+    let group=matchingGroups[0];
     if(!group){group={text:bucket.text,form:stem(meaning.label),spelling,sources:[],displayAlternatives:[],bucketKeys:bucket.bucketKeys||[],rank:S.vowelRank(entry,matchingWord)};groups.push(group);}
+    else if((item.bucketKeys||[]).length>1&&matchingGroups.length>1){
+     // A single reviewed source sense may list multiple alternatives that map
+     // one-to-one to separate records in the other dictionary. Join those
+     // groups only when each is reached by a different reviewed key and all
+     // explicit grammatical labels/headword forms remain compatible.
+     const bridged=matchingGroups.filter(g=>g.bucketKeys?.some(key=>item.bucketKeys.includes(key)));
+     const matchingKeys=bridged.map(g=>g.bucketKeys.find(key=>item.bucketKeys.includes(key)));
+     const keyCounts=new Map();for(const key of matchingKeys)keyCounts.set(key,(keyCounts.get(key)||0)+1);
+     const labels=new Set(bridged.map(g=>g.form).filter(Boolean));
+     const sourceFormsCompatible=bridged.every((g,i)=>bridged.slice(0,i).every(other=>
+      other.sources.every(a=>g.sources.every(b=>compatible(a.spelling,b.spelling,S.hasVowels(a.spelling)?a.spelling:(S.hasVowels(b.spelling)?b.spelling:word))))));
+     if(bridged.length>1&&new Set(matchingKeys).size===bridged.length&&[...keyCounts.values()].every(count=>count===1)&&labels.size<=1&&sourceFormsCompatible){
+      for(const extra of bridged.slice(1)){
+       for(const source of extra.sources)if(!group.sources.some(s=>s.id===source.id&&s.meaning.text===source.meaning.text&&stem(s.meaning.label)===stem(source.meaning.label)))group.sources.push(source);
+       for(const alternative of extra.displayAlternatives){
+        const key=alternativeKey(alternative);
+        if(!group.displayAlternatives.some(value=>alternativeKey(value)===key))group.displayAlternatives.push(alternative);
+       }
+       for(const key of extra.bucketKeys||[])if(!group.bucketKeys.includes(key))group.bucketKeys.push(key);
+       if(extra.rank<group.rank){group.rank=extra.rank;group.spelling=extra.spelling;}
+       if(!group.form)group.form=extra.form;
+       groups.splice(groups.indexOf(extra),1);
+      }
+      group.text=group.displayAlternatives.join(', ');
+     }
+    }
     if(!group.form)group.form=stem(meaning.label);
     const rank=S.vowelRank(entry,matchingWord);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
     if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label)))group.sources.push(sourceItem);
