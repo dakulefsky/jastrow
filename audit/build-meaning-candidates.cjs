@@ -52,7 +52,7 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
    matchedRecordPairs.add(j.r+'|'+k.r);
    for(const jp of phrasesByRef.get(j.r)||[])for(const kg of k.glosses||[]){
     const jt=tokens(jp.text),kt=tokens(kg.text);
-    if(!jt.length||!kt.length||clean(jp.text)===clean(kg.text))continue;
+    if(!jt.length||!kt.length||clean(jp.text)===clean(kg.text)||U.canonicalGlossKey(jp.text)===U.canonicalGlossKey(kg.text))continue;
     if(stem(jp.label)&&stem(kg.label)&&stem(jp.label)!==stem(kg.label))continue;
     if(!samePartOfSpeech(jp.text,kg.text))continue;
     if(/^to\s+/i.test(clean(jp.text))&&/^to\s+/i.test(clean(kg.text))&&voice(jp.text)!==voice(kg.text))continue;
