@@ -25,12 +25,12 @@
   }
   alternatives.push(current);
   const first=clean(alternatives[0]||''),verbList=/^to\s+/.test(first);
-  const normalized=alternatives.map((part,index)=>{
+  const normalized=alternatives.map(part=>{
    let item=clean(part).replace(/\bto\s+to\b/g,'to').replace(/^(?:a|an|the)\s+/,'');
-   if(index>0&&verbList)item=item.replace(/^to\s+/,'');
-   return item.replace(/[.,;:!?()[\\]{}]+/g,' ').replace(/\s+/g,' ').trim();
+   if(verbList)item=item.replace(/^to\s+/,'');
+   return item.replace(/[.,;:!?(){}]+/g,' ').replace(/\s+/g,' ').trim();
   }).filter(Boolean);
-  return [...new Set(normalized)].sort().join(' | ');
+  return (verbList?'verb:':'nonverb:')+[...new Set(normalized)].sort().join(' | ');
  };
  // Small exact synonym groups; no token-overlap or stemming heuristics.
  const synonymGroups=[
