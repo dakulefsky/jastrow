@@ -219,7 +219,7 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
    limitations:'Lexical overlap is only a review hint. Shared terms can represent distinct senses; grammatical labels and source context require manual review.',
    ambiguityFlags:'Exact alternative matches are flagged when the same source pair and exact alternative recur across multiple source senses or explicit grammatical labels. These are not auto-approved.'
   },
-  totals:{sourceEntries:entries.length,jastrowEntries:jastrow.length,krupnikEntries:krupnik.length,jastrowEntriesWithReaderPhrases:[...phrasesByRef.values()].filter(x=>x.length).length,sharedHeadwordRecordPairs:matchedRecordPairs.size,jastrowHeadwordIndexAssociations:[...byForm.values()].reduce((n,a)=>n+a.length,0),candidates:list.length},
+  totals:{sourceEntries:entries.length,jastrowEntries:jastrow.length,krupnikEntries:krupnik.length,jastrowEntriesWithReaderPhrases:[...phrasesByRef.values()].filter(x=>x.length).length,sharedHeadwordRecordPairs:matchedRecordPairs.size,jastrowHeadwordIndexAssociations:[...byForm.values()].reduce((n,a)=>n+a.length,0),candidates:list.length,exactAlternativeCandidates:list.filter(x=>(x.exactAlternativeMatches||[]).length).length,runtimeRuleHandledCandidates:list.filter(x=>x.reviewStatus==='handled-by-runtime-rule').length,ambiguityFlaggedExactCandidates:list.filter(x=>(x.exactAlternativeMatches||[]).length&&x.reviewFlags.length).length,nonExactSemanticCandidates:list.filter(x=>!(x.exactAlternativeMatches||[]).length).length},
   candidates:list
  };
  const output=path.join(__dirname,'meaning-consolidation-candidates.json');
@@ -230,7 +230,9 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
   '- Jastrow entries with reader-extracted meanings: '+report.totals.jastrowEntriesWithReaderPhrases,
   '- Krupnik entries: '+report.totals.krupnikEntries,
   '- Candidate gloss pairs requiring human review: '+list.length,
-  '- Exact alternative matches flagged for ambiguity: '+list.filter(x=>x.exactAlternativeMatch&&x.reviewFlags.length).length,
+  '- Exact alternative candidates handled by the guarded runtime rule: '+report.totals.runtimeRuleHandledCandidates,
+  '- Exact alternative candidates flagged for manual ambiguity review: '+report.totals.ambiguityFlaggedExactCandidates,
+  '- Non-exact semantic candidates still requiring human review: '+report.totals.nonExactSemanticCandidates,
   '',
   'This is a discovery queue only. Nothing is automatically merged or approved.',
   '',
