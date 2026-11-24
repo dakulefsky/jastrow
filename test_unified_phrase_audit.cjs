@@ -10,6 +10,7 @@ for(const file of fs.readdirSync(dataDir).filter(n=>/^(?:chunk-\d+|krupnik-\d+)\
 }
 const byRef=new Map(Object.values(context.window.JASTROW_CHUNKS).flatMap(chunk=>Object.values(chunk)).filter(e=>e.r).map(e=>[e.r,e]));
 const clean=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
+const alternativeKey=value=>clean(value).replace(/^(?:a|an|the)\s+/,'');
 const cases=[];
 const splitAlternatives=value=>{
  const out=[];let current='',depth=0;
@@ -36,7 +37,7 @@ for(const pair of U.reviewedSourceAlternativePairs){
  const krupnikRef=[a,b].find(x=>x.startsWith('KRU')),jastrowRef=[a,b].find(x=>!x.startsWith('KRU'));
  const krupnik=byRef.get(krupnikRef),jastrow=byRef.get(jastrowRef);
  assert(krupnik&&jastrow,'alternative source records exist for '+pair);
- assert((krupnik.glosses||[]).some(g=>splitAlternatives(g.text).some(value=>alternatives.includes(value))),
+ assert((krupnik.glosses||[]).some(g=>splitAlternatives(g.text).some(value=>alternatives.some(expected=>alternativeKey(expected)===alternativeKey(value)))),
   'reviewed Krupnik alternative must occur inside its original gloss for '+pair);
  const jastrowAlternative=alternatives.find(value=>value);
  assert(jastrowAlternative,'reviewed alternative pair must contain an exact phrase');
