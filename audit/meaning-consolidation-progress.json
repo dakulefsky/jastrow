@@ -6,12 +6,12 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1249 retained whole-gloss mappings and all 177 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1249 retained whole-gloss mappings and all 192 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
     "reviewedSourceGlossPairCount": 1249,
-    "reviewedSourceAlternativePairCount": 177,
+    "reviewedSourceAlternativePairCount": 192,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 16,
     "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions.",
@@ -1839,8 +1839,8 @@
     "note": "Twenty-five same-sense variants were approved from the next inventory page. The D00017 mapping was checked against the original records: Jastrow's real reader phrase is 'to flow', matching Krupnik sense 1 'to flow'; Krupnik sense 2 'to flow out' remains distinct and is not merged into it."
   },
   "alternativeLevelReview": {
-    "status": "expanded-with-177-source-scoped-alternative-matches",
-    "reviewedSourceAlternativePairs": 177,
+    "status": "expanded-with-192-source-scoped-alternative-matches",
+    "reviewedSourceAlternativePairs": 192,
     "acceptedPairs": [
       [
         "KRU04451",
@@ -3172,6 +3172,127 @@
       "An exact shared alternative merges while an unrelated semicolon-delimited sense remains separate.",
       "One exact phrase shared by multiple distinct Jastrow senses is not used as a bridge.",
       "One Jastrow sense matching two separately listed Krupnik senses is not used as a bridge."
+    ]
+  },
+  "sixthAlternativeReviewedTranche": {
+    "attemptedCandidateRows": 15,
+    "acceptedCandidateRows": 15,
+    "addedUniqueSourceAlternativePairs": 15,
+    "status": "accepted-source-attested-alternative-matches",
+    "rationale": "Reviewed the next 15 straightforward exact-alternative candidates against the actual reader phrase output, source glosses, and same-headword/sense boundaries. Every mapping is scoped to its two source records; unmatched alternatives and semicolon-separated senses remain distinct.",
+    "acceptedPairs": [
+      [
+        "KRU11696",
+        "M01949",
+        "to make poor",
+        "to make poor"
+      ],
+      [
+        "KRU11865",
+        "M02272",
+        "untanned hide",
+        "untanned hide."
+      ],
+      [
+        "KRU11968",
+        "M02465",
+        "real estate",
+        "real estate"
+      ],
+      [
+        "KRU11983",
+        "M02508",
+        "resting place",
+        "resting place"
+      ],
+      [
+        "KRU12131",
+        "M02811",
+        "a faulty version",
+        "a faulty version"
+      ],
+      [
+        "KRU12160",
+        "M02847",
+        "to be rubbed with oil",
+        "to be rubbed with oil"
+      ],
+      [
+        "KRU12188",
+        "M02905",
+        "to take a pledge",
+        "to take a pledge"
+      ],
+      [
+        "KRU12273",
+        "M03063",
+        "sweet taste",
+        "sweet taste"
+      ],
+      [
+        "KRU12300",
+        "M03112",
+        "sustained version",
+        "sustained version"
+      ],
+      [
+        "KRU12316",
+        "N00039",
+        "to come to the surface",
+        "come to the surface"
+      ],
+      [
+        "KRU12358",
+        "N00127",
+        "to get dark",
+        "to get dark"
+      ],
+      [
+        "KRU12377",
+        "N00174",
+        "to bite off",
+        "to bite off."
+      ],
+      [
+        "KRU12413",
+        "N00235",
+        "moving about",
+        "moving about"
+      ],
+      [
+        "KRU12501",
+        "N00390",
+        "boughs of a tree",
+        "boughs of a tree"
+      ],
+      [
+        "KRU12839",
+        "N00979",
+        "wearing shoes",
+        "wearing shoes."
+      ]
+    ],
+    "deferredCandidates": [
+      {
+        "jastrow": "M02528",
+        "krupnik": "KRU11994",
+        "reason": "Jastrow Hifil label; defer for grammatical/voice review."
+      },
+      {
+        "jastrow": "N00308",
+        "krupnik": "KRU12449",
+        "reason": "Krupnik uses parenthetical wording in the candidate alternative; the runtime exact-alternative key does not yet normalize parenthetical punctuation."
+      },
+      {
+        "jastrow": "N00341",
+        "krupnik": "KRU12466",
+        "reason": "Jastrow Afel label; defer for grammatical/voice review."
+      },
+      {
+        "jastrow": "N01011",
+        "krupnik": "KRU12852",
+        "reason": "Next clear candidate; left for the next tranche rather than expanding this batch."
+      }
     ]
   }
 }
