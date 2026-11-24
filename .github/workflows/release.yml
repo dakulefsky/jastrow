@@ -168,6 +168,7 @@ jobs:
           node hebrew/test_quick.cjs
           node hebrew/build-meaning-candidates.cjs
           node hebrew/test_recommendation_refresh.cjs
+          node --check hebrew/plugin/meaning-consolidation.js
           node --check hebrew/plugin/quick-lookup.js
           node --check hebrew/plugin/translation-prefetch.js
           node --check hebrew/plugin/sefaria-offline.js
