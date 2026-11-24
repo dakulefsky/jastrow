@@ -4,9 +4,9 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 505,
+    "reviewedNonIdenticalGlossPairs": 534,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "all 505 retained mappings passed Chromium validation",
+    "realReaderPhraseExtractorAudit": "all 534 retained mappings passed Chromium validation; five attempted mappings were removed because the reader extractor did not emit the proposed Jastrow phrase",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases"
   },
@@ -37,18 +37,39 @@
     "A-entry and D-entry follow-up batches"
   ],
   "nextPhase": {
-    "status": "rebuild-candidate-inventory",
+    "status": "systematic-human-review-of-generated-candidates",
     "rules": [
       "Generate candidates only where Jastrow and Krupnik records share an attested consonantal headword or alias.",
       "Use only phrases emitted by JastrowReadingView.phrases for Jastrow-side meanings.",
       "Compare individual senses, not whole-entry summaries.",
       "Exclude exact-identical glosses already handled by ordinary exact matching.",
       "Record every candidate as pending, accepted, rejected-distinct-sense, or rejected-not-displayed.",
-      "Keep original source references and exact source wording for every decision."
+      "Keep original source references and exact source wording for every decision.",
+      "Candidate discovery uses token overlap only to rank a review queue; it never automatically merges senses."
     ]
   },
   "publishing": {
     "merged": false,
     "published": false
+  },
+  "candidateInventory": {
+    "generator": "audit/build-meaning-candidates.cjs",
+    "workflow": "Build cross-dictionary synonym review inventory",
+    "runId": 45341044818,
+    "artifactId": 14896630080,
+    "candidateGlossPairs": 9771,
+    "sourceEntries": 47919,
+    "jastrowEntries": 32508,
+    "krupnikEntries": 15407,
+    "jastrowEntriesWithReaderPhrases": 19341,
+    "status": "generated; candidates remain pending human review",
+    "note": "The first full-corpus run used the real reader phrase extractor and original Krupnik glosses. It is a discovery queue, not an equivalence certification."
+  },
+  "reviewedTranche": {
+    "addedUniqueSourceGlossPairs": 29,
+    "attemptedRows": 58,
+    "rejectedNotDisplayed": 5,
+    "currentTotal": 534,
+    "note": "Only pairs retained after real-reader phrase validation are counted. Exact source wording and record references remain in plugin/unified-view.js."
   }
 }
