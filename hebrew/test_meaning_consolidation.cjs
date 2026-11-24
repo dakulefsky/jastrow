@@ -29,6 +29,7 @@ const reorderedHebrew=merge([{word:'בדיקה',records:[
 ]}],'בדיקה');
 assert.equal(reorderedHebrew.length,1,'the same exact Hebrew alternatives should consolidate when their order and punctuation differ');
 assert.equal(reorderedHebrew[0].items.length,2,'both original Hebrew records must remain available');
+assert.equal(reorderedHebrew[0].text,'בית, ביתו','reordered equivalent Hebrew alternatives should display once in a consolidated list');
 assert.notEqual(ctx.HebrewMeaningConsolidation.canonicalMeaningKey('אח אב'),ctx.HebrewMeaningConsolidation.canonicalMeaningKey('אב אח'),'word order within a Hebrew meaning must remain significant');
 const partialHebrewSense=merge([{word:'בדיקה',records:[
  {word:'א',rid:'KRU9101',parts:[{meaning:'בתנאי',text:'פירוט א',label:''}]},
@@ -57,7 +58,7 @@ const reviewed=merge([{word:'בדיקה',records:[
 ]}],'בדיקה');
 assert.equal(reviewed.length,1,'only an explicitly reviewed source-scoped Hebrew synonym pair should consolidate');
 assert.equal(reviewed[0].items.length,2,'reviewed Hebrew synonym consolidation must preserve both source records');
-assert.equal(reviewed[0].text,'הפסד / אובדן','the consolidated Hebrew gloss should visibly preserve both original synonym forms');
+assert.equal(reviewed[0].text,'הפסד, אובדן','the consolidated Hebrew gloss should visibly preserve both original synonym forms');
 ctx.HebrewMeaningConsolidation.reviewedSynonymPairs.delete(ctx.HebrewMeaningConsolidation.pairKey(reviewedA,reviewedB));
 function assertReviewedPair(a,b,word,meaningA,meaningB){
  const records=ctx.HEBREW_DICTIONARY.entries.filter(entry=>entry.rid===a||entry.rid===b);
