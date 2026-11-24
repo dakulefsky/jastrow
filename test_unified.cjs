@@ -83,7 +83,7 @@ assert.equal(U.sharesReviewedSynonym('burn','to burn'),false,'noun and infinitiv
 // Alternative-level review: match the shared phrase while retaining
 // comma-listed synonyms in the same sense and Jastrow's semicolon-separated
 // second sense separately.
-assert.equal(U.reviewedSourceAlternativePairs.size,159,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,177,'every source-scoped alternative match must be loaded');
 const alternativeScoped=U.merge([
  {id:301,entry:{h:'גָּנַח',r:'KRU04451',source:'krupnik'},meanings:[{text:'to sigh heavily under an attack of angina pectoris, to expectorate',label:''}]},
  {id:302,entry:{h:'גָּנַח',r:'C01128'},meanings:[
@@ -231,6 +231,22 @@ for(const [kr,jr,kg,jg] of addedEquivalences){
  const glosses=[normalizeReviewed(kg),normalizeReviewed(jg)].sort().join(' | ');
  assert(U.reviewedSourceGlossPairs.has(ids+'::'+glosses),'reviewed mapping missing: '+jr+' / '+kr);
 }
+
+
+const consolidatedTalkVerbs=U.merge([
+ {id:401,entry:{h:'לִמְלֵם',r:'KRU10334',source:'krupnik'},meanings:[{text:'to murmur, to talk against',label:''}]},
+ {id:402,entry:{h:'לִמְלֵם',r:'L00577',source:'jastrow'},meanings:[{text:'to talk against, murmur, sneer',label:''}]}
+],'למלם');
+assert.equal(consolidatedTalkVerbs.length,1,'both individually reviewed talk-verb alternatives should consolidate as one sense');
+assert.equal(consolidatedTalkVerbs[0].sources.length,2,'the consolidated talk-verb sense must retain both dictionary sources');
+assert(consolidatedTalkVerbs[0].text.includes('sneer'),'unmatched synonyms from the original comma-listed sense must remain visible');
+
+const twoLaazSenses=U.merge([
+ {id:403,entry:{h:'לַעַז',r:'KRU10364',source:'krupnik'},meanings:[{text:'foreign tongue, Greek',label:'1'},{text:'evil talk',label:'2'}]},
+ {id:404,entry:{h:'לַעַז',r:'L00604',source:'jastrow'},meanings:[{text:'foreign tongue',label:''},{text:'evil talk, disrepute',label:''}]}
+],'לעז');
+assert.equal(twoLaazSenses.length,2,'two distinct senses in one headword must remain separate');
+assert(twoLaazSenses.every(group=>group.sources.length===2),'each separately consolidated sense must retain both source records');
 
 console.log('PASS: real alternate-headword vowel matches, partial pointing, cantillation, conservative synonym consolidation, complete source references, and distinct stem/qualified senses.');
 assert.equal(U.merge([{id:1,entry:{h:'חוב'},meanings:[{text:'charge',label:''}]},{id:2,entry:{h:'חוב'},meanings:[{text:'charge, accusation',label:''}]}],'חוב').length,2,'a one-word overlap must not erase a distinct qualified sense');
