@@ -35,6 +35,10 @@ assert.equal(S.vowelRank({h:'אֲרַע²',alt:['אַרְעָא']},'אַרְעָ
 assert.equal(S.vowelRank({h:'אִרְעָא'},'אַרְעָא'),2);
 assert.equal(S.vowelRank({h:'ארעא'},'אַרְעָא'),1);
 assert.equal(S.vowelRank({h:'אַרְעָא'},'אַרעא'),0); // Partial supplied pointing.
+assert.equal(U.compatible('בּוּר I','בּוּר²','בור'),false,'explicitly different numbered homonyms must not consolidate');
+assert.equal(U.compatible('בּוּר I','בּוּר','בור'),true,'an unnumbered source counterpart may still be reviewed');
+assert.equal(U.compatible('גֵּו ²','גַּו','גו'),true,'a single numbered source may match an unnumbered counterpart');
+
 assert.equal(S.vowelRank({h:'אַרְעָא'},'אַרְעָ֑א'),0); // Cantillation is not a vowel.
 assert.equal(S.displayHeadword({h:'אִרְעָא',alt:['אַרְעָא']},'אַרְעָא'),'אַרְעָא');
 const records=[{id:1,entry:{h:'אֲרַע²',alt:['אַרְעָא'],source:'krupnik'},meanings:[{text:'land, ground',label:''}]},{id:2,entry:{h:'אַרְעָא',alt:[]},meanings:[{text:'land, earth, ground, field',label:''}]},{id:3,entry:{h:'אִרְעָא',alt:[]},meanings:[{text:'accident, occurrence',label:''}]}];
