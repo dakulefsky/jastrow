@@ -4,13 +4,13 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 770,
+    "reviewedNonIdenticalGlossPairs": 792,
     "reviewedGlossEquivalenceGroups": 38,
     "realReaderPhraseExtractorAudit": "All retained source-scoped mappings are required to pass the Chromium audit against JastrowReadingView.phrases; the previous transcription typo in M01377 was corrected in source data.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1104
+    "reviewedSourceGlossPairCount": 1126
   },
   "historicalCheckpoint": {
     "reportedCompleted": 29,
@@ -65,7 +65,7 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16911,
-    "status": "Awaiting regenerated inventory after the latest two additional source-scoped approvals (the second interrogative phrase from K00789 and the Ayin transliteration pair).",
+    "status": "The refreshed candidate queue is being regenerated after the two interrogative variants, Ayin transliteration pair, and this 22-pair tranche.",
     "note": "Generated from current branch a0c797? inventory artifact belongs to commit 278bbbb010f1aaf83d48479bed7cba5123c706aa. Review queue only: token overlap ranks candidates; no fuzzy automatic merging."
   },
   "reviewedTranche": {
@@ -900,5 +900,145 @@
   "displayConsolidation": {
     "policy": "For a manually reviewed or exact-equivalent group, display the union of unique alternatives from all source glosses, in source order, while retaining complete original source entries in More detail.",
     "synonymSafety": "A curated synonym group may consolidate whole glosses only when every comma/semicolon-separated alternative on both sides belongs to the same curated synonym group; a shared synonym cannot absorb an unrelated extra sense."
+  },
+  "fifthReviewedTranche": {
+    "attemptedRows": 22,
+    "addedUniqueSourceGlossPairs": 22,
+    "currentTotal": 792,
+    "acceptedPairs": [
+      [
+        "KRU09193",
+        "K00352",
+        "of Cyprus",
+        "Cyprus"
+      ],
+      [
+        "KRU11185",
+        "M01077",
+        "a woman’s protest against a marriage contracted during her minority",
+        "a woman’s protest against a marriage contracted during her minority, annulment of marriage"
+      ],
+      [
+        "KRU04347",
+        "C00977",
+        "to dig out, to engrave, to shape",
+        "to dig out, engrave; to shape, form"
+      ],
+      [
+        "KRU09167",
+        "K00309",
+        "the lower part of the winnowing shovel",
+        "receiver, the lower part of the winnowing shovel"
+      ],
+      [
+        "KRU03211",
+        "B01123",
+        "cleaving, cleft, log",
+        "cleaving, cleft; that which is cloven, a log."
+      ],
+      [
+        "KRU03320",
+        "B01236",
+        "to recover, to get strong",
+        "to get well, recover; to be strong"
+      ],
+      [
+        "KRU03732",
+        "C00283",
+        "border of the field, ridge",
+        "border of the field, balk, ridge."
+      ],
+      [
+        "KRU13305",
+        "O00377",
+        "a garment made of goat-skin",
+        "a garment made of goat-skin with the hair on"
+      ],
+      [
+        "KRU15271",
+        "Q00547",
+        "to give leave, to let go",
+        "to dismiss, give leave, let go"
+      ],
+      [
+        "KRU15536",
+        "Q00997",
+        "to vomit, to give out",
+        "to discharge, vomit, give out"
+      ],
+      [
+        "KRU19376",
+        "U01786",
+        "to discharge, to pour out",
+        "to pour out, run, discharge"
+      ],
+      [
+        "KRU03647",
+        "C00205",
+        "heaped (measure)",
+        "liberal, heaped measure"
+      ],
+      [
+        "KRU16876",
+        "S00439",
+        "powdered lime",
+        "powdered lime, plaster"
+      ],
+      [
+        "KRU01348",
+        "A02054",
+        "Roman Emperor",
+        "commander, Roman Emperor"
+      ],
+      [
+        "KRU02106",
+        "A03232",
+        "A perforated vessel, clepsydra",
+        "a perforated vessel"
+      ],
+      [
+        "KRU03082",
+        "B01035",
+        "habitual kicker",
+        "habitual kicker, butting"
+      ],
+      [
+        "KRU03083",
+        "B01037",
+        "to pray, to ask for mercy",
+        "to ask, pray"
+      ],
+      [
+        "KRU03641",
+        "C00198",
+        "incision in the flesh",
+        "incision in the flesh, wounding"
+      ],
+      [
+        "KRU03852",
+        "C00423",
+        "glowing coal",
+        "burning, glowing coal"
+      ],
+      [
+        "KRU03882",
+        "C00455",
+        "to bung, to cork",
+        "to squeeze, cork, bung"
+      ],
+      [
+        "KRU04381",
+        "C01022",
+        "full draught",
+        "quaffing, full draught"
+      ],
+      [
+        "KRU09492",
+        "K00771",
+        "fine cloaks for women",
+        "fine cloaks"
+      ]
+    ],
+    "note": "Twenty-two additional candidate pairs were reviewed. Approvals are restricted to the same definition with spelling, grammatical, or explanatory variants; entries with an extra independent sense remain unmerged."
   }
 }
