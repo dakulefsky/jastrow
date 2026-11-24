@@ -44,15 +44,14 @@
     "A-entry and D-entry follow-up batches"
   ],
   "nextPhase": {
-    "status": "continue-systematic-review-of-regenerated-candidate-inventory",
+    "status": "review-remaining-semantic-candidates-and-expand-hebrew-parity",
     "rules": [
-      "Generate candidates only where Jastrow and Krupnik records share an attested consonantal headword or alias.",
-      "Use only phrases emitted by JastrowReadingView.phrases for Jastrow-side meanings.",
-      "Compare individual senses, not whole-entry summaries.",
-      "Exclude exact-identical glosses already handled by ordinary exact matching.",
-      "Record every candidate as pending, accepted, rejected-distinct-sense, or rejected-not-displayed.",
-      "Keep original source references and exact source wording for every decision.",
-      "Candidate discovery uses token overlap only to rank a review queue; it never automatically merges senses."
+      "Use the generated candidate inventory as a review queue, never as automatic approval.",
+      "Exact alternative matches are consolidated at runtime only when the one-to-one and label/homonym safeguards pass.",
+      "Review ambiguity-flagged exact matches manually before considering any source-scoped mapping.",
+      "Review non-exact overlaps semantically against the original entries; shared words alone are insufficient.",
+      "Keep Hebrew and English behavior aligned while preserving language-specific gloss and label semantics.",
+      "Record decisions and source provenance durably."
     ]
   },
   "publishing": {
@@ -60,18 +59,18 @@
     "published": false
   },
   "candidateInventory": {
-    "generator": "audit/build-meaning-candidates.cjs",
-    "workflow": "Build cross-dictionary synonym review inventory",
-    "runId": 45503180697,
-    "artifactId": 14971901679,
-    "candidateGlossPairs": 4497,
+    "generatedFromCommit": "2816a4e875ad37254f206ff9cca3dfffedeb79ae",
     "sourceEntries": 47919,
     "jastrowEntries": 32508,
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
-    "status": "Reviewed first 21 ranked candidates: 16 accepted, 5 deliberately deferred; refreshing inventory after the new alternative mappings.",
-    "note": "Candidate discovery ranks exact alternative matches first, but each candidate is manually reviewed. No fuzzy automatic merging."
+    "candidates": 4497,
+    "exactAlternativeCandidates": 2685,
+    "exactAlternativeCandidatesWithAmbiguityFlags": 78,
+    "exactAlternativeCandidatesWithoutDirectAmbiguityFlags": 2607,
+    "remainingNonExactCandidates": 1812,
+    "note": "Counts are discovery statistics, not accepted semantic equivalence decisions. Runtime matching applies additional one-to-one sense guards."
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -3156,6 +3155,23 @@
         "krupnik": "KRU09891",
         "reason": "Jastrow marks the form Hifil; defer pending grammatical equivalence review."
       }
+    ]
+  },
+  "runtimeExactAlternativeMatching": {
+    "status": "implemented-and-regression-tested",
+    "policy": "At lookup time, Jastrow and Krupnik sense segments may consolidate when they contain an exactly identical comma/semicolon-delimited alternative, the headwords are compatible (including explicit homonym-number protection), and explicit grammatical labels do not conflict.",
+    "safeguards": [
+      "Only cross-dictionary source pairs are considered.",
+      "Semicolon-delimited senses are evaluated separately.",
+      "A source sense cannot bridge multiple distinct counterpart senses.",
+      "An exact alternative repeated across multiple senses in the same source pair is rejected as ambiguous.",
+      "Conflicting explicit grammatical labels are rejected.",
+      "The original full source wording remains available in the consolidated result."
+    ],
+    "tests": [
+      "An exact shared alternative merges while an unrelated semicolon-delimited sense remains separate.",
+      "One exact phrase shared by multiple distinct Jastrow senses is not used as a bridge.",
+      "One Jastrow sense matching two separately listed Krupnik senses is not used as a bridge."
     ]
   }
 }
