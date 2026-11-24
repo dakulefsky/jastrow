@@ -4,7 +4,7 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 728,
+    "reviewedNonIdenticalGlossPairs": 768,
     "reviewedGlossEquivalenceGroups": 38,
     "realReaderPhraseExtractorAudit": "All retained source-scoped mappings are required to pass the Chromium audit against JastrowReadingView.phrases; the previous transcription typo in M01377 was corrected in source data.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
@@ -64,7 +64,7 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16911,
-    "status": "regenerated after the 74 candidate rows reviewed in the two latest tranches; 4,737 conservative candidate gloss pairs remain pending human review",
+    "status": "The 4,737-row inventory was regenerated after the previous 74 reviewed rows; the next validation run will regenerate it after this third 40-row tranche.",
     "note": "Generated from current branch a0c797? inventory artifact belongs to commit 278bbbb010f1aaf83d48479bed7cba5123c706aa. Review queue only: token overlap ranks candidates; no fuzzy automatic merging."
   },
   "reviewedTranche": {
@@ -606,5 +606,252 @@
       ]
     ],
     "note": "A second 46-row high-confidence tranche was reviewed against source glosses and the real reader phrases. Twenty-six added new unique normalized source-scoped equivalences; twenty were already covered by canonicalized mappings. The remaining distinct senses and grammatical/semantic scope differences were not merged."
+  },
+  "thirdReviewedTranche": {
+    "attemptedRows": 40,
+    "addedUniqueSourceGlossPairs": 40,
+    "acceptedPairs": [
+      [
+        "KRU04498",
+        "C01187",
+        "roaring, crying",
+        "roaring, crying in agony"
+      ],
+      [
+        "KRU04774",
+        "D00108",
+        "to put up a flag",
+        "to put up a flag, to signalize"
+      ],
+      [
+        "KRU04953",
+        "D00363",
+        "present, gift",
+        "present, honorary gift"
+      ],
+      [
+        "KRU05244",
+        "D00741",
+        "removal of ashes",
+        "removal of ashes, cleaning"
+      ],
+      [
+        "KRU05314",
+        "D00833",
+        "sparsely planted",
+        "thin, sparsely planted"
+      ],
+      [
+        "KRU05517",
+        "D01078",
+        "to scatter, to winnow",
+        "to scatter, strew; to winnow"
+      ],
+      [
+        "KRU06195",
+        "F00083",
+        "rose-colored wool",
+        "rose-colored, red wool"
+      ],
+      [
+        "KRU06284",
+        "G00145",
+        "to remove, to shake",
+        "to move, shake; to remove."
+      ],
+      [
+        "KRU08318",
+        "I00849",
+        "worker in copper",
+        "worker in copper, bronze"
+      ],
+      [
+        "KRU08375",
+        "J00013",
+        "right, nice",
+        "fitting, right, nice"
+      ],
+      [
+        "KRU08593",
+        "J00287",
+        "single, lonely",
+        "singular, single, lonely"
+      ],
+      [
+        "KRU08889",
+        "J00681",
+        "inhabited land",
+        "settlement, inhabited land"
+      ],
+      [
+        "KRU09098",
+        "K00243",
+        "to scald, to cauterize",
+        "to sear, cauterize; to scald"
+      ],
+      [
+        "KRU09573",
+        "K00860",
+        "to grow smaller",
+        "to grow smaller, to contract"
+      ],
+      [
+        "KRU09573",
+        "K00860",
+        "to form a recess in a wall",
+        "to form a recess"
+      ],
+      [
+        "KRU09602",
+        "K00906",
+        "with a deformed hip",
+        "an animal with a deformed hip"
+      ],
+      [
+        "KRU09762",
+        "K01117",
+        "priestly division",
+        "band, priestly division"
+      ],
+      [
+        "KRU09827",
+        "K01227",
+        "a fenced in plantation",
+        "a plantation fenced in from all sides"
+      ],
+      [
+        "KRU09881",
+        "K01325",
+        "to grow better",
+        "to grow better, improve"
+      ],
+      [
+        "KRU09896",
+        "K01347",
+        "Biblical verse",
+        "Biblical verse, passage"
+      ],
+      [
+        "KRU09989",
+        "L00061",
+        "edge, rim",
+        "vertical rim, edge"
+      ],
+      [
+        "KRU09985",
+        "L00411",
+        "fanning a flame",
+        "blowing, fanning a flame"
+      ],
+      [
+        "KRU10294",
+        "L00548",
+        "to mix, to beat",
+        "to mix thoroughly, to beat"
+      ],
+      [
+        "KRU10423",
+        "L00690",
+        "harvesting, picking",
+        "picking, collecting, harvesting."
+      ],
+      [
+        "KRU10429",
+        "L00696",
+        "a small coin",
+        "a very small copper coin"
+      ],
+      [
+        "KRU10473",
+        "M00015",
+        "opening, window",
+        "light-hole, opening, window."
+      ],
+      [
+        "KRU10565",
+        "M00113",
+        "to dissolve, to steep",
+        "to soften, dissolve, steep"
+      ],
+      [
+        "KRU10781",
+        "M00442",
+        "leaves of onions",
+        "leaves of onions, leek"
+      ],
+      [
+        "KRU10791",
+        "M00461",
+        "the right conduct",
+        "the better, the right conduct"
+      ],
+      [
+        "KRU10822",
+        "M00505",
+        "stuffed meat",
+        "stuffing, stuffed meat"
+      ],
+      [
+        "KRU10875",
+        "M00582",
+        "hot spring",
+        "the hot spring of Tiberias"
+      ],
+      [
+        "KRU11058",
+        "M00877",
+        "blotting out",
+        "rubbing, blotting out"
+      ],
+      [
+        "KRU11169",
+        "M01058",
+        "capital, metropolis",
+        "metropolis, capital; city"
+      ],
+      [
+        "KRU11240",
+        "M01149",
+        "reduction to poverty",
+        "decline, reduction to poverty"
+      ],
+      [
+        "KRU11800",
+        "M02148",
+        "handle of the plough",
+        "handle of the plough; coulter"
+      ],
+      [
+        "KRU12296",
+        "M03105",
+        "firm solution",
+        "a firm, decided solution"
+      ],
+      [
+        "KRU12324",
+        "N00056",
+        "mean person",
+        "mean person, scamp."
+      ],
+      [
+        "KRU12403",
+        "N00219",
+        "dowry, a bride’s outfit",
+        "a bride’s outfit"
+      ],
+      [
+        "KRU12425",
+        "N00261",
+        "granted, admitted",
+        "let it be, granted, admitted"
+      ],
+      [
+        "KRU12466",
+        "N00341",
+        "to be laid down",
+        "to be laid down, placed"
+      ]
+    ],
+    "note": "Forty additional high-confidence candidate pairs were reviewed individually against the exact Jastrow and Krupnik glosses. Distinct extra senses, homographs, and grammatical contrasts were not approved. Real-reader phrase and source validation are running."
   }
 }
