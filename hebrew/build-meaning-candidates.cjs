@@ -24,6 +24,8 @@ const vowelCompatible=(a,b)=>{
  return true;
 };
 const headwordCompatible=(a,b)=>[a.word,...(a.alt||[])].some(x=>[b.word,...(b.alt||[])].some(y=>normalize(x)===normalize(y)&&vowelCompatible(x,y)));
+if(vowelCompatible('כָּבַשׁ','כְּבַשׁ'))throw new Error('Candidate inventory must reject conflicting pointed Hebrew readings');
+if(!vowelCompatible('כבש','כָּבַשׁ'))throw new Error('Unpointed headwords must remain eligible for review');
 const clean=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[^a-z0-9' -]/g,' ').replace(/\s+/g,' ').trim();
 const stop=new Set('a an the to of for in on with from by as and or is be are was were being been it this that these those one some any all which who what where when into unto over under without before after during through'.split(' '));
 const tokens=value=>[...new Set(clean(value).split(' ').filter(t=>t.length>=3&&!stop.has(t)))];
