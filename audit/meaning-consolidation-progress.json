@@ -9,7 +9,8 @@
     "realReaderPhraseExtractorAudit": "All retained source-scoped mappings are required to pass the Chromium audit against JastrowReadingView.phrases; the previous transcription typo in M01377 was corrected in source data.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
-    "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant."
+    "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
+    "reviewedSourceGlossPairCount": 1104
   },
   "historicalCheckpoint": {
     "reportedCompleted": 29,
@@ -64,14 +65,14 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16911,
-    "status": "The 4,737-row inventory was regenerated after the previous 74 reviewed rows; the next validation run will regenerate it after this third 40-row tranche.",
+    "status": "Awaiting regenerated inventory after the latest two additional source-scoped approvals (the second interrogative phrase from K00789 and the Ayin transliteration pair).",
     "note": "Generated from current branch a0c797? inventory artifact belongs to commit 278bbbb010f1aaf83d48479bed7cba5123c706aa. Review queue only: token overlap ranks candidates; no fuzzy automatic merging."
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
     "attemptedRows": 28,
     "rejectedNotDisplayed": 0,
-    "currentTotal": 769,
+    "currentTotal": 703,
     "acceptedPairs": [
       [
         "KRU08934",
@@ -611,7 +612,8 @@
         "general rule, principle"
       ]
     ],
-    "note": "A second 46-row high-confidence tranche was reviewed against source glosses and the real reader phrases. Twenty-six added new unique normalized source-scoped equivalences; twenty were already covered by canonicalized mappings. The remaining distinct senses and grammatical/semantic scope differences were not merged."
+    "note": "A second 46-row high-confidence tranche was reviewed against source glosses and the real reader phrases. Twenty-six added new unique normalized source-scoped equivalences; twenty were already covered by canonicalized mappings. The remaining distinct senses and grammatical/semantic scope differences were not merged.",
+    "currentTotal": 729
   },
   "thirdReviewedTranche": {
     "attemptedRows": 40,
@@ -858,7 +860,8 @@
         "to be laid down, placed"
       ]
     ],
-    "note": "Forty additional high-confidence candidate pairs were reviewed individually against the exact Jastrow and Krupnik glosses. Distinct extra senses, homographs, and grammatical contrasts were not approved. Real-reader phrase and source validation are running."
+    "note": "Forty additional high-confidence candidate pairs were reviewed individually against the exact Jastrow and Krupnik glosses. Distinct extra senses, homographs, and grammatical contrasts were not approved. Real-reader phrase and source validation are running.",
+    "currentTotal": 769
   },
   "fourthReviewedTranche": {
     "attemptedRows": 1,
@@ -871,6 +874,31 @@
         "the letter ʿAyin"
       ]
     ],
-    "note": "Approved exact same letter-name gloss with a transliteration/diacritic spelling variant. This is a source-scoped match, not a global text heuristic."
+    "note": "Approved exact same letter-name gloss with a transliteration/diacritic spelling variant. This is a source-scoped match, not a global text heuristic.",
+    "currentTotal": 770
+  },
+  "hebrewReview": {
+    "reviewedSourceScopedSynonymPairs": 11,
+    "newlyApprovedPair": [
+      "KRU02736",
+      "KRU02892",
+      "מקום הבליעה בגרון",
+      "פנים הגרון"
+    ],
+    "candidateQueue": {
+      "candidates": 634,
+      "evidenceCounts": {
+        "exact-gloss": 1,
+        "shared-content-terms": 14,
+        "different-glosses": 312,
+        "missing-gloss": 307
+      },
+      "ranking": "exact English glosses first, then shared content-term evidence, then different or missing English glosses; this is prioritization only and does not approve merges"
+    },
+    "note": "Hebrew definitions remain authoritative. One same-sense Hebrew pair for the gullet was approved; candidates with extra distinct senses, homographs, or conflicting grammatical voice were left separate."
+  },
+  "displayConsolidation": {
+    "policy": "For a manually reviewed or exact-equivalent group, display the union of unique alternatives from all source glosses, in source order, while retaining complete original source entries in More detail.",
+    "synonymSafety": "A curated synonym group may consolidate whole glosses only when every comma/semicolon-separated alternative on both sides belongs to the same curated synonym group; a shared synonym cannot absorb an unrelated extra sense."
   }
 }
