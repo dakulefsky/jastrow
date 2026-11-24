@@ -1353,7 +1353,7 @@
       [
         "KRU03562",
         "C00096",
-        "the camels) hump",
+        "the camel's hump",
         "hump."
       ],
       [
@@ -1660,5 +1660,14 @@
       ]
     ],
     "note": "Twenty-five straightforward lexical or explanatory equivalents were approved from the next inventory page; all matches are scoped to the exact source records and exact displayed glosses."
-  }
+  },
+  "dataCorrections": [
+    {
+      "source": "KRU03562",
+      "file": "plugin/data/krupnik-1006.js",
+      "before": "the camels) hump",
+      "after": "the camel's hump",
+      "reason": "The source Hebrew gloss חטוטרת means hump; the parenthetical English gloss clearly intended 'the camel's hump'. Corrected both the structured gloss and HTML source text."
+    }
+  ]
 }
