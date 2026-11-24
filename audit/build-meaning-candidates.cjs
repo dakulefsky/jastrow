@@ -21,6 +21,9 @@ const tokens=value=>[...new Set(clean(value).replace(/[^a-z0-9' -]/g,' ').split(
 const stem=label=>clean(String(label||'').replace(/^[—\s]*\d+[).]?\s*/,'').replace(/\s+\d+[).]?\s*$/,''));
 const sharedForms=(a,b)=>{const left=[a.h,...(a.alt||[])],right=[b.h,...(b.alt||[])],forms=[];for(const x of left)for(const y of right)if(S.normalize(x)===S.normalize(y)&&S.vowelRank({h:x},y)!==2)forms.push(S.normalize(x));return [...new Set(forms)];};
 const voice=value=>/^to\s+be\s+/i.test(clean(value))?'passive':'active';
+const samePartOfSpeech=(a,b)=>/^to\\s+/i.test(clean(a))===/^to\\s+/i.test(clean(b));
+if(samePartOfSpeech('to lament','lament'))throw new Error('Candidate queue must preserve verb/noun distinctions');
+if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speech synonyms should remain reviewable');
 (async()=>{
  const browser=await chromium.launch({executablePath,args:['--no-sandbox']});
  let phrasesByRef=new Map();
@@ -51,6 +54,7 @@ const voice=value=>/^to\s+be\s+/i.test(clean(value))?'passive':'active';
     const jt=tokens(jp.text),kt=tokens(kg.text);
     if(!jt.length||!kt.length||clean(jp.text)===clean(kg.text))continue;
     if(stem(jp.label)&&stem(kg.label)&&stem(jp.label)!==stem(kg.label))continue;
+    if(!samePartOfSpeech(jp.text,kg.text))continue;
     if(/^to\s+/i.test(clean(jp.text))&&/^to\s+/i.test(clean(kg.text))&&voice(jp.text)!==voice(kg.text))continue;
     const overlap=jt.filter(t=>kt.includes(t));
     if(!overlap.length)continue;
@@ -83,7 +87,7 @@ const voice=value=>/^to\s+be\s+/i.test(clean(value))?'passive':'active';
    headwordMatching:'Jastrow Search.normalize across primary and alternate headword spellings',
    jastrowMeanings:'JastrowReadingView.phrases, the actual reader extractor',
    krupnikMeanings:'Original Krupnik gloss records',
-   candidateRule:'At least one shared content token and overlap coefficient >= 0.5; pointed-headword conflicts, explicit grammatical-label conflicts, and active/passive infinitive mismatches are excluded; already-reviewed pairs are excluded; no automatic merging',
+   candidateRule:'At least one shared content token and overlap coefficient >= 0.5; pointed-headword conflicts, explicit label conflicts, verb/noun mismatches, and active/passive infinitive mismatches are excluded; already-reviewed pairs are excluded; no automatic merging',
    limitations:'Lexical overlap is only a review hint. Shared terms can represent distinct senses; grammatical labels and source context require manual review.'
   },
   totals:{sourceEntries:entries.length,jastrowEntries:jastrow.length,krupnikEntries:krupnik.length,jastrowEntriesWithReaderPhrases:[...phrasesByRef.values()].filter(x=>x.length).length,sharedHeadwordRecordPairs:matchedRecordPairs.size,jastrowHeadwordIndexAssociations:[...byForm.values()].reduce((n,a)=>n+a.length,0),candidates:list.length},
