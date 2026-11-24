@@ -883,7 +883,22 @@
   ["KRU11959","M02452","Biblical verse","Biblical verse, text"],
   ["KRU11990","M02522","pearl; jewel","gem, jewel, pearl"],
   ["KRU11996","M02540","baker’s shovel","baker’s shovel, peel"],
-  ["KRU12059","M02677","a tool for crushing bones","a tool for crushing"]
+  ["KRU12059","M02677","a tool for crushing bones","a tool for crushing"],
+  ["KRU14281","P00361","fine rain","fine rain, drizzle"],
+  ["KRU14434","P00611","chorus of lamentation","chorus of lamentation, dirge"],
+  ["KRU14464","P00660","tearing loose","uprooting, tearing loose"],
+  ["KRU14480","P00683","pouring from vessel to vessel","pouring from vessel to vessel, emptying"],
+  ["KRU14728","P01119","an earthen vessel","a common earthen vessel"],
+  ["KRU14811","P01287","mixed multitude","mixed multitude, rabble"],
+  ["KRU14874","P01388","the condition of one not circumcised","uncircumcision, the condition of one not circumcised"],
+  ["KRU14915","P01456","protest, claim","protest, objection, claim"],
+  ["KRU15098","Q00258","money-bag, belt","money-bag, hollow belt."],
+  ["KRU15198","Q00426","rash, overhasty","rash, overhasty, impetuous"],
+  ["KRU15353","Q00676","public show","display, public show"],
+  ["KRU15393","Q00751","separation, interruption","separation, interruption, pause"],
+  ["KRU15468","Q00879","stretching forth","spreading, stretching forth"],
+  ["KRU15536","Q00997","to tear off","to tear off, detach"],
+  ["KRU15559","Q01045","sheet, blanket","sheet, blanket; mantle"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  function reviewedEquivalent(source,item){
   if(!compatible(source.spelling,item.spelling))return false;
