@@ -4,7 +4,7 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 534,
+    "reviewedNonIdenticalGlossPairs": 539,
     "reviewedGlossEquivalenceGroups": 38,
     "realReaderPhraseExtractorAudit": "all 534 retained mappings passed Chromium validation; five attempted mappings were removed because the reader extractor did not emit the proposed Jastrow phrase",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
@@ -66,10 +66,10 @@
     "note": "The first full-corpus run used the real reader phrase extractor and original Krupnik glosses. It is a discovery queue, not an equivalence certification."
   },
   "reviewedTranche": {
-    "addedUniqueSourceGlossPairs": 29,
+    "addedUniqueSourceGlossPairs": 34,
     "attemptedRows": 58,
     "rejectedNotDisplayed": 5,
-    "currentTotal": 534,
-    "note": "Only pairs retained after real-reader phrase validation are counted. Exact source wording and record references remain in plugin/unified-view.js."
+    "currentTotal": 539,
+    "note": "The first candidate tranche added 34 unique source-pair mappings. Five attempted candidate rows were excluded because the real reader phrase extractor did not emit the proposed Jastrow phrase; those exclusions did not reduce the unique mapping count because they were duplicates or non-counted proposals."
   }
 }
