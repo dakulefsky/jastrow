@@ -1745,13 +1745,20 @@
   return out;
  };
  function meaningBuckets(ref,meaning,dynamicPairsByRef){
-  // The reader supplies one meaning object per source phrase. Keep every
-  // alternative within that phrase together; punctuation inside the phrase
-  // is not a reliable substitute for the reader's actual sense boundaries.
-  const mappings=[...(alternativePairsByRef.get(ref)||[]),...(dynamicPairsByRef?.get(ref)||[])];
-  const alternatives=glossAlternatives(meaning.text);
-  const bucketKeys=mappings.filter(mapping=>alternatives.some(value=>mapping.exact?clean(value)===clean(mapping.own):alternativeKey(value)===alternativeKey(mapping.own))).map(mapping=>mapping.key);
-  return [{text:meaning.text,bucketKeys:[...new Set(bucketKeys)],bucketId:bucketKeys.length?'reviewed-alternative-phrase':null}];
+  const segments=senseSegments(meaning.text),mappings=[...(alternativePairsByRef.get(ref)||[]),...(dynamicPairsByRef?.get(ref)||[])];
+  const buckets=segments.map((segment,index)=>{
+   const alternatives=glossAlternatives(segment);
+   const bucketKeys=[...new Set(mappings.filter(mapping=>alternatives.some(value=>mapping.exact?clean(value)===clean(mapping.own):alternativeKey(value)===alternativeKey(mapping.own))).map(mapping=>mapping.key))];
+   return {text:segment,bucketKeys,bucketId:bucketKeys.length?'reviewed-alternative-segment':'unmatched-segment:'+ref+':'+clean(meaning.label)+':'+index};
+  });
+  // Split semicolon segments only when every segment has its own distinct
+  // source-attested match. If only part of a phrase matches, keep unmatched
+  // wording attached to the original sense rather than guessing.
+  const allMapped=buckets.length>1&&buckets.every(bucket=>bucket.bucketKeys.length);
+  const disjoint=allMapped&&buckets.every((bucket,index)=>buckets.slice(0,index).every(other=>!bucket.bucketKeys.some(key=>other.bucketKeys.includes(key))));
+  if(disjoint)return buckets;
+  const bucketKeys=[...new Set(buckets.flatMap(bucket=>bucket.bucketKeys))];
+  return [{text:meaning.text,bucketKeys,bucketId:bucketKeys.length?'reviewed-alternative-phrase':null}];
  }
  function reviewedEquivalent(source,item){
   if(!compatible(source.spelling,item.spelling))return false;
@@ -1789,9 +1796,11 @@
    if(!compatible(k.spelling,jastrow.spelling,word))continue;
    for(const jm of jastrow.meanings)for(const km of k.meanings){
     if(!compatibleForm(stem(jm.label),stem(km.label)))continue;
-    const jSegment=jm.text,kSegment=km.text;
-    const jSegmentId=[jastrow.entry.r,clean(jm.text),stem(jm.label),clean(jm.section)].join('::');
-    const kSegmentId=[k.entry.r,clean(km.text),stem(km.label)].join('::');
+    const jSegments=senseSegments(jm.text),kSegments=senseSegments(km.text);
+    for(let ji=0;ji<jSegments.length;ji++)for(let ki=0;ki<kSegments.length;ki++){
+     const jSegment=jSegments[ji],kSegment=kSegments[ki];
+     const jSegmentId=[jastrow.entry.r,clean(jm.text),stem(jm.label),clean(jm.section),ji,clean(jSegment)].join('::');
+     const kSegmentId=[k.entry.r,clean(km.text),stem(km.label),ki,clean(kSegment)].join('::');
      for(const ja of glossAlternatives(jSegment))for(const ka of glossAlternatives(kSegment)){
       const jAlt=clean(ja),kAlt=clean(ka);
       if(!jAlt||jAlt!==kAlt||/^to\s+/i.test(jAlt)!==/^to\s+/i.test(kAlt))continue;
