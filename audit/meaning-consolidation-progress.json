@@ -12,7 +12,9 @@
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
     "reviewedSourceGlossPairCount": 1249,
     "reviewedSourceAlternativePairCount": 1,
-    "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording."
+    "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
+    "curatedSynonymGroups": 16,
+    "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions."
   },
   "historicalCheckpoint": {
     "reportedCompleted": 29,
@@ -1854,6 +1856,161 @@
       "Unmatched alternatives remain separate results.",
       "Original complete source gloss is preserved in More detail.",
       "Every Jastrow phrase is checked against the real Chromium reader extractor."
+    ]
+  },
+  "synonymGroupReview": {
+    "status": "expanded-with-source-attested-groups",
+    "groupCount": 16,
+    "newlyAdded": [
+      {
+        "terms": [
+          "heap",
+          "pile",
+          "mound"
+        ],
+        "sources": [
+          "KRU03599",
+          "C00144"
+        ]
+      },
+      {
+        "terms": [
+          "present",
+          "gift"
+        ],
+        "sources": [
+          "KRU04953",
+          "D00363"
+        ]
+      },
+      {
+        "terms": [
+          "sediment",
+          "lees",
+          "dregs"
+        ],
+        "sources": [
+          "KRU04950",
+          "D00357"
+        ]
+      },
+      {
+        "terms": [
+          "to frighten",
+          "to scare"
+        ],
+        "sources": [
+          "KRU04994",
+          "D00411"
+        ]
+      },
+      {
+        "terms": [
+          "to dwell",
+          "to reside"
+        ],
+        "sources": [
+          "KRU04941",
+          "D00341"
+        ]
+      },
+      {
+        "terms": [
+          "edge",
+          "rim"
+        ],
+        "sources": [
+          "KRU09989",
+          "L00061"
+        ]
+      },
+      {
+        "terms": [
+          "capital",
+          "metropolis"
+        ],
+        "sources": [
+          "KRU11169",
+          "M01058"
+        ]
+      },
+      {
+        "terms": [
+          "gathering",
+          "assembly"
+        ],
+        "sources": [
+          "KRU01598",
+          "A02444"
+        ]
+      },
+      {
+        "terms": [
+          "deity",
+          "divinity"
+        ],
+        "sources": [
+          "KRU01183",
+          "A01787"
+        ]
+      },
+      {
+        "terms": [
+          "strength",
+          "force"
+        ],
+        "sources": [
+          "KRU01222",
+          "A01866"
+        ]
+      },
+      {
+        "terms": [
+          "to glue",
+          "to paste"
+        ],
+        "sources": [
+          "KRU04747",
+          "D00073"
+        ]
+      },
+      {
+        "terms": [
+          "glue",
+          "paste"
+        ],
+        "sources": [
+          "KRU04748",
+          "D00074"
+        ]
+      },
+      {
+        "terms": [
+          "to grow better",
+          "to improve"
+        ],
+        "sources": [
+          "KRU09881",
+          "K01325"
+        ]
+      },
+      {
+        "terms": [
+          "to set on fire",
+          "to burn"
+        ],
+        "sources": [
+          "KRU08802",
+          "J00557"
+        ]
+      }
+    ],
+    "safeguards": [
+      "No token-overlap matching.",
+      "Headword compatibility is still required by the merge layer.",
+      "All alternatives in both glosses must belong to the same curated synonym group.",
+      "Coordinated infinitive markers are normalized only when the first alternative is an infinitive.",
+      "Noun/verb mismatch regression tests included."
     ]
   }
 }
