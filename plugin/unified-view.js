@@ -21,7 +21,7 @@
   return out;
  };
  const parts=text=>glossAlternatives(text).map(clean).filter(Boolean);
- const alternativeKey=text=>clean(text).replace(/^(?:a|an|the)\s+/,'');
+ const alternativeKey=text=>clean(text).replace(/^(?:a|an|the)\s+/,'').replace(/^to\s+/,'');
  // Canonicalize formatting variants of a complete gloss list. Alternatives
  // may be reordered; word order within each alternative remains significant.
  // Parenthetical explanations stay attached to their phrase. The first "to"
@@ -1587,6 +1587,7 @@
  function sameMeaning(group,item,word){
   const itemForm=stem(item.meaning.label);
   if(!compatibleForm(group.form,itemForm)||!group.sources.every(s=>compatible(s.spelling,item.spelling,word)))return false;
+  if(group.bucketId&&item.bucketId&&group.bucketId===item.bucketId)return true;
   return canonicalGlossKey(group.text)===canonicalGlossKey(item.meaning.text)||
    synonymKey(group.text)===synonymKey(item.meaning.text)||
    sharesReviewedSynonym(group.text,item.meaning.text)||
@@ -1600,13 +1601,16 @@
    for(const bucket of meaningBuckets(entry.r,meaning)){
     const item={...sourceItem,sourceMeaning:meaning,meaning:{...meaning,text:bucket.text},bucketId:bucket.bucketId};
     let group=groups.find(g=>sameMeaning(g,item,word));
-    if(!group){group={text:bucket.text,form:stem(meaning.label),spelling,sources:[],displayAlternatives:[],rank:S.vowelRank(entry,matchingWord)};groups.push(group);}
+    if(!group){group={text:bucket.text,form:stem(meaning.label),spelling,sources:[],displayAlternatives:[],bucketId:bucket.bucketId,rank:S.vowelRank(entry,matchingWord)};groups.push(group);}
     if(!group.form)group.form=stem(meaning.label);
     const rank=S.vowelRank(entry,matchingWord);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
     if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label)))group.sources.push(sourceItem);
     for(const alternative of glossAlternatives(bucket.text)){
-     const key=alternativeKey(alternative);
-     if(key&&!group.displayAlternatives.some(value=>alternativeKey(value)===key))group.displayAlternatives.push(alternative);
+     const scoped=String(group.bucketId||'').startsWith('reviewed-alternative:');
+     const key=scoped?alternativeKey(alternative):clean(alternative).replace(/^(?:a|an|the)\s+/,'');
+     const index=group.displayAlternatives.findIndex(value=>(scoped?alternativeKey(value):clean(value).replace(/^(?:a|an|the)\s+/,''))===key);
+     if(index<0)group.displayAlternatives.push(alternative);
+     else if(scoped&&/^to\s+/.test(alternative)&&!/^to\s+/.test(group.displayAlternatives[index]))group.displayAlternatives[index]=alternative;
     }
     group.text=group.displayAlternatives.join(', ');
    }
