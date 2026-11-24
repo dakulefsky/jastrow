@@ -47,6 +47,20 @@ for(const entry of dictionary.entries)for(const word of [entry.word,...(entry.al
  if(!byWord.has(key))byWord.set(key,new Map());
  byWord.get(key).set(entry.rid,entry);
 }
+const englishEvidence=(a,b,overlap,jaccard)=>{
+ const ea=clean(a),eb=clean(b);
+ if(ea&&ea===eb)return {level:'exact-gloss',score:3};
+ if(overlap.length)return {level:'shared-content-terms',score:2+jaccard};
+ if(ea&&eb)return {level:'different-glosses',score:1};
+ return {level:'missing-gloss',score:0};
+};
+const evidenceExamples=[
+ englishEvidence('throat','throat',[],0).level==='exact-gloss',
+ englishEvidence('throat','gullet',['throat'],0.5).level==='shared-content-terms',
+ englishEvidence('throat','unrelated',[],0).level==='different-glosses',
+ englishEvidence('','',[],0).level==='missing-gloss'
+];
+if(evidenceExamples.some(ok=>!ok))throw new Error('Hebrew candidate evidence ranking must distinguish exact, overlapping, unrelated, and missing English glosses');
 const candidates=new Map();
 for(const [key,records] of byWord){
  const entries=[...records.values()];
@@ -63,6 +77,7 @@ for(const [key,records] of byWord){
    if(ea&&eb&&!grammaticalCompatible(ea,eb))continue;
    const ta=tokens(ea),tb=tokens(eb);
    const overlap=ta.filter(t=>tb.includes(t)),jaccard=ta.length&&tb.length?overlap.length/new Set([...ta,...tb]).size:0;
+   const evidence=englishEvidence(ea,eb,overlap,jaccard);
    const refs=[a.rid,b.rid].sort();
    const glosses=[normalize(ha),normalize(hb)].sort();
    const keyId=[key,...refs,...glosses].join('::');
@@ -71,12 +86,13 @@ for(const [key,records] of byWord){
     sourceA:{rid:a.rid,headword:a.word,label:pa.label||'',hebrew:ha,fullHebrew:pa.text||'',english:pa.english||''},
     sourceB:{rid:b.rid,headword:b.word,label:pb.label||'',hebrew:hb,fullHebrew:pb.text||'',english:pb.english||''},
     sharedEnglishTerms:overlap,jaccard:Number(jaccard.toFixed(3)),englishGlossesIdentical:!!ea&&ea===eb,
+    englishEvidence:evidence.level,englishEvidenceScore:Number(evidence.score.toFixed(3)),
     reviewStatus:'pending-human-review'
    });
   }
  }
 }
-const list=[...candidates.values()].sort((a,b)=>b.jaccard-a.jaccard||a.headword.localeCompare(b.headword));
+const list=[...candidates.values()].sort((a,b)=>b.englishEvidenceScore-a.englishEvidenceScore||b.jaccard-a.jaccard||b.sharedEnglishTerms.length-a.sharedEnglishTerms.length||a.headword.localeCompare(b.headword));
 const report={
  purpose:'Review queue only. No Hebrew definitions are automatically merged or rewritten.',
  method:{
@@ -86,7 +102,7 @@ const report={
   safeguards:'Different explicit grammatical labels are excluded; identical Hebrew glosses are already handled by exact grouping; approved source-scoped synonym pairs are excluded from the queue',
   limitation:'English overlap is only an alignment clue. Reviewers must confirm the Hebrew definitions express the same sense before approving a merge.'
  },
-  totals:{sourceRecords:dictionary.entries.length,uniqueHeadwordForms:byWord.size,repeatedHeadwordForms:[...byWord.values()].filter(group=>group.size>1).length,candidates:list.length},
+  totals:{sourceRecords:dictionary.entries.length,uniqueHeadwordForms:byWord.size,repeatedHeadwordForms:[...byWord.values()].filter(group=>group.size>1).length,candidates:list.length,evidenceCounts:Object.fromEntries(['exact-gloss','shared-content-terms','different-glosses','missing-gloss'].map(level=>[level,list.filter(x=>x.englishEvidence===level).length]))},
  candidates:list
 };
 const output=path.join(__dirname,'meaning-consolidation-candidates.json');
@@ -98,7 +114,7 @@ const summary=[
  '- Repeated headword forms: '+report.totals.repeatedHeadwordForms,
  '- Candidate pairs for manual Hebrew review: '+list.length,
  '',
- 'English glosses are used only as an alignment clue; no Hebrew meaning is automatically merged.',
+ 'English glosses are used only as an alignment clue; exact and shared-content-term evidence is ranked first, unrelated or missing glosses are kept lower in the review queue; no Hebrew meaning is automatically merged.',
  '',
  'Top examples:',
  ...list.slice(0,12).map(x=>'- '+x.headword+' ('+x.sourceA.rid+' / '+x.sourceB.rid+'): '+x.sourceA.hebrew+' ↔ '+x.sourceB.hebrew+' [English: '+x.sourceA.english+' / '+x.sourceB.english+']')
