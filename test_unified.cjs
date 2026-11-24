@@ -294,6 +294,13 @@ assert(exactAlternativeShared,'the exact shared alternative should consolidate i
 assert.equal(exactAlternativeShared.text,'to get well, recover','the fuller comma-list context should be preserved');
 assert(exactAlternativeBridge.some(group=>group.text==='to be strong'&&group.sources.length===1),'an unrelated semicolon-delimited sense must remain separate');
 
+const infinitiveMarkerMustMatch=U.merge([
+ {id:116,entry:{h:'אָמַר',r:'KRU00032',source:'krupnik'},meanings:[{text:'speak',label:''}]},
+ {id:117,entry:{h:'אָמַר',r:'A00032',source:'jastrow'},meanings:[{text:'to speak',label:''}]}
+],'אמר');
+assert.equal(infinitiveMarkerMustMatch.length,2,'the runtime exact-alternative rule must not strip infinitive markers or merge a noun-like gloss with a verb');
+
+
 const ambiguousExactAlternative=U.merge([
  {id:112,entry:{h:'סָרַח III',r:'KRU13990',source:'krupnik'},meanings:[{text:'to smell badly',label:''}]},
  {id:113,entry:{h:'סָרַח III',r:'O01573',source:'jastrow'},meanings:[
