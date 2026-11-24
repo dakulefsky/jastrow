@@ -252,6 +252,34 @@ const labelBridge=U.merge([
 assert.equal(labelBridge.length,1,'an unlabelled Krupnik sense should not be split from the same explicit Jastrow gloss');
 assert.equal(labelBridge[0].sources.length,2,'both source records must remain available');
 assert.equal(labelBridge[0].form,'ithpe','retain the normalized explicit grammatical label when the other source omits one');
+
+const exactAlternativeBridge=U.merge([
+ {id:110,entry:{h:'בְּרִי I',r:'KRU03319',source:'krupnik'},meanings:[{text:'to get well',label:''}]},
+ {id:111,entry:{h:'בְּרִי I',r:'B01236',source:'jastrow'},meanings:[{text:'to get well, recover; to be strong',label:'Hif.'}]}
+],'ברי');
+assert.equal(exactAlternativeBridge.length,2,'an unambiguous exact alternative should merge without absorbing a separate semicolon-delimited sense');
+const exactAlternativeShared=exactAlternativeBridge.find(group=>group.sources.length===2);
+assert(exactAlternativeShared,'the exact shared alternative should consolidate its two source records');
+assert.equal(exactAlternativeShared.text,'to get well, recover','the fuller comma-list context should be preserved');
+assert(exactAlternativeBridge.some(group=>group.text==='to be strong'&&group.sources.length===1),'an unrelated semicolon-delimited sense must remain separate');
+
+const ambiguousExactAlternative=U.merge([
+ {id:112,entry:{h:'סָרַח III',r:'KRU13990',source:'krupnik'},meanings:[{text:'to smell badly',label:''}]},
+ {id:113,entry:{h:'סָרַח III',r:'O01573',source:'jastrow'},meanings:[
+  {text:'to decay; to smell badly',label:''},
+  {text:'to become putrid; to smell badly',label:'Hif.'}
+ ]}
+],'סרח');
+assert.equal(ambiguousExactAlternative.length,3,'one exact gloss shared by multiple distinct source senses must not bridge those senses');
+
+const oneToManyExactAlternatives=U.merge([
+ {id:114,entry:{h:'אָמַר',r:'KRU00031',source:'krupnik'},meanings:[
+  {text:'to say',label:''},{text:'to speak',label:''}
+ ]},
+ {id:115,entry:{h:'אָמַר',r:'A00031',source:'jastrow'},meanings:[{text:'to say, to speak',label:''}]}
+],'אמר');
+assert.equal(oneToManyExactAlternatives.length,3,'a single source sense must not bridge two separately listed counterpart senses');
+
 const labelConflict=U.merge([
  {id:12,entry:{h:'אָמַר',r:'A00002'},meanings:[{text:'to say',label:'Ithpe.'}]},
  {id:13,entry:{h:'אָמַר',r:'KRU00002'},meanings:[{text:'to say',label:'Pa.'}]}
