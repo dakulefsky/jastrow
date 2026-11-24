@@ -44,6 +44,25 @@ assert.equal(separateIntention.items.length,1,'the additional intention sense sh
 assert.equal(separateIntention.items[0].p.meaning,'בתנאי, בכוונה','the original complete Hebrew source wording must remain accessible');
 assert.deepEqual(Array.from(ctx.HebrewMeaningConsolidation.splitAlternatives('תנאי (כך, וכך), דבר נוסף')),['תנאי (כך, וכך)','דבר נוסף'],'commas inside parenthetical explanations must not split Hebrew alternatives');
 
+const distinctHebrewHomonyms=merge([{word:'ברא',records:[
+ {word:'בְּרָא²',rid:'KRU9020',parts:[{meaning:'נקב',text:'נקב',label:''}]},
+ {word:'בְּרָא³',rid:'KRU9021',parts:[{meaning:'נקב',text:'נקב',label:''}]}
+]}],'ברא');
+assert.equal(distinctHebrewHomonyms.length,2,'explicitly different numbered Hebrew homonyms must never consolidate');
+
+const ambiguousUnnumberedHomonym=merge([{word:'ברא',records:[
+ {word:'בְּרָא²',rid:'KRU9022',parts:[{meaning:'נקב',text:'נקב',label:''}]},
+ {word:'בְּרָא³',rid:'KRU9023',parts:[{meaning:'נקב',text:'נקב',label:''}]},
+ {word:'בְּרָא',rid:'KRU9024',parts:[{meaning:'נקב',text:'נקב',label:''}]}
+]}],'ברא');
+assert.equal(ambiguousUnnumberedHomonym.length,3,'an unnumbered Hebrew record must not be arbitrarily attached when multiple numbered homonyms are present');
+
+const unambiguousUnnumberedHomonym=merge([{word:'ברא',records:[
+ {word:'בְּרָא²',rid:'KRU9025',parts:[{meaning:'נקב',text:'נקב',label:''}]},
+ {word:'בְּרָא',rid:'KRU9026',parts:[{meaning:'נקב',text:'נקב',label:''}]}
+]}],'ברא');
+assert.equal(unambiguousUnnumberedHomonym.length,1,'a numbered Hebrew record may consolidate with one unnumbered counterpart when no competing homonym exists');
+
 const distinctMeaning=merge([{word:'בדיקה',records:[
  {word:'א',rid:'KRU9005',parts:[{meaning:'הפסד',text:'הפסד',label:''}]},
  {word:'ב',rid:'KRU9006',parts:[{meaning:'אבידה',text:'אבידה',label:''}]}
