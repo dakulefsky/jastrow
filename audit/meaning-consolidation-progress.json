@@ -4,7 +4,7 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 748,
+    "reviewedNonIdenticalGlossPairs": 728,
     "reviewedGlossEquivalenceGroups": 38,
     "realReaderPhraseExtractorAudit": "All retained source-scoped mappings are required to pass the Chromium audit against JastrowReadingView.phrases; the previous transcription typo in M01377 was corrected in source data.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
@@ -326,7 +326,7 @@
   },
   "secondReviewedTranche": {
     "attemptedRows": 46,
-    "addedUniqueSourceGlossPairs": 46,
+    "addedUniqueSourceGlossPairs": 26,
     "acceptedPairs": [
       [
         "KRU03864",
@@ -605,6 +605,6 @@
         "general rule, principle"
       ]
     ],
-    "note": "A second 46-row high-confidence tranche was reviewed against the source glosses and actual reader-extracted Jastrow phrases. It focuses on equivalent definitions, explanatory variants, and synonymous wording; rows with extra distinct senses, different grammatical voice, or merely related concepts remain unmerged. The real-reader audit and source validation are running."
+    "note": "A second 46-row high-confidence tranche was reviewed against source glosses and the real reader phrases. Twenty-six added new unique normalized source-scoped equivalences; twenty were already covered by canonicalized mappings. The remaining distinct senses and grammatical/semantic scope differences were not merged."
   }
 }
