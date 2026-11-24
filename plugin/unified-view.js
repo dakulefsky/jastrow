@@ -19,6 +19,14 @@
   const value=clean(text);
   return synonymGroups.find(group=>group.includes(value))?.[0]||value;
  };
+ // Match curated synonyms at the individual-gloss level as well as when the
+ // whole gloss is a synonym. This lets "to happen" match the "occur" item in
+ // "to occur, to take place" without treating arbitrary shared words as equal.
+ const glossSynonymKeys=text=>parts(text).map(synonymKey);
+ const sharesReviewedSynonym=(a,b)=>{
+  const keys=new Set(glossSynonymKeys(a));
+  return glossSynonymKeys(b).some(key=>keys.has(key)&&synonymGroups.some(group=>group[0]===key));
+ };
  // Manually reviewed cross-dictionary gloss equivalents. Each pair is scoped
  // to the same Hebrew headword, so an English phrase cannot merge unrelated
  // entries elsewhere in the dictionary. Keep this list conservative.
@@ -597,6 +605,7 @@
   const itemForm=stem(item.meaning.label);
   if(!compatibleForm(group.form,itemForm)||!group.sources.every(s=>compatible(s.spelling,item.spelling,word)))return false;
   return synonymKey(group.text)===synonymKey(item.meaning.text)||
+   sharesReviewedSynonym(group.text,item.meaning.text)||
    group.sources.some(s=>reviewedEquivalent(s,item)||reviewedGlossEquivalent(s,item));
  }
  function merge(records,word){
