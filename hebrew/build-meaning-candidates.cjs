@@ -6,22 +6,12 @@ vm.runInContext(fs.readFileSync(path.join(__dirname,'plugin/data.js'),'utf8'),co
 vm.runInContext(fs.readFileSync(path.join(__dirname,'plugin/lookup.js'),'utf8'),context);
 vm.runInContext(fs.readFileSync(path.join(__dirname,'plugin/meaning-consolidation.js'),'utf8'),context);
 const dictionary=context.HEBREW_DICTIONARY,normalize=context.HebrewLookup.normalize;
-const label=value=>{
+const label=value=>normalize(String(value||'').replace(/\b\d+\b/g,'').trim());
  const raw=String(value||'').trim();
  if(/^\d+$/.test(raw))return '#'+raw;
  return normalize(raw.replace(/\b\d+\b/g,'').trim());
 };
-const numericLabel=value=>/^\d+$/.test(String(value||'').trim())?Number(String(value).trim()):null;
-const numericLabelCompatible=(a,b,knownNumbers)=>{
- const na=numericLabel(a),nb=numericLabel(b);
- if(na!==null&&nb!==null)return na===nb;
- if(na!==null||nb!==null){
-  const other=na===null?String(a||'').trim():String(b||'').trim();
-  if(other)return false;
-  return (knownNumbers?.size||0)<=1;
- }
- return true;
-};
+
 const pointed=value=>{
  const out=[];
  for(const ch of String(value||'').normalize('NFD')){
@@ -47,20 +37,12 @@ const homonymNumber=value=>{
  if(roman)return ({I:1,II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8,IX:9,X:10})[roman[1].toUpperCase()]||null;
  return null;
 };
-const homonymNumbersByForm=new Map(),numericLabelsByForm=new Map();
+const homonymNumbersByForm=new Map();
 for(const entry of dictionary.entries)for(const form of [entry.word,...(entry.alt||[])]){
  const key=normalize(form),number=homonymNumber(form);
- if(!key)continue;
- if(number!==null){
-  if(!homonymNumbersByForm.has(key))homonymNumbersByForm.set(key,new Set());
-  homonymNumbersByForm.get(key).add(number);
- }
- for(const part of entry.parts||[]){
-  const numeric=numericLabel(part.label);
-  if(numeric===null)continue;
-  if(!numericLabelsByForm.has(key))numericLabelsByForm.set(key,new Set());
-  numericLabelsByForm.get(key).add(numeric);
- }
+ if(!key||number===null)continue;
+ if(!homonymNumbersByForm.has(key))homonymNumbersByForm.set(key,new Set());
+ homonymNumbersByForm.get(key).add(number);
 }
 const headwordCompatible=(a,b)=>[a.word,...(a.alt||[])].some(x=>[b.word,...(b.alt||[])].some(y=>{
  const key=normalize(x),nx=homonymNumber(x),ny=homonymNumber(y),known=homonymNumbersByForm.get(key)||new Set();
@@ -72,9 +54,7 @@ const headwordCompatible=(a,b)=>[a.word,...(a.alt||[])].some(x=>[b.word,...(b.al
 if(headwordCompatible({word:'בְּרָא²'},{word:'בְּרָא³'}))throw new Error('Candidate inventory must reject explicitly different Hebrew homonyms');
 if(headwordCompatible({word:'בְּרָא'},{word:'בְּרָא³'})&&homonymNumbersByForm.get(normalize('בְּרָא'))?.size>1)throw new Error('An unnumbered Hebrew headword must not be assigned arbitrarily among multiple numbered homonyms');
 if(!headwordCompatible({word:'בדיקה³'},{word:'בדיקה'}))throw new Error('A numbered Hebrew headword may match an unnumbered counterpart when unambiguous');
-if(numericLabelCompatible('1','2',new Set([1,2])))throw new Error('Different numeric Hebrew sense labels must remain separate');
-if(numericLabelCompatible('1','',new Set([1,2])))throw new Error('An unlabelled Hebrew part must not be assigned among multiple numeric senses');
-if(!numericLabelCompatible('1','',new Set([1])))throw new Error('A single numeric Hebrew sense may match an unlabelled counterpart');
+
 if(vowelCompatible('כָּבַשׁ','כְּבַשׁ'))throw new Error('Candidate inventory must reject conflicting pointed Hebrew readings');
 if(!vowelCompatible('כבש','כָּבַשׁ'))throw new Error('Unpointed headwords must remain eligible for review');
 const clean=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[^a-z0-9' -]/g,' ').replace(/\s+/g,' ').trim();
@@ -126,7 +106,6 @@ for(const [key,records] of byWord){
    const ha=pa.meaning||pa.text||'',hb=pb.meaning||pb.text||'';
    if(!normalize(ha)||!normalize(hb)||context.HebrewMeaningConsolidation.canonicalMeaningKey(ha)===context.HebrewMeaningConsolidation.canonicalMeaningKey(hb))continue;
    if(label(pa.label)&&label(pb.label)&&label(pa.label)!==label(pb.label))continue;
-   if(!numericLabelCompatible(pa.label,pb.label,numericLabelsByForm.get(key)))continue;
    const itemA={e:a,p:pa},itemB={e:b,p:pb};
    if(context.HebrewMeaningConsolidation.reviewedSynonymPairs.has(context.HebrewMeaningConsolidation.pairKey(itemA,itemB)))continue;
    const ea=clean(pa.english),eb=clean(pb.english);
