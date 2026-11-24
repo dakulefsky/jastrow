@@ -7,6 +7,23 @@ vm.runInContext(fs.readFileSync(path.join(__dirname,'plugin/lookup.js'),'utf8'),
 vm.runInContext(fs.readFileSync(path.join(__dirname,'plugin/meaning-consolidation.js'),'utf8'),context);
 const dictionary=context.HEBREW_DICTIONARY,normalize=context.HebrewLookup.normalize;
 const label=value=>normalize(String(value||'').replace(/\b\d+\b/g,'').trim());
+const pointed=value=>{
+ const out=[];
+ for(const ch of String(value||'').normalize('NFD')){
+  if(/[א-ת]/.test(ch))out.push({letter:ch,marks:[]});
+  else if(/[\\u05b0-\\u05bc\\u05c1\\u05c2\\u05c7]/.test(ch)&&out.length)out[out.length-1].marks.push(ch);
+ }
+ return out;
+};
+const vowelCompatible=(a,b)=>{
+ const A=pointed(a),B=pointed(b);
+ if(A.map(x=>x.letter).join('')!==B.map(x=>x.letter).join(''))return false;
+ for(let i=0;i<A.length;i++)if(A[i].marks.length&&B[i].marks.length){
+  if(A[i].marks.slice().sort().join('')!==B[i].marks.slice().sort().join(''))return false;
+ }
+ return true;
+};
+const headwordCompatible=(a,b)=>[a.word,...(a.alt||[])].some(x=>[b.word,...(b.alt||[])].some(y=>normalize(x)===normalize(y)&&vowelCompatible(x,y)));
 const clean=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[^a-z0-9' -]/g,' ').replace(/\s+/g,' ').trim();
 const stop=new Set('a an the to of for in on with from by as and or is be are was were being been it this that these those one some any all which who what where when into unto over under without before after during through'.split(' '));
 const tokens=value=>[...new Set(clean(value).split(' ').filter(t=>t.length>=3&&!stop.has(t)))];
@@ -21,6 +38,7 @@ for(const [key,records] of byWord){
  const entries=[...records.values()];
  for(let i=0;i<entries.length;i++)for(let j=i+1;j<entries.length;j++){
   const a=entries[i],b=entries[j];
+  if(!headwordCompatible(a,b))continue;
   for(const pa of a.parts||[])for(const pb of b.parts||[]){
    const ha=pa.meaning||pa.text||'',hb=pb.meaning||pb.text||'';
    if(!normalize(ha)||!normalize(hb)||normalize(ha)===normalize(hb))continue;
@@ -48,7 +66,7 @@ const report={
  purpose:'Review queue only. No Hebrew definitions are automatically merged or rewritten.',
  method:{
   source:'Original Krupnik and Silbermann Hebrew definitions with their embedded original English gloss metadata',
-  headwordMatching:'HebrewLookup.normalize across primary and alternate headwords',
+  headwordMatching:'HebrewLookup.normalize across primary and alternate headwords, with conflicts between two explicitly pointed forms excluded',
   alignment:'All non-identical Hebrew meaning pairs from repeated normalized headwords are queued; original English gloss overlap is shown as a ranking clue, not a hard filter',
   safeguards:'Different explicit grammatical labels are excluded; identical Hebrew glosses are already handled by exact grouping; approved source-scoped synonym pairs are excluded from the queue',
   limitation:'English overlap is only an alignment clue. Reviewers must confirm the Hebrew definitions express the same sense before approving a merge.'
