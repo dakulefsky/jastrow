@@ -82,7 +82,7 @@ assert.equal(U.sharesReviewedSynonym('burn','to burn'),false,'noun and infinitiv
 
 // Alternative-level review: match only the shared sense, keeping the
 // unrelated alternative in the Krupnik gloss and Jastrow's second sense apart.
-assert.equal(U.reviewedSourceAlternativePairs.size,1);
+assert.equal(U.reviewedSourceAlternativePairs.size,63,'every source-scoped alternative match must be loaded');
 const alternativeScoped=U.merge([
  {id:301,entry:{h:'גָּנַח',r:'KRU04451',source:'krupnik'},meanings:[{text:'to sigh heavily under an attack of angina pectoris, to expectorate',label:''}]},
  {id:302,entry:{h:'גָּנַח',r:'C01128'},meanings:[
