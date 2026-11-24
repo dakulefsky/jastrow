@@ -6,12 +6,12 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All retained source-scoped mappings are required to pass the Chromium audit against JastrowReadingView.phrases; the previous transcription typo in M01377 was corrected in source data.",
+    "realReaderPhraseExtractorAudit": "All 1249 retained whole-gloss mappings and all 63 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
     "reviewedSourceGlossPairCount": 1249,
-    "reviewedSourceAlternativePairCount": 1,
+    "reviewedSourceAlternativePairCount": 63,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 16,
     "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions.",
@@ -70,8 +70,8 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16911,
-    "status": "Regenerating after individual-alternative matching and exclusion of already-reviewed alternative pairs.",
-    "note": "The generator now scores individual comma/semicolon-separated alternatives and reports the exact best-matching pair. It excludes already-reviewed whole-gloss and alternative-level pairs. Candidate overlap remains discovery evidence only; it never automatically approves a merge."
+    "status": "Regenerating after 63 reviewed alternative-level mappings, synonym-group expansion, and explicit homonym safeguards.",
+    "note": "The candidate generator now compares each Jastrow phrase and Krupnik gloss at individual alternative level, ranks exact alternatives first, records up to ten alternative-pair comparisons, excludes reviewed whole-gloss and alternative pairs, and rejects conflicting explicit homonym numbers. Candidate overlap is still review evidence only."
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -1840,8 +1840,8 @@
     "note": "Twenty-five same-sense variants were approved from the next inventory page. The D00017 mapping was checked against the original records: Jastrow's real reader phrase is 'to flow', matching Krupnik sense 1 'to flow'; Krupnik sense 2 'to flow out' remains distinct and is not merged into it."
   },
   "alternativeLevelReview": {
-    "status": "implemented-and-under-test",
-    "reviewedSourceAlternativePairs": 1,
+    "status": "expanded-with-63-source-scoped-alternative-matches",
+    "reviewedSourceAlternativePairs": 63,
     "acceptedPairs": [
       [
         "KRU04451",
@@ -2032,5 +2032,386 @@
     },
     "scope": "runtime meaning merge and candidate inventory generation",
     "rationale": "A shared consonantal spelling is not enough when both dictionaries explicitly distinguish different numbered homonyms."
+  },
+  "secondAlternativeReviewedTranche": {
+    "attemptedPairs": 62,
+    "addedUniqueSourceAlternativePairs": 62,
+    "status": "accepted-exact-alternative-pairs",
+    "rationale": "Each pair has the same individual meaning alternative in both source records, with matching consonantal headword forms and no conflicting explicit grammatical labels or numbered homonyms. Alternative-level bucketing consolidates only the matched phrase; every unmatched phrase remains a separate result, and More detail preserves the full original source gloss.",
+    "acceptedPairs": [
+      [
+        "KRU17170",
+        "S00988",
+        "cloth made of Cilician goat’s hair",
+        "cloth made of Cilician goat’s hair"
+      ],
+      [
+        "KRU17489",
+        "S01587",
+        "symbolical form of making an agreement binding",
+        "symbolical form of making an agreement binding"
+      ],
+      [
+        "KRU03653",
+        "C00213",
+        "precaution against trespassing the law",
+        "precaution against trespassing the law"
+      ],
+      [
+        "KRU03653",
+        "C00213",
+        "fence",
+        "fence"
+      ],
+      [
+        "KRU08407",
+        "J00050",
+        "to cut off dry twigs",
+        "to cut off dry twigs"
+      ],
+      [
+        "KRU15958",
+        "Q01754",
+        "to place beyond due limits",
+        "to place beyond due limits"
+      ],
+      [
+        "KRU17193",
+        "S01027",
+        "warning given to the suspected wife",
+        "warning given to the suspected wife"
+      ],
+      [
+        "KRU03135",
+        "B01064",
+        "to open the mouth wide",
+        "to open the mouth wide"
+      ],
+      [
+        "KRU08235",
+        "I00727",
+        "looking out for business",
+        "looking out for business"
+      ],
+      [
+        "KRU03803",
+        "C00364",
+        "rough untrimmed stone",
+        "rough untrimmed stone"
+      ],
+      [
+        "KRU03803",
+        "C00364",
+        "cobble",
+        "cobble"
+      ],
+      [
+        "KRU03873",
+        "C00445",
+        "to embolden one's heart",
+        "to embolden one’s heart"
+      ],
+      [
+        "KRU04589",
+        "C01299",
+        "broken pieces of iron",
+        "broken pieces of iron"
+      ],
+      [
+        "KRU04589",
+        "C01299",
+        "trumpery",
+        "trumpery"
+      ],
+      [
+        "KRU04738",
+        "D00059",
+        "cake of pressed figs",
+        "cake of pressed figs"
+      ],
+      [
+        "KRU05183",
+        "D00659",
+        "bag with two pouches",
+        "bag with two pouches"
+      ],
+      [
+        "KRU05908",
+        "E00579",
+        "undue delay over night",
+        "undue delay over night"
+      ],
+      [
+        "KRU06426",
+        "G00421",
+        "cutting shoots off",
+        "cutting shoots off"
+      ],
+      [
+        "KRU06426",
+        "G00421",
+        "trimming",
+        "trimming"
+      ],
+      [
+        "KRU06562",
+        "G00684",
+        "the legal status of the non-priest",
+        "the legal status of the non-priest"
+      ],
+      [
+        "KRU06756",
+        "H00319",
+        "to rest upon one as a duty",
+        "to rest upon one as a duty"
+      ],
+      [
+        "KRU07294",
+        "H01218",
+        "to pass a restrictive law",
+        "to pass a restrictive law"
+      ],
+      [
+        "KRU07811",
+        "I00178",
+        "one whose sex is unknown",
+        "one whose sex is unknown"
+      ],
+      [
+        "KRU08096",
+        "I00556",
+        "to hide one’s self",
+        "to hide one’s self"
+      ],
+      [
+        "KRU08360",
+        "I00915",
+        "to hide one’s self",
+        "to hide one’s self"
+      ],
+      [
+        "KRU08363",
+        "I00915",
+        "to hide one’s self",
+        "to hide one’s self"
+      ],
+      [
+        "KRU09482",
+        "K00755",
+        "to raise a crown of hair",
+        "to raise a crown of hair"
+      ],
+      [
+        "KRU10756",
+        "M00401",
+        "spices put on coals",
+        "spices put on coals"
+      ],
+      [
+        "KRU11222",
+        "M01119",
+        "vessel for heating water",
+        "vessel for heating water"
+      ],
+      [
+        "KRU11930",
+        "M02399",
+        "a tool for whetting millstones",
+        "a tool for whetting millstones."
+      ],
+      [
+        "KRU12574",
+        "N00534",
+        "to let come down",
+        "to let come down"
+      ],
+      [
+        "KRU12884",
+        "N01064",
+        "to blow air into the lungs",
+        "to blow air into the lungs"
+      ],
+      [
+        "KRU14617",
+        "P00866",
+        "cylinder around which a scroll is rolled",
+        "cylinder around which a scroll is rolled"
+      ],
+      [
+        "KRU14779",
+        "P01209",
+        "to seek occasion against",
+        "to seek occasion against"
+      ],
+      [
+        "KRU03379",
+        "B01319",
+        "a kind of piazza",
+        "a kind of piazza"
+      ],
+      [
+        "KRU03747",
+        "C00301",
+        "leather bag",
+        "leather bag"
+      ],
+      [
+        "KRU04370",
+        "C01010",
+        "coupling song",
+        "coupling song"
+      ],
+      [
+        "KRU04859",
+        "D00221",
+        "medicine for the appetite",
+        "medicine for the appetite"
+      ],
+      [
+        "KRU02133",
+        "A01619",
+        "exact time",
+        "exact time"
+      ],
+      [
+        "KRU01308",
+        "A01993",
+        "servitude of a maid",
+        "servitude of a maid"
+      ],
+      [
+        "KRU01571",
+        "A02373",
+        "virgin oil",
+        "virgin oil"
+      ],
+      [
+        "KRU02420",
+        "B00332",
+        "uncultured person",
+        "an uncultured person"
+      ],
+      [
+        "KRU02905",
+        "B00891",
+        "bathing utensils",
+        "bathing utensils"
+      ],
+      [
+        "KRU02911",
+        "B00898",
+        "to make absorb",
+        "to make absorb"
+      ],
+      [
+        "KRU02392",
+        "B00921",
+        "reconnoitring troop",
+        "reconnoitring troop"
+      ],
+      [
+        "KRU03008",
+        "B00981",
+        "to trample upon",
+        "to trample upon"
+      ],
+      [
+        "KRU03035",
+        "B01003",
+        "to feel the wine",
+        "to feel the wine"
+      ],
+      [
+        "KRU03219",
+        "B01133",
+        "piece of wood",
+        "piece of wood"
+      ],
+      [
+        "KRU03219",
+        "B01133",
+        "chip",
+        "chip"
+      ],
+      [
+        "KRU03228",
+        "B01144",
+        "stock of cattle",
+        "stock of cattle"
+      ],
+      [
+        "KRU03228",
+        "B01144",
+        "cattle-yard",
+        "cattle-yard"
+      ],
+      [
+        "KRU03233",
+        "B01150",
+        "short cut",
+        "short cut"
+      ],
+      [
+        "KRU03233",
+        "B01150",
+        "valley",
+        "valley"
+      ],
+      [
+        "KRU03319",
+        "B01237",
+        "to get well",
+        "to get well"
+      ],
+      [
+        "KRU03339",
+        "B01267",
+        "young shoot",
+        "young shoot."
+      ],
+      [
+        "KRU03360",
+        "B01294",
+        "the brick-layer’s cushion",
+        "the brick-layer’s cushion"
+      ],
+      [
+        "KRU03390",
+        "B01335",
+        "to make clear",
+        "to make clear"
+      ],
+      [
+        "KRU03397",
+        "B01339",
+        "young tree",
+        "young tree"
+      ],
+      [
+        "KRU03397",
+        "B01339",
+        "daughter",
+        "daughter"
+      ],
+      [
+        "KRU03540",
+        "C00067",
+        "tall and slim",
+        "tall and slim"
+      ],
+      [
+        "KRU03576",
+        "C00113",
+        "District of Gablan",
+        "District of Gablan"
+      ],
+      [
+        "KRU03613",
+        "C00166",
+        "to cut off",
+        "to cut off"
+      ]
+    ],
+    "note": "These mappings were added at the individual-alternative level, not as whole-gloss equivalences. For example, matching 'to rest upon one as a duty' does not pull Jastrow's separate 'to hover around one's head' or 'to take effect' into the same result."
   }
 }
