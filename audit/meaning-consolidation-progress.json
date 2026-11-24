@@ -4,13 +4,13 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 836,
+    "reviewedNonIdenticalGlossPairs": 865,
     "reviewedGlossEquivalenceGroups": 38,
     "realReaderPhraseExtractorAudit": "All retained source-scoped mappings are required to pass the Chromium audit against JastrowReadingView.phrases; the previous transcription typo in M01377 was corrected in source data.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1170
+    "reviewedSourceGlossPairCount": 1199
   },
   "historicalCheckpoint": {
     "reportedCompleted": 29,
@@ -65,7 +65,7 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16911,
-    "status": "Awaiting refreshed candidate inventory after this 15-pair review tranche.",
+    "status": "Awaiting regeneration after the eighth review tranche.",
     "note": "Generated from current branch a0c797? inventory artifact belongs to commit 278bbbb010f1aaf83d48479bed7cba5123c706aa. Review queue only: token overlap ranks candidates; no fuzzy automatic merging."
   },
   "reviewedTranche": {
@@ -1320,5 +1320,187 @@
       ]
     ],
     "note": "Fifteen additional explanatory variants were approved after checking the full source glosses. The fuller wording clarifies the same definition rather than adding an independent sense."
+  },
+  "eighthReviewedTranche": {
+    "attemptedRows": 29,
+    "addedUniqueSourceGlossPairs": 29,
+    "currentTotal": 865,
+    "acceptedPairs": [
+      [
+        "KRU02353",
+        "B00211",
+        "mat",
+        "a mat of reeds"
+      ],
+      [
+        "KRU02511",
+        "B00495",
+        "receptacles",
+        "column-like receptacles"
+      ],
+      [
+        "KRU03264",
+        "B01166",
+        "intimate",
+        "intimate, familiar"
+      ],
+      [
+        "KRU03295",
+        "B01205",
+        "cover",
+        "wrapper, cover"
+      ],
+      [
+        "KRU03562",
+        "C00096",
+        "the camels) hump",
+        "hump."
+      ],
+      [
+        "KRU03915",
+        "C00491",
+        "a trap or cage",
+        "a trap"
+      ],
+      [
+        "KRU04005",
+        "C00594",
+        "imper. burn them",
+        "burn them"
+      ],
+      [
+        "KRU04624",
+        "C01357",
+        "document",
+        "bond, document"
+      ],
+      [
+        "KRU04631",
+        "C01369",
+        "gramma, scrupulum",
+        "gramma"
+      ],
+      [
+        "KRU04905",
+        "D00293",
+        "measure",
+        "keg, measure"
+      ],
+      [
+        "KRU06732",
+        "H00275",
+        "a species of thistles",
+        "thistles"
+      ],
+      [
+        "KRU07817",
+        "I00186",
+        "shade",
+        "shade, shadow"
+      ],
+      [
+        "KRU08197",
+        "I00678",
+        "a heated tile",
+        "tile;"
+      ],
+      [
+        "KRU08270",
+        "I00772",
+        "inflammation",
+        "an eruption, inflammation"
+      ],
+      [
+        "KRU08896",
+        "J00690",
+        "ballast-stones",
+        "anchor, ballast-stones"
+      ],
+      [
+        "KRU09221",
+        "K00405",
+        "embroidery",
+        "embroidery, design"
+      ],
+      [
+        "KRU09873",
+        "K01304",
+        "to prosper",
+        "to do well, prosper"
+      ],
+      [
+        "KRU10755",
+        "M00400",
+        "pivot",
+        "pivot, hinge"
+      ],
+      [
+        "KRU11876",
+        "M02288",
+        "wrangler",
+        "wrangler, hair-plucker"
+      ],
+      [
+        "KRU15129",
+        "Q00313",
+        "quarry",
+        "stone-breaking, quarry"
+      ],
+      [
+        "KRU16363",
+        "R00276",
+        "thirsty",
+        "parched, thirsty."
+      ],
+      [
+        "KRU19559",
+        "V00045",
+        "Thebaic",
+        "Thebaic cubit"
+      ],
+      [
+        "KRU00082",
+        "A00120",
+        "want",
+        "want, distress"
+      ],
+      [
+        "KRU00538",
+        "A00842",
+        "evening",
+        "twilight, evening"
+      ],
+      [
+        "KRU00835",
+        "A01302",
+        "the land Elam",
+        "Elam"
+      ],
+      [
+        "KRU00787",
+        "A01316",
+        "hind",
+        "hind, roe"
+      ],
+      [
+        "KRU00863",
+        "A01342",
+        "day",
+        "day time"
+      ],
+      [
+        "KRU00875",
+        "A01364",
+        "yes",
+        "yes, indeed"
+      ],
+      [
+        "KRU00900",
+        "A01406",
+        "prohibition",
+        "prohibition, interdict;"
+      ]
+    ],
+    "note": "Twenty-nine additional source-scoped matches were approved from the next ranked inventory page. They are spelling, grammatical, or explanatory variants of the same underlying definition; additional independent senses remain pending."
   }
 }
