@@ -83,7 +83,7 @@ assert.equal(U.sharesReviewedSynonym('burn','to burn'),false,'noun and infinitiv
 // Alternative-level review: match the shared phrase while retaining
 // comma-listed synonyms in the same sense and Jastrow's semicolon-separated
 // second sense separately.
-assert.equal(U.reviewedSourceAlternativePairs.size,224,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,240,'every source-scoped alternative match must be loaded');
 const alternativeScoped=U.merge([
  {id:301,entry:{h:'גָּנַח',r:'KRU04451',source:'krupnik'},meanings:[{text:'to sigh heavily under an attack of angina pectoris, to expectorate',label:''}]},
  {id:302,entry:{h:'גָּנַח',r:'C01128'},meanings:[
@@ -313,6 +313,37 @@ assert.equal(turbidSenseBoundaries.length,3,'the exact turbid sense must merge w
 const turbid=turbidSenseBoundaries.find(group=>group.sources.length===2);
 assert(turbid&&turbid.text.includes('to trouble'),'the matched semicolon-delimited sense should retain its other alternative');
 assert.equal(turbidSenseBoundaries.filter(group=>group.sources.length===1).length,2,'the other two senses must remain separate');
+
+
+const twoArarSenses=U.merge([
+ {id:441,entry:{h:'עִרְעֵר',r:'KRU14890',source:'krupnik'},meanings:[{text:'to excite to lamentation',label:''},{text:'to lay bare',label:''}]},
+ {id:442,entry:{h:'עִרְעֵר',r:'P01417',source:'jastrow'},meanings:[{text:'to stir up, excite to lamentation',label:''}]},
+ {id:443,entry:{h:'עִרְעֵר II',r:'P01418',source:'jastrow'},meanings:[{text:'to lay bare, strip, denude; to make lonely',label:''}]}
+],'ערער');
+assert.equal(twoArarSenses.length,2,'two separately attested senses under the same root must remain distinct');
+assert(twoArarSenses.every(group=>group.sources.length===2),'each distinct arar sense should consolidate only with its own source gloss');
+
+const twoAtakSenses=U.merge([
+ {id:444,entry:{h:'עֲתַק',r:'KRU14959',source:'krupnik'},meanings:[{text:'to be worn out',label:''},{text:'to remain long',label:''}]},
+ {id:445,entry:{h:'עֲתַק',r:'P01545',source:'jastrow'},meanings:[{text:'to be old, worn out',label:''},{text:'to remain long, be settled permanently',label:'Ithpa. אִתְעַתַּק'}]}
+],'עתק');
+assert.equal(twoAtakSenses.length,2,'the worn-out and remain-long senses must not collapse into one');
+assert(twoAtakSenses.every(group=>group.sources.length===2),'each atak sense should preserve both dictionary sources');
+
+const pigeonAndBerry=U.merge([
+ {id:446,entry:{h:'פְּרִידָה',r:'KRU15983',source:'krupnik'},meanings:[{text:'single pigeon',label:'1'},{text:'a single berry',label:'2'}]},
+ {id:447,entry:{h:'פְּרִידָה',r:'Q01791',source:'jastrow'},meanings:[{text:'one of a pair of pigeons, single pigeon',label:''},{text:'a single berry; a slice',label:''}]}
+],'פרידה');
+assert.equal(pigeonAndBerry.length,2,'the pigeon and berry senses must remain separate despite sharing a headword');
+assert(pigeonAndBerry.every(group=>group.sources.length===2),'each pigeon/berry sense should consolidate with its corresponding source only');
+
+const pairedNumericalGloss=U.merge([
+ {id:448,entry:{h:'פְּרוֹטְרוֹט',r:'KRU15920',source:'krupnik'},meanings:[{text:'detail number, odd sum',label:''}]},
+ {id:449,entry:{h:'פְּרוֹטְרוֹט',r:'Q01677',source:'jastrow'},meanings:[{text:'units, odd sum, detail number',label:''}]}
+],'פרוטרוט');
+assert.equal(pairedNumericalGloss.length,1,'both exact alternatives from the same numerical sense should consolidate into one result');
+assert.equal(pairedNumericalGloss[0].sources.length,2,'the numerical gloss should preserve both source entries');
+assert(pairedNumericalGloss[0].text.includes('units'),'the additional Jastrow alternative should remain visible');
 
 console.log('PASS: real alternate-headword vowel matches, partial pointing, cantillation, conservative synonym consolidation, complete source references, and distinct stem/qualified senses.');
 assert.equal(U.merge([{id:1,entry:{h:'חוב'},meanings:[{text:'charge',label:''}]},{id:2,entry:{h:'חוב'},meanings:[{text:'charge, accusation',label:''}]}],'חוב').length,2,'a one-word overlap must not erase a distinct qualified sense');
