@@ -692,7 +692,32 @@
   ["KRU07322","H01264","supplied with an application of Henna","supplied with an application of Henna;"],
   ["KRU09532","K00816","worthy, able, adequate","adequate, able, worthy"],
   ["KRU10153","L00343","a stake fastened in the ground","leḥi, a stake fastened in the ground"],
-  ["KRU10162","L00358","moisture, juice, vitality","moisture, juice; vitality"]
+  ["KRU10162","L00358","moisture, juice, vitality","moisture, juice; vitality"],
+  // Third reviewed tranche: high-confidence source gloss pairs from the corpus queue.
+  ["KRU04644","C01392","to saw, to split","to saw, split"],
+  ["KRU04750","D00076","to lead, to drive","to lead, drive"],
+  ["KRU04820","D00170","to flow, to drip","to flow, drip"],
+  ["KRU04858","D00222","menstruating woman","a menstruating woman"],
+  ["KRU04948","D00355","haughty leader","a haughty leader"],
+  ["KRU05002","D00431","pressure, squeezing","squeezing, pressure"],
+  ["KRU05194","D00676","double price","a double price"],
+  ["KRU05287","D00828","to draw, to raise","to draw, raise"],
+  ["KRU05527","D01098","threshing time","threshing, threshing time"],
+  ["KRU05596","E00029","to singe, to parch","to singe, parch"],
+  ["KRU05753","E00317","perversion (of justice)","perversion of justice"],
+  ["KRU05807","E00406","brine (for pickling)","brine for pickling"],
+  ["KRU06451","G00477","to drip, to flow","to drip, flow"],
+  ["KRU06496","G00544","song, music","music, song"],
+  ["KRU06691","H00202","eleven, the eleventh","eleven, eleventh"],
+  ["KRU07200","H01075","to wash, to rinse","to wash, rinse"],
+  ["KRU07216","H01098","to change, to exchange","to change, exchange"],
+  ["KRU07216","H01098","to be exchanged, to be mixed up","to be exchanged, mixed up"],
+  ["KRU07229","H01116","field, lot","lot, field"],
+  ["KRU08184","I00660","to paste, to line","to paste, line."],
+  ["KRU08586","J00278","young shoot","a young shoot"],
+  ["KRU08997","K00082","to withhold, to detain","to withhold, detain"],
+  ["KRU08993","K00081","to press, to squeeze","to press, squeeze."],
+  ["KRU09099","K00206","window, aperture","aperture, window"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  function reviewedEquivalent(source,item){
   if(!compatible(source.spelling,item.spelling))return false;
