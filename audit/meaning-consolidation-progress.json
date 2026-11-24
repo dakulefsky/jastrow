@@ -10,7 +10,9 @@
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1249
+    "reviewedSourceGlossPairCount": 1249,
+    "reviewedSourceAlternativePairCount": 1,
+    "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording."
   },
   "historicalCheckpoint": {
     "reportedCompleted": 29,
@@ -65,8 +67,8 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16911,
-    "status": "Awaiting regenerated inventory after the tenth reviewed tranche.",
-    "note": "Generated from current branch a0c797? inventory artifact belongs to commit 278bbbb010f1aaf83d48479bed7cba5123c706aa. Review queue only: token overlap ranks candidates; no fuzzy automatic merging."
+    "status": "Regenerating after individual-alternative matching and exclusion of already-reviewed alternative pairs.",
+    "note": "The generator now scores individual comma/semicolon-separated alternatives and reports the exact best-matching pair. It excludes already-reviewed whole-gloss and alternative-level pairs. Candidate overlap remains discovery evidence only; it never automatically approves a merge."
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -1833,5 +1835,25 @@
       ]
     ],
     "note": "Twenty-five same-sense variants were approved from the next inventory page. The D00017 mapping was checked against the original records: Jastrow's real reader phrase is 'to flow', matching Krupnik sense 1 'to flow'; Krupnik sense 2 'to flow out' remains distinct and is not merged into it."
+  },
+  "alternativeLevelReview": {
+    "status": "implemented-and-under-test",
+    "reviewedSourceAlternativePairs": 1,
+    "acceptedPairs": [
+      [
+        "KRU04451",
+        "C01128",
+        "to sigh heavily under an attack of angina pectoris",
+        "to sigh heavily under an attack of angina pectoris"
+      ]
+    ],
+    "rationale": "Jastrow C01128 has separate phrases for sighing heavily under an attack of angina pectoris and coughing/spitting blood. Krupnik KRU04451 has a combined gloss listing the first phrase plus 'to expectorate'. Only the exact shared phrase is consolidated; the unmatched Krupnik alternative and Jastrow's second sense remain separate.",
+    "safeguards": [
+      "Alternative mapping is scoped to exact source record IDs and exact source phrase.",
+      "Only the explicitly matched alternative is placed in the shared result.",
+      "Unmatched alternatives remain separate results.",
+      "Original complete source gloss is preserved in More detail.",
+      "Every Jastrow phrase is checked against the real Chromium reader extractor."
+    ]
   }
 }
