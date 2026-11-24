@@ -64,10 +64,10 @@ const globallyAmbiguousUnnumberedHomonym=merge([{word:'ברא',records:[
 assert.equal(globallyAmbiguousUnnumberedHomonym.length,2,'an unnumbered counterpart must remain separate when the full dictionary has multiple numbered homonyms, even if only one numbered entry is in this lookup');
 
 
-const unambiguousUnnumberedHomonym=merge([{word:'ברא',records:[
+const unambiguousUnnumberedHomonym=merge([{word:'בדיקה',records:[
  {word:'בדיקה²',rid:'KRU9025',parts:[{meaning:'משמעות',text:'משמעות',label:''}]},
  {word:'בדיקה',rid:'KRU9026',parts:[{meaning:'משמעות',text:'משמעות',label:''}]}
-]}],'ברא');
+]}],'בדיקה');
 assert.equal(unambiguousUnnumberedHomonym.length,1,'a numbered Hebrew record may consolidate with one unnumbered counterpart when no competing homonym exists');
 
 const distinctMeaning=merge([{word:'בדיקה',records:[
