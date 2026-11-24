@@ -9,7 +9,18 @@
   value=value.replace(/^[—\s]*\d+[).]?\s*/,'').replace(/\s+\d+[).]?\s*$/,'');
   return clean(value);
  };
- const parts=text=>String(text).split(/[,;]/).map(clean).filter(Boolean);
+ const glossAlternatives=text=>{
+  const out=[];let current='',depth=0;
+  for(const ch of String(text||'')){
+   if(ch==='(')depth++;
+   else if(ch===')')depth=Math.max(0,depth-1);
+   if((ch===','||ch===';')&&depth===0){if(clean(current))out.push(current.trim());current='';}
+   else current+=ch;
+  }
+  if(clean(current))out.push(current.trim());
+  return out;
+ };
+ const parts=text=>glossAlternatives(text).map(clean).filter(Boolean);
  // Canonicalize formatting variants of a complete gloss list. Alternatives
  // may be reordered; word order within each alternative remains significant.
  // Parenthetical explanations stay attached to their phrase. The first "to"
@@ -46,10 +57,17 @@
  // Match curated synonyms at the individual-gloss level as well as when the
  // whole gloss is a synonym. This lets "to happen" match the "occur" item in
  // "to occur, to take place" without treating arbitrary shared words as equal.
- const glossSynonymKeys=text=>parts(text).map(synonymKey);
+ const synonymGroupKey=text=>{
+  const value=clean(text);
+  return synonymGroups.find(group=>group.includes(value))?.[0]||null;
+ };
+ // A whole gloss may merge through a curated synonym group only when every
+ // alternative on both sides belongs to that same group. One shared synonym
+ // must not drag an unrelated extra sense into the consolidated result.
  const sharesReviewedSynonym=(a,b)=>{
-  const keys=new Set(glossSynonymKeys(a));
-  return glossSynonymKeys(b).some(key=>keys.has(key)&&synonymGroups.some(group=>group[0]===key));
+  const left=parts(a).map(synonymGroupKey),right=parts(b).map(synonymGroupKey);
+  return left.length>0&&right.length>0&&left.every(Boolean)&&right.every(Boolean)&&
+   new Set([...left,...right]).size===1;
  };
  // Manually reviewed cross-dictionary gloss equivalents. Each pair is scoped
  // to the same Hebrew headword, so an English phrase cannot merge unrelated
@@ -1294,9 +1312,16 @@
    let group=groups.find(g=>sameMeaning(g,item,word));
    if(!group){group={text:meaning.text,form:stem(meaning.label),spelling,sources:[],rank:S.vowelRank(entry,matchingWord)};groups.push(group);}
    if(!group.form)group.form=stem(meaning.label);
-   if(parts(meaning.text).length>parts(group.text).length)group.text=meaning.text;
    const rank=S.vowelRank(entry,matchingWord);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
-   if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label)))group.sources.push(item);
+   if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label))){
+    group.sources.push(item);
+    const display=[],seen=new Set();
+    for(const source of group.sources)for(const alternative of glossAlternatives(source.meaning.text)){
+     const key=clean(alternative);
+     if(key&&!seen.has(key)){seen.add(key);display.push(alternative);}
+    }
+    group.text=display.join(', ');
+   }
   }
   if(S.hasVowels(word))groups.sort((a,b)=>a.rank-b.rank);
   return groups;
