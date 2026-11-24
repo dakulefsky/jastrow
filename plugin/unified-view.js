@@ -1243,7 +1243,7 @@
   ["KRU02511", "B00495", "receptacles", "column-like receptacles"],
   ["KRU03264", "B01166", "intimate", "intimate, familiar"],
   ["KRU03295", "B01205", "cover", "wrapper, cover"],
-  ["KRU03562", "C00096", "the camels) hump", "hump."],
+  ["KRU03562", "C00096", "the camel's hump", "hump."],
   ["KRU03915", "C00491", "a trap or cage", "a trap"],
   ["KRU04005", "C00594", "imper. burn them", "burn them"],
   ["KRU04624", "C01357", "document", "bond, document"],
