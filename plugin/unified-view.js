@@ -21,7 +21,7 @@
   return out;
  };
  const parts=text=>glossAlternatives(text).map(clean).filter(Boolean);
- const alternativeKey=text=>clean(text).replace(/^(?:a|an|the)\\s+/,'');
+ const alternativeKey=text=>clean(text).replace(/^(?:a|an|the)\s+/,'');
  // Canonicalize formatting variants of a complete gloss list. Alternatives
  // may be reordered; word order within each alternative remains significant.
  // Parenthetical explanations stay attached to their phrase. The first "to"
