@@ -83,7 +83,7 @@ assert.equal(U.sharesReviewedSynonym('burn','to burn'),false,'noun and infinitiv
 // Alternative-level review: match the shared phrase while retaining
 // comma-listed synonyms in the same sense and Jastrow's semicolon-separated
 // second sense separately.
-assert.equal(U.reviewedSourceAlternativePairs.size,240,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,241,'every source-scoped alternative match must be loaded');
 const alternativeScoped=U.merge([
  {id:301,entry:{h:'גָּנַח',r:'KRU04451',source:'krupnik'},meanings:[{text:'to sigh heavily under an attack of angina pectoris, to expectorate',label:''}]},
  {id:302,entry:{h:'גָּנַח',r:'C01128'},meanings:[
