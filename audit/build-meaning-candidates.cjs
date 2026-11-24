@@ -77,7 +77,8 @@ const annotateExactPairRisks=list=>{
 };
 const riskFixture=[
  {exactAlternativeMatch:true,bestAlternativeMatch:{jastrow:'to smell badly',krupnik:'to smell badly'},jastrow:{ref:'J1',text:'to decay, to smell badly',label:'',section:'verb'},krupnik:{ref:'K1',text:'to smell badly',label:''}},
- {exactAlternativeMatch:true,bestAlternativeMatch:{jastrow:'to smell badly',krupnik:'to smell badly'},jastrow:{ref:'J1',text:'to become putrid; to smell badly',label:'Hif.',section:'verb'},krupnik:{ref:'K1',text:'to smell badly',label:''}}
+ {exactAlternativeMatch:true,bestAlternativeMatch:{jastrow:'to smell badly',krupnik:'to smell badly'},jastrow:{ref:'J1',text:'to become putrid; to smell badly',label:'Hif.',section:'verb'},krupnik:{ref:'K1',text:'to smell badly',label:''}},
+ {exactAlternativeMatch:true,bestAlternativeMatch:{jastrow:'to smell badly',krupnik:'to smell badly'},jastrow:{ref:'J1',text:'to smell badly',label:'Pael.',section:'verb'},krupnik:{ref:'K1',text:'to smell badly',label:''}}
 ];
 annotateExactPairRisks(riskFixture);
 assert(riskFixture.every(item=>item.reviewFlags.includes('multiple-jastrow-senses-share-this-exact-alternative')),'repeated exact alternatives across distinct Jastrow senses must be flagged');
