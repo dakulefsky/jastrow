@@ -20,7 +20,7 @@ const stop=new Set(('a an the to of for in on with from by as and or is be are w
 const tokens=value=>[...new Set(clean(value).replace(/[^a-z0-9' -]/g,' ').split(/\s+/).filter(t=>t.length>=3&&!stop.has(t)))];
 const stem=label=>clean(String(label||'').replace(/^[—\s]*\d+[).]?\s*/,'').replace(/\s+\d+[).]?\s*$/,''));
 const sharedForms=(a,b)=>{const left=[a.h,...(a.alt||[])],right=[b.h,...(b.alt||[])],forms=[];for(const x of left)for(const y of right)if(S.normalize(x)===S.normalize(y)&&S.vowelRank({h:x},y)!==2)forms.push(S.normalize(x));return [...new Set(forms)];};
-const voice=value=>/^to\s+be\s+/i.test(clean(value))?'passive':/^to\s+(?:get|become)\s+/i.test(clean(value))?'passive':'active';
+const voice=value=>/^to\s+be\s+/i.test(clean(value))?'passive':'active';
 (async()=>{
  const browser=await chromium.launch({executablePath,args:['--no-sandbox']});
  let phrasesByRef=new Map();
@@ -50,7 +50,7 @@ const voice=value=>/^to\s+be\s+/i.test(clean(value))?'passive':/^to\s+(?:get|bec
     const jt=tokens(jp.text),kt=tokens(kg.text);
     if(!jt.length||!kt.length||clean(jp.text)===clean(kg.text))continue;
     if(stem(jp.label)&&stem(kg.label)&&stem(jp.label)!==stem(kg.label))continue;
-    if(voice(jp.text)!==voice(kg.text)&&/^to\s+(?:be|get|become)\s+/i.test(clean(jp.text))&&/^to\s+(?:be|get|become)\s+/i.test(clean(kg.text)))continue;
+    if(/^to\s+/i.test(clean(jp.text))&&/^to\s+/i.test(clean(kg.text))&&voice(jp.text)!==voice(kg.text))continue;
     const overlap=jt.filter(t=>kt.includes(t));
     if(!overlap.length)continue;
     const score=overlap.length/Math.min(jt.length,kt.length);
