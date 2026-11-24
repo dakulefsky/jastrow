@@ -39,9 +39,8 @@ for(const pair of U.reviewedSourceAlternativePairs){
  assert(krupnik&&jastrow,'alternative source records exist for '+pair);
  assert((krupnik.glosses||[]).some(g=>splitAlternatives(g.text).some(value=>alternatives.some(expected=>alternativeKey(expected)===alternativeKey(value)))),
   'reviewed Krupnik alternative must occur inside its original gloss for '+pair);
- const jastrowAlternative=alternatives.find(value=>value);
- assert(jastrowAlternative,'reviewed alternative pair must contain an exact phrase');
- cases.push({ref:jastrowRef,html:jastrow.html,expected:jastrowAlternative,kind:'alternative'});
+ assert(alternatives.length===2&&alternatives.every(Boolean),'reviewed alternative pair must contain two source phrases');
+ cases.push({ref:jastrowRef,html:jastrow.html,expected:alternatives,kind:'alternative'});
 }
 (async()=>{
  const browser=await chromium.launch({executablePath,args:['--no-sandbox']});
@@ -51,7 +50,8 @@ for(const pair of U.reviewedSourceAlternativePairs){
   const results=await page.evaluate(cases=>cases.map(test=>{
    const body=document.createElement('div');body.innerHTML=test.html;
    const extracted=JastrowReadingView.phrases(body).map(p=>p.text.normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' '));
-   return {ref:test.ref,expected:test.expected,extracted,found:extracted.includes(test.expected)};
+   const expected=Array.isArray(test.expected)?test.expected:[test.expected];
+   return {ref:test.ref,expected,extracted,found:expected.some(value=>extracted.includes(value))};
   }),cases);
   const misses=results.filter(x=>!x.found);
   if(misses.length)console.error('UNMATCHED_REVIEWED_PAIRS='+JSON.stringify(misses));
