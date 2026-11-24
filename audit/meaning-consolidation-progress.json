@@ -4,7 +4,7 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 768,
+    "reviewedNonIdenticalGlossPairs": 769,
     "reviewedGlossEquivalenceGroups": 38,
     "realReaderPhraseExtractorAudit": "All retained source-scoped mappings are required to pass the Chromium audit against JastrowReadingView.phrases; the previous transcription typo in M01377 was corrected in source data.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
@@ -68,10 +68,10 @@
     "note": "Generated from current branch a0c797? inventory artifact belongs to commit 278bbbb010f1aaf83d48479bed7cba5123c706aa. Review queue only: token overlap ranks candidates; no fuzzy automatic merging."
   },
   "reviewedTranche": {
-    "addedUniqueSourceGlossPairs": 16,
+    "addedUniqueSourceGlossPairs": 17,
     "attemptedRows": 28,
     "rejectedNotDisplayed": 0,
-    "currentTotal": 702,
+    "currentTotal": 769,
     "acceptedPairs": [
       [
         "KRU08934",
@@ -240,9 +240,15 @@
         "U01649",
         "the seven letters which require crownlets in the Pentateuch scrolls",
         "the seven letters which require crownlets"
+      ],
+      [
+        "KRU09509",
+        "K00789",
+        "how! how many! how much!",
+        "how!, how many!, how much!"
       ]
     ],
-    "note": "Twenty-eight high-confidence candidate rows were reviewed; 16 added new unique normalized source-scoped equivalences (the remaining 12 were already represented by canonical mappings). Distinct additional senses and changes in grammatical/semantic scope were left unmerged. A missing comma in the mapping array was caught by the new count/mapping assertions and corrected."
+    "note": "The first interrogative gloss pair has two distinct reader-extracted phrase variants in the same Jastrow record; both were reviewed and matched to the corresponding Krupnik gloss. The pending inventory is used to catch alternate phrases from the same record that remain after an earlier mapping."
   },
   "hebrewConsolidation": {
     "status": "shared grouping layer in Hebrew reader and quick lookup; exact Hebrew alternative lists now consolidate despite punctuation/order differences",
