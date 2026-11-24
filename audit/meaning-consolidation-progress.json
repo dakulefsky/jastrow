@@ -59,18 +59,18 @@
     "published": false
   },
   "candidateInventory": {
-    "generatedFromCommit": "2816a4e875ad37254f206ff9cca3dfffedeb79ae",
+    "generatedFromCommit": "d2d6029f9fe3cec81d1b18126913368307e29b1c",
     "sourceEntries": 47919,
     "jastrowEntries": 32508,
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
-    "candidates": 4497,
-    "exactAlternativeCandidates": 2685,
-    "exactAlternativeCandidatesWithAmbiguityFlags": 78,
-    "exactAlternativeCandidatesWithoutDirectAmbiguityFlags": 2607,
-    "remainingNonExactCandidates": 1812,
-    "note": "Counts are discovery statistics, not accepted semantic equivalence decisions. Runtime matching applies additional one-to-one sense guards."
+    "candidates": 4472,
+    "exactAlternativeCandidates": 2657,
+    "runtimeRuleHandledCandidates": 2264,
+    "ambiguityFlaggedExactCandidates": 393,
+    "nonExactSemanticCandidates": 1815,
+    "note": "Runtime-rule counts mirror the guarded one-to-one exact-alternative matcher. Candidates marked handled are consolidated only when source-sense and grammatical-label ambiguity checks pass. Ambiguous exact matches and non-exact lexical-overlap candidates remain human-review work."
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
