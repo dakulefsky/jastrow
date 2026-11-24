@@ -29,6 +29,18 @@ if(!vowelCompatible('כבש','כָּבַשׁ'))throw new Error('Unpointed headwo
 const clean=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[^a-z0-9' -]/g,' ').replace(/\s+/g,' ').trim();
 const stop=new Set('a an the to of for in on with from by as and or is be are was were being been it this that these those one some any all which who what where when into unto over under without before after during through'.split(' '));
 const tokens=value=>[...new Set(clean(value).split(' ').filter(t=>t.length>=3&&!stop.has(t)))];
+const grammaticalCompatible=(a,b)=>{
+ const va=/^to\s+/.test(clean(a)),vb=/^to\s+/.test(clean(b));
+ if(va!==vb)return false;
+ if(va){
+  const pa=/^to\s+be\s+/.test(clean(a)),pb=/^to\s+be\s+/.test(clean(b));
+  if(pa!==pb)return false;
+ }
+ return true;
+};
+if(grammaticalCompatible('to be lame','lame'))throw new Error('Candidate queue must preserve verb/adjective distinctions');
+if(grammaticalCompatible('to be crushed','to crush, to be crushed'))throw new Error('Candidate queue must preserve active/passive distinctions');
+if(!grammaticalCompatible('to plait','to braid'))throw new Error('Same-part-of-speech synonyms should remain reviewable');
 const byWord=new Map();
 for(const entry of dictionary.entries)for(const word of [entry.word,...(entry.alt||[])]){
  const key=normalize(word);if(!key)continue;
@@ -48,6 +60,7 @@ for(const [key,records] of byWord){
    const itemA={e:a,p:pa},itemB={e:b,p:pb};
    if(context.HebrewMeaningConsolidation.reviewedSynonymPairs.has(context.HebrewMeaningConsolidation.pairKey(itemA,itemB)))continue;
    const ea=clean(pa.english),eb=clean(pb.english);
+   if(ea&&eb&&!grammaticalCompatible(ea,eb))continue;
    const ta=tokens(ea),tb=tokens(eb);
    const overlap=ta.filter(t=>tb.includes(t)),jaccard=ta.length&&tb.length?overlap.length/new Set([...ta,...tb]).size:0;
    const refs=[a.rid,b.rid].sort();
@@ -69,7 +82,7 @@ const report={
  method:{
   source:'Original Krupnik and Silbermann Hebrew definitions with their embedded original English gloss metadata',
   headwordMatching:'HebrewLookup.normalize across primary and alternate headwords, with conflicts between two explicitly pointed forms excluded',
-  alignment:'All non-identical Hebrew meaning pairs from repeated normalized headwords are queued; original English gloss overlap is shown as a ranking clue, not a hard filter',
+  alignment:'Non-identical Hebrew meanings from repeated normalized headwords are queued; English gloss overlap ranks candidates, and obvious verb/non-verb or active/passive mismatches are excluded',
   safeguards:'Different explicit grammatical labels are excluded; identical Hebrew glosses are already handled by exact grouping; approved source-scoped synonym pairs are excluded from the queue',
   limitation:'English overlap is only an alignment clue. Reviewers must confirm the Hebrew definitions express the same sense before approving a merge.'
  },
