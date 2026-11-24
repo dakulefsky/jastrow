@@ -10,6 +10,28 @@
   return clean(value);
  };
  const parts=text=>String(text).split(/[,;]/).map(clean).filter(Boolean);
+ // Canonicalize formatting variants of a complete gloss list. Alternatives
+ // may be reordered; word order within each alternative remains significant.
+ // Parenthetical explanations stay attached to their phrase. The first "to"
+ // marks a verb list; later coordinated items may repeat or omit that marker.
+ const canonicalGlossKey=text=>{
+  const value=String(text||'').normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-');
+  const alternatives=[];let current='',depth=0;
+  for(const ch of value){
+   if(ch==='(')depth++;
+   else if(ch===')')depth=Math.max(0,depth-1);
+   if((ch===','||ch===';')&&depth===0){alternatives.push(current);current='';}
+   else current+=ch;
+  }
+  alternatives.push(current);
+  const first=clean(alternatives[0]||''),verbList=/^to\\s+/.test(first);
+  const normalized=alternatives.map((part,index)=>{
+   let item=clean(part).replace(/\\bto\\s+to\\b/g,'to').replace(/^(?:a|an|the)\\s+/,'');
+   if(index>0&&verbList)item=item.replace(/^to\\s+/,'');
+   return item.replace(/[.,;:!?()[\\]{}]+/g,' ').replace(/\\s+/g,' ').trim();
+  }).filter(Boolean);
+  return [...new Set(normalized)].sort().join(' | ');
+ };
  // Small exact synonym groups; no token-overlap or stemming heuristics.
  const synonymGroups=[
   ['sometimes','at times','from time to time','occasionally'],
@@ -802,7 +824,7 @@
  function sameMeaning(group,item,word){
   const itemForm=stem(item.meaning.label);
   if(!compatibleForm(group.form,itemForm)||!group.sources.every(s=>compatible(s.spelling,item.spelling,word)))return false;
-  return synonymKey(group.text)===synonymKey(item.meaning.text)||
+  return canonicalGlossKey(group.text)===canonicalGlossKey(item.meaning.text)||\n   synonymKey(group.text)===synonymKey(item.meaning.text)||
    sharesReviewedSynonym(group.text,item.meaning.text)||
    group.sources.some(s=>reviewedEquivalent(s,item)||reviewedGlossEquivalent(s,item));
  }
@@ -863,5 +885,5 @@
   if(withoutMeanings.length){const details=element('details',undefined,'scholarly-entry original-only');details.append(element('summary','Additional dictionary references'));withoutMeanings.forEach((r,i)=>details.append(sourceBlock({...r,meaning:{text:'',label:''}},i)));section.append(details);}
   return section;
  }
- const api={merge,render,compatible,synonymKey,sharesReviewedSynonym,reviewedGlossPairs,reviewedSourceGlossPairs,reviewedSourceGlossPairCount:reviewedSourceGlossPairs.size};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.DictionaryMeanings=api;
+ const api={merge,render,compatible,synonymKey,sharesReviewedSynonym,canonicalGlossKey,reviewedGlossPairs,reviewedSourceGlossPairs,reviewedSourceGlossPairCount:reviewedSourceGlossPairs.size};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.DictionaryMeanings=api;
 })(typeof window!=='undefined'?window:globalThis);
