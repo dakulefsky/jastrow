@@ -73,7 +73,21 @@
   ['glue','paste'],
   ['to grow better','to improve'],
   // KRU08802 / J00557
-  ['to set on fire','to burn']
+  ['to set on fire','to burn'],
+  // KRU18419 / T01148: "to tremble, shake"
+  ['to tremble','to shake'],
+  // KRU18409 / T01130: "indulgence, clemency"
+  ['indulgence','clemency'],
+  // KRU15738 / Q01337: "caterer, purveyor"
+  ['caterer','purveyor'],
+  // KRU15729 / Q01325: "to be disqualified, made unfit, declared unfit"
+  ['to be disqualified','to be made unfit','to be declared unfit'],
+  // KRU15744 / Q01350: "to apportion, assign"
+  ['to apportion','to assign'],
+  // KRU15744 / Q01350: "to recite a verse"
+  ['to recite a Bible verse','to recite a verse'],
+  // KRU18405 / T01122: "to bubble, boil"
+  ['to bubble','to boil']
  ];
  const synonymKey=text=>{
   const value=clean(text);
@@ -90,10 +104,11 @@
  // alternative on both sides belongs to that same group. One shared synonym
  // must not drag an unrelated extra sense into the consolidated result.
  const synonymParts=text=>{
-  const values=parts(text),coordinatedVerb=/^to\s+/.test(values[0]||'');
-  // Dictionary glosses often write "to frighten, scare": the second
-  // infinitive marker is understood, not a change to a noun.
-  return values.map(value=>coordinatedVerb&&!/^to\s+/.test(value)?'to '+value:value);
+  const values=parts(text),first=values[0]||'';
+  const coordinatedPrefix=/^to\s+be\s+/.test(first)?'to be ':/^to\s+/.test(first)?'to ':'';
+  // Coordinated lists may omit a repeated active "to" or passive "to be".
+  // Restore only the marker established by the first alternative.
+  return values.map(value=>coordinatedPrefix&&!/^to\s+/.test(value)?coordinatedPrefix+value:value);
  };
  const sharesReviewedSynonym=(a,b)=>{
   const left=synonymParts(a).map(synonymGroupKey),right=synonymParts(b).map(synonymGroupKey);
