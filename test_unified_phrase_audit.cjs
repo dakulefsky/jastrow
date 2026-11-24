@@ -10,7 +10,7 @@ for(const file of fs.readdirSync(dataDir).filter(n=>/^(?:chunk-\d+|krupnik-\d+)\
 }
 const byRef=new Map(Object.values(context.window.JASTROW_CHUNKS).flatMap(chunk=>Object.values(chunk)).filter(e=>e.r).map(e=>[e.r,e]));
 const clean=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
-const alternativeKey=value=>clean(value).replace(/^(?:a|an|the)\s+/,'');
+const alternativeKey=value=>clean(value).replace(/^(?:a|an|the)\s+/,'').replace(/^to\s+/,'');
 const cases=[];
 const splitAlternatives=value=>{
  const out=[];let current='',depth=0;
