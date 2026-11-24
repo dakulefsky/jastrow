@@ -60,6 +60,26 @@ assert.equal(mixedSynonymAndDistinctSense.length,2,'a shared curated synonym mus
 assert.equal(U.sharesReviewedSynonym('to happen','to occur, to take place'),true);
 assert.equal(U.sharesReviewedSynonym('to happen','to occur, charge'),false);
 
+// Alternative-level review: match only the shared sense, keeping the
+// unrelated alternative in the Krupnik gloss and Jastrow's second sense apart.
+assert.equal(U.reviewedSourceAlternativePairs.size,1);
+const alternativeScoped=U.merge([
+ {id:301,entry:{h:'גָּנַח',r:'KRU04451',source:'krupnik'},meanings:[{text:'to sigh heavily under an attack of angina pectoris, to expectorate',label:''}]},
+ {id:302,entry:{h:'גָּנַח',r:'C01128'},meanings:[
+  {text:'to sigh heavily under an attack of angina pectoris',label:''},
+  {text:'to cough and spit blood',label:''}
+ ]}
+],'גָּנַח');
+assert.equal(alternativeScoped.length,3,'only the explicitly matched alternative should consolidate');
+const matchedSigh=alternativeScoped.find(group=>group.text==='to sigh heavily under an attack of angina pectoris');
+const krupnikRemainder=alternativeScoped.find(group=>group.text==='to expectorate');
+const jastrowOtherSense=alternativeScoped.find(group=>group.text==='to cough and spit blood');
+assert.equal(matchedSigh.sources.length,2,'the matched alternative must retain both dictionary sources');
+assert.equal(krupnikRemainder.sources.length,1,'the unmatched Krupnik alternative must remain separate');
+assert.equal(jastrowOtherSense.sources.length,1,'the second Jastrow sense must remain separate');
+assert.equal(matchedSigh.sources.find(source=>source.entry.r==='KRU04451').meaning.text,'to sigh heavily under an attack of angina pectoris, to expectorate','More detail must retain the full original Krupnik gloss');
+
+
 // Exact gloss-list equivalence is normalized for punctuation, ordering,
 // articles, and coordinated infinitive markers without using word overlap.
 const formatOnly=U.merge([
