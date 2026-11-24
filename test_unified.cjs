@@ -335,8 +335,9 @@ const pigeonAndBerry=U.merge([
  {id:446,entry:{h:'פְּרִידָה',r:'KRU15983',source:'krupnik'},meanings:[{text:'single pigeon',label:'1'},{text:'a single berry',label:'2'}]},
  {id:447,entry:{h:'פְּרִידָה',r:'Q01791',source:'jastrow'},meanings:[{text:'one of a pair of pigeons, single pigeon',label:''},{text:'a single berry; a slice',label:''}]}
 ],'פרידה');
-assert.equal(pigeonAndBerry.length,2,'the pigeon and berry senses must remain separate despite sharing a headword');
-assert(pigeonAndBerry.every(group=>group.sources.length===2),'each pigeon/berry sense should consolidate with its corresponding source only');
+assert.equal(pigeonAndBerry.length,3,'the pigeon, berry, and separate slice senses must remain distinct');
+assert.equal(pigeonAndBerry.filter(group=>group.sources.length===2).length,2,'the pigeon and berry senses should consolidate with their corresponding source records');
+assert(pigeonAndBerry.some(group=>group.sources.length===1&&group.text==='a slice'),'the additional semicolon-separated slice sense must remain separate');
 
 const pairedNumericalGloss=U.merge([
  {id:448,entry:{h:'פְּרוֹטְרוֹט',r:'KRU15920',source:'krupnik'},meanings:[{text:'detail number, odd sum',label:''}]},
