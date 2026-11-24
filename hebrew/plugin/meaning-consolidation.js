@@ -77,8 +77,13 @@
     if(!group.label)group.label=label;
     if(!group.items.some(x=>x.e.rid===entry.rid&&x.p===part&&normalize(itemMeaning(x))===normalize(displayMeaning))){
      group.items.push(item);
-     group.displayTexts=[...new Set(group.items.map(x=>String(itemMeaning(x)).trim()).filter(Boolean))];
-     group.text=group.displayTexts.join(' / ');
+     const displayTexts=[],seen=new Set();
+     for(const existing of group.items)for(const alternative of splitAlternatives(itemMeaning(existing))){
+      const key=normalize(alternative);
+      if(key&&!seen.has(key)){seen.add(key);displayTexts.push(alternative);}
+     }
+     group.displayTexts=displayTexts;
+     group.text=group.displayTexts.join(', ');
     }
    }
   }
