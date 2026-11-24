@@ -57,6 +57,13 @@ const ambiguousUnnumberedHomonym=merge([{word:'ברא',records:[
 ]}],'ברא');
 assert.equal(ambiguousUnnumberedHomonym.length,3,'an unnumbered Hebrew record must not be arbitrarily attached when multiple numbered homonyms are present');
 
+const globallyAmbiguousUnnumberedHomonym=merge([{word:'ברא',records:[
+ {word:'בְּרָא²',rid:'KRU9027',parts:[{meaning:'נקב',text:'נקב',label:''}]},
+ {word:'בְּרָא',rid:'KRU9028',parts:[{meaning:'נקב',text:'נקב',label:''}]}
+]}],'ברא');
+assert.equal(globallyAmbiguousUnnumberedHomonym.length,2,'an unnumbered counterpart must remain separate when the full dictionary has multiple numbered homonyms, even if only one numbered entry is in this lookup');
+
+
 const unambiguousUnnumberedHomonym=merge([{word:'ברא',records:[
  {word:'בְּרָא²',rid:'KRU9025',parts:[{meaning:'נקב',text:'נקב',label:''}]},
  {word:'בְּרָא',rid:'KRU9026',parts:[{meaning:'נקב',text:'נקב',label:''}]}
