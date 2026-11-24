@@ -21,6 +21,7 @@
   return out;
  };
  const parts=text=>glossAlternatives(text).map(clean).filter(Boolean);
+ const alternativeKey=text=>clean(text).replace(/^(?:a|an|the)\\s+/,'');
  // Canonicalize formatting variants of a complete gloss list. Alternatives
  // may be reordered; word order within each alternative remains significant.
  // Parenthetical explanations stay attached to their phrase. The first "to"
@@ -1495,16 +1496,16 @@
  ));
  function meaningBuckets(ref,meaning){
   const alternatives=glossAlternatives(meaning.text),mappings=alternativePairsByRef.get(ref)||[];
-  const matched=mappings.filter(mapping=>alternatives.some(value=>clean(value)===clean(mapping.own)));
+  const matched=mappings.filter(mapping=>alternatives.some(value=>alternativeKey(value)===alternativeKey(mapping.own)));
   if(!matched.length)return [{text:meaning.text,bucketId:null}];
   const consumed=new Set(),buckets=[];
   for(const mapping of matched){
-   const value=alternatives.find(item=>clean(item)===clean(mapping.own));
+   const value=alternatives.find(item=>alternativeKey(item)===alternativeKey(mapping.own));
    if(!value)continue;
-   consumed.add(clean(value));
+   consumed.add(alternativeKey(value));
    buckets.push({text:value,bucketId:'reviewed-alternative:'+mapping.key});
   }
-  const residual=alternatives.filter(value=>!consumed.has(clean(value)));
+  const residual=alternatives.filter(value=>!consumed.has(alternativeKey(value)));
   if(residual.length)buckets.push({text:residual.join(', '),bucketId:'unmatched-alternatives:'+ref+':'+clean(meaning.label)+':'+residual.map(clean).join('|')});
   return buckets;
  }
@@ -1542,8 +1543,8 @@
     const rank=S.vowelRank(entry,matchingWord);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
     if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label)))group.sources.push(sourceItem);
     for(const alternative of glossAlternatives(bucket.text)){
-     const key=clean(alternative);
-     if(key&&!group.displayAlternatives.some(value=>clean(value)===key))group.displayAlternatives.push(alternative);
+     const key=alternativeKey(alternative);
+     if(key&&!group.displayAlternatives.some(value=>alternativeKey(value)===key))group.displayAlternatives.push(alternative);
     }
     group.text=group.displayAlternatives.join(', ');
    }
