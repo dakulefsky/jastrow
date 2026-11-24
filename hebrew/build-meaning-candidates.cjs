@@ -52,7 +52,7 @@ for(const [key,records] of byWord){
    const glosses=[normalize(ha),normalize(hb)].sort();
    const keyId=[key,...refs,...glosses].join('::');
    candidates.set(keyId,{
-    headword:a.word,normalizedHeadword:key,
+    headword:a.word,normalizedHeadword:key,sharedHeadwordForm:key,
     sourceA:{rid:a.rid,headword:a.word,label:pa.label||'',hebrew:ha,fullHebrew:pa.text||'',english:pa.english||''},
     sourceB:{rid:b.rid,headword:b.word,label:pb.label||'',hebrew:hb,fullHebrew:pb.text||'',english:pb.english||''},
     sharedEnglishTerms:overlap,jaccard:Number(jaccard.toFixed(3)),englishGlossesIdentical:!!ea&&ea===eb,
