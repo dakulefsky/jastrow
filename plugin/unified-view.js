@@ -149,12 +149,12 @@
   const text=String(value||'').trim();
   const superscript=text.match(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+$/);
   if(superscript)return Number([...superscript[0]].map(ch=>'⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join(''));
-  const roman=text.match(/(?:^|\\s)(I{1,3}|IV|V|VI|VII|VIII|IX|X)$/i);
+  const roman=text.match(/(?:^|\s)(I{1,3}|IV|V|VI|VII|VIII|IX|X)$/i);
   if(roman){
    const values={I:1,II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8,IX:9,X:10};
    return values[roman[1].toUpperCase()]||null;
   }
-  const arabic=text.match(/(?:^|\\s)(\\d+)$/);
+  const arabic=text.match(/(?:^|\s)(\d+)$/);
   return arabic?Number(arabic[1]):null;
  };
  function compatible(a,b,word){
