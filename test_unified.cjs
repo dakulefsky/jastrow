@@ -83,7 +83,7 @@ assert.equal(U.sharesReviewedSynonym('burn','to burn'),false,'noun and infinitiv
 // Alternative-level review: match the shared phrase while retaining
 // comma-listed synonyms in the same sense and Jastrow's semicolon-separated
 // second sense separately.
-assert.equal(U.reviewedSourceAlternativePairs.size,192,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,209,'every source-scoped alternative match must be loaded');
 const alternativeScoped=U.merge([
  {id:301,entry:{h:'גָּנַח',r:'KRU04451',source:'krupnik'},meanings:[{text:'to sigh heavily under an attack of angina pectoris, to expectorate',label:''}]},
  {id:302,entry:{h:'גָּנַח',r:'C01128'},meanings:[
@@ -262,6 +262,39 @@ const pledgeSense=U.merge([
  {id:414,entry:{h:'מִשְׁכֵּן',r:'M02905',source:'jastrow'},meanings:[{text:'to take a pledge; to seize, levy',label:''}]}
 ],'משכן');
 assert.equal(pledgeSense.length,2,'a separately delimited seize/levy sense must not be absorbed by the pledge match');
+
+
+const parentheticalShake=U.merge([
+ {id:421,entry:{h:'נוּד ²',r:'KRU12449',source:'krupnik'},meanings:[{text:'to shake (the head)',label:''}]},
+ {id:422,entry:{h:'נוּד ²',r:'N00308',source:'jastrow'},meanings:[{text:'to shake the head, sympathize',label:''}]}
+],'נוד');
+assert.equal(parentheticalShake.length,1,'parenthetical clarification must not block an otherwise exact reviewed phrase');
+assert.equal(parentheticalShake[0].sources.length,2,'parenthetical normalization must preserve both source records');
+assert(parentheticalShake[0].text.includes('sympathize'),'the unmatched synonym in the original sense must remain visible');
+
+const parentheticalCeiling=U.merge([
+ {id:423,entry:{h:'סְכָךְ',r:'KRU13620',source:'krupnik'},meanings:[{text:'cover, ceiling (of twigs)',label:''}]},
+ {id:424,entry:{h:'סְכָךְ',r:'O00906',source:'jastrow'},meanings:[{text:'ceiling of twigs',label:''}]}
+],'סכך');
+assert.equal(parentheticalCeiling.length,1,'parenthetical wording should normalize for the reviewed ceiling sense');
+assert.equal(parentheticalCeiling[0].sources.length,2,'the ceiling sense must retain both source entries');
+assert(parentheticalCeiling[0].text.includes('cover'),'the other original gloss alternative must remain visible');
+
+const pressAndWring=U.merge([
+ {id:425,entry:{h:'סָחַט',r:'KRU13347',source:'krupnik'},meanings:[{text:'to press out, to wring',label:''}]},
+ {id:426,entry:{h:'סָחַט',r:'O00452',source:'jastrow'},meanings:[{text:'to press out, wring, cause to flow',label:''}]}
+],'סחט');
+assert.equal(pressAndWring.length,1,'two reviewed alternatives from the same source sense should consolidate together');
+assert.equal(pressAndWring[0].sources.length,2,'the press/wring result must preserve both source entries');
+assert(pressAndWring[0].text.includes('cause to flow'),'unmatched alternatives in the same sense must remain visible');
+
+const oldAgeAndGreyHead=U.merge([
+ {id:427,entry:{h:'סֵיבוּ',r:'KRU13399',source:'krupnik'},meanings:[{text:'old age',label:''}]},
+ {id:428,entry:{h:'סֵיבוּ',r:'KRU13404',source:'krupnik'},meanings:[{text:'gray head',label:''}]},
+ {id:429,entry:{h:'סֵיבוּ',r:'O00530',source:'jastrow'},meanings:[{text:'gray head, old age',label:''}]}
+],'סיבו');
+assert.equal(oldAgeAndGreyHead.length,1,'the two source-attested alternatives in one Jastrow sense should consolidate together');
+assert.equal(oldAgeAndGreyHead[0].sources.length,3,'both Krupnik entries and the Jastrow entry must remain cited');
 
 console.log('PASS: real alternate-headword vowel matches, partial pointing, cantillation, conservative synonym consolidation, complete source references, and distinct stem/qualified senses.');
 assert.equal(U.merge([{id:1,entry:{h:'חוב'},meanings:[{text:'charge',label:''}]},{id:2,entry:{h:'חוב'},meanings:[{text:'charge, accusation',label:''}]}],'חוב').length,2,'a one-word overlap must not erase a distinct qualified sense');
