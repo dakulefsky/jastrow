@@ -1152,7 +1152,7 @@
   ["KRU18826","U00720","to set free","to set free, emancipate"],
   ["KRU18839","U00749","spread, mat","spread, rug, mat"],
   ["KRU08934", "J00748", "a person having an additional limb", "additional, a person having an additional limb"],
-  ["KRU09509", "K00789", "how! how many! how much!", "how much?, how many?"],
+  ["KRU09509", "K00789", "how! how many! how much!", "how!, how many!, how much!"],
   ["KRU16068", "Q01943", "to collect payment", "to collect payment from"],
   ["KRU17577", "S01744", "mimic intimation", "mimic intimation of"],
   ["KRU07227", "H01112", "to be divided", "to be divided up"],
