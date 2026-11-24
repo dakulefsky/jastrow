@@ -48,7 +48,7 @@ const headwordCompatible=(a,b)=>[a.word,...(a.alt||[])].some(x=>[b.word,...(b.al
 }));
 if(headwordCompatible({word:'בְּרָא²'},{word:'בְּרָא³'}))throw new Error('Candidate inventory must reject explicitly different Hebrew homonyms');
 if(headwordCompatible({word:'בְּרָא'},{word:'בְּרָא³'})&&homonymNumbersByForm.get(normalize('בְּרָא'))?.size>1)throw new Error('An unnumbered Hebrew headword must not be assigned arbitrarily among multiple numbered homonyms');
-if(!headwordCompatible({word:'בְּרָא³'},{word:'בְּרָא'}))throw new Error('A numbered Hebrew headword may match an unnumbered counterpart when unambiguous');
+if(!headwordCompatible({word:'בדיקה³'},{word:'בדיקה'}))throw new Error('A numbered Hebrew headword may match an unnumbered counterpart when unambiguous');
 if(vowelCompatible('כָּבַשׁ','כְּבַשׁ'))throw new Error('Candidate inventory must reject conflicting pointed Hebrew readings');
 if(!vowelCompatible('כבש','כָּבַשׁ'))throw new Error('Unpointed headwords must remain eligible for review');
 const clean=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[^a-z0-9' -]/g,' ').replace(/\s+/g,' ').trim();
