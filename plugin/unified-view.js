@@ -46,9 +46,33 @@
   return voice+':'+[...new Set(normalized)].sort().join(' | ');
  };
  // Small exact synonym groups; no token-overlap or stemming heuristics.
+ // Curated from explicit synonym lists in the original Jastrow/Krupnik
+ // records. These groups are applied only within the same headword and only
+ // when every alternative on both sides belongs to one group.
  const synonymGroups=[
   ['sometimes','at times','from time to time','occasionally'],
-  ['happen','to happen','occur','to occur','take place','to take place']
+  ['happen','to happen','occur','to occur','take place','to take place'],
+  // KRU03599 / C00144; KRU04953 / D00363
+  ['heap','pile','mound'],
+  ['present','gift'],
+  // KRU04950 / D00357; KRU04994 / D00411
+  ['sediment','lees','dregs'],
+  ['to frighten','to scare'],
+  // KRU04941 / D00341; KRU09989 / L00061
+  ['to dwell','to reside'],
+  ['edge','rim'],
+  // KRU11169 / M01058; KRU01598 / A02444
+  ['capital','metropolis'],
+  ['gathering','assembly'],
+  // KRU01183 / A01787; KRU01222 / A01866
+  ['deity','divinity'],
+  ['strength','force'],
+  // KRU04747 / D00073; KRU09881 / K01325
+  ['to glue','to paste'],
+  ['glue','paste'],
+  ['to grow better','to improve'],
+  // KRU08802 / J00557
+  ['to set on fire','to burn']
  ];
  const synonymKey=text=>{
   const value=clean(text);
