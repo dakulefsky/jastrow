@@ -88,8 +88,14 @@
  // A whole gloss may merge through a curated synonym group only when every
  // alternative on both sides belongs to that same group. One shared synonym
  // must not drag an unrelated extra sense into the consolidated result.
+ const synonymParts=text=>{
+  const values=parts(text),coordinatedVerb=/^to\\s+/.test(values[0]||'');
+  // Dictionary glosses often write "to frighten, scare": the second
+  // infinitive marker is understood, not a change to a noun.
+  return values.map(value=>coordinatedVerb&&!/^to\\s+/.test(value)?'to '+value:value);
+ };
  const sharesReviewedSynonym=(a,b)=>{
-  const left=parts(a).map(synonymGroupKey),right=parts(b).map(synonymGroupKey);
+  const left=synonymParts(a).map(synonymGroupKey),right=synonymParts(b).map(synonymGroupKey);
   return left.length>0&&right.length>0&&left.every(Boolean)&&right.every(Boolean)&&
    new Set([...left,...right]).size===1;
  };
