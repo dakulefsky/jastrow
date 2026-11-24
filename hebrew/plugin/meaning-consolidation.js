@@ -38,7 +38,7 @@
    dictionaryHomonymsByForm.get(key).add(number);
   }
   for(const part of entry.parts||[]){
-   const numeric=/^\\d+$/.test(String(part.label||'').trim())?Number(String(part.label).trim()):null;
+   const numeric=/^\d+$/.test(String(part.label||'').trim())?Number(String(part.label).trim()):null;
    if(numeric===null)continue;
    if(!dictionaryNumericLabelsByForm.has(key))dictionaryNumericLabelsByForm.set(key,new Set());
    dictionaryNumericLabelsByForm.get(key).add(numeric);
