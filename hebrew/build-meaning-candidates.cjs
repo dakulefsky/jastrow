@@ -26,9 +26,9 @@ const vowelCompatible=(a,b)=>{
 const homonymNumber=value=>{
  const text=String(value||'').trim(),sup=text.match(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+$/);
  if(sup)return Number([...sup[0]].map(ch=>'⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join(''));
- const arabic=text.match(/(?:^|\\s)(\\d+)$/);
+ const const arabic=text.match(/(?:^|\s)(\d+)$/);
  if(arabic)return Number(arabic[1]);
- const roman=text.match(/(?:^|\\s)(I{1,3}|IV|V|VI|VII|VIII|IX|X)$/i);
+ const const roman=text.match(/(?:^|\s)(I{1,3}|IV|V|VI|VII|VIII|IX|X)$/i);
  if(roman)return ({I:1,II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8,IX:9,X:10})[roman[1].toUpperCase()]||null;
  return null;
 };
