@@ -36,15 +36,12 @@
   if(!records.length&&String(word).trim().includes(' '))segments=root.HebrewLookup.segmentWords(word);
   const sources=segments?.length?segments.map(segment=>({word:segment.word,records:segment.records})):
    records.length?[{word:'',records}]:[];
-  const seen=new Set(),items=[];
-  for(const source of sources)for(const entry of source.records)for(const part of entry.parts){
-   const text=part.meaning||part.text,label=String(part.label||'').replace(/\b\d+\b/g,'').trim();
-   // Collapse identical Hebrew glosses across duplicate dictionary records,
-   // while keeping separate selected-word segments and distinct labels.
-   const key=[root.HebrewLookup.normalize(source.word||word),root.HebrewLookup.normalize(label),root.HebrewLookup.normalize(text)].join('|');
-   if(!seen.has(key)){seen.add(key);items.push({text,entry,hebrewMeaning:part.meaning||'',selectedWord:source.word||undefined});}
-  }
-  return items;
+  return root.HebrewMeaningConsolidation.merge(sources,word).map(group=>({
+   text:group.text,
+   entry:group.items[0].e,
+   hebrewMeaning:[...new Set(group.items.map(item=>item.p.meaning||'').filter(Boolean))].join('; '),
+   selectedWord:group.items[0].selectedWord
+  }));
  }
  async function applyOfflineRecommendation(word,items,selection,serial,epoch){
   if(!selection||!root.SefariaEvidence?.compareTranslation)return false;
