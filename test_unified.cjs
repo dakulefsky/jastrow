@@ -52,6 +52,20 @@ assert.equal(partSynonym.length,1,'a curated synonym inside a comma-separated gl
 assert.equal(partSynonym[0].sources.length,2,'part-level synonym consolidation must preserve both sources');
 assert.equal(partSynonym[0].text,'to occur, to take place','the fuller list of alternatives should remain the display gloss');
 
+// Exact gloss-list equivalence is normalized for punctuation, ordering,
+// articles, and coordinated infinitive markers without using word overlap.
+const formatOnly=U.merge([
+ {id:205,entry:{h:'גדע',r:'KRU-FMT-1'},meanings:[{text:'to cut, chop, lop off',label:''}]},
+ {id:206,entry:{h:'גדע',r:'FMT-1'},meanings:[{text:'to cut; to chop; to lop off.',label:''}]}
+],'גדע');
+assert.equal(formatOnly.length,1,'punctuation and coordinated infinitive formatting must not create duplicate meanings');
+assert.equal(formatOnly[0].sources.length,2,'format-only consolidation must preserve both source records');
+assert.equal(U.canonicalGlossKey('to cut, chop, lop off'),U.canonicalGlossKey('to cut; to chop; to lop off.'));
+assert.equal(U.canonicalGlossKey('bank, alluvial ground'),U.canonicalGlossKey('alluvial ground; bank'));
+assert.notEqual(U.canonicalGlossKey('to lament'),U.canonicalGlossKey('lament'),'a single infinitive must remain distinct from a noun/adjective');
+assert.notEqual(U.canonicalGlossKey('father’s brother'),U.canonicalGlossKey('brother’s father'),'word order inside a meaning must remain significant');
+assert.notEqual(U.canonicalGlossKey('charge, fee'),U.canonicalGlossKey('charge, accusation'),'a shared word must not equate different gloss lists');
+
 // Similar words outside the curated synonym list must not be enough.
 const unreviewedPartOverlap=U.merge([
  {id:203,entry:{h:'קם'},meanings:[{text:'charge, fee',label:''}]},
