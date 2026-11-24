@@ -868,7 +868,22 @@
   ["KRU07816","I00183","secret place","secret, hiding place"],
   ["KRU08187","I00662","of secondary import","attachment, of secondary import"],
   ["KRU08257","I00759","a head cover","t’ratin, a head cover."],
-  ["KRU08366","J00013","nice, right","fitting, right, nice"]
+  ["KRU08366","J00013","nice, right","fitting, right, nice"],
+  ["KRU10459","L00715","moistening the grain before grinding","moistening the grain"],
+  ["KRU10811","M00483","to make a hem","to make an edge, to hem"],
+  ["KRU10826","M00517","mime, actor","mimic actor, mime"],
+  ["KRU10883","M00594","a sort of state garments","state garments"],
+  ["KRU11082","M00929","to blot out","to rub out, blot out"],
+  ["KRU11135","M01002","place of banishment","exile, place of banishment"],
+  ["KRU11137","M01006","movable goods","movable goods, chattel"],
+  ["KRU11151","M01026","hidden place","hiding place, hidden place"],
+  ["KRU11420","M01459","easily crushed","brittle, easily crushed"],
+  ["KRU11808","M02168","Palestine (in the west of Babylonia)","the West, Palestine"],
+  ["KRU11834","M02200","throwing seed","dropping, throwing seed"],
+  ["KRU11959","M02452","Biblical verse","Biblical verse, text"],
+  ["KRU11990","M02522","pearl; jewel","gem, jewel, pearl"],
+  ["KRU11996","M02540","baker’s shovel","baker’s shovel, peel"],
+  ["KRU12059","M02677","a tool for crushing bones","a tool for crushing"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  function reviewedEquivalent(source,item){
   if(!compatible(source.spelling,item.spelling))return false;
