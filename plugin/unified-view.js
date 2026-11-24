@@ -1689,7 +1689,22 @@
   ["KRU13692","O01042","to cut chips","to cut chips"],
   ["KRU13714","O01078","to make blind","to make blind"],
   ["KRU13841","O01294","to be inflicted upon","to be inflicted upon"],
-  ["KRU13853","O01319","speaker at funerals","speaker at funerals"]
+  ["KRU13853","O01319","speaker at funerals","speaker at funerals"],
+  ["KRU13868","O01349","to give to eat","give to eat"],
+  ["KRU13949","O01497","to paint red","to paint red"],
+  ["KRU14015","O01635","to hold fast","hold fast"],
+  ["KRU14052","O01713","to tear down","tear down"],
+  ["KRU14077","P00029","thick with leaves","thick with leaves"],
+  ["KRU14321","P00450","upper garment","upper garment"],
+  ["KRU14344","P00490","dressing hides","dressing hides"],
+  ["KRU14354","P00500","disability to remarry","disability to remarry"],
+  ["KRU14375","P00532","covering (the head)","covering the head"],
+  ["KRU14403","P00582","upper chamber","upper chamber"],
+  ["KRU14408","P00592","using as a slave","using as a slave"],
+  ["KRU14485","P00687","exciting to lamentation","exciting to lamentation"],
+  ["KRU14534","P00749","to make turbid","make turbid"],
+  ["KRU14686","P01052","to do one thing while intending to do another thing","to do one thing while intending to do another thing"],
+  ["KRU14772","P01188","removal from place","removal from place"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
