@@ -37,6 +37,7 @@ const reviewed=merge([{word:'בדיקה',records:[
 ]}],'בדיקה');
 assert.equal(reviewed.length,1,'only an explicitly reviewed source-scoped Hebrew synonym pair should consolidate');
 assert.equal(reviewed[0].items.length,2,'reviewed Hebrew synonym consolidation must preserve both source records');
+assert.equal(reviewed[0].text,'הפסד / אובדן','the consolidated Hebrew gloss should visibly preserve both original synonym forms');
 function assertReviewedPair(a,b,word,meaningA,meaningB){
  const records=ctx.HEBREW_DICTIONARY.entries.filter(entry=>entry.rid===a||entry.rid===b);
  assert.equal(records.length,2,'both original Hebrew source records must exist: '+a+' / '+b);
