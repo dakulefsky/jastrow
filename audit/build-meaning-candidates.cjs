@@ -41,11 +41,12 @@ const voice=value=>/^to\s+be\s+/i.test(clean(value))?'passive':'active';
   if(!byForm.has(form))byForm.set(form,[]);
   byForm.get(form).push(entry);
  }
- const candidates=new Map();
+ const candidates=new Map(),matchedRecordPairs=new Set();
  for(const k of krupnik){
   const matches=new Map();
   for(const form of [k.h,...(k.alt||[])].map(S.normalize).filter(Boolean))for(const j of byForm.get(form)||[]){const forms=sharedForms(j,k);if(forms.length)matches.set(j.r,{entry:j,forms});}
   for(const {entry:j,forms} of matches.values()){
+   matchedRecordPairs.add(j.r+'|'+k.r);
    for(const jp of phrasesByRef.get(j.r)||[])for(const kg of k.glosses||[]){
     const jt=tokens(jp.text),kt=tokens(kg.text);
     if(!jt.length||!kt.length||clean(jp.text)===clean(kg.text))continue;
@@ -81,10 +82,10 @@ const voice=value=>/^to\s+be\s+/i.test(clean(value))?'passive':'active';
    headwordMatching:'Jastrow Search.normalize across primary and alternate headword spellings',
    jastrowMeanings:'JastrowReadingView.phrases, the actual reader extractor',
    krupnikMeanings:'Original Krupnik gloss records',
-   candidateRule:'At least one shared content token and overlap coefficient >= 0.5; conflicting explicit grammatical labels are excluded; already-reviewed source pairs are excluded; no automatic merging or synonym inference',
+   candidateRule:'At least one shared content token and overlap coefficient >= 0.5; pointed-headword conflicts, explicit grammatical-label conflicts, and active/passive infinitive mismatches are excluded; already-reviewed pairs are excluded; no automatic merging',
    limitations:'Lexical overlap is only a review hint. Shared terms can represent distinct senses; grammatical labels and source context require manual review.'
   },
-  totals:{sourceEntries:entries.length,jastrowEntries:jastrow.length,krupnikEntries:krupnik.length,jastrowEntriesWithReaderPhrases:[...phrasesByRef.values()].filter(x=>x.length).length,sharedHeadwordRecordPairs:[...byForm.values()].reduce((n,a)=>n+a.length,0),candidates:list.length},
+  totals:{sourceEntries:entries.length,jastrowEntries:jastrow.length,krupnikEntries:krupnik.length,jastrowEntriesWithReaderPhrases:[...phrasesByRef.values()].filter(x=>x.length).length,sharedHeadwordRecordPairs:matchedRecordPairs.size,jastrowHeadwordIndexAssociations:[...byForm.values()].reduce((n,a)=>n+a.length,0),candidates:list.length},
   candidates:list
  };
  const output=path.join(__dirname,'meaning-consolidation-candidates.json');
