@@ -16,6 +16,13 @@
   if(a===null&&b===null)return true;
   return (knownNumbers?.size||0)<=1;
  };
+ const dictionaryHomonymsByForm=new Map();
+ for(const entry of root.HEBREW_DICTIONARY?.entries||[])for(const form of [entry.word,...(entry.alt||[])]){
+  const key=normalize(form),number=homonymNumber(form);
+  if(!key||number===null)continue;
+  if(!dictionaryHomonymsByForm.has(key))dictionaryHomonymsByForm.set(key,new Set());
+  dictionaryHomonymsByForm.get(key).add(number);
+ }
  // Exact Hebrew alternatives may be listed in a different order by the
  // source records. Normalize punctuation and order only; preserve word order
  // within each phrase and never infer synonyms from shared words.
@@ -71,9 +78,9 @@
   // meaning to consolidate while an extra sense in the fuller gloss stays
   // separate. Original full parts remain attached to every resulting item.
   const homonymsByScope=new Map();
-  for(const item of prepared)if(item.homonym!==null){
-   if(!homonymsByScope.has(item.scope))homonymsByScope.set(item.scope,new Set());
-   homonymsByScope.get(item.scope).add(item.homonym);
+  for(const item of prepared){
+   if(!homonymsByScope.has(item.scope))homonymsByScope.set(item.scope,new Set(dictionaryHomonymsByForm.get(item.scope)||[]));
+   if(item.homonym!==null)homonymsByScope.get(item.scope).add(item.homonym);
   }
   const compatibleInScope=(scope,a,b)=>homonymCompatible(a,b,homonymsByScope.get(scope));
   const splitParts=new Set();
