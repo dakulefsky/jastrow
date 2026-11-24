@@ -29,3 +29,12 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Verify every reviewed gloss is returned by the real extractor
         run: node test_unified_phrase_audit.cjs
+      - name: Build pending cross-dictionary meaning review queue
+        run: node audit/build-meaning-candidates.cjs
+      - name: Upload meaning review queue
+        uses: actions/upload-artifact@v4
+        with:
+          name: meaning-consolidation-candidates
+          path: audit/meaning-consolidation-candidates.json
+          if-no-files-found: error
+          retention-days: 30
