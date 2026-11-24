@@ -6,12 +6,12 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1249 retained whole-gloss mappings and all 63 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1249 retained whole-gloss mappings and all 113 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
     "reviewedSourceGlossPairCount": 1249,
-    "reviewedSourceAlternativePairCount": 63,
+    "reviewedSourceAlternativePairCount": 113,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 16,
     "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions.",
@@ -70,8 +70,8 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16911,
-    "status": "Regenerating after 63 reviewed alternative-level mappings, synonym-group expansion, and explicit homonym safeguards.",
-    "note": "The candidate generator now compares each Jastrow phrase and Krupnik gloss at individual alternative level, ranks exact alternatives first, records up to ten alternative-pair comparisons, excludes reviewed whole-gloss and alternative pairs, and rejects conflicting explicit homonym numbers. Candidate overlap is still review evidence only."
+    "status": "Regenerating after 113 alternative-level reviews and semicolon-boundary refinement.",
+    "note": "The reviewer now consolidates a matched comma-delimited sense segment as a whole, rather than splitting out every comma phrase. Semicolon-separated senses remain separate. The inventory excludes reviewed source alternatives and explicit homonym conflicts."
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -1840,8 +1840,8 @@
     "note": "Twenty-five same-sense variants were approved from the next inventory page. The D00017 mapping was checked against the original records: Jastrow's real reader phrase is 'to flow', matching Krupnik sense 1 'to flow'; Krupnik sense 2 'to flow out' remains distinct and is not merged into it."
   },
   "alternativeLevelReview": {
-    "status": "expanded-with-63-source-scoped-alternative-matches",
-    "reviewedSourceAlternativePairs": 63,
+    "status": "expanded-with-113-source-scoped-alternative-matches",
+    "reviewedSourceAlternativePairs": 113,
     "acceptedPairs": [
       [
         "KRU04451",
@@ -1857,7 +1857,8 @@
       "Unmatched alternatives remain separate results.",
       "Original complete source gloss is preserved in More detail.",
       "Every Jastrow phrase is checked against the real Chromium reader extractor."
-    ]
+    ],
+    "policy": "A reviewed alternative match joins the full semicolon-delimited sense segment containing it, not just the isolated comma-separated word or phrase. Comma-listed gloss alternatives stay together as one sense; semicolon-separated senses remain separate. Original complete source wording is retained in More detail."
   },
   "synonymGroupReview": {
     "status": "expanded-with-source-attested-groups",
@@ -2413,5 +2414,319 @@
       ]
     ],
     "note": "These mappings were added at the individual-alternative level, not as whole-gloss equivalences. For example, matching 'to rest upon one as a duty' does not pull Jastrow's separate 'to hover around one's head' or 'to take effect' into the same result."
+  },
+  "thirdAlternativeReviewedTranche": {
+    "attemptedPairs": 50,
+    "addedUniqueSourceAlternativePairs": 50,
+    "status": "accepted-exact-and-coordinated-alternative-pairs",
+    "rationale": "The batch includes 44 exact or formatting-normalized individual alternative matches and six coordinated-verb matches where one source omits the repeated 'to'. Each pair was discovered under the same headword, with candidate filtering for conflicting explicit homonym numbers and grammatical labels. The merge now attaches the whole comma-delimited sense segment, preserving synonyms and explanations, while semicolon boundaries remain distinct.",
+    "acceptedPairs": [
+      [
+        "KRU03667",
+        "C00228",
+        "elevation to dignity",
+        "elevation to dignity"
+      ],
+      [
+        "KRU03803",
+        "C00364",
+        "a roll of parchment",
+        "a roll of parchment"
+      ],
+      [
+        "KRU03824",
+        "C00391",
+        "common soldier",
+        "common soldier"
+      ],
+      [
+        "KRU03853",
+        "C00424",
+        "a local skin-disease",
+        "a local skin-disease"
+      ],
+      [
+        "KRU03873",
+        "C00446",
+        "to become bold",
+        "to become bold"
+      ],
+      [
+        "KRU03884",
+        "C00456",
+        "to commit adultery with",
+        "to commit adultery with"
+      ],
+      [
+        "KRU03920",
+        "C00498",
+        "threshing floor",
+        "threshing floor"
+      ],
+      [
+        "KRU03920",
+        "C00498",
+        "harvesting season",
+        "harvesting season"
+      ],
+      [
+        "KRU03954",
+        "C00536",
+        "feast of circumcision",
+        "feast of circumcision"
+      ],
+      [
+        "KRU03954",
+        "C00536",
+        "circumcision",
+        "circumcision"
+      ],
+      [
+        "KRU03954",
+        "C00536",
+        "the circumcised membrum",
+        "the circumcised membrum"
+      ],
+      [
+        "KRU04009",
+        "C00598",
+        "a legal document",
+        "a legal document"
+      ],
+      [
+        "KRU04060",
+        "C00651",
+        "calendering clothes",
+        "calendering clothes"
+      ],
+      [
+        "KRU04099",
+        "C00690",
+        "to break forth",
+        "to break forth"
+      ],
+      [
+        "KRU04121",
+        "C00719",
+        "something rounded",
+        "something rounded"
+      ],
+      [
+        "KRU04220",
+        "C00830",
+        "descendant of proselytes",
+        "descendant of proselytes"
+      ],
+      [
+        "KRU04257",
+        "C00871",
+        "celestial sphere",
+        "celestial sphere"
+      ],
+      [
+        "KRU04320",
+        "C00941",
+        "margin of scrolls",
+        "margin of scrolls."
+      ],
+      [
+        "KRU04382",
+        "C01033",
+        "nuptial feast",
+        "nuptial feast"
+      ],
+      [
+        "KRU04389",
+        "C01042",
+        "teaming arrangement",
+        "teaming arrangement"
+      ],
+      [
+        "KRU04389",
+        "C01042",
+        "a small bridge",
+        "a small bridge"
+      ],
+      [
+        "KRU04410",
+        "C01065",
+        "last touch",
+        "last touch"
+      ],
+      [
+        "KRU04410",
+        "C01065",
+        "finishing",
+        "finishing"
+      ],
+      [
+        "KRU04586",
+        "C01296",
+        "broken ware",
+        "broken ware."
+      ],
+      [
+        "KRU04586",
+        "C01296",
+        "frippery",
+        "frippery"
+      ],
+      [
+        "KRU04602",
+        "C01321",
+        "to let off",
+        "to let off"
+      ],
+      [
+        "KRU04604",
+        "C01325",
+        "arid land",
+        "arid land"
+      ],
+      [
+        "KRU04223",
+        "C01376",
+        "acquired learning",
+        "acquired learning"
+      ],
+      [
+        "KRU04637",
+        "C01381",
+        "to form globules",
+        "to form globules"
+      ],
+      [
+        "KRU04646",
+        "C01393",
+        "to whet the appetite",
+        "to whet the appetite"
+      ],
+      [
+        "KRU04756",
+        "D00080",
+        "way of moving",
+        "way of moving"
+      ],
+      [
+        "KRU04800",
+        "D00144",
+        "price in gold",
+        "price in gold"
+      ],
+      [
+        "KRU05063",
+        "D00509",
+        "succession in government",
+        "succession in government"
+      ],
+      [
+        "KRU05288",
+        "D00803",
+        "drawer of water",
+        "drawer of water"
+      ],
+      [
+        "KRU05331",
+        "D00857",
+        "to kindle a light",
+        "to kindle a light"
+      ],
+      [
+        "KRU05332",
+        "D00858",
+        "burning material",
+        "burning material"
+      ],
+      [
+        "KRU05455",
+        "D01006",
+        "act of digging",
+        "act of digging"
+      ],
+      [
+        "KRU05539",
+        "D01113",
+        "to be trodden down",
+        "to be trodden down"
+      ],
+      [
+        "KRU05579",
+        "E00009",
+        "close attention",
+        "close attention"
+      ],
+      [
+        "KRU05614",
+        "E00057",
+        "setting bounds",
+        "setting bounds"
+      ],
+      [
+        "KRU05634",
+        "E00093",
+        "drawing near",
+        "drawing near"
+      ],
+      [
+        "KRU05877",
+        "E00525",
+        "verdict by a majority of one",
+        "verdict by a majority of one"
+      ],
+      [
+        "KRU05981",
+        "E00709",
+        "funeral address",
+        "funeral address"
+      ],
+      [
+        "KRU06071",
+        "E00854",
+        "precautionary measure",
+        "a precautionary measure"
+      ],
+      [
+        "KRU02786",
+        "B00752",
+        "to pass the night",
+        "pass the night."
+      ],
+      [
+        "KRU03169",
+        "B01075",
+        "to bubble forth",
+        "bubble forth"
+      ],
+      [
+        "KRU03169",
+        "B01075",
+        "to burst forth",
+        "burst forth"
+      ],
+      [
+        "KRU03223",
+        "B01137",
+        "to leave unclaimed",
+        "leave unclaimed"
+      ],
+      [
+        "KRU04602",
+        "C01321",
+        "to thrust",
+        "thrust"
+      ],
+      [
+        "KRU05484",
+        "D01043",
+        "to remove ashes",
+        "remove ashes"
+      ]
+    ],
+    "safeguards": [
+      "Whole comma-delimited segments are retained; only semicolon-separated senses split.",
+      "Coordinated infinitive variants are joined only by explicit source-scoped review.",
+      "Leading articles, punctuation, and apostrophe variants are normalized for matching.",
+      "Original source gloss remains visible in More detail."
+    ]
   }
 }
