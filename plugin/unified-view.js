@@ -145,7 +145,23 @@
   if(S.normalize(a.spelling)!==S.normalize(b.spelling))return false;
   return reviewedGlossPairs.has([clean(a.meaning.text),clean((b.sourceMeaning||b.meaning).text)].sort().join(' | '));
  };
+ const homonymNumber=value=>{
+  const text=String(value||'').trim();
+  const superscript=text.match(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+$/);
+  if(superscript)return Number([...superscript[0]].map(ch=>'⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join(''));
+  const roman=text.match(/(?:^|\\s)(I{1,3}|IV|V|VI|VII|VIII|IX|X)$/i);
+  if(roman){
+   const values={I:1,II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8,IX:9,X:10};
+   return values[roman[1].toUpperCase()]||null;
+  }
+  const arabic=text.match(/(?:^|\\s)(\\d+)$/);
+  return arabic?Number(arabic[1]):null;
+ };
  function compatible(a,b,word){
+  // Explicit homonym numbering is lexical evidence, not decoration. If both
+  // sources distinguish different numbered homonyms, never merge them.
+  const leftNumber=homonymNumber(a),rightNumber=homonymNumber(b);
+  if(leftNumber!==null&&rightNumber!==null&&leftNumber!==rightNumber)return false;
   // Consonantal identity is required for every lookup. Only enforce vowel
   // agreement when the user's query supplied vowels; unpointed lookup should
   // still combine the same consonantal headword across source vocalizations.
