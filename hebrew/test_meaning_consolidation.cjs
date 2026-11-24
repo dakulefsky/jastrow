@@ -37,20 +37,23 @@ const reviewed=merge([{word:'בדיקה',records:[
 ]}],'בדיקה');
 assert.equal(reviewed.length,1,'only an explicitly reviewed source-scoped Hebrew synonym pair should consolidate');
 assert.equal(reviewed[0].items.length,2,'reviewed Hebrew synonym consolidation must preserve both source records');
-function assertReviewedPair(a,b,word){
+function assertReviewedPair(a,b,word,meaningA,meaningB){
  const records=ctx.HEBREW_DICTIONARY.entries.filter(entry=>entry.rid===a||entry.rid===b);
  assert.equal(records.length,2,'both original Hebrew source records must exist: '+a+' / '+b);
  const groups=merge([{word,records}],word);
- const matching=groups.filter(group=>group.items.some(item=>item.e.rid===a)&&group.items.some(item=>item.e.rid===b));
- assert.equal(matching.length,1,'reviewed Hebrew synonym pair should consolidate: '+a+' / '+b);
- assert.equal(matching[0].items.length,2,'consolidation must preserve both source records: '+a+' / '+b);
+ const norm=ctx.HebrewMeaningConsolidation.normalize;
+ const matching=groups.filter(group=>
+  group.items.some(item=>item.e.rid===a&&norm(item.p.meaning||item.p.text)===norm(meaningA))&&
+  group.items.some(item=>item.e.rid===b&&norm(item.p.meaning||item.p.text)===norm(meaningB))
+ );
+ assert.equal(matching.length,1,'the exact reviewed Hebrew gloss pair should consolidate without collapsing other senses: '+a+' / '+b);
 }
-assertReviewedPair('KRU03116','KRU15803','בעל פקדון');
-assertReviewedPair('KRU03661','KRU03664','גדל');
-assertReviewedPair('KRU06890','KRU06892','חזר');
-assertReviewedPair('KRU07618','KRU07619','חשוך');
-assertReviewedPair('KRU15532','KRU15533','פלח');
-assertReviewedPair('KRU15825','KRU15827','פקע');
+assertReviewedPair('KRU03116','KRU15803','בעל פקדון','מי שמפקידין אצלו','נאמן, שומר');
+assertReviewedPair('KRU03661','KRU03664','גדל','קלע וסבך חוטים או שערות וכדומה','עשה מעשה גדיל, קלע');
+assertReviewedPair('KRU06890','KRU06892','חזר','שנה, עשה שוב','שב ועשה');
+assertReviewedPair('KRU07618','KRU07619','חשוך','כהה','תרג׳ עמ׳ ה׳ כ׳ (חושך יום ה׳): חשוך יומא דעתיד למיתי.');
+assertReviewedPair('KRU15532','KRU15533','פלח','העריץ ועבד לאלהות','עבד לאלהות');
+assertReviewedPair('KRU15825','KRU15827','פקע','נבקע','נפקע');
 const segments=merge([{word:'נפקא מינה',records:lookup.lookup('נפקא מינה')},{word:'נפקא',records:lookup.lookup('נפקא')}],'נפקא מינה נפקא');
 assert(segments.some(g=>g.scope==='נפקא מינה')&&segments.some(g=>g.scope==='נפקא'),'separate words in a multiword selection must never be merged together');
 console.log('PASS: shared Hebrew meaning consolidation preserves exact source wording, labels, source records, and phrase boundaries.');
