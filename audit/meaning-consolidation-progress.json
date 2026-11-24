@@ -75,7 +75,52 @@
   "hebrewConsolidation": {
     "status": "shared grouping layer added to the Hebrew reader and quick lookup",
     "sources": "Krupnik/Silbermann Hebrew source records only; the Hebrew plugin does not load Jastrow",
-    "safeguards": "Exact Hebrew meanings consolidate by default; synonym mappings must be explicitly reviewed and source-scoped; grammatical labels and selected-word boundaries are preserved",
-    "candidateReview": "The initial English-gloss alignment filter found no pairs. The inventory was broadened to list every non-identical meaning pair across repeated normalized headwords for manual review."
+    "safeguards": "Exact Hebrew meanings consolidate by default; synonym mappings must be explicitly reviewed and source-scoped; grammatical labels and selected-word boundaries are preserved Pointed headword conflicts are excluded from the candidate queue; six real source-scoped synonym pairs are now curated.",
+    "candidateReview": "The initial English-gloss alignment filter found no pairs. The inventory was broadened to list every non-identical meaning pair across repeated normalized headwords for manual review.",
+    "reviewedSynonymPairs": 6,
+    "reviewedPairs": [
+      {
+        "records": [
+          "KRU03116",
+          "KRU15803"
+        ],
+        "meaning": "trustee"
+      },
+      {
+        "records": [
+          "KRU03661",
+          "KRU03664"
+        ],
+        "meaning": "plaiting/braiding"
+      },
+      {
+        "records": [
+          "KRU06890",
+          "KRU06892"
+        ],
+        "meaning": "reiteration"
+      },
+      {
+        "records": [
+          "KRU07618",
+          "KRU07619"
+        ],
+        "meaning": "dark"
+      },
+      {
+        "records": [
+          "KRU15532",
+          "KRU15533"
+        ],
+        "meaning": "worship"
+      },
+      {
+        "records": [
+          "KRU15825",
+          "KRU15827"
+        ],
+        "meaning": "bursting"
+      }
+    ]
   }
 }
