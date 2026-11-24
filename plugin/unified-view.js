@@ -1556,19 +1556,26 @@
  const reviewedSourceAlternativePairs=new Set(reviewedSourceAlternativePairRecords.map(([kr,jr,kg,jg])=>
   [kr,jr].sort().join('|')+'::'+[clean(kg),clean(jg)].sort().join(' | ')
  ));
- function meaningBuckets(ref,meaning){
-  const alternatives=glossAlternatives(meaning.text),mappings=alternativePairsByRef.get(ref)||[];
-  const matched=mappings.filter(mapping=>alternatives.some(value=>alternativeKey(value)===alternativeKey(mapping.own)));
-  if(!matched.length)return [{text:meaning.text,bucketId:null}];
-  const consumed=new Set(),buckets=[];
-  for(const mapping of matched){
-   const value=alternatives.find(item=>alternativeKey(item)===alternativeKey(mapping.own));
-   if(!value)continue;
-   consumed.add(alternativeKey(value));
-   buckets.push({text:value,bucketId:'reviewed-alternative:'+mapping.key});
+ const senseSegments=text=>{
+  const out=[];let current='',depth=0;
+  for(const ch of String(text||'')){
+   if(ch==='(')depth++;else if(ch===')')depth=Math.max(0,depth-1);
+   if(ch===';'&&depth===0){if(clean(current))out.push(current.trim());current='';}
+   else current+=ch;
   }
-  const residual=alternatives.filter(value=>!consumed.has(alternativeKey(value)));
-  if(residual.length)buckets.push({text:residual.join(', '),bucketId:'unmatched-alternatives:'+ref+':'+clean(meaning.label)+':'+residual.map(clean).join('|')});
+  if(clean(current))out.push(current.trim());
+  return out;
+ };
+ function meaningBuckets(ref,meaning){
+  const segments=senseSegments(meaning.text),mappings=alternativePairsByRef.get(ref)||[];
+  const buckets=segments.map((segment,index)=>{
+   const alternatives=glossAlternatives(segment);
+   const bucketKeys=mappings.filter(mapping=>alternatives.some(value=>alternativeKey(value)===alternativeKey(mapping.own))).map(mapping=>mapping.key);
+   return {text:segment,bucketKeys:[...new Set(bucketKeys)],bucketId:bucketKeys.length?'reviewed-alternative-segment':'unmatched-segment:'+ref+':'+clean(meaning.label)+':'+index};
+  });
+  // Without an explicit cross-dictionary match, preserve the original source
+  // phrase exactly as it was presented by the reader.
+  if(!buckets.some(bucket=>bucket.bucketKeys.length))return [{text:meaning.text,bucketKeys:[],bucketId:null}];
   return buckets;
  }
  function reviewedEquivalent(source,item){
@@ -1587,7 +1594,7 @@
  function sameMeaning(group,item,word){
   const itemForm=stem(item.meaning.label);
   if(!compatibleForm(group.form,itemForm)||!group.sources.every(s=>compatible(s.spelling,item.spelling,word)))return false;
-  if(group.bucketId&&item.bucketId&&group.bucketId===item.bucketId)return true;
+  if(group.bucketKeys?.some(key=>item.bucketKeys?.includes(key)))return true;
   return canonicalGlossKey(group.text)===canonicalGlossKey(item.meaning.text)||
    synonymKey(group.text)===synonymKey(item.meaning.text)||
    sharesReviewedSynonym(group.text,item.meaning.text)||
@@ -1599,18 +1606,20 @@
    if(!meaning.text?.trim())continue;
    const matchingWord=lookupWord||word,spelling=S.displayHeadword(entry,matchingWord),sourceItem={id,entry,meaning,spelling};
    for(const bucket of meaningBuckets(entry.r,meaning)){
-    const item={...sourceItem,sourceMeaning:meaning,meaning:{...meaning,text:bucket.text},bucketId:bucket.bucketId};
+    const item={...sourceItem,sourceMeaning:meaning,meaning:{...meaning,text:bucket.text},bucketKeys:bucket.bucketKeys||[]};
     let group=groups.find(g=>sameMeaning(g,item,word));
-    if(!group){group={text:bucket.text,form:stem(meaning.label),spelling,sources:[],displayAlternatives:[],bucketId:bucket.bucketId,rank:S.vowelRank(entry,matchingWord)};groups.push(group);}
+    if(!group){group={text:bucket.text,form:stem(meaning.label),spelling,sources:[],displayAlternatives:[],bucketKeys:bucket.bucketKeys||[],rank:S.vowelRank(entry,matchingWord)};groups.push(group);}
     if(!group.form)group.form=stem(meaning.label);
     const rank=S.vowelRank(entry,matchingWord);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
     if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label)))group.sources.push(sourceItem);
     for(const alternative of glossAlternatives(bucket.text)){
-     const scoped=String(group.bucketId||'').startsWith('reviewed-alternative:');
+     const scoped=group.bucketKeys.length>0;
      const key=scoped?alternativeKey(alternative):clean(alternative).replace(/^(?:a|an|the)\s+/,'');
      const index=group.displayAlternatives.findIndex(value=>(scoped?alternativeKey(value):clean(value).replace(/^(?:a|an|the)\s+/,''))===key);
      if(index<0)group.displayAlternatives.push(alternative);
      else if(scoped&&/^to\s+/.test(alternative)&&!/^to\s+/.test(group.displayAlternatives[index]))group.displayAlternatives[index]=alternative;
+    }
+    for(const key of bucket.bucketKeys||[])if(!group.bucketKeys.includes(key))group.bucketKeys.push(key);
     }
     group.text=group.displayAlternatives.join(', ');
    }
