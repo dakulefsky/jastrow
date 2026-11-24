@@ -18,7 +18,7 @@ for(const entry of dictionary.entries)for(const word of [entry.word,...(entry.al
 const candidates=new Map();
 for(const [key,records] of byWord){
  const entries=[...records.values()];
- for(let i=0;i<entries.length;i++)for(let j=i;j<entries.length;j++){
+ for(let i=0;i<entries.length;i++)for(let j=i+1;j<entries.length;j++){
   const a=entries[i],b=entries[j];
   for(const pa of a.parts||[])for(const pb of (i===j?a.parts||[]:b.parts||[])){
    if(a.rid===b.rid&&pa===pb)continue;
@@ -36,7 +36,7 @@ for(const [key,records] of byWord){
     headword:a.word,normalizedHeadword:key,
     sourceA:{rid:a.rid,headword:a.word,label:pa.label||'',hebrew:ha,fullHebrew:pa.text||'',english:pa.english||''},
     sourceB:{rid:b.rid,headword:b.word,label:pb.label||'',hebrew:hb,fullHebrew:pb.text||'',english:pb.english||''},
-    sharedEnglishTerms:overlap,jaccard:Number(jaccard.toFixed(3)),
+    sharedEnglishTerms:overlap,jaccard:Number(jaccard.toFixed(3)),englishGlossesIdentical:!!ea&&ea===eb,
     reviewStatus:'pending-human-review'
    });
   }
@@ -48,7 +48,7 @@ const report={
  method:{
   source:'Original Krupnik and Silbermann Hebrew definitions with their embedded original English gloss metadata',
   headwordMatching:'HebrewLookup.normalize across primary and alternate headwords',
-  alignment:'English gloss similarity >= 0.75 Jaccard with at least two shared content terms',
+  alignment:'All non-identical Hebrew meaning pairs from repeated normalized headwords are queued; original English gloss overlap is shown as a ranking clue, not a hard filter',
   safeguards:'Different explicit grammatical labels are excluded; identical Hebrew glosses are already handled by exact grouping',
   limitation:'English overlap is only an alignment clue. Reviewers must confirm the Hebrew definitions express the same sense before approving a merge.'
  },
@@ -61,7 +61,7 @@ const summary=[
  '## Hebrew dictionary meaning-consolidation candidates',
  '',
  '- Original Hebrew source records: '+dictionary.entries.length,
- '- Candidate pairs for manual Hebrew review: '+list.length,
+ '- Repeated headword forms: '+report.totals.repeatedHeadwordForms,\n '- Candidate pairs for manual Hebrew review: '+list.length,
  '',
  'English glosses are used only as an alignment clue; no Hebrew meaning is automatically merged.',
  '',
