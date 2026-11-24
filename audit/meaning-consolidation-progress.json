@@ -6,12 +6,12 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1249 retained whole-gloss mappings and all 159 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1249 retained whole-gloss mappings and all 177 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
     "reviewedSourceGlossPairCount": 1249,
-    "reviewedSourceAlternativePairCount": 159,
+    "reviewedSourceAlternativePairCount": 177,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 16,
     "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions.",
@@ -62,16 +62,16 @@
   "candidateInventory": {
     "generator": "audit/build-meaning-candidates.cjs",
     "workflow": "Build cross-dictionary synonym review inventory",
-    "runId": 45397550450,
-    "artifactId": 14920219633,
-    "candidateGlossPairs": 4737,
+    "runId": 45503180697,
+    "artifactId": 14971901679,
+    "candidateGlossPairs": 4497,
     "sourceEntries": 47919,
     "jastrowEntries": 32508,
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
-    "sharedHeadwordRecordPairs": 16911,
-    "status": "Regenerating after 159 alternative-level reviews and semicolon-sense bucketing.",
-    "note": "Candidate discovery now excludes 159 source-specific alternative pairs and conflicting explicit homonym numbers. Human review continues from the refreshed inventory; no fuzzy automatic merging is used."
+    "sharedHeadwordRecordPairs": 16731,
+    "status": "Reviewed first 21 ranked candidates: 16 accepted, 5 deliberately deferred; refreshing inventory after the new alternative mappings.",
+    "note": "Candidate discovery ranks exact alternative matches first, but each candidate is manually reviewed. No fuzzy automatic merging."
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -1840,8 +1840,8 @@
     "note": "Twenty-five same-sense variants were approved from the next inventory page. The D00017 mapping was checked against the original records: Jastrow's real reader phrase is 'to flow', matching Krupnik sense 1 'to flow'; Krupnik sense 2 'to flow out' remains distinct and is not merged into it."
   },
   "alternativeLevelReview": {
-    "status": "expanded-with-159-source-scoped-alternative-matches",
-    "reviewedSourceAlternativePairs": 159,
+    "status": "expanded-with-177-source-scoped-alternative-matches",
+    "reviewedSourceAlternativePairs": 177,
     "acceptedPairs": [
       [
         "KRU04451",
@@ -3013,5 +3013,149 @@
       ]
     ],
     "note": "Two nearby candidates were deliberately not accepted: Jastrow H00428 ('חוּץ I') because of its numbered-homonym distinction from H00429, and Jastrow C00872 ('גַּלְגַּל ²') because it explicitly distinguishes a numbered homonym. A second Krupnik spelling variant KRU09853 was also left out pending separate review."
+  },
+  "fifthAlternativeReviewedTranche": {
+    "attemptedCandidateRows": 21,
+    "acceptedCandidateRows": 16,
+    "addedUniqueSourceAlternativePairs": 18,
+    "status": "accepted-source-attested-alternative-matches",
+    "rationale": "Reviewed the first 21 ranked candidates against the actual reader-extracted Jastrow phrases, Krupnik source glosses, headword identity, and grammatical/homonym safeguards. Only exact same-sense alternatives were mapped. Unmatched alternatives stay separate and complete original source wording remains in More detail.",
+    "acceptedPairs": [
+      [
+        "KRU07721",
+        "I00064",
+        "to make obligatory the setting aside of tithes",
+        "to make obligatory the setting aside of tithes&c"
+      ],
+      [
+        "KRU03613",
+        "C00166",
+        "to cut off",
+        "cut off."
+      ],
+      [
+        "KRU10059",
+        "L00182",
+        "white matter",
+        "white matter"
+      ],
+      [
+        "KRU10087",
+        "L00229",
+        "to talk about",
+        "to talk about"
+      ],
+      [
+        "KRU10087",
+        "L00229",
+        "to talk disrespectfully",
+        "talk disrespectfully"
+      ],
+      [
+        "KRU10173",
+        "L00376",
+        "to loll the tongue",
+        "to loll the tongue"
+      ],
+      [
+        "KRU10213",
+        "L00438",
+        "evil talk",
+        "evil talk"
+      ],
+      [
+        "KRU10334",
+        "L00577",
+        "to talk against",
+        "to talk against"
+      ],
+      [
+        "KRU10334",
+        "L00577",
+        "to murmur",
+        "murmur"
+      ],
+      [
+        "KRU10364",
+        "L00604",
+        "foreign tongue",
+        "foreign tongue"
+      ],
+      [
+        "KRU10364",
+        "L00604",
+        "evil talk",
+        "evil talk"
+      ],
+      [
+        "KRU10363",
+        "L00603",
+        "to talk against",
+        "to talk against"
+      ],
+      [
+        "KRU10924",
+        "M00669",
+        "coarse bran",
+        "coarse bran"
+      ],
+      [
+        "KRU10955",
+        "M00716",
+        "mixed wine",
+        "mixed wine"
+      ],
+      [
+        "KRU10977",
+        "M00750",
+        "offering drink",
+        "offering drink"
+      ],
+      [
+        "KRU11255",
+        "M01174",
+        "drawing water",
+        "drawing water."
+      ],
+      [
+        "KRU11414",
+        "M01442",
+        "preparatory means",
+        "preparatory means"
+      ],
+      [
+        "KRU11442",
+        "M01501",
+        "funeral escort",
+        "funeral escort"
+      ]
+    ],
+    "deferredCandidates": [
+      {
+        "jastrow": "B01236",
+        "krupnik": "KRU03319",
+        "reason": "Hifil grammatical label may change the semantic/voice relationship; defer pending full grammatical review."
+      },
+      {
+        "jastrow": "C00872",
+        "krupnik": "KRU04257",
+        "reason": "Jastrow explicitly numbers this homonym; do not merge on shared unnumbered Krupnik form without separate homonym review."
+      },
+      {
+        "jastrow": "H00428",
+        "krupnik": "KRU06819",
+        "reason": "Conflicts with the separately numbered H00429 entry; preserve the homonym distinction."
+      },
+      {
+        "jastrow": "K01198",
+        "krupnik": "KRU09853",
+        "reason": "Krupnik has a second spelling/numbered form candidate; defer until its headword relation is resolved."
+      },
+      {
+        "jastrow": "K01339",
+        "krupnik": "KRU09891",
+        "reason": "Jastrow marks the form Hifil; defer pending grammatical equivalence review."
+      }
+    ]
   }
 }
