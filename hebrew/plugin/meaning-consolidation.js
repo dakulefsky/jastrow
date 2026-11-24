@@ -60,8 +60,12 @@
   for(let i=0;i<prepared.length;i++)for(let j=i+1;j<prepared.length;j++){
    const a=prepared[i],b=prepared[j];
    if(a.scope!==b.scope||(a.label&&b.label&&a.label!==b.label))continue;
-   const right=new Set(b.alternatives.map(normalize));
-   if(a.alternatives.some(value=>right.has(normalize(value)))){splitParts.add(i);splitParts.add(j);}
+   const leftValues=[...new Set(a.alternatives.map(normalize).filter(Boolean))];
+   const rightValues=[...new Set(b.alternatives.map(normalize).filter(Boolean))];
+   const right=new Set(rightValues);
+   const overlaps=leftValues.some(value=>right.has(value));
+   const sameCompleteSet=leftValues.length===rightValues.length&&leftValues.every(value=>right.has(value));
+   if(overlaps&&!sameCompleteSet){splitParts.add(i);splitParts.add(j);}
   }
   for(let index=0;index<prepared.length;index++){
    const {source,entry,part,text,label,scope,alternatives}=prepared[index];
