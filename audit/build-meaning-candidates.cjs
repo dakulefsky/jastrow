@@ -2,6 +2,7 @@
 // Discovery only: this script NEVER merges meanings or edits reviewed mappings.
 // Jastrow phrases are taken from the same extractor used by the reading UI.
 const fs=require('node:fs');
+const assert=require('node:assert/strict');
 const path=require('node:path');
 const vm=require('node:vm');
 const {chromium,executablePath}=require('../browser_support.cjs');
@@ -50,6 +51,38 @@ if(sharedForms({h:'בּוּר I'},{h:'בּוּר²'}).length)throw new Error('Ca
 if(!sharedForms({h:'בּוּר I'},{h:'בּוּר'}).length)throw new Error('An unnumbered counterpart remains eligible for review');
 const voice=value=>/^to\s+be\s+/i.test(clean(value))?'passive':'active';
 const samePartOfSpeech=(a,b)=>/^to\s+/i.test(clean(a))===/^to\s+/i.test(clean(b));
+const annotateExactPairRisks=list=>{
+ const groups=new Map();
+ for(const candidate of list.filter(item=>item.exactAlternativeMatch)){
+  const matched=candidate.bestAlternativeMatch;
+  const key=[candidate.jastrow.ref,candidate.krupnik.ref].sort().join('|')+'::'+[clean(matched.jastrow),clean(matched.krupnik)].sort().join(' | ');
+  if(!groups.has(key))groups.set(key,{jastrow:new Set(),krupnik:new Set(),jastrowLabels:new Set(),krupnikLabels:new Set()});
+  const group=groups.get(key);
+  group.jastrow.add(clean(candidate.jastrow.text)+'::'+clean(candidate.jastrow.section));
+  group.krupnik.add(clean(candidate.krupnik.text));
+  if(stem(candidate.jastrow.label))group.jastrowLabels.add(stem(candidate.jastrow.label));
+  if(stem(candidate.krupnik.label))group.krupnikLabels.add(stem(candidate.krupnik.label));
+ }
+ for(const candidate of list.filter(item=>item.exactAlternativeMatch)){
+  const matched=candidate.bestAlternativeMatch;
+  const key=[candidate.jastrow.ref,candidate.krupnik.ref].sort().join('|')+'::'+[clean(matched.jastrow),clean(matched.krupnik)].sort().join(' | ');
+  const group=groups.get(key),flags=[];
+  if(group.jastrow.size>1)flags.push('multiple-jastrow-senses-share-this-exact-alternative');
+  if(group.krupnik.size>1)flags.push('multiple-krupnik-senses-share-this-exact-alternative');
+  if(group.jastrowLabels.size>1||group.krupnikLabels.size>1)flags.push('conflicting-explicit-grammatical-labels');
+  candidate.reviewFlags=flags;
+  candidate.reviewPriority=flags.length?'manual-ambiguity-review':'exact-alternative-review';
+ }
+ return list;
+};
+const riskFixture=[
+ {exactAlternativeMatch:true,bestAlternativeMatch:{jastrow:'to smell badly',krupnik:'to smell badly'},jastrow:{ref:'J1',text:'to decay, to smell badly',label:'',section:'verb'},krupnik:{ref:'K1',text:'to smell badly',label:''}},
+ {exactAlternativeMatch:true,bestAlternativeMatch:{jastrow:'to smell badly',krupnik:'to smell badly'},jastrow:{ref:'J1',text:'to become putrid; to smell badly',label:'Hif.',section:'verb'},krupnik:{ref:'K1',text:'to smell badly',label:''}}
+];
+annotateExactPairRisks(riskFixture);
+assert(riskFixture.every(item=>item.reviewFlags.includes('multiple-jastrow-senses-share-this-exact-alternative')),'repeated exact alternatives across distinct Jastrow senses must be flagged');
+assert(riskFixture.every(item=>item.reviewFlags.includes('conflicting-explicit-grammatical-labels')),'conflicting explicit grammatical labels must be flagged');
+
 if(samePartOfSpeech('to lament','lament'))throw new Error('Candidate queue must preserve verb/noun distinctions');
 if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speech synonyms should remain reviewable');
 (async()=>{
@@ -128,30 +161,8 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
   }
  }
  const list=[...candidates.values()];
- // An exact phrase can still be ambiguous when the same source entry uses it
- // under multiple distinct senses or explicit grammatical labels. Flag those
- // collisions for manual review instead of treating literal wording as proof.
- const exactPairGroups=new Map();
- for(const candidate of list.filter(item=>item.exactAlternativeMatch)){
-  const matched=candidate.bestAlternativeMatch;
-  const key=[candidate.jastrow.ref,candidate.krupnik.ref].sort().join('|')+'::'+[clean(matched.jastrow),clean(matched.krupnik)].sort().join(' | ');
-  if(!exactPairGroups.has(key))exactPairGroups.set(key,{jastrow:new Set(),krupnik:new Set(),jastrowLabels:new Set(),krupnikLabels:new Set()});
-  const group=exactPairGroups.get(key);
-  group.jastrow.add(clean(candidate.jastrow.text)+'::'+clean(candidate.jastrow.section));
-  group.krupnik.add(clean(candidate.krupnik.text));
-  if(stem(candidate.jastrow.label))group.jastrowLabels.add(stem(candidate.jastrow.label));
-  if(stem(candidate.krupnik.label))group.krupnikLabels.add(stem(candidate.krupnik.label));
- }
- for(const candidate of list.filter(item=>item.exactAlternativeMatch)){
-  const matched=candidate.bestAlternativeMatch;
-  const key=[candidate.jastrow.ref,candidate.krupnik.ref].sort().join('|')+'::'+[clean(matched.jastrow),clean(matched.krupnik)].sort().join(' | ');
-  const group=exactPairGroups.get(key),flags=[];
-  if(group.jastrow.size>1)flags.push('multiple-jastrow-senses-share-this-exact-alternative');
-  if(group.krupnik.size>1)flags.push('multiple-krupnik-senses-share-this-exact-alternative');
-  if(group.jastrowLabels.size>1||group.krupnikLabels.size>1)flags.push('conflicting-explicit-grammatical-labels');
-  candidate.reviewFlags=flags;
-  candidate.reviewPriority=flags.length?'manual-ambiguity-review':'exact-alternative-review';
- }
+ // Exact alternative matches with colliding source senses are explicitly flagged.
+ annotateExactPairRisks(list);
  list.sort((a,b)=>b.jaccard-a.jaccard||b.overlap-a.overlap||b.sharedTerms.length-a.sharedTerms.length||a.headword.localeCompare(b.headword));
  const report={
   generatedBy:'audit/build-meaning-candidates.cjs',
