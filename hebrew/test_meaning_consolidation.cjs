@@ -65,8 +65,8 @@ assert.equal(globallyAmbiguousUnnumberedHomonym.length,2,'an unnumbered counterp
 
 
 const unambiguousUnnumberedHomonym=merge([{word:'ברא',records:[
- {word:'בְּרָא²',rid:'KRU9025',parts:[{meaning:'נקב',text:'נקב',label:''}]},
- {word:'בְּרָא',rid:'KRU9026',parts:[{meaning:'נקב',text:'נקב',label:''}]}
+ {word:'בדיקה²',rid:'KRU9025',parts:[{meaning:'משמעות',text:'משמעות',label:''}]},
+ {word:'בדיקה',rid:'KRU9026',parts:[{meaning:'משמעות',text:'משמעות',label:''}]}
 ]}],'ברא');
 assert.equal(unambiguousUnnumberedHomonym.length,1,'a numbered Hebrew record may consolidate with one unnumbered counterpart when no competing homonym exists');
 
