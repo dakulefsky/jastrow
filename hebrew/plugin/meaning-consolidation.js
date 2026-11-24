@@ -2,10 +2,7 @@
  'use strict';
  const normalize=value=>root.HebrewLookup.normalize(String(value||''));
  const labelKey=value=>normalize(String(value||'').replace(/\b\d+\b/g,'').trim());
-  const raw=String(value||'').trim();
-  if(/^\d+$/.test(raw))return '#'+raw;
-  return normalize(raw.replace(/\b\d+\b/g,'').trim());
- };
+
  const homonymNumber=value=>{
   const text=String(value||'').trim(),sup=text.match(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+$/);
   if(sup)return Number([...sup[0]].map(ch=>'⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join(''));
