@@ -59,6 +59,17 @@ const mixedSynonymAndDistinctSense=U.merge([
 assert.equal(mixedSynonymAndDistinctSense.length,2,'a shared curated synonym must not merge a gloss that also contains a distinct sense');
 assert.equal(U.sharesReviewedSynonym('to happen','to occur, to take place'),true);
 assert.equal(U.sharesReviewedSynonym('to happen','to occur, charge'),false);
+const sourceAttestedSynonyms=[
+ ['heap','pile'],['pile','mound'],['present','gift'],['sediment','dregs'],
+ ['to frighten','to scare'],['to dwell','to reside'],['edge','rim'],
+ ['capital','metropolis'],['gathering','assembly'],['deity','divinity'],
+ ['strength','force'],['to glue','to paste'],['glue','paste'],
+ ['to grow better','to improve'],['to set on fire','to burn']
+];
+for(const [a,b] of sourceAttestedSynonyms)assert.equal(U.sharesReviewedSynonym(a,b),true,'reviewed synonym group should consolidate: '+a+' / '+b);
+assert.equal(U.sharesReviewedSynonym('to frighten','to scare, to threaten'),false,'an unrelated extra sense must prevent synonym-group consolidation');
+assert.equal(U.sharesReviewedSynonym('heap','pile, accusation'),false,'a synonym must not absorb an unrelated alternative');
+
 
 // Alternative-level review: match only the shared sense, keeping the
 // unrelated alternative in the Krupnik gloss and Jastrow's second sense apart.
