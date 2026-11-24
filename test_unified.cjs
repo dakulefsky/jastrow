@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1170,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1199,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -99,6 +99,15 @@ for(const [kr,jr,kg,jg] of thirdReviewedEquivalences){
 
 
 
+
+
+// Eighth reviewed tranche: twenty-nine source-scoped equivalents from the next inventory page.
+const eighthReviewedEquivalences=[["KRU02353","B00211","mat","a mat of reeds"],["KRU02511","B00495","receptacles","column-like receptacles"],["KRU03264","B01166","intimate","intimate, familiar"],["KRU03295","B01205","cover","wrapper, cover"],["KRU03562","C00096","the camels) hump","hump."],["KRU03915","C00491","a trap or cage","a trap"],["KRU04005","C00594","imper. burn them","burn them"],["KRU04624","C01357","document","bond, document"],["KRU04631","C01369","gramma, scrupulum","gramma"],["KRU04905","D00293","measure","keg, measure"],["KRU06732","H00275","a species of thistles","thistles"],["KRU07817","I00186","shade","shade, shadow"],["KRU08197","I00678","a heated tile","tile;"],["KRU08270","I00772","inflammation","an eruption, inflammation"],["KRU08896","J00690","ballast-stones","anchor, ballast-stones"],["KRU09221","K00405","embroidery","embroidery, design"],["KRU09873","K01304","to prosper","to do well, prosper"],["KRU10755","M00400","pivot","pivot, hinge"],["KRU11876","M02288","wrangler","wrangler, hair-plucker"],["KRU15129","Q00313","quarry","stone-breaking, quarry"],["KRU16363","R00276","thirsty","parched, thirsty."],["KRU19559","V00045","Thebaic","Thebaic cubit"],["KRU00082","A00120","want","want, distress"],["KRU00538","A00842","evening","twilight, evening"],["KRU00835","A01302","the land Elam","Elam"],["KRU00787","A01316","hind","hind, roe"],["KRU00863","A01342","day","day time"],["KRU00875","A01364","yes","yes, indeed"],["KRU00900","A01406","prohibition","prohibition, interdict;"]];
+for(const [kr,jr,kg,jg] of eighthReviewedEquivalences){
+ const ids=[kr,jr].sort().join('|');
+ const glosses=[normalizeReviewed(kg),normalizeReviewed(jg)].sort().join(' | ');
+ assert(U.reviewedSourceGlossPairs.has(ids+'::'+glosses),'eighth-tranche mapping missing: '+jr+' / '+kr);
+}
 
 // Seventh reviewed tranche: fifteen additional equivalent explanatory gloss variants.
 const seventhReviewedEquivalences=[["KRU20038","V00892","to remove obstacles","to remove obstacles, clear"],["KRU20048","V00912","joists, ceiling","roofing, ceiling, joists"],["KRU20107","V01008","fall, ruin","sinking, fall, ruin"],["KRU03924","C00503","lump, clod, ball","something substantial, lump, clod, ball"],["KRU04563","C01266","a certain reddish clay (also used as medicine)","a certain reddish clay"],["KRU08853","J00633","going down, fall","going down, fall, decline, degradation."],["KRU13401","O00535","common meal, picnic","sending provisions for a common meal, picnic"],["KRU16140","Q02072","plain, a matter of course","plain, self-evident truth; is it not a matter of course?"],["KRU17675","S01941","persons called up to read from the Torah","persons called up to read from the Scriptures"],["KRU10850","M00548","Musaf, additional offering and prayer on Sabbath and festive days","Musaf, additional offering, additional prayer"],["KRU15903","Q01646","a declaration that the law of limitation by the entrance of the Sabbatical year shall not apply to the loans to be transacted","prosbul, a declaration made in court, before the execution of a loan, to the effect that the law of limitation by the entrance of the Sabbatical year shall not apply to the loan to be transacted"],["KRU03757","C00312","thumb, great toe Daumen, grosse Zehe","thumb, great toe"],["KRU03767","C00322","a subterranean thunder, earthquake","an abrupt sound, a subterranean thunder, earthquake, rumbling"],["KRU11781","M02117","a paste made of flour","a paste made of flour on which boiling water is poured"],["KRU14332","P00470","to put on an upper garment","to wrap one’s self up, to put on an upper garment"]];
