@@ -29,12 +29,20 @@
   }
   return !a||!b||a===b;
  };
- const dictionaryHomonymsByForm=new Map();
+ const dictionaryHomonymsByForm=new Map(),dictionaryNumericLabelsByForm=new Map();
  for(const entry of root.HEBREW_DICTIONARY?.entries||[])for(const form of [entry.word,...(entry.alt||[])]){
   const key=normalize(form),number=homonymNumber(form);
-  if(!key||number===null)continue;
-  if(!dictionaryHomonymsByForm.has(key))dictionaryHomonymsByForm.set(key,new Set());
-  dictionaryHomonymsByForm.get(key).add(number);
+  if(!key)continue;
+  if(number!==null){
+   if(!dictionaryHomonymsByForm.has(key))dictionaryHomonymsByForm.set(key,new Set());
+   dictionaryHomonymsByForm.get(key).add(number);
+  }
+  for(const part of entry.parts||[]){
+   const numeric=/^\\d+$/.test(String(part.label||'').trim())?Number(String(part.label).trim()):null;
+   if(numeric===null)continue;
+   if(!dictionaryNumericLabelsByForm.has(key))dictionaryNumericLabelsByForm.set(key,new Set());
+   dictionaryNumericLabelsByForm.get(key).add(numeric);
+  }
  }
  // Exact Hebrew alternatives may be listed in a different order by the
  // source records. Normalize punctuation and order only; preserve word order
@@ -96,9 +104,9 @@
    if(item.homonym!==null)homonymsByScope.get(item.scope).add(item.homonym);
   }
   const numericLabelsByScope=new Map();
-  for(const item of prepared)if(item.numericLabel!==null){
-   if(!numericLabelsByScope.has(item.scope))numericLabelsByScope.set(item.scope,new Set());
-   numericLabelsByScope.get(item.scope).add(item.numericLabel);
+  for(const item of prepared){
+   if(!numericLabelsByScope.has(item.scope))numericLabelsByScope.set(item.scope,new Set(dictionaryNumericLabelsByForm.get(item.scope)||[]));
+   if(item.numericLabel!==null)numericLabelsByScope.get(item.scope).add(item.numericLabel);
   }
   const compatibleInScope=(scope,a,b)=>homonymCompatible(a,b,homonymsByScope.get(scope));
   const labelsCompatible=(scope,a,b)=>labelsCompatibleInScope(a,b,numericLabelsByScope.get(scope));
