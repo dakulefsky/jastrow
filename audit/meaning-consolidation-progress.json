@@ -4,13 +4,13 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 914,
+    "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
     "realReaderPhraseExtractorAudit": "All retained source-scoped mappings are required to pass the Chromium audit against JastrowReadingView.phrases; the previous transcription typo in M01377 was corrected in source data.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1248
+    "reviewedSourceGlossPairCount": 1249
   },
   "historicalCheckpoint": {
     "reportedCompleted": 29,
@@ -1677,9 +1677,9 @@
     }
   ],
   "tenthReviewedTranche": {
-    "attemptedRows": 24,
-    "addedUniqueSourceGlossPairs": 24,
-    "currentTotal": 914,
+    "attemptedRows": 25,
+    "addedUniqueSourceGlossPairs": 25,
+    "currentTotal": 915,
     "acceptedPairs": [
       [
         "KRU04566",
@@ -1824,8 +1824,14 @@
         "D00462",
         "gonorrhoea",
         "flux, gonorrhoea"
+      ],
+      [
+        "KRU04694",
+        "D00017",
+        "to flow",
+        "to flow"
       ]
     ],
-    "note": "Twenty-four further same-sense variants were approved from the next inventory page. One proposed pair was rejected after the real reader extractor showed that the Jastrow phrase is 'to flow', not 'to flow out'; it was removed from the reviewed mapping and audit."
+    "note": "Twenty-five same-sense variants were approved from the next inventory page. The D00017 mapping was checked against the original records: Jastrow's real reader phrase is 'to flow', matching Krupnik sense 1 'to flow'; Krupnik sense 2 'to flow out' remains distinct and is not merged into it."
   }
 }
