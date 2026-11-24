@@ -42,6 +42,23 @@ const merged=U.merge(records,'אַרְעָא');assert.equal(merged.length,2);ass
 assert.equal(U.merge([{id:1,entry:{h:'אָמַר'},meanings:[{text:'to say',label:'Af.'}]},{id:2,entry:{h:'אָמַר'},meanings:[{text:'to say',label:'Pa.'}]}],'אמר').length,2);
 assert.equal(U.merge([{id:1,entry:{h:'אָמַר'},meanings:[{text:'charge, fee',label:''}]},{id:2,entry:{h:'אָמַר'},meanings:[{text:'charge, accusation',label:''}]}],'אמר').length,2);
 assert.equal(U.merge([{id:1,entry:{h:'אַרְעָא'},meanings:[{text:'land',label:'1'}]},{id:2,entry:{h:'אַרְעָא'},meanings:[{text:'land.',label:'2)'}]}],'ארעא').length,1);
+
+// Curated synonyms are recognized inside multi-alternative glosses too.
+const partSynonym=U.merge([
+ {id:201,entry:{h:'קם',r:'KRU-SYN-1',source:'krupnik'},meanings:[{text:'to happen',label:''}]},
+ {id:202,entry:{h:'קם',r:'SYN-1',source:'jastrow'},meanings:[{text:'to occur, to take place',label:''}]}
+],'קם');
+assert.equal(partSynonym.length,1,'a curated synonym inside a comma-separated gloss should consolidate');
+assert.equal(partSynonym[0].sources.length,2,'part-level synonym consolidation must preserve both sources');
+assert.equal(partSynonym[0].text,'to occur, to take place','the fuller list of alternatives should remain the display gloss');
+
+// Similar words outside the curated synonym list must not be enough.
+const unreviewedPartOverlap=U.merge([
+ {id:203,entry:{h:'קם'},meanings:[{text:'charge, fee',label:''}]},
+ {id:204,entry:{h:'קם'},meanings:[{text:'charge, accusation',label:''}]}
+],'קם');
+assert.equal(unreviewedPartOverlap.length,2,'an arbitrary shared word must not merge distinct senses');
+
 console.log('PASS: real alternate-headword vowel matches, partial pointing, cantillation, conservative synonym consolidation, complete source references, and distinct stem/qualified senses.');
 assert.equal(U.merge([{id:1,entry:{h:'חוב'},meanings:[{text:'charge',label:''}]},{id:2,entry:{h:'חוב'},meanings:[{text:'charge, accusation',label:''}]}],'חוב').length,2,'a one-word overlap must not erase a distinct qualified sense');
 assert.equal(U.merge([{id:1,entry:{h:'אָמַר'},meanings:[{text:'to say',label:''}]},{id:2,entry:{h:'אָמַר'},meanings:[{text:'to say',label:''}]}],'אמר').length,1,'identical glosses should still consolidate');
