@@ -4,13 +4,13 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 821,
+    "reviewedNonIdenticalGlossPairs": 836,
     "reviewedGlossEquivalenceGroups": 38,
     "realReaderPhraseExtractorAudit": "All retained source-scoped mappings are required to pass the Chromium audit against JastrowReadingView.phrases; the previous transcription typo in M01377 was corrected in source data.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1155
+    "reviewedSourceGlossPairCount": 1170
   },
   "historicalCheckpoint": {
     "reportedCompleted": 29,
@@ -65,7 +65,7 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16911,
-    "status": "Awaiting regenerated candidate queue after 29 further reviewed equivalences; the prior inventory had 4,673 pending pairs.",
+    "status": "Awaiting refreshed candidate inventory after this 15-pair review tranche.",
     "note": "Generated from current branch a0c797? inventory artifact belongs to commit 278bbbb010f1aaf83d48479bed7cba5123c706aa. Review queue only: token overlap ranks candidates; no fuzzy automatic merging."
   },
   "reviewedTranche": {
@@ -1222,5 +1222,103 @@
       ]
     ],
     "note": "Twenty-nine additional cross-dictionary pairs were approved after checking the complete source glosses. Matches preserve the same sense; extra senses, homographs, and non-equivalent wording remain separate."
+  },
+  "seventhReviewedTranche": {
+    "attemptedRows": 15,
+    "addedUniqueSourceGlossPairs": 15,
+    "currentTotal": 836,
+    "acceptedPairs": [
+      [
+        "KRU20038",
+        "V00892",
+        "to remove obstacles",
+        "to remove obstacles, clear"
+      ],
+      [
+        "KRU20048",
+        "V00912",
+        "joists, ceiling",
+        "roofing, ceiling, joists"
+      ],
+      [
+        "KRU20107",
+        "V01008",
+        "fall, ruin",
+        "sinking, fall, ruin"
+      ],
+      [
+        "KRU03924",
+        "C00503",
+        "lump, clod, ball",
+        "something substantial, lump, clod, ball"
+      ],
+      [
+        "KRU04563",
+        "C01266",
+        "a certain reddish clay (also used as medicine)",
+        "a certain reddish clay"
+      ],
+      [
+        "KRU08853",
+        "J00633",
+        "going down, fall",
+        "going down, fall, decline, degradation."
+      ],
+      [
+        "KRU13401",
+        "O00535",
+        "common meal, picnic",
+        "sending provisions for a common meal, picnic"
+      ],
+      [
+        "KRU16140",
+        "Q02072",
+        "plain, a matter of course",
+        "plain, self-evident truth; is it not a matter of course?"
+      ],
+      [
+        "KRU17675",
+        "S01941",
+        "persons called up to read from the Torah",
+        "persons called up to read from the Scriptures"
+      ],
+      [
+        "KRU10850",
+        "M00548",
+        "Musaf, additional offering and prayer on Sabbath and festive days",
+        "Musaf, additional offering, additional prayer"
+      ],
+      [
+        "KRU15903",
+        "Q01646",
+        "a declaration that the law of limitation by the entrance of the Sabbatical year shall not apply to the loans to be transacted",
+        "prosbul, a declaration made in court, before the execution of a loan, to the effect that the law of limitation by the entrance of the Sabbatical year shall not apply to the loan to be transacted"
+      ],
+      [
+        "KRU03757",
+        "C00312",
+        "thumb, great toe Daumen, grosse Zehe",
+        "thumb, great toe"
+      ],
+      [
+        "KRU03767",
+        "C00322",
+        "a subterranean thunder, earthquake",
+        "an abrupt sound, a subterranean thunder, earthquake, rumbling"
+      ],
+      [
+        "KRU11781",
+        "M02117",
+        "a paste made of flour",
+        "a paste made of flour on which boiling water is poured"
+      ],
+      [
+        "KRU14332",
+        "P00470",
+        "to put on an upper garment",
+        "to wrap one’s self up, to put on an upper garment"
+      ]
+    ],
+    "note": "Fifteen additional explanatory variants were approved after checking the full source glosses. The fuller wording clarifies the same definition rather than adding an independent sense."
   }
 }
