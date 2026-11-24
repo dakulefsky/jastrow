@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1224,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1249,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -101,6 +101,15 @@ for(const [kr,jr,kg,jg] of thirdReviewedEquivalences){
 
 
 
+
+
+// Tenth reviewed tranche: twenty-five same-sense lexical and grammatical variants.
+const tenthReviewedEquivalences=[["KRU04566","C01270","fringe","that which is combed, fringe"],["KRU04578","C01320","to incite, to stir up","to incite"],["KRU04694","D00017","to flow out","to flow"],["KRU04712","D00027","a species of doves","doves"],["KRU04721","D00037","to overflow","to drip, overflow"],["KRU04733","D00052","bee-hive","bee-swarm, bee-hive"],["KRU04747","D00073","to glue","to paste, glue"],["KRU04747","D00073","to be attached to","to be attached, join"],["KRU04748","D00074","glue","glue, paste"],["KRU04755","D00082","field","pasture, field"],["KRU04815","D00164","two","two, double"],["KRU04818","D00168","mail-carrier","mail-carrier, despatch-bearer"],["KRU05023","D00170","to flow","to flow, drip"],["KRU04830","D00184","to be troubled","to be anxious, troubled"],["KRU04835","D00190","simile","simile, illustration"],["KRU05061","D00236","grief","grief, affliction"],["KRU04867","D00235","sad","sad, depressed"],["KRU04927","D00326","exactness","exactness, minuteness"],["KRU04941","D00341","to dwell","to reside, dwell"],["KRU04945","D00350","load","burden, load"],["KRU04987","D00408","suspension","postponement, suspension"],["KRU04994","D00411","to frighten","to frighten, scare"],["KRU04999","D00426","God-fearing","God-fearing, conscientious"],["KRU05016","D00450","edict","edict, ordinance"],["KRU05024","D00462","gonorrhoea","flux, gonorrhoea"]];
+for(const [kr,jr,kg,jg] of tenthReviewedEquivalences){
+ const ids=[kr,jr].sort().join('|');
+ const glosses=[normalizeReviewed(kg),normalizeReviewed(jg)].sort().join(' | ');
+ assert(U.reviewedSourceGlossPairs.has(ids+'::'+glosses),'tenth-tranche mapping missing: '+jr+' / '+kr);
+}
 
 // Ninth reviewed tranche: twenty-five straightforward lexical and explanatory variants.
 const ninthReviewedEquivalences=[["KRU01183","A01787","deity","Deity, divinity"],["KRU01222","A01866","strength","strength, force"],["KRU01201","A01923","in Greek","Hellenic, in Greek"],["KRU01286","A01961","womb","womb, mouth of the womb"],["KRU01352","A02058","middle","central, middle"],["KRU01408","A02139","lighting","lighting, illumination"],["KRU01527","A02316","wife","woman, wife"],["KRU01542","A02346","station","resting station"],["KRU01551","A02376","garment","robe, garment"],["KRU01588","A02428","physician","physician, surgeon;"],["KRU01590","A02432","recovery","cure, recovery"],["KRU01598","A02444","gathering","gathering, assembly"],["KRU01607","A02457","consent","consent, agreement"],["KRU01608","A02458","croup","choking, croup"],["KRU01614","A02466","support","support, reliance"],["KRU01617","A02468","granary","store-house, granary."],["KRU01618","A02469","thorn-bush","thorn-bush, bramble"],["KRU01664","A02555","officer","Roman officer"],["KRU01666","A02558","road, way","road"],["KRU01702","A02620","Apulia in Italy","Apulia"],["KRU01748","A02687","even, even if","even if, although, even"],["KRU01780","A02728","to turn, reverse","to turn"],["KRU01889","A02883","prosperity","success, prosperity"],["KRU00554","A03057","hammock","cradle, hammock"],["KRU02160","A03321","setting","fitting, setting"]];
