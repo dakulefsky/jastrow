@@ -83,7 +83,7 @@ assert.equal(U.sharesReviewedSynonym('burn','to burn'),false,'noun and infinitiv
 // Alternative-level review: match the shared phrase while retaining
 // comma-listed synonyms in the same sense and Jastrow's semicolon-separated
 // second sense separately.
-assert.equal(U.reviewedSourceAlternativePairs.size,177,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,192,'every source-scoped alternative match must be loaded');
 const alternativeScoped=U.merge([
  {id:301,entry:{h:'גָּנַח',r:'KRU04451',source:'krupnik'},meanings:[{text:'to sigh heavily under an attack of angina pectoris, to expectorate',label:''}]},
  {id:302,entry:{h:'גָּנַח',r:'C01128'},meanings:[
@@ -247,6 +247,21 @@ const twoLaazSenses=U.merge([
 ],'לעז');
 assert.equal(twoLaazSenses.length,2,'two distinct senses in one headword must remain separate');
 assert(twoLaazSenses.every(group=>group.sources.length===2),'each separately consolidated sense must retain both source records');
+
+
+const movingAndExile=U.merge([
+ {id:411,entry:{h:'נִדְנוּד',r:'KRU12413',source:'krupnik'},meanings:[{text:'moving about',label:'1'}]},
+ {id:412,entry:{h:'נִדְנוּד',r:'N00235',source:'jastrow'},meanings:[{text:'moving about, exile',label:''}]}
+],'נדנוד');
+assert.equal(movingAndExile.length,1,'the exact moving-about alternative should consolidate across dictionaries');
+assert.equal(movingAndExile[0].sources.length,2,'the consolidated movement sense must retain both source records');
+assert(movingAndExile[0].text.includes('exile'),'the unmatched explanatory alternative must remain visible in its original sense');
+
+const pledgeSense=U.merge([
+ {id:413,entry:{h:'מִשְׁכֵּן',r:'KRU12188',source:'krupnik'},meanings:[{text:'to take a pledge',label:''}]},
+ {id:414,entry:{h:'מִשְׁכֵּן',r:'M02905',source:'jastrow'},meanings:[{text:'to take a pledge; to seize, levy',label:''}]}
+],'משכן');
+assert.equal(pledgeSense.length,2,'a separately delimited seize/levy sense must not be absorbed by the pledge match');
 
 console.log('PASS: real alternate-headword vowel matches, partial pointing, cantillation, conservative synonym consolidation, complete source references, and distinct stem/qualified senses.');
 assert.equal(U.merge([{id:1,entry:{h:'חוב'},meanings:[{text:'charge',label:''}]},{id:2,entry:{h:'חוב'},meanings:[{text:'charge, accusation',label:''}]}],'חוב').length,2,'a one-word overlap must not erase a distinct qualified sense');
