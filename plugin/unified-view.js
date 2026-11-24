@@ -824,7 +824,8 @@
  function sameMeaning(group,item,word){
   const itemForm=stem(item.meaning.label);
   if(!compatibleForm(group.form,itemForm)||!group.sources.every(s=>compatible(s.spelling,item.spelling,word)))return false;
-  return canonicalGlossKey(group.text)===canonicalGlossKey(item.meaning.text)||\n   synonymKey(group.text)===synonymKey(item.meaning.text)||
+  return canonicalGlossKey(group.text)===canonicalGlossKey(item.meaning.text)||
+   synonymKey(group.text)===synonymKey(item.meaning.text)||
    sharesReviewedSynonym(group.text,item.meaning.text)||
    group.sources.some(s=>reviewedEquivalent(s,item)||reviewedGlossEquivalent(s,item));
  }
