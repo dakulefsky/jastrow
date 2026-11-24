@@ -1662,8 +1662,8 @@
   if(clean(current))out.push(current.trim());
   return out;
  };
- function meaningBuckets(ref,meaning){
-  const segments=senseSegments(meaning.text),mappings=alternativePairsByRef.get(ref)||[];
+ function meaningBuckets(ref,meaning,dynamicPairsByRef){
+  const segments=senseSegments(meaning.text),mappings=[...(alternativePairsByRef.get(ref)||[]),...(dynamicPairsByRef?.get(ref)||[])];
   const buckets=segments.map((segment,index)=>{
    const alternatives=glossAlternatives(segment);
    const bucketKeys=mappings.filter(mapping=>alternatives.some(value=>alternativeKey(value)===alternativeKey(mapping.own))).map(mapping=>mapping.key);
@@ -1696,12 +1696,64 @@
    sharesReviewedSynonym(group.text,item.meaning.text)||
    group.sources.some(s=>reviewedEquivalent(s,item)||reviewedGlossEquivalent(s,item));
  }
+ function exactAlternativeMappings(records,word){
+  const pairs=new Map();
+  const prepared=(records||[]).filter(record=>record.entry&&Array.isArray(record.meanings)).map(record=>{
+   const lookupWord=record.lookupWord||word;
+   return {...record,spelling:S.displayHeadword(record.entry,lookupWord)};
+  });
+  for(let i=0;i<prepared.length;i++)for(let j=i+1;j<prepared.length;j++){
+   const first=prepared[i],second=prepared[j];
+   const firstIsK=first.entry.source==='krupnik',secondIsK=second.entry.source==='krupnik';
+   if(firstIsK===secondIsK)continue;
+   const k=firstIsK?first:second,jastrow=firstIsK?second:first;
+   if(!compatible(k.spelling,jastrow.spelling,word))continue;
+   for(const jm of jastrow.meanings)for(const km of k.meanings){
+    if(!compatibleForm(stem(jm.label),stem(km.label)))continue;
+    const jSegments=senseSegments(jm.text),kSegments=senseSegments(km.text);
+    for(let ji=0;ji<jSegments.length;ji++)for(let ki=0;ki<kSegments.length;ki++){
+     const jSegment=jSegments[ji],kSegment=kSegments[ki];
+     const jSegmentId=[jastrow.entry.r,clean(jm.text),stem(jm.label),clean(jm.section),ji,clean(jSegment)].join('::');
+     const kSegmentId=[k.entry.r,clean(km.text),stem(km.label),ki,clean(kSegment)].join('::');
+     for(const ja of glossAlternatives(jSegment))for(const ka of glossAlternatives(kSegment)){
+      const jAlt=clean(ja),kAlt=clean(ka);
+      if(!jAlt||jAlt!==kAlt||/^to\s+/i.test(jAlt)!==/^to\s+/i.test(kAlt))continue;
+      const key=[jastrow.entry.r,k.entry.r].sort().join('|')+'::'+[jAlt,kAlt].sort().join(' | ');
+      if(!pairs.has(key))pairs.set(key,{key,jastrow:new Map(),krupnik:new Map(),matches:[]});
+      const pair=pairs.get(key);
+      pair.jastrow.set(jSegmentId,{id:jSegmentId,label:stem(jm.label)});
+      pair.krupnik.set(kSegmentId,{id:kSegmentId,label:stem(km.label)});
+      pair.matches.push({jSegmentId,kSegmentId,jRef:jastrow.entry.r,kRef:k.entry.r,jAlt:ja,kAlt:ka});
+     }
+    }
+   }
+  }
+  const jTargets=new Map(),kTargets=new Map();
+  for(const pair of pairs.values())for(const match of pair.matches){
+   if(!jTargets.has(match.jSegmentId))jTargets.set(match.jSegmentId,new Set());
+   if(!kTargets.has(match.kSegmentId))kTargets.set(match.kSegmentId,new Set());
+   jTargets.get(match.jSegmentId).add(match.kSegmentId);
+   kTargets.get(match.kSegmentId).add(match.jSegmentId);
+  }
+  const byRef=new Map();
+  for(const pair of pairs.values()){
+   const labels=[...pair.jastrow.values(),...pair.krupnik.values()].map(item=>item.label).filter(Boolean);
+   const ambiguous=pair.jastrow.size!==1||pair.krupnik.size!==1||new Set(labels).size>1||
+    pair.matches.some(match=>jTargets.get(match.jSegmentId)?.size>1||kTargets.get(match.kSegmentId)?.size>1);
+   if(ambiguous)continue;
+   for(const match of pair.matches)for(const [ref,own] of [[match.jRef,match.jAlt],[match.kRef,match.kAlt]]){
+    if(!byRef.has(ref))byRef.set(ref,[]);
+    byRef.get(ref).push({key:pair.key,own});
+   }
+  }
+  return byRef;
+ }
  function merge(records,word){
-  const groups=[];
+  const groups=[],dynamicPairsByRef=exactAlternativeMappings(records,word);
   for(const {id,entry,meanings,lookupWord} of records)for(const meaning of meanings){
    if(!meaning.text?.trim())continue;
    const matchingWord=lookupWord||word,spelling=S.displayHeadword(entry,matchingWord),sourceItem={id,entry,meaning,spelling};
-   for(const bucket of meaningBuckets(entry.r,meaning)){
+   for(const bucket of meaningBuckets(entry.r,meaning,dynamicPairsByRef)){
     const item={...sourceItem,sourceMeaning:meaning,meaning:{...meaning,text:bucket.text},bucketKeys:bucket.bucketKeys||[]};
     let group=groups.find(g=>sameMeaning(g,item,word));
     if(!group){group={text:bucket.text,form:stem(meaning.label),spelling,sources:[],displayAlternatives:[],bucketKeys:bucket.bucketKeys||[],rank:S.vowelRank(entry,matchingWord)};groups.push(group);}
