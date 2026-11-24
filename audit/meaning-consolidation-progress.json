@@ -4,9 +4,9 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 714,
+    "reviewedNonIdenticalGlossPairs": 702,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 714 retained source-scoped mappings are required to pass the Chromium audit against JastrowReadingView.phrases.",
+    "realReaderPhraseExtractorAudit": "All retained source-scoped mappings are required to pass the Chromium audit against JastrowReadingView.phrases; the previous transcription typo in M01377 was corrected in source data.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant."
@@ -68,10 +68,10 @@
     "note": "This is a regenerated inventory from the current PR branch and current source data. It is a review queue, not a synonym certification; lexical overlap only ranks candidates and never triggers automatic fuzzy merging."
   },
   "reviewedTranche": {
-    "addedUniqueSourceGlossPairs": 28,
+    "addedUniqueSourceGlossPairs": 16,
     "attemptedRows": 28,
     "rejectedNotDisplayed": 0,
-    "currentTotal": 714,
+    "currentTotal": 702,
     "acceptedPairs": [
       [
         "KRU08934",
@@ -242,7 +242,7 @@
         "the seven letters which require crownlets"
       ]
     ],
-    "note": "Twenty-eight additional high-confidence candidates were reviewed individually. All preserve the same underlying sense; entries that added a distinct sense or changed grammatical/semantic scope were deliberately left pending or rejected. The automated Chromium reader phrase audit and source validation are running on the current branch."
+    "note": "Twenty-eight high-confidence candidate rows were reviewed; 16 added new unique normalized source-scoped equivalences (the remaining 12 were already represented by canonical mappings). Distinct additional senses and changes in grammatical/semantic scope were left unmerged. A missing comma in the mapping array was caught by the new count/mapping assertions and corrected."
   },
   "hebrewConsolidation": {
     "status": "shared grouping layer in Hebrew reader and quick lookup; exact Hebrew alternative lists now consolidate despite punctuation/order differences",
