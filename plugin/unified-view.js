@@ -1639,7 +1639,25 @@
   ["KRU09606","K00913","to cut down","to cut down"],
   ["KRU09624","K00952","to feel ashamed","to feel ashamed"],
   ["KRU09809","K01191","to round off","to round off"],
-  ["KRU09812","K01198","troop of siege","troop of siege"]
+  ["KRU09812","K01198","troop of siege","troop of siege"],
+  ["KRU07721","I00064","to make obligatory the setting aside of tithes","to make obligatory the setting aside of tithes&c"],
+  ["KRU03613","C00166","to cut off","cut off."],
+  ["KRU10059","L00182","white matter","white matter"],
+  ["KRU10087","L00229","to talk about","to talk about"],
+  ["KRU10087","L00229","to talk disrespectfully","talk disrespectfully"],
+  ["KRU10173","L00376","to loll the tongue","to loll the tongue"],
+  ["KRU10213","L00438","evil talk","evil talk"],
+  ["KRU10334","L00577","to talk against","to talk against"],
+  ["KRU10334","L00577","to murmur","murmur"],
+  ["KRU10364","L00604","foreign tongue","foreign tongue"],
+  ["KRU10364","L00604","evil talk","evil talk"],
+  ["KRU10363","L00603","to talk against","to talk against"],
+  ["KRU10924","M00669","coarse bran","coarse bran"],
+  ["KRU10955","M00716","mixed wine","mixed wine"],
+  ["KRU10977","M00750","offering drink","offering drink"],
+  ["KRU11255","M01174","drawing water","drawing water."],
+  ["KRU11414","M01442","preparatory means","preparatory means"],
+  ["KRU11442","M01501","funeral escort","funeral escort"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
