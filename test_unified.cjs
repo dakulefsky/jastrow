@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1104,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1126,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -96,6 +96,15 @@ for(const [kr,jr,kg,jg] of thirdReviewedEquivalences){
  assert(U.reviewedSourceGlossPairs.has(ids+'::'+glosses),'third-tranche mapping missing: '+jr+' / '+kr);
 }
 
+
+
+// Fifth reviewed tranche: twenty-two additional conservative equivalences from the refreshed queue.
+const fifthReviewedEquivalences=[["KRU09193","K00352","of Cyprus","Cyprus"],["KRU11185","M01077","a woman’s protest against a marriage contracted during her minority","a woman’s protest against a marriage contracted during her minority, annulment of marriage"],["KRU04347","C00977","to dig out, to engrave, to shape","to dig out, engrave; to shape, form"],["KRU09167","K00309","the lower part of the winnowing shovel","receiver, the lower part of the winnowing shovel"],["KRU03211","B01123","cleaving, cleft, log","cleaving, cleft; that which is cloven, a log."],["KRU03320","B01236","to recover, to get strong","to get well, recover; to be strong"],["KRU03732","C00283","border of the field, ridge","border of the field, balk, ridge."],["KRU13305","O00377","a garment made of goat-skin","a garment made of goat-skin with the hair on"],["KRU15271","Q00547","to give leave, to let go","to dismiss, give leave, let go"],["KRU15536","Q00997","to vomit, to give out","to discharge, vomit, give out"],["KRU19376","U01786","to discharge, to pour out","to pour out, run, discharge"],["KRU03647","C00205","heaped (measure)","liberal, heaped measure"],["KRU16876","S00439","powdered lime","powdered lime, plaster"],["KRU01348","A02054","Roman Emperor","commander, Roman Emperor"],["KRU02106","A03232","A perforated vessel, clepsydra","a perforated vessel"],["KRU03082","B01035","habitual kicker","habitual kicker, butting"],["KRU03083","B01037","to pray, to ask for mercy","to ask, pray"],["KRU03641","C00198","incision in the flesh","incision in the flesh, wounding"],["KRU03852","C00423","glowing coal","burning, glowing coal"],["KRU03882","C00455","to bung, to cork","to squeeze, cork, bung"],["KRU04381","C01022","full draught","quaffing, full draught"],["KRU09492","K00771","fine cloaks for women","fine cloaks"]];
+for(const [kr,jr,kg,jg] of fifthReviewedEquivalences){
+ const ids=[kr,jr].sort().join('|');
+ const glosses=[normalizeReviewed(kg),normalizeReviewed(jg)].sort().join(' | ');
+ assert(U.reviewedSourceGlossPairs.has(ids+'::'+glosses),'fifth-tranche mapping missing: '+jr+' / '+kr);
+}
 
 // Fourth reviewed tranche: the letter name is a spelling/transliteration variant.
 const fourthReviewedEquivalences=[["KRU14410","P00548","the letter Ayin","the letter ʿAyin"]];
