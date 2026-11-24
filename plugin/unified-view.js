@@ -1620,7 +1620,6 @@
      else if(scoped&&/^to\s+/.test(alternative)&&!/^to\s+/.test(group.displayAlternatives[index]))group.displayAlternatives[index]=alternative;
     }
     for(const key of bucket.bucketKeys||[])if(!group.bucketKeys.includes(key))group.bucketKeys.push(key);
-    }
     group.text=group.displayAlternatives.join(', ');
    }
   }
