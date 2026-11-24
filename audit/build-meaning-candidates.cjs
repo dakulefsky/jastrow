@@ -87,7 +87,7 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
    headwordMatching:'Jastrow Search.normalize across primary and alternate headword spellings',
    jastrowMeanings:'JastrowReadingView.phrases, the actual reader extractor',
    krupnikMeanings:'Original Krupnik gloss records',
-   candidateRule:'At least one shared content token and overlap coefficient >= 0.5; pointed-headword conflicts, explicit label conflicts, verb/noun mismatches, and active/passive infinitive mismatches are excluded; already-reviewed pairs are excluded; no automatic merging',
+   candidateRule:'At least one shared content token and overlap coefficient >= 0.5; exact complete gloss lists that differ only by punctuation, alternative ordering, articles, or coordinated infinitive markers are handled by the deterministic canonical matcher and excluded; pointed-headword conflicts, explicit label conflicts, verb/noun mismatches, and active/passive infinitive mismatches are excluded; already-reviewed pairs are excluded; no fuzzy automatic merging',
    limitations:'Lexical overlap is only a review hint. Shared terms can represent distinct senses; grammatical labels and source context require manual review.'
   },
   totals:{sourceEntries:entries.length,jastrowEntries:jastrow.length,krupnikEntries:krupnik.length,jastrowEntriesWithReaderPhrases:[...phrasesByRef.values()].filter(x=>x.length).length,sharedHeadwordRecordPairs:matchedRecordPairs.size,jastrowHeadwordIndexAssociations:[...byForm.values()].reduce((n,a)=>n+a.length,0),candidates:list.length},
