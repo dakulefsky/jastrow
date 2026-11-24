@@ -4,13 +4,13 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 890,
+    "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
     "realReaderPhraseExtractorAudit": "All retained source-scoped mappings are required to pass the Chromium audit against JastrowReadingView.phrases; the previous transcription typo in M01377 was corrected in source data.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1224
+    "reviewedSourceGlossPairCount": 1249
   },
   "historicalCheckpoint": {
     "reportedCompleted": 29,
@@ -65,7 +65,7 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16911,
-    "status": "Awaiting refreshed candidate inventory after the ninth review tranche.",
+    "status": "Awaiting regenerated inventory after the tenth reviewed tranche.",
     "note": "Generated from current branch a0c797? inventory artifact belongs to commit 278bbbb010f1aaf83d48479bed7cba5123c706aa. Review queue only: token overlap ranks candidates; no fuzzy automatic merging."
   },
   "reviewedTranche": {
@@ -1675,5 +1675,163 @@
       "actualReaderPhrase": "physician, surgeon;",
       "reason": "The real reader extractor includes a trailing semicolon in this Jastrow gloss. The reviewed mapping now matches the exact emitted phrase rather than weakening the audit."
     }
-  ]
+  ],
+  "tenthReviewedTranche": {
+    "attemptedRows": 25,
+    "addedUniqueSourceGlossPairs": 25,
+    "currentTotal": 915,
+    "acceptedPairs": [
+      [
+        "KRU04566",
+        "C01270",
+        "fringe",
+        "that which is combed, fringe"
+      ],
+      [
+        "KRU04578",
+        "C01320",
+        "to incite, to stir up",
+        "to incite"
+      ],
+      [
+        "KRU04694",
+        "D00017",
+        "to flow out",
+        "to flow"
+      ],
+      [
+        "KRU04712",
+        "D00027",
+        "a species of doves",
+        "doves"
+      ],
+      [
+        "KRU04721",
+        "D00037",
+        "to overflow",
+        "to drip, overflow"
+      ],
+      [
+        "KRU04733",
+        "D00052",
+        "bee-hive",
+        "bee-swarm, bee-hive"
+      ],
+      [
+        "KRU04747",
+        "D00073",
+        "to glue",
+        "to paste, glue"
+      ],
+      [
+        "KRU04747",
+        "D00073",
+        "to be attached to",
+        "to be attached, join"
+      ],
+      [
+        "KRU04748",
+        "D00074",
+        "glue",
+        "glue, paste"
+      ],
+      [
+        "KRU04755",
+        "D00082",
+        "field",
+        "pasture, field"
+      ],
+      [
+        "KRU04815",
+        "D00164",
+        "two",
+        "two, double"
+      ],
+      [
+        "KRU04818",
+        "D00168",
+        "mail-carrier",
+        "mail-carrier, despatch-bearer"
+      ],
+      [
+        "KRU05023",
+        "D00170",
+        "to flow",
+        "to flow, drip"
+      ],
+      [
+        "KRU04830",
+        "D00184",
+        "to be troubled",
+        "to be anxious, troubled"
+      ],
+      [
+        "KRU04835",
+        "D00190",
+        "simile",
+        "simile, illustration"
+      ],
+      [
+        "KRU05061",
+        "D00236",
+        "grief",
+        "grief, affliction"
+      ],
+      [
+        "KRU04867",
+        "D00235",
+        "sad",
+        "sad, depressed"
+      ],
+      [
+        "KRU04927",
+        "D00326",
+        "exactness",
+        "exactness, minuteness"
+      ],
+      [
+        "KRU04941",
+        "D00341",
+        "to dwell",
+        "to reside, dwell"
+      ],
+      [
+        "KRU04945",
+        "D00350",
+        "load",
+        "burden, load"
+      ],
+      [
+        "KRU04987",
+        "D00408",
+        "suspension",
+        "postponement, suspension"
+      ],
+      [
+        "KRU04994",
+        "D00411",
+        "to frighten",
+        "to frighten, scare"
+      ],
+      [
+        "KRU04999",
+        "D00426",
+        "God-fearing",
+        "God-fearing, conscientious"
+      ],
+      [
+        "KRU05016",
+        "D00450",
+        "edict",
+        "edict, ordinance"
+      ],
+      [
+        "KRU05024",
+        "D00462",
+        "gonorrhoea",
+        "flux, gonorrhoea"
+      ]
+    ],
+    "note": "Twenty-five further same-sense variants were approved from the next inventory page. These include synonymic gloss expansions, grammatical equivalents, and explanatory variants; distinct senses remain separate."
+  }
 }
