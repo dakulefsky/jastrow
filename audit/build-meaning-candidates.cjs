@@ -36,7 +36,18 @@ const partEvidence=(a,b)=>{
   jaccard:Number((shared.length/new Set([...left,...right]).size).toFixed(3))};
 };
 const stem=label=>clean(String(label||'').replace(/^[—\s]*\d+[).]?\s*/,'').replace(/\s+\d+[).]?\s*$/,''));
-const sharedForms=(a,b)=>{const left=[a.h,...(a.alt||[])],right=[b.h,...(b.alt||[])],forms=[];for(const x of left)for(const y of right)if(S.normalize(x)===S.normalize(y)&&S.vowelRank({h:x},y)!==2)forms.push(S.normalize(x));return [...new Set(forms)];};
+const homonymNumber=value=>{
+ const text=String(value||'').trim(),sup=text.match(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+$/);
+ if(sup)return Number([...sup[0]].map(ch=>'⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join(''));
+ const roman=text.match(/(?:^|\s)(I{1,3}|IV|V|VI|VII|VIII|IX|X)$/i);
+ if(roman)return ({I:1,II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8,IX:9,X:10})[roman[1].toUpperCase()]||null;
+ const arabic=text.match(/(?:^|\s)(\d+)$/);
+ return arabic?Number(arabic[1]):null;
+};
+const sameHomonym=(a,b)=>{const x=homonymNumber(a),y=homonymNumber(b);return x===null||y===null||x===y;};
+const sharedForms=(a,b)=>{const left=[a.h,...(a.alt||[])],right=[b.h,...(b.alt||[])],forms=[];for(const x of left)for(const y of right)if(S.normalize(x)===S.normalize(y)&&sameHomonym(x,y)&&S.vowelRank({h:x},y)!==2)forms.push(S.normalize(x));return [...new Set(forms)];};
+if(sharedForms({h:'בּוּר I'},{h:'בּוּר²'}).length)throw new Error('Candidate inventory must not pair explicitly different homonyms');
+if(!sharedForms({h:'בּוּר I'},{h:'בּוּר'}).length)throw new Error('An unnumbered counterpart remains eligible for review');
 const voice=value=>/^to\s+be\s+/i.test(clean(value))?'passive':'active';
 const samePartOfSpeech=(a,b)=>/^to\s+/i.test(clean(a))===/^to\s+/i.test(clean(b));
 if(samePartOfSpeech('to lament','lament'))throw new Error('Candidate queue must preserve verb/noun distinctions');
