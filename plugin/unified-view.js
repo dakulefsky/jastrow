@@ -1657,7 +1657,22 @@
   ["KRU10977","M00750","offering drink","offering drink"],
   ["KRU11255","M01174","drawing water","drawing water."],
   ["KRU11414","M01442","preparatory means","preparatory means"],
-  ["KRU11442","M01501","funeral escort","funeral escort"]
+  ["KRU11442","M01501","funeral escort","funeral escort"],
+  ["KRU11696","M01949","to make poor","to make poor"],
+  ["KRU11865","M02272","untanned hide","untanned hide."],
+  ["KRU11968","M02465","real estate","real estate"],
+  ["KRU11983","M02508","resting place","resting place"],
+  ["KRU12131","M02811","a faulty version","a faulty version"],
+  ["KRU12160","M02847","to be rubbed with oil","to be rubbed with oil"],
+  ["KRU12188","M02905","to take a pledge","to take a pledge"],
+  ["KRU12273","M03063","sweet taste","sweet taste"],
+  ["KRU12300","M03112","sustained version","sustained version"],
+  ["KRU12316","N00039","to come to the surface","come to the surface"],
+  ["KRU12358","N00127","to get dark","to get dark"],
+  ["KRU12377","N00174","to bite off","to bite off."],
+  ["KRU12413","N00235","moving about","moving about"],
+  ["KRU12501","N00390","boughs of a tree","boughs of a tree"],
+  ["KRU12839","N00979","wearing shoes","wearing shoes."]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
