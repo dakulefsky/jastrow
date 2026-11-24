@@ -1,7 +1,11 @@
 (function(root){
  'use strict';
  const normalize=value=>root.HebrewLookup.normalize(String(value||''));
- const labelKey=value=>normalize(String(value||'').replace(/\\b\\d+\\b/g,'').trim());
+ const labelKey=value=>{
+  const raw=String(value||'').trim();
+  if(/^\d+$/.test(raw))return '#'+raw;
+  return normalize(raw.replace(/\b\d+\b/g,'').trim());
+ };
  const homonymNumber=value=>{
   const text=String(value||'').trim(),sup=text.match(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+$/);
   if(sup)return Number([...sup[0]].map(ch=>'⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join(''));
@@ -15,6 +19,15 @@
   if(a!==null&&b!==null)return a===b;
   if(a===null&&b===null)return true;
   return (knownNumbers?.size||0)<=1;
+ };
+ const labelsCompatibleInScope=(a,b,knownNumbers)=>{
+  const aNumeric=/^#\d+$/.test(a||''),bNumeric=/^#\d+$/.test(b||'');
+  if(aNumeric&&bNumeric)return a===b;
+  if(aNumeric||bNumeric){
+   if((a||'')&&!aNumeric||(b||'')&&!bNumeric)return false;
+   return (knownNumbers?.size||0)<=1;
+  }
+  return !a||!b||a===b;
  };
  const dictionaryHomonymsByForm=new Map();
  for(const entry of root.HEBREW_DICTIONARY?.entries||[])for(const form of [entry.word,...(entry.alt||[])]){
@@ -71,7 +84,7 @@
   for(const source of sources||[])for(const entry of source.records||[])for(const part of entry.parts||[]){
    const text=part.meaning||part.text||'',label=labelKey(part.label),scope=normalize(source.word||word),homonym=homonymNumber(entry.word);
    if(!normalize(text))continue;
-   prepared.push({source,entry,part,text,label,scope,homonym,alternatives:splitAlternatives(text)});
+   prepared.push({source,entry,part,text,label,scope,homonym,numericLabel:/^\d+$/.test(String(part.label||'').trim())?Number(String(part.label).trim()):null,alternatives:splitAlternatives(text)});
   }
   // If two source parts share an exact Hebrew alternative, split those parts
   // into their individual alternatives for display. This allows a common
@@ -82,11 +95,17 @@
    if(!homonymsByScope.has(item.scope))homonymsByScope.set(item.scope,new Set(dictionaryHomonymsByForm.get(item.scope)||[]));
    if(item.homonym!==null)homonymsByScope.get(item.scope).add(item.homonym);
   }
+  const numericLabelsByScope=new Map();
+  for(const item of prepared)if(item.numericLabel!==null){
+   if(!numericLabelsByScope.has(item.scope))numericLabelsByScope.set(item.scope,new Set());
+   numericLabelsByScope.get(item.scope).add(item.numericLabel);
+  }
   const compatibleInScope=(scope,a,b)=>homonymCompatible(a,b,homonymsByScope.get(scope));
+  const labelsCompatible=(scope,a,b)=>labelsCompatibleInScope(a,b,numericLabelsByScope.get(scope));
   const splitParts=new Set();
   for(let i=0;i<prepared.length;i++)for(let j=i+1;j<prepared.length;j++){
    const a=prepared[i],b=prepared[j];
-   if(a.scope!==b.scope||!compatibleInScope(a.scope,a.homonym,b.homonym)||(a.label&&b.label&&a.label!==b.label))continue;
+   if(a.scope!==b.scope||!compatibleInScope(a.scope,a.homonym,b.homonym)||!labelsCompatible(a.scope,a.label,b.label))continue;
    const leftValues=[...new Set(a.alternatives.map(normalize).filter(Boolean))];
    const rightValues=[...new Set(b.alternatives.map(normalize).filter(Boolean))];
    const right=new Set(rightValues);
@@ -99,9 +118,12 @@
    const displayMeanings=splitParts.has(index)?alternatives:[text];
    for(const displayMeaning of displayMeanings){
     const item={e:entry,p:part,selectedWord:source.word||undefined,displayMeaning};
-    let group=groups.find(g=>g.scope===scope&&compatibleInScope(scope,g.homonym,homonym)&&(!g.label||!label||g.label===label)&&g.items.some(existing=>equivalent(existing,item)));
+    let group=groups.find(g=>g.scope===scope&&compatibleInScope(scope,g.homonym,homonym)&&labelsCompatible(scope,g.label,label)&&g.items.some(existing=>equivalent(existing,item)));
     if(!group){group={word:entry.word,text:displayMeaning,scope,label,homonym,items:[]};groups.push(group);}
-    else if(group.homonym===null&&homonym!==null)group.homonym=homonym;
+    else{
+     if(group.homonym===null&&homonym!==null)group.homonym=homonym;
+     if(!group.label&&label)group.label=label;
+    }
     if(!group.label)group.label=label;
     if(!group.items.some(x=>x.e.rid===entry.rid&&x.p===part&&normalize(itemMeaning(x))===normalize(displayMeaning))){
      group.items.push(item);
