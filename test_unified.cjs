@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1283,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1284,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -660,6 +660,15 @@ const shaggyGoatConsolidation=U.merge([
 assert.equal(shaggyGoatConsolidation.length,1,'the shaggy-goat definition should consolidate');
 assert.equal(shaggyGoatConsolidation[0].sources.length,2,'both zoological source records should remain available');
 assert.equal(shaggyGoatConsolidation[0].text,'a goat with long hair lumps and long, dependent ears','the fuller animal description should display once');
+
+const heirShareConsolidation=U.merge([
+ {id:16142,entry:{h:'פְּשִׁיטוּת',r:'KRU16142',source:'krupnik'},meanings:[{text:'single share of the heir, opp. to the double share of the first-born son',label:''}]},
+ {id:2074,entry:{h:'פְּשִׁיטוּת',r:'Q02074'},meanings:[{text:'the plain heir’s right, single share',label:''}]}
+],'פשיטות');
+assert.equal(heirShareConsolidation.length,1,'the plain-heir single-share sense should consolidate');
+assert.equal(heirShareConsolidation[0].sources.length,2,'both inheritance-definition sources should remain available');
+assert.equal(heirShareConsolidation[0].text,'single share of the heir, opp. to the double share of the first-born son','the complete legal distinction should display once');
+
 
 
 
