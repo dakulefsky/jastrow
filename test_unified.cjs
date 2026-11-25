@@ -530,6 +530,18 @@ assert.equal(ownerlessConsolidation.length,1,'the same ownerless-property sense 
 assert.equal(ownerlessConsolidation[0].sources.length,2,'both source records should remain available');
 assert.equal(ownerlessConsolidation[0].text,'declare a property ownerless, to declare free, to renounce ownership','the more informative wording should be displayed without repeating the same ownerless definition');
 
+const eruvConsolidation=U.merge([
+ {id:14478,entry:{h:'עֵירוּב',r:'KRU14478',source:'krupnik'},meanings:[{text:'a symbolical act by which the legal fiction of community or continuity is established',label:'2'}]},
+ {id:680,entry:{h:'עֵירוּב',r:'P00680'},meanings:[
+  {text:'‘Erub, a symbolical act by which the legal fiction of community',label:''},
+  {text:'continuity is established',label:''}
+ ]}
+],'עירוב');
+assert.equal(eruvConsolidation.length,1,'the split reader phrases together describe one Erub sense');
+assert.equal(eruvConsolidation[0].sources.length,3,'the consolidated Erub sense must retain both reader phrases and the Krupnik source');
+assert.equal(eruvConsolidation[0].text,'a symbolical act by which the legal fiction of community or continuity is established','the complete source definition should display once, not as three overlapping fragments');
+
+
 
 
 const nifka=U.merge([{id:42393,entry:{h:'נִפְקָא',r:'KRU12894'},meanings:[{text:'excrements',label:'1'},{text:'outlet',label:'2'}]},{id:20165,entry:{h:'נִפִקָא',r:'N01077'},meanings:[{text:'excrements',label:''},{text:'outlet, opening',label:''}]}],'נפקא');
