@@ -10,6 +10,10 @@
   ['R00053::to raise one or more fingers','to raise the fingers as a signal'],
   ['KRU14845::trough for kneading etc','trough, tub, kneading trough'],
   ['E00517::marking out the road','marking out the road to the city of refuge'],
+  ['D00689::pricking pain','pricking pain in the eye'],
+  ['D00765::an elevated spot','an elevated spot on the hearth'],
+  ['KRU01971::long bedside','long board, longside of bedstead, bedside'],
+  ['KRU01236::diagonal','diagonal line, diameter'],
  ]);
  const displayGloss=(ref,value)=>displayCorrections.get(ref+'::'+clean(value))||value;
  const stem=label=>{
@@ -219,6 +223,10 @@
   ['KRU16236','R00053','to raise the fingers as a signal','to raise one or more fingers'],
   ['KRU14845','P01349','trough for kneading etc.','trough, tub, kneading trough'],
   ['KRU05871','E00517','marking out the road to the city of refuge','marking out the road'],
+  ['KRU05204','D00689','pricking pain in the eye','pricking pain'],
+  ['KRU05265','D00765','an elevated spot on the hearth','an elevated spot'],
+  ['KRU01971','A03028','long bedside','long board, longside of bedstead, bedside'],
+  ['KRU01236','A01891','diagonal','diagonal line, diameter'],
   ['KRU18341','T00991','to bore through','to bore'],
   ['KRU18343','T00995','to press, to crush','to press, crush'],
   ['KRU18343','T00995','to be squeezed','to be squeezed, crushed'],
