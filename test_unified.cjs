@@ -538,7 +538,7 @@ const eruvConsolidation=U.merge([
  ]}
 ],'עירוב');
 assert.equal(eruvConsolidation.length,1,'the split reader phrases together describe one Erub sense');
-assert.equal(eruvConsolidation[0].sources.length,3,'the consolidated Erub sense must retain both reader phrases and the Krupnik source');
+assert.equal(eruvConsolidation[0].sources.length,2,'the consolidated Erub sense must retain the actual reader phrase and the Krupnik source');
 assert.equal(eruvConsolidation[0].text,'a symbolical act by which the legal fiction of community or continuity is established','the complete source definition should display once, not as three overlapping fragments');
 
 
