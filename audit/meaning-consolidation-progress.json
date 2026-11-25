@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1286 retained whole-gloss mappings and all 271 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1289 retained whole-gloss mappings and all 271 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1286,
+    "reviewedSourceGlossPairCount": 1289,
     "reviewedSourceAlternativePairCount": 271,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -4546,5 +4546,50 @@
       "no other food terms are merged based solely on broad ingredient overlap"
     ],
     "currentTotal": 1286
+  },
+  "twentySeventhReviewedTranche": {
+    "attemptedCandidates": 4,
+    "addedUniqueSourceGlossPairs": 3,
+    "acceptedPairs": [
+      [
+        "KRU02095",
+        "A03220",
+        "in accident",
+        "accident, occurrence"
+      ],
+      [
+        "KRU07529",
+        "H01646",
+        "to squeeze",
+        "to squeeze into"
+      ],
+      [
+        "KRU09370",
+        "K00616",
+        "in what manner? how?",
+        "how?, in what manner?, in what respect?"
+      ]
+    ],
+    "evidence": [
+      "KRU02095 and Jastrow A03220 both define אִרְעָא as an accident or occurrence and cite Targum Ruth II:3. Krupnik's separate trouble sense remains independent; the legacy runtime exception is now represented in the source-scoped reviewed-pair registry so the inventory will not rediscover it.",
+      "KRU07529 and Jastrow H01646 both define the squeeze sense and cite Song of Songs Rabbah I:10. Krupnik's separate stringing and explaining senses remain independent.",
+      "KRU09370 and Jastrow K00616 give equivalent interrogative definitions, 'in what manner/how'. The fuller Jastrow wording is used for display, with both source entries retained."
+    ],
+    "rejectedPairs": [
+      [
+        "KRU06547",
+        "G00654",
+        "dealer in leather bags",
+        "maker of and dealer in leather bags"
+      ]
+    ],
+    "rejectionRationale": "Rejected the occupational overlap: 'maker of and dealer in leather bags' includes an additional maker sense and is not equivalent to 'dealer in leather bags'. The runtime mapping and display correction were removed, and a regression test now requires the two definitions to remain separate.",
+    "safeguards": [
+      "accepted mappings are scoped to exact source refs and exact glosses",
+      "the real Jastrow reader phrase extractor is the authority for displayed Jastrow wording",
+      "distinct senses in the same source entries remain separate",
+      "source detail retains both original dictionary records and wording"
+    ],
+    "currentTotal": 1289
   }
 }
