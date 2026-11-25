@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1315,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1320,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -132,7 +132,7 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,273,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,274,'every source-scoped alternative match must be loaded');
 
 const likenessVariant=U.merge([
  {id:1100,entry:{h:'דִּכְוָת',r:'KRU05268',source:'krupnik'},meanings:[{text:'like, as',label:''}]},
@@ -1378,4 +1378,57 @@ const newMoonProclamation=U.merge([
 assert.equal(newMoonProclamation.length,4,'the New-Moon proclamation should merge without absorbing other Kiddush senses');
 assert.equal(newMoonProclamation.find(group=>group.sources.length===2)?.text,'proclamation of the New Moon or the New Year','the complete New-Moon definition should display once');
 assert.equal(newMoonProclamation.filter(group=>group.sources.length===1).length,3,'sanctification, Kiddush, and priestly washing remain separate');
+
+const olivePressBale=U.merge([
+ {id:14773,entry:sourceByRef.get('KRU14773'),meanings:[{text:'a bale containing the olives to be pressed',label:'1'}]},
+ {id:1192,entry:sourceByRef.get('P01192'),meanings:[
+  {text:'a bale of loose texture containing the olive pulp to be pressed',label:'1'},
+  {text:'a mass of iron used for ballast',label:'2'}
+ ]}
+],S.normalize(sourceByRef.get('KRU14773').h));
+assert.equal(olivePressBale.length,2,'the olive-press bale should merge while the iron-ballast sense remains distinct');
+assert.equal(olivePressBale.find(group=>group.sources.length===2)?.text,'a bale of loose texture containing the olive pulp to be pressed','the precise olive-press definition should display once');
+assert(olivePressBale.some(group=>group.text==='a mass of iron used for ballast'&&group.sources.length===1),'the unrelated ballast sense must remain independent');
+
+const myrrhBecomesBitter=U.merge([
+ {id:12105,entry:sourceByRef.get('KRU12105'),meanings:[{text:'to become bitter',label:'Hithpa.'}]},
+ {id:2773,entry:sourceByRef.get('M02773'),meanings:[
+  {text:'to make bitter',label:'Piel'},
+  {text:'to become sticky and bitter',label:'Hithpa.'}
+ ]}
+],S.normalize(sourceByRef.get('KRU12105').h));
+assert.equal(myrrhBecomesBitter.length,2,'the intransitive myrrh sense should merge without absorbing the active causative sense');
+assert.equal(myrrhBecomesBitter.find(group=>group.sources.length===2)?.text,'to become sticky and bitter','the fuller myrrh-handling definition should display once');
+assert(myrrhBecomesBitter.some(group=>group.text==='to make bitter'&&group.sources.length===1),'the active "to make bitter" sense must remain independent');
+
+const fixedRentAndTenant=U.merge([
+ {id:7111,entry:sourceByRef.get('KRU07111'),meanings:[{text:'tenant on a fixed rent payable in kind',label:'1'}]},
+ {id:7103,entry:sourceByRef.get('KRU07103'),meanings:[{text:'rent',label:'2'}]},
+ {id:931,entry:sourceByRef.get('H00931'),meanings:[
+  {text:'tenant',label:'1'},
+  {text:'the fixed annual rent in kind',label:'2'}
+ ]}
+],S.normalize(sourceByRef.get('KRU07111').h));
+assert.equal(fixedRentAndTenant.length,2,'tenant and rent must be two separate dictionary senses');
+assert.equal(fixedRentAndTenant.filter(group=>group.sources.length===2).length,2,'each tenant/rent sense should match its own Krupnik record');
+assert(fixedRentAndTenant.some(group=>group.text==='tenant on a fixed rent payable in kind'&&group.sources.length===2),'the tenant definition should consolidate independently');
+assert(fixedRentAndTenant.some(group=>group.text==='the fixed annual rent in kind'&&group.sources.length===2),'the annual-rent definition should consolidate independently');
+
+const forkfulMeasure=U.merge([
+ {id:16546,entry:sourceByRef.get('KRU16546'),meanings:[{text:'a piece as large as can be taken up with a fork',label:''}]},
+ {id:617,entry:sourceByRef.get('R00617'),meanings:[{text:'a piece as large as can be taken up with a hook',label:''}]}
+],S.normalize(sourceByRef.get('KRU16546').h));
+assert.equal(forkfulMeasure.length,1,'the hook/fork measurement definitions should consolidate');
+assert.equal(forkfulMeasure[0].sources.length,2,'both Pesikta Rabbati source records should remain available');
+assert.equal(forkfulMeasure[0].text,'a piece as large as can be taken up with a fork','the source-confirmed fork wording should display once');
+
+const familySeveringCeremony=U.merge([
+ {id:17632,entry:sourceByRef.get('KRU17632'),meanings:[{text:'timber; a ceremony of severing family connections with a man who married beneath his social rank',label:''}]},
+ {id:1839,entry:sourceByRef.get('S01839'),meanings:[{text:'cutting off, severing family connections; ḳ’tsatsah, a ceremony attending the sale of an heirloom to an outsider, and the marriage of a man beneath his social rank',label:''}]}
+],S.normalize(sourceByRef.get('KRU17632').h));
+assert.equal(familySeveringCeremony.length,3,'the ceremony segment should merge while the general severing gloss and timber sense remain separate');
+const ceremonyGroup=familySeveringCeremony.find(group=>group.sources.length===2);
+assert(ceremonyGroup&&ceremonyGroup.text.includes('ḳ’tsatsah'),'the specific family-severing ceremony should consolidate');
+assert(familySeveringCeremony.some(group=>group.text==='timber'&&group.sources.length===1),'the unrelated timber sense must remain independent');
+assert(familySeveringCeremony.some(group=>group.text==='cutting off, severing family connections'&&group.sources.length===1),'the general severing gloss must remain independent');
 
