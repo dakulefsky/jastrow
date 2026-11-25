@@ -785,6 +785,18 @@ const coinAndWeight=U.merge([
 assert.equal(coinAndWeight.length,2,'coin and weight must remain separate senses');
 assert(coinAndWeight.every(g=>g.sources.length===2),'both matching coin and weight senses should preserve both sources');
 
+const cutAndCutInto=U.merge([
+ {id:411,entry:sourceByRef.get('KRU07668'),meanings:[
+  {text:'to cut',label:''},{text:'to decide',label:''},{text:'to be cut',label:''}
+ ]},
+ {id:412,entry:sourceByRef.get('H01896'),meanings:[
+  {text:'to be cut off, severed; to be cut into',label:'',section:'verb'}
+ ]}
+],'חתך');
+assert.equal(cutAndCutInto.length,4,'the reviewed Niphal sense must merge without absorbing adjacent cut-off, active-cut, or decide senses');
+assert.equal(cutAndCutInto.filter(g=>g.sources.length===2).length,1,'only the source-attested "to be cut into" sense should join');
+assert(cutAndCutInto.some(g=>g.text==='to be cut off, severed'&&g.sources.length===1),'the distinct cut-off sense must remain independent');
+
 const movementSenses=U.merge([
  {id:100,entry:{h:'טִלְטוּל',r:'KRU08043',source:'krupnik'},meanings:[{text:'moving',label:''},{text:'migration',label:''}]},
  {id:101,entry:{h:'טִלְטוּל',r:'I00486',source:'jastrow'},meanings:[{text:'moving, handling',label:''},{text:'migration, exile',label:''}]}
