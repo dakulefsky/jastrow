@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1301,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1303,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -1228,4 +1228,23 @@ const dyePlantJuice=U.merge([
 assert.equal(dyePlantJuice.length,1,'the dye-producing plant juice should consolidate');
 assert.equal(dyePlantJuice[0].sources.length,2,'both Hullin source records should remain available');
 assert.equal(dyePlantJuice[0].text,'juice of a plant used for dyeing','the full technical definition should display once');
+
+const sycamoreSpecies=U.merge([
+ {id:4824,entry:sourceByRef.get('KRU04824'),meanings:[
+  {text:'a species of sycamore',label:'1'},
+  {text:'unripe fig',label:'2'}
+ ]},
+ {id:175,entry:sourceByRef.get('D00175'),meanings:[{text:'a species of figs or sycamore',label:''}]}
+],S.normalize(sourceByRef.get('KRU04824').h));
+assert.equal(sycamoreSpecies.length,2,'the sycamore sense should merge while the unripe-fig sense stays distinct');
+assert.equal(sycamoreSpecies.find(group=>group.sources.length===2)?.text,'a species of sycamore','the more specific botanical identification should display once');
+assert(sycamoreSpecies.some(group=>group.text==='unripe fig'&&group.sources.length===1),'the separate unripe-fig meaning must remain independent');
+
+const upperGarment=U.merge([
+ {id:11938,entry:sourceByRef.get('KRU11938'),meanings:[{text:'an upper garment',label:''}]},
+ {id:2411,entry:sourceByRef.get('M02411'),meanings:[{text:'the upper garment with the girdle, walking cloak',label:''}]}
+],S.normalize(sourceByRef.get('KRU11938').h));
+assert.equal(upperGarment.length,1,'the upper-garment definitions should consolidate');
+assert.equal(upperGarment[0].sources.length,2,'both Yerushalmi source records should remain available');
+assert.equal(upperGarment[0].text,'the upper garment with the girdle, walking cloak','the more precise garment definition should display once');
 
