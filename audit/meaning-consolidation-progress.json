@@ -4248,25 +4248,32 @@
     "currentTotal": 1265
   },
   "seventeenthReviewedTranche": {
-    "attemptedCandidates": 2,
+    "attemptedCandidates": 1,
     "addedUniqueSourceGlossPairs": 2,
     "acceptedPairs": [
       [
-        "KRU14926",
-        "P01470",
-        "hard ground",
-        "hard and level ground"
+        "KRU14478",
+        "P00680",
+        "a symbolical act by which the legal fiction of community or continuity is established",
+        "‘Erub, a symbolical act by which the legal fiction of community"
       ],
       [
-        "KRU17914",
-        "T00110",
-        "lying down of animals",
-        "lying down, esp. damage caused by an animal falling on an object"
+        "KRU14478",
+        "P00680",
+        "a symbolical act by which the legal fiction of community or continuity is established",
+        "continuity is established"
       ]
     ],
     "evidence": [
-      "KRU14926 and P01470 both cite Mekhilta B'shallach s. 5 and the same Hebrew description of the hard floor of the sea; Jastrow adds the complementary adjective 'level'.",
-      "KRU17914 and T00110 both cite Bava Kamma 2b for the legal category of animal lying down; Jastrow gives the legal consequence as an explanatory gloss."
+      "Krupnik KRU14478 sense 2 defines an Erub as a symbolical act by which the legal fiction of community or continuity is established.",
+      "Jastrow P00680's same numbered sense divides the italicized definition across two reader phrases: '‘Erub, a symbolical act by which the legal fiction of community' and 'continuity is established'. The original HTML joins them in one sentence with 'or'.",
+      "Both Jastrow phrases map to the same Krupnik sense, so they are consolidated into one complete display phrase rather than shown as separate partial definitions."
+    ],
+    "safeguards": [
+      "both mappings are scoped to KRU14478/P00680 and the same sense number 2",
+      "Jastrow's other Erub meanings, including mixture/conjunction, remain separate",
+      "both reader-extracted italic phrases are validated against the original HTML",
+      "the Krupnik gloss is the canonical display wording; full source records remain available"
     ],
     "currentTotal": 1267
   }
