@@ -20,6 +20,7 @@
   ['KRU01645::van-guard','forerunner, the commander’s van-guard'],
   ['A02164::antiochian, native of antiochia, resident of a','of Antiochia'],
   ['KRU16409::with lang dependent ears','a goat with long hair lumps and long, dependent ears'],
+  ['Q02074::the plain heir’s right, single share','single share of the heir, opp. to the double share of the first-born son'],
  ]);
  const displayGloss=(ref,value)=>displayCorrections.get(ref+'::'+clean(value))||value;
  const stem=label=>{
@@ -239,6 +240,7 @@
   ['KRU01645','A02519','van-guard','forerunner, the commander’s van-guard'],
   ['KRU01430','A02164','of Antiochia','Antiochian, native of Antiochia, resident of A'],
   ['KRU16409','R00377','with lang dependent ears','a goat with long hair lumps and long, dependent ears'],
+  ['KRU16142','Q02074','single share of the heir, opp. to the double share of the first-born son','the plain heir’s right, single share'],
   ['KRU18341','T00991','to bore through','to bore'],
   ['KRU18343','T00995','to press, to crush','to press, crush'],
   ['KRU18343','T00995','to be squeezed','to be squeezed, crushed'],
