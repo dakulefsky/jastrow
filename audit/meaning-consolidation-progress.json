@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1283 retained whole-gloss mappings and all 271 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1284 retained whole-gloss mappings and all 271 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1283,
+    "reviewedSourceGlossPairCount": 1284,
     "reviewedSourceAlternativePairCount": 271,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -4494,6 +4494,29 @@
       "the G00654/KRU06547 occupational overlap is deliberately rejected because 'maker' is not equivalent to 'dealer'",
       "the original source records remain available in More detail"
     ],
-    "currentTotal": 1283
+    "currentTotal": 1284
+  },
+  "twentyFifthReviewedTranche": {
+    "attemptedCandidates": 1,
+    "addedUniqueSourceGlossPairs": 1,
+    "acceptedPairs": [
+      [
+        "KRU16142",
+        "Q02074",
+        "single share of the heir, opp. to the double share of the first-born son",
+        "the plain heir’s right, single share"
+      ]
+    ],
+    "evidence": [
+      "Krupnik KRU16142 and Jastrow Q02074 both define פְּשִׁיטוּת as the plain heir's single share.",
+      "Both entries cite Yerushalmi Bava Batra VIII:16b and the same passage ליטול פשיטות אביו.",
+      "Krupnik's fuller wording explains the legal contrast with the double share of the first-born son, while Jastrow's shorter wording names the plain heir's right."
+    ],
+    "safeguards": [
+      "mapping is scoped to KRU16142/Q02074",
+      "the full legal distinction from Krupnik is used for display",
+      "the original Jastrow wording and both source records remain available"
+    ],
+    "currentTotal": 1284
   }
 }
