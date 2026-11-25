@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1286,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1289,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -1052,3 +1052,42 @@ const pressedAndSqueezed=U.merge([
 ],'רצף');
 assert.equal(pressedAndSqueezed.length,2,'the active and passive meanings of the same root must stay distinct');
 assert(pressedAndSqueezed.every(g=>g.sources.length===2),'both source records should be preserved for each active/passive sense');
+
+const accidentConsolidation=U.merge([
+ {id:2095,entry:sourceByRef.get('KRU02095'),meanings:[
+  {text:'in accident',label:'1'},
+  {text:'trouble',label:'2'}
+ ]},
+ {id:3220,entry:sourceByRef.get('A03220'),meanings:[{text:'accident, occurrence',label:''}]}
+],S.normalize(sourceByRef.get('KRU02095').h));
+assert.equal(accidentConsolidation.length,2,'the accident sense should merge without absorbing the separate trouble sense');
+assert.equal(accidentConsolidation.find(g=>g.sources.length===2)?.text,'accident, occurrence','the source-specific accident wording should display once');
+assert(accidentConsolidation.some(g=>g.text==='trouble'&&g.sources.length===1),'the separate trouble sense must remain independent');
+
+const squeezeIntoConsolidation=U.merge([
+ {id:7529,entry:sourceByRef.get('KRU07529'),meanings:[
+  {text:'to string',label:'1'},
+  {text:'to squeeze',label:'2'},
+  {text:'to explain',label:'3'}
+ ]},
+ {id:1646,entry:sourceByRef.get('H01646'),meanings:[{text:'to squeeze into',label:''}]}
+],S.normalize(sourceByRef.get('KRU07529').h));
+assert.equal(squeezeIntoConsolidation.length,3,'the squeeze sense should consolidate without absorbing stringing or explaining');
+assert.equal(squeezeIntoConsolidation.find(g=>g.sources.length===2)?.text,'to squeeze into','the more specific squeeze wording should display once');
+assert(squeezeIntoConsolidation.some(g=>g.text==='to string'&&g.sources.length===1),'the stringing sense must remain independent');
+assert(squeezeIntoConsolidation.some(g=>g.text==='to explain'&&g.sources.length===1),'the explaining sense must remain independent');
+
+const howConsolidation=U.merge([
+ {id:9370,entry:sourceByRef.get('KRU09370'),meanings:[{text:'in what manner? how?',label:''}]},
+ {id:616,entry:sourceByRef.get('K00616'),meanings:[{text:'how?, in what manner?, in what respect?',label:''}]}
+],S.normalize(sourceByRef.get('KRU09370').h));
+assert.equal(howConsolidation.length,1,'the equivalent interrogative glosses should consolidate');
+assert.equal(howConsolidation[0].sources.length,2,'both interrogative source entries should remain available');
+assert.equal(howConsolidation[0].text,'how?, in what manner?, in what respect?','the fuller definition should display once');
+
+const makerAndDealerRemainDistinct=U.merge([
+ {id:6547,entry:sourceByRef.get('KRU06547'),meanings:[{text:'dealer in leather bags',label:''}]},
+ {id:6546,entry:sourceByRef.get('G00654'),meanings:[{text:'maker of and dealer in leather bags',label:''}]}
+],S.normalize(sourceByRef.get('KRU06547').h));
+assert.equal(makerAndDealerRemainDistinct.length,2,'maker and dealer are not equivalent occupational definitions and must not merge');
+
