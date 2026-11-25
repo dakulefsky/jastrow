@@ -1762,7 +1762,11 @@
   ["KRU10126","L00307","one having thick eye-brows","one having thick and connected eye-brows"],
   ["KRU14250","P00294","a period of twelve hours","a period of twelve astronomical hours"],
   ["KRU12583","N00545","an animal in whose body an organ is found to be absent or destroyed","the case of an animal in whose body an organ is found to be absent"],
-  ["KRU19830","V00526","the body of an animal stuffed with its loose pieces and roasted","the body of an animal stuffed with its loose pieces"]
+  ["KRU19830","V00526","the body of an animal stuffed with its loose pieces and roasted","the body of an animal stuffed with its loose pieces"],
+  ["KRU18096","T00517","to have pity","pity"],
+  ["KRU10885","M00596","an animal set aside for a sacrifice","an animal set aside"],
+  ["KRU10422","L00689","bass-relief","in bass-relief"],
+  ["KRU08326","I00860","to knock","to knock at"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
