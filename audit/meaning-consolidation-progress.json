@@ -60,18 +60,18 @@
     "published": false
   },
   "candidateInventory": {
-    "generatedFromCommit": "e9b26b7180d9351aa9e8bf89902b8f0c66631b03",
+    "generatedFromCommit": "ef269e4eb6bb4b7c219241e2c575b312418bf32e",
     "sourceEntries": 47919,
     "jastrowEntries": 32508,
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
     "candidates": 4403,
-    "exactAlternativeCandidates": 2989,
-    "runtimeRuleHandledCandidates": 2457,
-    "ambiguityFlaggedExactCandidates": 532,
-    "nonExactSemanticCandidates": 1414,
-    "note": "Regenerated from original dictionary data and the real reader extractor after 269 reviewed source-scoped alternative matches. Runtime-handled candidates use guarded one-to-one alternative matching; ambiguity-flagged exact candidates and non-exact semantic candidates remain human-review work."
+    "exactAlternativeCandidates": 2990,
+    "runtimeRuleHandledCandidates": 2456,
+    "ambiguityFlaggedExactCandidates": 534,
+    "nonExactSemanticCandidates": 1413,
+    "note": "Regenerated after contextual infinitive, reflexive spelling, and terminal punctuation normalization. One formerly lexical-overlap case moved into the exact-but-ambiguous queue because a single Krupnik gloss maps to two separate Jastrow senses; it is correctly not auto-merged."
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -3997,10 +3997,20 @@
   },
   "remainingSemanticReview": {
     "generatedFromCommit": "e9b26b7180d9351aa9e8bf89902b8f0c66631b03",
-    "strongAlternativeOverlapCandidates": 41,
-    "ambiguityFlaggedExactCandidates": 532,
-    "nonExactSemanticCandidates": 1414,
+    "strongAlternativeOverlapCandidates": 40,
+    "ambiguityFlaggedExactCandidates": 534,
+    "nonExactSemanticCandidates": 1413,
     "status": "pending-human-review",
-    "note": "The remaining strongest lexical-overlap candidates are not auto-merged. Manual screening shows examples where overlap masks different senses: opposite polarity, homonym/entity distinctions, construct-state phrases, direction, voice, and distinct actions. Continue only with source-grounded, sense-specific matches."
+    "note": "The remaining strongest lexical-overlap candidates are not auto-merged. Manual screening shows examples where overlap masks different senses: opposite polarity, homonym/entity distinctions, construct-state phrases, direction, voice, and distinct actions. Continue only with source-grounded, sense-specific matches.",
+    "ambiguousCandidateExamples": [
+      {
+        "records": [
+          "KRU03395",
+          "B01338"
+        ],
+        "decision": "manual-ambiguity-review",
+        "reason": "The Krupnik comma-list 'naked, in ecstasy?' appears to match two distinct Jastrow senses ('naked' and 'in ecstasy'). One-to-many mapping is ambiguous, so the runtime correctly refuses to auto-merge."
+      }
+    ]
   }
 }
