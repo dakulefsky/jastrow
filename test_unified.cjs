@@ -126,7 +126,7 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,270,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,271,'every source-scoped alternative match must be loaded');
 
 const likenessVariant=U.merge([
  {id:1100,entry:{h:'דִּכְוָת',r:'KRU05268',source:'krupnik'},meanings:[{text:'like, as',label:''}]},
@@ -828,6 +828,21 @@ const coinAndWeight=U.merge([
 ],'זוז');
 assert.equal(coinAndWeight.length,2,'coin and weight must remain separate senses');
 assert(coinAndWeight.every(g=>g.sources.length===2),'both matching coin and weight senses should preserve both sources');
+
+const muktzehToolAndSacrifice=U.merge([
+ {id:417,entry:sourceByRef.get('KRU10885'),meanings:[
+  {text:'a tool specially intended for cutting figs',label:'3'},
+  {text:'an animal set aside for a sacrifice',label:'4'},
+  {text:'that which is not counted on for use on the Sabbath or Holy Day',label:'5'}
+ ]},
+ {id:418,entry:sourceByRef.get('M00596'),meanings:[
+  {text:'the tool specially intended',label:'3',section:'noun'},
+  {text:'an animal set aside',label:'4',section:'noun'}
+ ]}
+],'מוקצה');
+assert.equal(muktzehToolAndSacrifice.length,3,'the two matched Muktzeh senses must consolidate while the Sabbath-use sense stays separate');
+assert.equal(muktzehToolAndSacrifice.filter(g=>g.sources.length===2).length,2,'both the fig-cutting tool and sacrifice-animal senses should retain both sources');
+assert(muktzehToolAndSacrifice.some(g=>g.sources.length===1&&g.text==='that which is not counted on for use on the Sabbath or Holy Day'),'the unrelated Sabbath-use sense must remain independent');
 
 const cutAndCutInto=U.merge([
  {id:411,entry:sourceByRef.get('KRU07668'),meanings:[
