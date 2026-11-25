@@ -9,6 +9,7 @@
   ["KRU09880::to work with zeal",'to adapt one’s self, to work with zeal and conscientiousness'],
   ['R00053::to raise one or more fingers','to raise the fingers as a signal'],
   ['KRU14845::trough for kneading etc.','trough, tub, kneading trough'],
+  ['E00517::marking out the road','marking out the road to the city of refuge'],
  ]);
  const displayGloss=(ref,value)=>displayCorrections.get(ref+'::'+clean(value))||value;
  const stem=label=>{
@@ -217,6 +218,7 @@
   ['KRU09880','K01324','to work with zeal','to adapt one’s self, to work with zeal and conscientiousness'],
   ['KRU16236','R00053','to raise the fingers as a signal','to raise one or more fingers'],
   ['KRU14845','P01349','trough for kneading etc.','trough, tub, kneading trough'],
+  ['KRU05871','E00517','marking out the road to the city of refuge','marking out the road'],
   ['KRU18341','T00991','to bore through','to bore'],
   ['KRU18343','T00995','to press, to crush','to press, crush'],
   ['KRU18343','T00995','to be squeezed','to be squeezed, crushed'],
