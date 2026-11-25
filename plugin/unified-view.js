@@ -5,7 +5,7 @@
  const displayCorrections=new Map([
   ['KRU08370::desparing of recovering a lost object','despairing of recovering a lost object'],
   ['KRU15837::to declare ownerless','declare a property ownerless'],
-  ['P00680::'erub, a symbolical act by which the legal fiction of community','a symbolical act by which the legal fiction of community or continuity is established'],
+  ["P00680::'erub, a symbolical act by which the legal fiction of community",'a symbolical act by which the legal fiction of community or continuity is established'],
   ['P00680::continuity is established','a symbolical act by which the legal fiction of community or continuity is established']
  ]);
  const displayAlternative=(ref,value)=>displayCorrections.get(ref+'::'+clean(value))||value;
