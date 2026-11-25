@@ -6,12 +6,12 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1315 retained whole-gloss mappings and all 273 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1320 retained whole-gloss mappings and all 274 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1315,
-    "reviewedSourceAlternativePairCount": 273,
+    "reviewedSourceGlossPairCount": 1320,
+    "reviewedSourceAlternativePairCount": 274,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
     "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions.",
@@ -4942,5 +4942,67 @@
     ],
     "currentTotal": 1315,
     "currentAlternativeTotal": 273
+  },
+  "thirtySeventhReviewedTranche": {
+    "attemptedCandidates": 5,
+    "addedUniqueSourceGlossPairs": 5,
+    "addedUniqueSourceAlternativePairs": 1,
+    "acceptedWholeGlossPairs": [
+      [
+        "KRU14773",
+        "P01192",
+        "a bale containing the olives to be pressed",
+        "a bale of loose texture containing the olive pulp to be pressed"
+      ],
+      [
+        "KRU12105",
+        "M02773",
+        "to become bitter",
+        "to become sticky and bitter"
+      ],
+      [
+        "KRU07111",
+        "H00931",
+        "tenant on a fixed rent payable in kind",
+        "tenant"
+      ],
+      [
+        "KRU07103",
+        "H00931",
+        "rent",
+        "the fixed annual rent in kind"
+      ],
+      [
+        "KRU16546",
+        "R00617",
+        "a piece as large as can be taken up with a fork",
+        "a piece as large as can be taken up with a hook"
+      ]
+    ],
+    "acceptedAlternativePairs": [
+      [
+        "KRU17632",
+        "S01839",
+        "a ceremony of severing family connections with a man who married beneath his social rank",
+        "ḳ’tsatsah, a ceremony attending the sale of an heirloom to an outsider, and the marriage of a man beneath his social rank"
+      ]
+    ],
+    "evidence": [
+      "KRU14773 and Jastrow P01192 both define the woven bale used in olive pressing. The Jastrow source adds the loose texture and olive-pulp detail; its separate iron-ballast sense remains independent.",
+      "KRU12105 and Jastrow M02773 both define the Hithpael myrrh-handling sense as becoming bitter; Jastrow adds the sticky effect. The active 'to make bitter' sense remains independent.",
+      "KRU07111/H00931 match the tenant sense; KRU07103/H00931 match the annual-rent sense. The two senses are explicitly mapped to separate Krupnik records.",
+      "KRU16546 and Jastrow R00617 both define a piece as large as can be taken up with a fork; Jastrow itself notes 'fork' as the alternative to 'hook'.",
+      "KRU17632 and Jastrow S01839 both define the specific ketsatsah family-severing ceremony. The mapping is alternative-level because Jastrow's broader 'cutting off' gloss and Krupnik's separate timber sense must remain independent."
+    ],
+    "safeguards": [
+      "the olive-press mapping does not absorb the iron-ballast sense",
+      "the active 'to make bitter' sense does not merge with the intransitive myrrh sense",
+      "tenant and annual rent are mapped to separate Krupnik records",
+      "the ceremony mapping matches only the specific semicolon-delimited ceremony segment",
+      "the general severing gloss and timber sense remain independent",
+      "original source records and citations remain available in More detail"
+    ],
+    "currentTotal": 1320,
+    "currentAlternativeTotal": 274
   }
 }
