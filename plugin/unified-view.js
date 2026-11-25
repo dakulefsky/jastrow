@@ -2,6 +2,8 @@
  'use strict';
  const S=root.JastrowSearch||(typeof require==='function'?require('./search.js'):null);
  const clean=text=>String(text).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
+ const displayCorrections=new Map([['KRU08370::desparing of recovering a lost object','despairing of recovering a lost object']]);
+ const displayAlternative=(ref,value)=>displayCorrections.get(ref+'::'+clean(value))||value;
  const stem=label=>{
   let value=String(label||'').trim();
   // Krupnik often prefixes/suffixes grammatical labels with sense numbers;
@@ -1956,7 +1958,8 @@
     if(!group.form)group.form=stem(meaning.label);
     const rank=S.vowelRank(entry,matchingWord);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
     if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label)))group.sources.push(sourceItem);
-    for(const alternative of glossAlternatives(bucket.text)){
+    for(const originalAlternative of glossAlternatives(bucket.text)){
+     const alternative=displayAlternative(id,originalAlternative);
      const scoped=group.bucketKeys.length>0;
      const key=scoped?alternativeKey(alternative):clean(alternative).replace(/^(?:a|an|the)\s+/,'');
      const index=group.displayAlternatives.findIndex(value=>(scoped?alternativeKey(value):clean(value).replace(/^(?:a|an|the)\s+/,''))===key);
