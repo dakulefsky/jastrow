@@ -6,12 +6,12 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1249 retained whole-gloss mappings and all 246 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1249 retained whole-gloss mappings and all 253 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
     "reviewedSourceGlossPairCount": 1249,
-    "reviewedSourceAlternativePairCount": 246,
+    "reviewedSourceAlternativePairCount": 253,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
     "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions.",
@@ -1859,8 +1859,8 @@
     "note": "Twenty-five same-sense variants were approved from the next inventory page. The D00017 mapping was checked against the original records: Jastrow's real reader phrase is 'to flow', matching Krupnik sense 1 'to flow'; Krupnik sense 2 'to flow out' remains distinct and is not merged into it."
   },
   "alternativeLevelReview": {
-    "status": "expanded-with-246-source-scoped-alternative-matches",
-    "reviewedSourceAlternativePairs": 246,
+    "status": "expanded-with-253-source-scoped-alternative-matches",
+    "reviewedSourceAlternativePairs": 253,
     "acceptedPairs": [
       [
         "KRU04451",
@@ -1897,9 +1897,51 @@
         "A01744",
         "in the lump",
         "in a lump"
+      ],
+      [
+        "KRU04213",
+        "C00821",
+        "customary addition to weight or measure",
+        "customary addition to weight"
+      ],
+      [
+        "KRU04374",
+        "C01015",
+        "a fig ripened through caprification",
+        "a fig or carob ripened through caprification"
+      ],
+      [
+        "KRU05017",
+        "D00453",
+        "cut glass vessels",
+        "cut or engraved glass vessels"
+      ],
+      [
+        "KRU10126",
+        "L00307",
+        "one having thick eye-brows",
+        "one having thick and connected eye-brows"
+      ],
+      [
+        "KRU14250",
+        "P00294",
+        "a period of twelve hours",
+        "a period of twelve astronomical hours"
+      ],
+      [
+        "KRU12583",
+        "N00545",
+        "an animal in whose body an organ is found to be absent or destroyed",
+        "the case of an animal in whose body an organ is found to be absent"
+      ],
+      [
+        "KRU19830",
+        "V00526",
+        "the body of an animal stuffed with its loose pieces and roasted",
+        "the body of an animal stuffed with its loose pieces"
       ]
     ],
-    "rationale": "Jastrow C01128 has separate phrases for sighing heavily under an attack of angina pectoris and coughing/spitting blood. Krupnik KRU04451 has a combined gloss listing the first phrase plus 'to expectorate'. Only the exact shared phrase is consolidated; the unmatched Krupnik alternative and Jastrow's second sense remain separate. Five additional high-confidence alternatives were reviewed from the regenerated inventory: leather apron, easily enticed, laying the foundation, writing plene, and lump. The original source wording and any unmatched senses remain intact.",
+    "rationale": "Jastrow C01128 has separate phrases for sighing heavily under an attack of angina pectoris and coughing/spitting blood. Krupnik KRU04451 has a combined gloss listing the first phrase plus 'to expectorate'. Only the exact shared phrase is consolidated; the unmatched Krupnik alternative and Jastrow's second sense remain separate. Five additional high-confidence alternatives were reviewed from the regenerated inventory: leather apron, easily enticed, laying the foundation, writing plene, and lump. The original source wording and any unmatched senses remain intact. Seven further high-confidence alternative matches were reviewed against original entries: customary weight addition, caprification-ripened fig, cut glass vessels, thick eyebrows, the twelve-hour period, absent organ, and stuffed animal dish. Each preserves the complete original wording in More detail.",
     "safeguards": [
       "Alternative mapping is scoped to exact source record IDs and exact source phrase.",
       "Only the explicitly matched alternative is placed in the shared result.",
@@ -3209,7 +3251,7 @@
   },
   "runtimeExactAlternativeMatching": {
     "status": "implemented-and-regression-tested",
-    "policy": "At lookup time, Jastrow and Krupnik sense segments may consolidate when they contain a source-attested identical alternative after safe contextual normalization of coordinated active/passive infinitive markers, punctuation, leading articles, and the spelling variant “one's self”/“oneself”; headwords must be compatible and explicit grammatical labels must not conflict.",
+    "policy": "At lookup time, Jastrow and Krupnik sense segments may consolidate when they contain a source-attested identical alternative after safe contextual normalization of coordinated active/passive infinitive markers, terminal punctuation, leading articles, and the spelling variant “one's self”/“oneself”; headwords must be compatible and explicit grammatical labels must not conflict.",
     "safeguards": [
       "Only cross-dictionary source pairs are considered.",
       "Semicolon-delimited senses are evaluated separately.",
