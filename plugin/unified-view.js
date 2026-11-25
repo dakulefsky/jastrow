@@ -1507,6 +1507,12 @@
   ["KRU12403", "N00219", "dowry, a bride’s outfit", "a bride’s outfit"],
   ["KRU12425", "N00261", "granted, admitted", "let it be, granted, admitted"],
   ["KRU12466", "N00341", "to be laid down", "to be laid down, placed"],
+  // T00094 / KRU17905: both source entries describe the same flour-and-oil preparation;
+  // their shared Menachot 89a citation supports the source-specific match.
+  ["KRU17905", "T00094", "pulp of flour mixed with hot oil", "a pulp of flour mixed with hot water and oil"],
+  // V00886 / KRU20035: this maps only the Musaf prayer sense (Krupnik sense 2);
+  // the separate "New Year's day" sense remains independent.
+  ["KRU20035", "V00886", "a section of the Musaf of the New Year’s Day", "the prayers on the New Year interspersed with blowing the Shofar, the Musaf of the New Year’s Day"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
