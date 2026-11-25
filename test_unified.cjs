@@ -78,6 +78,10 @@ assert.equal(U.sharesReviewedSynonym('to dwell','to dwell, reside'),true,'the om
 assert.equal(U.sharesReviewedSynonym('to set on fire','to set on fire, burn'),true,'a coordinated bare verb should match its infinitive synonym');
 assert.equal(U.sharesReviewedSynonym('burn','to burn'),false,'noun and infinitive readings must not be conflated');
 assert.equal(U.alternativeMatchKey('to veil one’s self','to veil one’s self').key,U.alternativeMatchKey('to veil oneself','to veil oneself').key,'orthographic reflexive variants should normalize to the same phrase');
+const passiveCoordinated=U.alternativeMatchKey('be saturated','to be moist, be saturated, drip');
+const passiveFull=U.alternativeMatchKey('to be saturated','to be saturated');
+assert.equal(passiveCoordinated.key,passiveFull.key,'a repeated passive marker may be omitted from later alternatives without duplicating "be"');
+assert.equal(passiveCoordinated.voice,'passive','coordinated passive alternatives must retain passive voice');
 
 
 
