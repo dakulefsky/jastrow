@@ -21,6 +21,14 @@
   ['KRU04289::a superior sort of olives','a superior sort of olives already pressed when appearing in the market'],
   ['U00198::to appoint a Sabbath camp','to appoint a Sabbath camp as the center for Sabbath movement'],
   ['KRU09504::like','like that which'],
+  ['B01081::engines of siege','engines of siege or defence'],
+  ['KRU09073::of priestly descent','one proving priestly descent, belonging to the priestly caste'],
+  ['S00787::to cover with ashes','to cover embers with ashes'],
+  ['I00688::additional, second layer','additional, second layer of a clay dam'],
+  ['KRU08204::second layer of a clay dam','additional, second layer of a clay dam'],
+  ['KRU15393::setting a price','setting a price on fruits before they are harvested'],
+  ['KRU15393::spreading, straddling','spreading the feet'],
+  ['L00537::juice of a plant','juice of a plant used for dyeing'],
   ["E00092::cutting the animal's throat in a slanting direction","cutting the animal’s throat in a slanting direction (letting the knife slide beyond the space ritually designated for cutting)"],
   ['H00556::claim based on undisturbed possession','claim based on undisturbed possession during a legally fixed period'],
   ['KRU16649::artificial foot','a piece of wood hollowed out for the stump of a leg, a sort of artificial foot'],
@@ -1600,6 +1608,20 @@
   ["KRU18541","U00198","to appoint a Sabbath camp as the center for Sabbath movement","to appoint a Sabbath camp"],
   // The first prepositional sense is "like that which"; the interrogative sense stays separate.
   ["KRU09504","K00786","like","like that which"],
+  // Both entries cite Pesikta HaChodesh p. 47a for siege engines.
+  ["KRU03174","B01081","engines of siege or defence","engines of siege"],
+  // Both entries cite Kiddushin IV:1 for priestly descent.
+  ["KRU09073","K00168","of priestly descent","one proving priestly descent, belonging to the priestly caste"],
+  // The fuller definition identifies the covered embers; Jastrow cites Shabbat 37a as well.
+  ["KRU17059","S00787","to cover embers with ashes","to cover with ashes"],
+  // Both entries cite Bava Metzia 103b for the second clay layer.
+  ["KRU08204","I00688","second layer of a clay dam","additional, second layer"],
+  // Both entries cite Yerushalmi Bava Metzia V:10c for fixing the price before harvest.
+  ["KRU15393","Q00751","setting a price","setting a price on fruits before they are harvested"],
+  // Both entries define the act of spreading the feet, with the same Ketubot 39b citation.
+  ["KRU15393","Q00751","spreading, straddling","spreading the feet"],
+  // Both entries cite Hullin 28a for the dye-producing plant juice.
+  ["KRU10283","L00537","juice of a plant used for dyeing","juice of a plant"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
