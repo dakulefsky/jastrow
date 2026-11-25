@@ -29,6 +29,8 @@
   ['KRU15393::setting a price','setting a price on fruits before they are harvested'],
   ['KRU15393::spreading, straddling','spreading the feet'],
   ['L00537::juice of a plant','juice of a plant used for dyeing'],
+  ['D00175::a species of figs or sycamore','a species of sycamore'],
+  ['KRU11938::an upper garment','the upper garment with the girdle, walking cloak'],
   ["E00092::cutting the animal's throat in a slanting direction","cutting the animal’s throat in a slanting direction (letting the knife slide beyond the space ritually designated for cutting)"],
   ['H00556::claim based on undisturbed possession','claim based on undisturbed possession during a legally fixed period'],
   ['KRU16649::artificial foot','a piece of wood hollowed out for the stump of a leg, a sort of artificial foot'],
@@ -1622,6 +1624,10 @@
   ["KRU15393","Q00751","spreading, straddling","spreading the feet"],
   // Both entries cite Hullin 28a for the dye-producing plant juice.
   ["KRU10283","L00537","juice of a plant used for dyeing","juice of a plant"],
+  // Both entries cite Berakhot 40b for the same sycamore species; the unripe-fig sense stays separate.
+  ["KRU04824","D00175","a species of sycamore","a species of figs or sycamore"],
+  // Both entries cite Yerushalmi Bava Metzia II:8b for the same upper garment.
+  ["KRU11938","M02411","an upper garment","the upper garment with the girdle, walking cloak"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
