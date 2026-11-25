@@ -528,7 +528,7 @@ const ownerlessConsolidation=U.merge([
 ],'פקר');
 assert.equal(ownerlessConsolidation.length,1,'the same ownerless-property sense should consolidate across both dictionaries');
 assert.equal(ownerlessConsolidation[0].sources.length,2,'both source records should remain available');
-assert.equal(ownerlessConsolidation[0].text,'to declare free, to renounce ownership, declare a property ownerless','the more informative wording should be displayed without repeating the same ownerless definition');
+assert.equal(ownerlessConsolidation[0].text,'declare a property ownerless, to declare free, to renounce ownership','the more informative wording should be displayed without repeating the same ownerless definition');
 
 
 
