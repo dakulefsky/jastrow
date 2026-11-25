@@ -14,6 +14,10 @@
   ['D00765::an elevated spot','an elevated spot on the hearth'],
   ['KRU01971::long bedside','long board, longside of bedstead, bedside'],
   ['KRU01236::diagonal','diagonal line, diameter'],
+  ['KRU02095::in accident','accident, occurrence'],
+  ['KRU07529::to squeeze','to squeeze into'],
+  ['KRU09370::in what manner? how?','how?, in what manner?, in what respect?'],
+  ['KRU06547::dealer in leather bags','maker of and dealer in leather bags'],
   ['KRU16649::artificial foot','a piece of wood hollowed out for the stump of a leg, a sort of artificial foot'],
   ['S02038::covered with a crust','covered with a crust of sediments'],
   ['KRU17738::formation of a crust','formation of a light crust'],
@@ -234,6 +238,10 @@
   ['KRU05265','D00765','an elevated spot on the hearth','an elevated spot'],
   ['KRU01971','A03028','long bedside','long board, longside of bedstead, bedside'],
   ['KRU01236','A01891','diagonal','diagonal line, diameter'],
+  ['KRU02095','A03220','in accident','accident, occurrence'],
+  ['KRU07529','H01646','to squeeze','to squeeze into'],
+  ['KRU09370','K00616','in what manner? how?','how?, in what manner?, in what respect?'],
+  ['KRU06547','G00654','dealer in leather bags','maker of and dealer in leather bags'],
   ['KRU16649','S00025','artificial foot','a piece of wood hollowed out for the stump of a leg, a sort of artificial foot'],
   ['KRU17729','S02038','covered with a crust of sediments','covered with a crust'],
   ['KRU17738','S02061','formation of a crust','formation of a light crust'],
@@ -1891,8 +1899,7 @@
   const otherMeaning=item.sourceMeaning||item.meaning;
   const ids=[source.entry.r,item.entry.r].sort().join('|');
   const glosses=[clean(source.meaning.text),clean(otherMeaning.text)].sort().join(' | ');
-  return (ids==='A03220|KRU02095'&&glosses==='accident, occurrence | in accident')||
-   reviewedSourceGlossPairs.has(ids+'::'+glosses);
+  return reviewedSourceGlossPairs.has(ids+'::'+glosses);
  }
  function compatibleForm(a,b){
   // A missing source label is unknown, not evidence of a different grammatical sense.
