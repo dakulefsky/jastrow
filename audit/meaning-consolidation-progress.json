@@ -2152,7 +2152,13 @@
       "All alternatives in both glosses must belong to the same curated synonym group.",
       "Coordinated infinitive markers are normalized only when the first alternative is an infinitive.",
       "Noun/verb mismatch regression tests included."
-    ]
+    ],
+    "testCoverage": {
+      "testedGroupCount": 23,
+      "allCuratedGroupsCovered": true,
+      "normalization": "group members are normalized case-insensitively before lookup",
+      "regression": "The capitalized 'Bible' synonym member was found not to match lowercased input; normalization is fixed and tested."
+    }
   },
   "homonymSafeguards": {
     "status": "implemented-and-tested",
@@ -3311,7 +3317,10 @@
     "tests": [
       "An exact shared alternative merges while an unrelated semicolon-delimited sense remains separate.",
       "One exact phrase shared by multiple distinct Jastrow senses is not used as a bridge.",
-      "One Jastrow sense matching two separately listed Krupnik senses is not used as a bridge."
+      "One Jastrow sense matching two separately listed Krupnik senses is not used as a bridge.",
+      "A coordinated passive alternative such as 'be saturated' restores 'to be' exactly once and consolidates against 'to be saturated'.",
+      "Terminal punctuation and the orthographic reflexive variant 'one's self'/'oneself' normalize safely.",
+      "Active/passive and noun/verb alternatives remain separate."
     ]
   },
   "sixthAlternativeReviewedTranche": {
