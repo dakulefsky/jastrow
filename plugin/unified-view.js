@@ -1766,7 +1766,11 @@
   ["KRU18096","T00517","to have pity","pity"],
   ["KRU10885","M00596","an animal set aside for a sacrifice","an animal set aside"],
   ["KRU10422","L00689","bass-relief","in bass-relief"],
-  ["KRU08326","I00860","to knock","to knock at"]
+  ["KRU08326","I00860","to knock","to knock at"],
+  ["KRU08390","J00028","it corresponds to","corresponds to"],
+  ["KRU12467","N00343","good","it is good"],
+  ["KRU04637","C01379","to deduct from","deduct"],
+  ["KRU07673","H01900","to close","to close up"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
