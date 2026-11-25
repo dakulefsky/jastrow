@@ -21,7 +21,7 @@
   return out;
  };
  const parts=text=>glossAlternatives(text).map(clean).filter(Boolean);
- const alternativeKey=text=>clean(text).replace(/[()[\]{}]/g,' ').replace(/\s+/g,' ').trim().replace(/^(?:a|an|the)\s+/,'').replace(/^to\s+/,''); 
+ const alternativeKey=text=>clean(text).replace(/[()[\]{}]/g,' ').replace(/\s+/g,' ').trim().replace(/\bone's self\b/g,'oneself').replace(/^(?:a|an|the)\s+/,'').replace(/^to\s+/,''); 
  // Restore an infinitive marker omitted from later comma-separated alternatives,
  // while keeping active, passive, and unmarked readings distinct.
  const contextualAlternative=(value,segment)=>{
