@@ -7,6 +7,10 @@ on:
       - 'plugin/reading-view.js'
       - 'plugin/unified-view.js'
       - 'audit/build-meaning-candidates.cjs'
+      - 'hebrew/plugin/data.js'
+      - 'hebrew/plugin/lookup.js'
+      - 'hebrew/plugin/meaning-consolidation.js'
+      - 'hebrew/build-meaning-candidates.cjs'
       - '.github/workflows/build-meaning-candidates.yml'
   push:
     branches: [main]
@@ -16,6 +20,10 @@ on:
       - 'plugin/reading-view.js'
       - 'plugin/unified-view.js'
       - 'audit/build-meaning-candidates.cjs'
+      - 'hebrew/plugin/data.js'
+      - 'hebrew/plugin/lookup.js'
+      - 'hebrew/plugin/meaning-consolidation.js'
+      - 'hebrew/build-meaning-candidates.cjs'
       - '.github/workflows/build-meaning-candidates.yml'
 jobs:
   candidate-inventory:
@@ -31,10 +39,19 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Build candidate inventory from original dictionary data
         run: node audit/build-meaning-candidates.cjs
+      - name: Build Hebrew synonym review inventory
+        run: node hebrew/build-meaning-candidates.cjs
       - name: Upload human-review inventory
         uses: actions/upload-artifact@v4
         with:
           name: meaning-consolidation-candidates
           path: audit/meaning-consolidation-candidates.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload Hebrew human-review inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: hebrew-meaning-consolidation-candidates
+          path: hebrew/meaning-consolidation-candidates.json
           if-no-files-found: error
           retention-days: 30
