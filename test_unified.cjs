@@ -215,6 +215,7 @@ for(const [n,item] of additionalReviewedAlternativeFixtures.entries()){
  assert.equal(matched.sources.length,2,'both original sources must be retained: '+item.jr+' / '+item.kr);
 }
 assert.equal(U.alternativeMatchKey('conqueror!','conqueror!').key,U.alternativeMatchKey('conqueror','conqueror').key,'terminal punctuation must not prevent an otherwise identical gloss match');
+assert.equal(U.alternativeMatchKey('in ecstacy ?','in ecstacy ?').key,U.alternativeMatchKey('in ecstacy','in ecstacy').key,'whitespace before terminal punctuation must not change the alternative key');
 
 const reviewedAlternativeFixtures=[
  {word:'סְקוֹרְטְיָא',kr:'KRU13933',jr:'O01464',k:'leather apron',j:'leather coat; also leather apron.',extra:'leather coat'},
