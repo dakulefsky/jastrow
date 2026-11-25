@@ -59,18 +59,18 @@
     "published": false
   },
   "candidateInventory": {
-    "generatedFromCommit": "9872f4de886ec540f7f128bb687e0f04d1b612af",
+    "generatedFromCommit": "e9b26b7180d9351aa9e8bf89902b8f0c66631b03",
     "sourceEntries": 47919,
     "jastrowEntries": 32508,
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
-    "candidates": 4410,
+    "candidates": 4403,
     "exactAlternativeCandidates": 2989,
     "runtimeRuleHandledCandidates": 2457,
     "ambiguityFlaggedExactCandidates": 532,
-    "nonExactSemanticCandidates": 1421,
-    "note": "Regenerated from original dictionary data and the real reader extractor after the expanded 261-pair alternative review and case-insensitive synonym group lookup. Runtime-handled candidates use guarded one-to-one alternative matching; ambiguity-flagged exact candidates and non-exact semantic candidates remain for human review."
+    "nonExactSemanticCandidates": 1414,
+    "note": "Regenerated from original dictionary data and the real reader extractor after 269 reviewed source-scoped alternative matches. Runtime-handled candidates use guarded one-to-one alternative matching; ambiguity-flagged exact candidates and non-exact semantic candidates remain human-review work."
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
