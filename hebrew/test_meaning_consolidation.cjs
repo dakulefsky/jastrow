@@ -108,7 +108,8 @@ assertReviewedPair('KRU14546','KRU16290','עלי ועל צוארי','על אחר
 assertReviewedPair('KRU15796','KRU15797','פצל','ביקע, הפריד','חילק');
 assertReviewedPair('KRU00145','KRU04650','אגב גררא','בהזדמנות','על ידי המשך הדבור, דרך אגב');
 assertReviewedPair('KRU02736','KRU02892','בית הבליעה','מקום הבליעה בגרון','פנים הגרון');
+assertReviewedPair('KRU09162','KRU09163','כון','עשה ישר ומכוון','1) עשה ישר');
 const segments=merge([{word:'נפקא מינה',records:lookup.lookup('נפקא מינה')},{word:'נפקא',records:lookup.lookup('נפקא')}],'נפקא מינה נפקא');
 assert(segments.some(g=>g.scope==='נפקא מינה')&&segments.some(g=>g.scope==='נפקא'),'separate words in a multiword selection must never be merged together');
-assert.equal(ctx.HebrewMeaningConsolidation.reviewedSynonymPairs.size,11,'only the ten manually reviewed Hebrew synonym pairs should be active');
+assert.equal(ctx.HebrewMeaningConsolidation.reviewedSynonymPairs.size,12,'only the manually reviewed Hebrew synonym pairs should be active');
 console.log('PASS: shared Hebrew meaning consolidation preserves exact source wording, labels, source records, and phrase boundaries.');
