@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1273,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1277,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -574,6 +574,42 @@ const refugeRoadConsolidation=U.merge([
 assert.equal(refugeRoadConsolidation.length,1,'the road-preparation sense for the city of refuge should consolidate');
 assert.equal(refugeRoadConsolidation[0].sources.length,2,'both dictionary source records should remain available');
 assert.equal(refugeRoadConsolidation[0].text,'marking out the road to the city of refuge','the complete legal meaning should display once');
+
+const eyePainConsolidation=U.merge([
+ {id:5204,entry:{h:'דִּיצָא II',r:'KRU05204',source:'krupnik'},meanings:[{text:'pricking pain in the eye',label:''}]},
+ {id:689,entry:{h:'דִּיצָא II',r:'D00689'},meanings:[{text:'pricking pain',label:''}]}
+],'דיצא');
+assert.equal(eyePainConsolidation.length,1,'the pricking pain in the eye sense should consolidate');
+assert.equal(eyePainConsolidation[0].sources.length,2,'both source entries should remain available');
+assert.equal(eyePainConsolidation[0].text,'pricking pain in the eye','the full eye-pain definition should display once');
+
+const hearthConsolidation=U.merge([
+ {id:5265,entry:{h:'דָּכוֹן',r:'KRU05265',source:'krupnik'},meanings:[{text:'an elevated spot on the hearth',label:''}]},
+ {id:765,entry:{h:'דָּכוֹן',r:'D00765'},meanings:[{text:'an elevated spot',label:''}]}
+],'דכון');
+assert.equal(hearthConsolidation.length,1,'the elevated hearth-stand sense should consolidate');
+assert.equal(hearthConsolidation[0].sources.length,2,'the elevated-spot sources should both remain available');
+assert.equal(hearthConsolidation[0].text,'an elevated spot on the hearth','the more specific source definition should display once');
+
+const bedsideConsolidation=U.merge([
+ {id:1971,entry:{h:'אֲרוּכָה',r:'KRU01971',source:'krupnik'},meanings:[
+  {text:'long bedside',label:'1'},
+  {text:'respite',label:'2'}
+ ]},
+ {id:3028,entry:{h:'אֲרוּכָה I',r:'A03028'},meanings:[{text:'long board, longside of bedstead, bedside',label:'—2)'}]}
+],'ארוכה');
+assert.equal(bedsideConsolidation.length,2,'the separate respite sense must remain distinct from the bedside sense');
+assert.equal(bedsideConsolidation.find(g=>g.sources.length===2)?.text,'long board, longside of bedstead, bedside','the complete bedside definition should display once');
+assert(bedsideConsolidation.some(g=>g.text==='respite'&&g.sources.length===1),'the unrelated respite sense must remain separate');
+
+const diagonalConsolidation=U.merge([
+ {id:1236,entry:{h:'אֲלַכְסוֹן',r:'KRU01236',source:'krupnik'},meanings:[{text:'diagonal',label:''}]},
+ {id:1891,entry:{h:'אֲלַכְסוֹן',r:'A01891'},meanings:[{text:'diagonal line, diameter',label:'—2)'}]}
+],'אלכסון');
+assert.equal(diagonalConsolidation.length,1,'the geometric diagonal sense should consolidate');
+assert.equal(diagonalConsolidation[0].sources.length,2,'the geometric diagonal should retain both sources');
+assert.equal(diagonalConsolidation[0].text,'diagonal line, diameter','the fuller geometric definition should display once');
+
 
 
 
