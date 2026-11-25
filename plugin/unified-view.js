@@ -1525,6 +1525,10 @@
   ["KRU17350", "S01302", "to rise in a column (fire)", "to rise in a column"],
   ["KRU19505", "U02081", "one that is silent when reproached with spurious decent", "silenced, one that is silent when reproached with spurious descent"],
   ["KRU19720", "V00350", "a shoot for inoculation", "a shoot used for inoculation."],
+  // Both sources cite the same Tosefta Avodah Zarah passage about opening wine barrels.
+  ["KRU19531", "U02126", "skilled in boring", "one known to be skilled in boring"],
+  // Both sources cite Pesikta Rabbati s. 43, end, for making her rebellious.
+  ["KRU20125", "V01040", "to make rebellious", "to make discontented, rebellious"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
