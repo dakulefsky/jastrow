@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1284,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1286,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -668,6 +668,23 @@ const heirShareConsolidation=U.merge([
 assert.equal(heirShareConsolidation.length,1,'the plain-heir single-share sense should consolidate');
 assert.equal(heirShareConsolidation[0].sources.length,2,'both inheritance-definition sources should remain available');
 assert.equal(heirShareConsolidation[0].text,'single share of the heir, opp. to the double share of the first-born son','the complete legal distinction should display once');
+
+const charosetConsolidation=U.merge([
+ {id:7518,entry:{h:'חֲרוֹסֶת',r:'KRU07518',source:'krupnik'},meanings:[{text:'a pap made of fruits and spices with wine (used as sauce on the Passover-night)',label:''}]},
+ {id:1630,entry:{h:'חֲרוֹסֶת',r:'H01630'},meanings:[{text:'a pap made of fruits and spices with wine or vinegar',label:''}]}
+],'חרוסת');
+assert.equal(charosetConsolidation.length,1,'the two descriptions of charoset should consolidate');
+assert.equal(charosetConsolidation[0].sources.length,2,'both charoset source records should remain available');
+assert.equal(charosetConsolidation[0].text,'a pap made of fruits and spices with wine or vinegar','the fuller ingredient definition should display once');
+
+const kutahConsolidation=U.merge([
+ {id:9233,entry:{h:'כּוּתָּח',r:'KRU09233',source:'krupnik'},meanings:[{text:'a dish consisting of sour milk, bread and salt',label:''}]},
+ {id:422,entry:{h:'כּוּתָּח',r:'K00422'},meanings:[{text:'a preserve consisting of sour milk, bread-crusts and salt',label:''}]}
+],'כותח');
+assert.equal(kutahConsolidation.length,1,'the two definitions of Kutah should consolidate');
+assert.equal(kutahConsolidation[0].sources.length,2,'both Kutah source records should remain available');
+assert.equal(kutahConsolidation[0].text,'a preserve consisting of sour milk, bread-crusts and salt','the fuller traditional-food description should display once');
+
 
 
 
