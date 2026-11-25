@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1272,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1273,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -566,6 +566,15 @@ const troughConsolidation=U.merge([
 assert.equal(troughConsolidation.length,2,'the separate boat sense must not merge with the kneading-trough sense');
 assert.equal(troughConsolidation.find(g=>g.sources.length===2)?.text,'trough, tub, kneading trough','the shared kneading-trough sense should consolidate');
 assert(troughConsolidation.some(g=>g.text==='boat, skiff'&&g.sources.length===1),'the unrelated boat sense must remain separate');
+
+const refugeRoadConsolidation=U.merge([
+ {id:5871,entry:{h:'הָכֵן²',r:'KRU05871',alt:['הֲכָנָה'],source:'krupnik'},meanings:[{text:'marking out the road to the city of refuge',label:'2'}]},
+ {id:517,entry:{h:'הֲכָנָה',r:'E00517'},meanings:[{text:'marking out the road',label:'—2)'}]}
+],'הכנה');
+assert.equal(refugeRoadConsolidation.length,1,'the road-preparation sense for the city of refuge should consolidate');
+assert.equal(refugeRoadConsolidation[0].sources.length,2,'both dictionary source records should remain available');
+assert.equal(refugeRoadConsolidation[0].text,'marking out the road to the city of refuge','the complete legal meaning should display once');
+
 
 
 
