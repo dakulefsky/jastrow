@@ -28,7 +28,7 @@
   const first=clean(glossAlternatives(segment)[0]||'');
   const marker=/^to\s+be\s+/.test(first)?'to be ':/^to\s+/.test(first)?'to ':'';
   const item=clean(value);
-  return marker&&!/^to\s+/.test(item)?marker+item:item;
+  return marker&&!/^to\s+/.test(item)?(marker==='to be '&&/^be\s+/.test(item)?'to '+item:marker+item):item;
  };
  const alternativeVoice=value=>/^to\s+be\s+/.test(clean(value))?'passive':/^to\s+/.test(clean(value))?'active':'unmarked';
  const alternativeMatchKey=(value,segment)=>{
