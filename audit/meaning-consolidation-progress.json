@@ -59,18 +59,18 @@
     "published": false
   },
   "candidateInventory": {
-    "generatedFromCommit": "47609fecd35ca96dbd0bb198c23f12037e59e383",
+    "generatedFromCommit": "e2ae9449189d3cab035c87c8070fe55c348c10db",
     "sourceEntries": 47919,
     "jastrowEntries": 32508,
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
-    "candidates": 4425,
-    "exactAlternativeCandidates": 2988,
-    "runtimeRuleHandledCandidates": 2456,
+    "candidates": 4418,
+    "exactAlternativeCandidates": 2989,
+    "runtimeRuleHandledCandidates": 2457,
     "ambiguityFlaggedExactCandidates": 532,
-    "nonExactSemanticCandidates": 1437,
-    "note": "The inventory is generated from original dictionary data and the real Jastrow reader extractor. Runtime-handled candidates are consolidated only through guarded exact alternative matching, including contextual active/passive infinitive normalization. Ambiguity-flagged exact candidates and non-exact semantic candidates remain human-review work."
+    "nonExactSemanticCandidates": 1429,
+    "note": "Regenerated from original dictionary data and the real Jastrow reader extractor after 12 new source-scoped alternative matches and contextual normalization. Runtime-handled candidates use guarded one-to-one alternative matching; ambiguity-flagged exact candidates and non-exact semantic candidates remain human-review work."
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
