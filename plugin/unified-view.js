@@ -38,7 +38,7 @@
   ['H00665::that which is sqeezed in to fill a gap, repair, insertion','stopper, insertion (to fill a gap)'],
   ['KRU04552::to let the olives shrivel','to let the olive shrivel'],
   ['KRU16989::stomach of birds','the thick muscular stomach of birds, craw'],
-  ['T00015::appearance in the Temple, pilgrimage','appearance in the Temple (on the three festivals)'],
+  ['T00015::appearance in the temple, pilgrimage','appearance in the Temple (on the three festivals)'],
   ["E00092::cutting the animal's throat in a slanting direction","cutting the animal’s throat in a slanting direction (letting the knife slide beyond the space ritually designated for cutting)"],
   ['H00556::claim based on undisturbed possession','claim based on undisturbed possession during a legally fixed period'],
   ['KRU16649::artificial foot','a piece of wood hollowed out for the stump of a leg, a sort of artificial foot'],
