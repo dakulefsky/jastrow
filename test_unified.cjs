@@ -11,6 +11,12 @@ for(const file of fs.readdirSync(dataDir).filter(n=>/^(?:chunk-\d+|krupnik-\d+)\
 const sourceEntries=Object.values(c.window.JASTROW_CHUNKS).flatMap(chunk=>Object.values(chunk));
 const sourceByRef=new Map(sourceEntries.filter(entry=>entry.r).map(entry=>[entry.r,entry]));
 const cleanGloss=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
+const displayCorrectionSource=fs.readFileSync(__dirname+'/plugin/unified-view.js','utf8').match(/const displayCorrections=new Map\(\[([\s\S]*?)\]\);/);
+assert(displayCorrectionSource,'display corrections must remain inspectable for normalization checks');
+for(const match of displayCorrectionSource[1].matchAll(/^\s*\[(['"])(.*?)\1,/gm)){
+ const key=match[2].split('::')[1]||'';
+ assert.equal(key,cleanGloss(key),'display-correction keys must already use runtime normalization: '+match[2]);
+}
 const decodeHtml=value=>value.replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#(\d+);/g,(_,n)=>String.fromCodePoint(Number(n))).replace(/&#x([0-9a-f]+);/gi,(_,n)=>String.fromCodePoint(parseInt(n,16)));
 for(const pair of U.reviewedSourceGlossPairs){
  const [refs,glossText]=pair.split('::'),[firstRef,secondRef]=refs.split('|'),glosses=glossText.split(' | ');
