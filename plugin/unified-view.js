@@ -1819,7 +1819,9 @@
   ["KRU06638","H00104","to embrace one another","to embrace"],
   ["KRU05268","D00769","like","the like of"],
   // Map only the Niphal "to be cut into" sense; the separate cut-off sense stays apart.
-  ["KRU07668","H01896","to be cut","to be cut into"]
+  ["KRU07668","H01896","to be cut","to be cut into"],
+  // A second sense in the same Muktzeh entry: the dedicated tool for cutting figs.
+  ["KRU10885","M00596","a tool specially intended for cutting figs","the tool specially intended"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
