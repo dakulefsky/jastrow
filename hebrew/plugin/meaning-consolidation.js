@@ -55,7 +55,9 @@
   ['KRU14546','KRU16290','על אחריותי','אני מקבל עלי את האחריות'],
   ['KRU15796','KRU15797','ביקע, הפריד','חילק'],
   ['KRU00145','KRU04650','בהזדמנות','על ידי המשך הדבור, דרך אגב'],
-  ['KRU02736','KRU02892','מקום הבליעה בגרון','פנים הגרון']
+  ['KRU02736','KRU02892','מקום הבליעה בגרון','פנים הגרון'],
+  // KRU09162 / KRU09163: same straightening sense; the latter retains additional distinct senses.
+  ['KRU09162','KRU09163','עשה ישר ומכוון','1) עשה ישר']
  ].map(([a,b,x,y])=>{
   const ids=[a,b].sort().join('|'),glosses=[normalize(x),normalize(y)].sort().join(' | ');
   return ids+'::'+glosses;
