@@ -202,6 +202,9 @@ if(active.key===passive.key&&active.voice===passive.voice)throw new Error('Activ
      sharedForms:forms,
      jastrow:{ref:j.r,headword:j.h,text:jp.text,label:jp.label,section:jp.section},
      krupnik:{ref:k.r,headword:k.h,text:kg.text,label:kg.label||''},
+     // Preserve original entry context in the review artifact so semantic
+     // decisions can be made against citations and neighboring source senses.
+     sourceHtml:{jastrow:j.html,krupnik:k.html},
      sharedTerms:best.sharedTerms,
      overlap:best.overlap,
      jaccard:best.jaccard,
