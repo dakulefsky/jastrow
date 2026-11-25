@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1303,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1311,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -1247,4 +1247,79 @@ const upperGarment=U.merge([
 assert.equal(upperGarment.length,1,'the upper-garment definitions should consolidate');
 assert.equal(upperGarment[0].sources.length,2,'both Yerushalmi source records should remain available');
 assert.equal(upperGarment[0].text,'the upper garment with the girdle, walking cloak','the more precise garment definition should display once');
+
+const caprificationBranch=U.merge([
+ {id:4375,entry:sourceByRef.get('KRU04375'),meanings:[{text:'a branch used for caprification',label:'1'}]},
+ {id:1017,entry:sourceByRef.get('C01017'),meanings:[
+  {text:'branches used for caprification',label:'1'},
+  {text:'fruits ripened through caprification',label:'2'}
+ ]}
+],S.normalize(sourceByRef.get('KRU04375').h));
+assert.equal(caprificationBranch.length,2,'the caprification branch and the fruit produced by caprification are distinct');
+assert.equal(caprificationBranch.find(group=>group.sources.length===2)?.text,'branches used for caprification','the branch definition should consolidate once');
+assert(caprificationBranch.some(group=>group.text==='fruits ripened through caprification'&&group.sources.length===1),'the separate fruit sense must remain independent');
+
+const sacredObjectRemoval=U.merge([
+ {id:4462,entry:sourceByRef.get('KRU04462'),meanings:[{text:'removal of sacred object',label:''}]},
+ {id:1140,entry:sourceByRef.get('C01140'),meanings:[{text:'removal of sacred objects',label:''}]}
+],S.normalize(sourceByRef.get('KRU04462').h));
+assert.equal(sacredObjectRemoval.length,1,'the sacred-object removal definitions should consolidate');
+assert.equal(sacredObjectRemoval[0].sources.length,2,'both Shabbat source records should remain available');
+assert.equal(sacredObjectRemoval[0].text,'removal of sacred objects','the normalized plural wording should display once');
+
+const quinceRoseMarmalade=U.merge([
+ {id:5533,entry:sourceByRef.get('KRU05533'),meanings:[{text:'a marmalade of quinces and roses',label:''}]},
+ {id:1107,entry:sourceByRef.get('D01107'),meanings:[{text:'a marmelade of quinces and roses',label:''}]}
+],S.normalize(sourceByRef.get('KRU05533').h));
+assert.equal(quinceRoseMarmalade.length,1,'the quince-and-rose marmalade definitions should consolidate');
+assert.equal(quinceRoseMarmalade[0].sources.length,2,'both Yerushalmi Sheviit source records should remain available');
+assert.equal(quinceRoseMarmalade[0].text,'a marmalade of quinces and roses','the corrected spelling should display once');
+
+const ownerlessPropertyWatching=U.merge([
+ {id:5597,entry:sourceByRef.get('KRU05597'),meanings:[{text:'watching ownerless objects',label:'2'}]},
+ {id:33,entry:sourceByRef.get('E00033'),meanings:[{text:'superintendence, watching owner-less objects',label:'2'}]}
+],S.normalize(sourceByRef.get('KRU05597').h));
+assert.equal(ownerlessPropertyWatching.length,1,'the legal watching of ownerless property should consolidate');
+assert.equal(ownerlessPropertyWatching[0].sources.length,2,'both Bava Metzia source records should remain available');
+assert.equal(ownerlessPropertyWatching[0].text,'superintendence, watching ownerless objects','the fuller legal definition should display once');
+
+const gapStopper=U.merge([
+ {id:6956,entry:sourceByRef.get('KRU06956'),meanings:[{text:'stopper, insertion (to fill a gap)',label:''}]},
+ {id:665,entry:sourceByRef.get('H00665'),meanings:[{text:'that which is sqeezed in to fill a gap, repair, insertion',label:''}]}
+],S.normalize(sourceByRef.get('KRU06956').h));
+assert.equal(gapStopper.length,1,'the gap-stopper definitions should consolidate');
+assert.equal(gapStopper[0].sources.length,2,'both Hullin source records should remain available');
+assert.equal(gapStopper[0].text,'stopper, insertion (to fill a gap)','the concise technical definition should display once');
+
+const oliveShrivelling=U.merge([
+ {id:4552,entry:sourceByRef.get('KRU04552'),meanings:[{text:'to let the olives shrivel',label:'3'}]},
+ {id:1255,entry:sourceByRef.get('C01255'),meanings:[{text:'to let the olive shrivel',label:'3'}]}
+],S.normalize(sourceByRef.get('KRU04552').h));
+assert.equal(oliveShrivelling.length,1,'the olive-shrivelling definitions should consolidate');
+assert.equal(oliveShrivelling[0].sources.length,2,'both Menachot source records should remain available');
+assert.equal(oliveShrivelling[0].text,'to let the olive shrivel','the normalized olive-shrivelling wording should display once');
+
+const birdCraw=U.merge([
+ {id:16989,entry:sourceByRef.get('KRU16989'),meanings:[
+  {text:'stomach of birds',label:'1'},
+  {text:'stomach of man',label:'2'}
+ ]},
+ {id:640,entry:sourceByRef.get('S00640'),meanings:[{text:'the thick muscular stomach of birds, craw',label:''}]}
+],S.normalize(sourceByRef.get('KRU16989').h));
+assert.equal(birdCraw.length,2,'the bird-craw sense should merge without absorbing the human-stomach sense');
+assert.equal(birdCraw.find(group=>group.sources.length===2)?.text,'the thick muscular stomach of birds, craw','the precise bird anatomy definition should display once');
+assert(birdCraw.some(group=>group.text==='stomach of man'&&group.sources.length===1),'the human-stomach sense must remain separate');
+
+const templeAppearance=U.merge([
+ {id:17864,entry:sourceByRef.get('KRU17864'),meanings:[
+  {text:'seeing',label:'1'},
+  {text:'attack of pollution, menstruation',label:'2'},
+  {text:'appearance in the Temple (on the three festivals)',label:'3'}
+ ]},
+ {id:15,entry:sourceByRef.get('T00015'),meanings:[{text:'appearance in the Temple, pilgrimage',label:''}]}
+],S.normalize(sourceByRef.get('KRU17864').h));
+assert.equal(templeAppearance.length,3,'the Temple-appearance sense should merge while unrelated senses remain distinct');
+assert.equal(templeAppearance.find(group=>group.sources.length===2)?.text,'appearance in the Temple (on the three festivals)','the festival obligation should display with its precise scope');
+assert(templeAppearance.some(group=>group.text==='seeing'&&group.sources.length===1),'the seeing sense must not be absorbed');
+assert(templeAppearance.some(group=>group.text==='attack of pollution, menstruation'&&group.sources.length===1),'the separate medical sense must not be absorbed');
 
