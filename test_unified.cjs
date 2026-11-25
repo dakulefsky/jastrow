@@ -126,7 +126,15 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,269,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,270,'every source-scoped alternative match must be loaded');
+
+const likenessVariant=U.merge([
+ {id:1100,entry:{h:'דִּכְוָת',r:'KRU05268',source:'krupnik'},meanings:[{text:'like, as',label:''}]},
+ {id:1101,entry:{h:'דִּכְוָת',r:'D00769'},meanings:[{text:'the like of, resemblance, appearance',label:''}]}
+],'דִּכְוָת');
+assert.equal(likenessVariant.length,1,'the same likeness meaning should consolidate across its prepositional and nominal wording');
+assert.equal(likenessVariant[0].sources.length,2,'both source records must remain accessible');
+
 
 const lastReviewedSemanticFixtures=[
  {word:'נָהַג',kr:'KRU12418',jr:'N00250',k:'to conduct o. s.',j:'to lead, conduct; to demean one’s self; to be guided by, be wont to; to apply, be practiced'},
