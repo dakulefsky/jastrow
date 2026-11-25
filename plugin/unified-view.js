@@ -8,7 +8,7 @@
   ["P00680::'erub, a symbolical act by which the legal fiction of community",'a symbolical act by which the legal fiction of community or continuity is established'],
   ["KRU09880::to work with zeal",'to adapt one’s self, to work with zeal and conscientiousness'],
   ['R00053::to raise one or more fingers','to raise the fingers as a signal'],
-  ['KRU14845::trough for kneading etc.','trough, tub, kneading trough'],
+  ['KRU14845::trough for kneading etc','trough, tub, kneading trough'],
   ['E00517::marking out the road','marking out the road to the city of refuge'],
  ]);
  const displayGloss=(ref,value)=>displayCorrections.get(ref+'::'+clean(value))||value;
