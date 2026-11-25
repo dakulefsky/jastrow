@@ -44,14 +44,15 @@
     "A-entry and D-entry follow-up batches"
   ],
   "nextPhase": {
-    "status": "review-remaining-semantic-candidates-and-expand-hebrew-parity",
+    "status": "continue-source-grounded-review-of-remaining-semantic-and-ambiguous-candidates",
     "rules": [
       "Use the generated candidate inventory as a review queue, never as automatic approval.",
       "Exact alternative matches are consolidated at runtime only when the one-to-one and label/homonym safeguards pass.",
       "Review ambiguity-flagged exact matches manually before considering any source-scoped mapping.",
       "Review non-exact overlaps semantically against the original entries; shared words alone are insufficient.",
       "Keep Hebrew and English behavior aligned while preserving language-specific gloss and label semantics.",
-      "Record decisions and source provenance durably."
+      "Record decisions and source provenance durably.",
+      "Do not lower the acceptance threshold to reduce the queue; prioritize clear same-sense variants and defer entries whose numbered or semicolon-separated senses cannot be isolated safely."
     ]
   },
   "publishing": {
@@ -3987,5 +3988,13 @@
         "reason": "Potential one-Krupnik-to-two-Jastrow sense mapping; review only one exact alternative at a time."
       }
     ]
+  },
+  "remainingSemanticReview": {
+    "generatedFromCommit": "e9b26b7180d9351aa9e8bf89902b8f0c66631b03",
+    "strongAlternativeOverlapCandidates": 41,
+    "ambiguityFlaggedExactCandidates": 532,
+    "nonExactSemanticCandidates": 1414,
+    "status": "pending-human-review",
+    "note": "The remaining strongest lexical-overlap candidates are not auto-merged. Manual screening shows examples where overlap masks different senses: opposite polarity, homonym/entity distinctions, construct-state phrases, direction, voice, and distinct actions. Continue only with source-grounded, sense-specific matches."
   }
 }
