@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1269 retained whole-gloss mappings and all 271 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1266 retained whole-gloss mappings and all 271 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1269,
+    "reviewedSourceGlossPairCount": 1266,
     "reviewedSourceAlternativePairCount": 271,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -4294,6 +4294,22 @@
       "sense labels 3 and 4 remain distinct",
       "Krupnik's Sabbath-use sense remains separate",
       "the real reader extractor verifies the Jastrow phrase"
+    ]
+  },
+  "nineteenthReaderPhraseCorrection": {
+    "removedInvalidMappings": [
+      [
+        "KRU14478",
+        "P00680",
+        "a symbolical act by which the legal fiction of community or continuity is established",
+        "continuity is established"
+      ]
+    ],
+    "rationale": "The real reader extractor does not emit 'continuity is established' as a separate italic phrase in P00680; it is outside the italic span. The remaining full-phrase display correction is applied before comma splitting, so the actual Jastrow phrase and Krupnik definition display once.",
+    "safeguards": [
+      "source detail retains the full original Jastrow HTML",
+      "only the phrase emitted by the real reader extractor remains in the reviewed mapping",
+      "the Eruv regression now asserts two source records, not a fabricated third reader phrase"
     ]
   }
 }
