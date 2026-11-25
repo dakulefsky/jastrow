@@ -34,6 +34,7 @@
   ['KRU04375::a branch used for caprification','branches used for caprification'],
   ['KRU04462::removal of sacred object','removal of sacred objects'],
   ['D01107::a marmelade of quinces and roses','a marmalade of quinces and roses'],
+  ['E00033::superintendence, watching owner-less objects','superintendence, watching ownerless objects'],
   ['KRU05597::watching ownerless objects','superintendence, watching ownerless objects'],
   ['H00665::that which is sqeezed in to fill a gap, repair, insertion','stopper, insertion (to fill a gap)'],
   ['KRU04552::to let the olives shrivel','to let the olive shrivel'],
