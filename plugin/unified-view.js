@@ -1513,6 +1513,8 @@
   // V00886 / KRU20035: this maps only the Musaf prayer sense (Krupnik sense 2);
   // the separate "New Year's day" sense remains independent.
   ["KRU20035", "V00886", "a section of the Musaf of the New Year’s Day", "the prayers on the New Year interspersed with blowing the Shofar, the Musaf of the New Year’s Day"],
+  // B00536 sense 3 and KRU02534 sense 1 share the same "son of" reading and cited passage.
+  ["KRU02534", "B00536", "son", "son of;"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
