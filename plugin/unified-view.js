@@ -19,7 +19,7 @@
   ['KRU09370::in what manner? how?','how?, in what manner?, in what respect?'],
   ['KRU06183::relinquishment, addition to exact measure','the retailer’s customary addition to exact measure'],
   ['KRU04289::a superior sort of olives','a superior sort of olives already pressed when appearing in the market'],
-  ['U00198::to appoint a Sabbath camp','to appoint a Sabbath camp as the center for Sabbath movement'],
+  ['U00198::to appoint a sabbath camp','to appoint a Sabbath camp as the center for Sabbath movement'],
   ['KRU09504::like','like that which'],
   ['B01081::engines of siege','engines of siege or defence'],
   ['KRU09073::of priestly descent','one proving priestly descent, belonging to the priestly caste'],
