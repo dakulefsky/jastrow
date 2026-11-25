@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1292,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1294,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -1130,4 +1130,34 @@ const breadAndOlives=U.merge([
 assert.equal(breadAndOlives.length,2,'the bread and olive meanings of this headword must remain separate');
 assert(breadAndOlives.every(group=>group.sources.length===2),'each independently matching food sense should retain both sources');
 assert.equal(breadAndOlives.find(group=>group.text.includes('olives'))?.text,'a superior sort of olives already pressed when appearing in the market','the fuller olive definition should display once');
+
+const sabbathCampSenses=U.merge([
+ {id:18541,entry:sourceByRef.get('KRU18541'),meanings:[
+  {text:'to stay over the Sabbath',label:'1'},
+  {text:'to appoint a Sabbath camp as the center for Sabbath movement',label:'2'}
+ ]},
+ {id:198,entry:sourceByRef.get('U00198'),meanings:[
+  {text:'to stay over the Sabbath',label:'2'},
+  {text:'to appoint a Sabbath camp',label:'3'}
+ ]}
+],S.normalize(sourceByRef.get('KRU18541').h));
+assert.equal(sabbathCampSenses.length,2,'staying over the Sabbath and appointing a Sabbath camp are distinct senses');
+assert(sabbathCampSenses.every(group=>group.sources.length===2),'each corresponding Sabbath sense should retain both dictionary sources');
+assert.equal(sabbathCampSenses.find(group=>group.text.includes('appoint'))?.text,'to appoint a Sabbath camp as the center for Sabbath movement','the fuller legal explanation should display once');
+
+const comparativeLike=U.merge([
+ {id:9504,entry:sourceByRef.get('KRU09504'),meanings:[
+  {text:'like',label:'1'},
+  {text:'how!',label:'2'}
+ ]},
+ {id:786,entry:sourceByRef.get('K00786'),meanings:[
+  {text:'like that which',label:'1'},
+  {text:'how! how many!, how much!, how long!',label:'2'}
+ ]}
+],S.normalize(sourceByRef.get('KRU09504').h));
+const likeGroup=comparativeLike.find(group=>group.sources.some(source=>source.entry.r==='KRU09504')&&group.sources.some(source=>source.entry.r==='K00786'));
+assert(likeGroup,'the comparative "like that which" sense should consolidate');
+assert.equal(likeGroup.text,'like that which','the more precise prepositional definition should display once');
+assert(comparativeLike.some(group=>group.text.toLowerCase().includes('how!')),'the separate interrogative sense must remain visible');
+assert(comparativeLike.length>=2,'the comparative and interrogative senses must not collapse into one result');
 
