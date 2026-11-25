@@ -1777,7 +1777,10 @@
   ["KRU11129","M00995","to arrive","to arrive at"],
   ["KRU07227","H01112","to differ with","to differ."],
   ["KRU19569","V00067","to ask for","to ask"],
-  ["KRU09370","K00616","in what manner? how?","in what manner?"]
+  ["KRU09370","K00616","in what manner? how?","in what manner?"],
+  ["KRU12418","N00250","to conduct o. s.","to demean one’s self"],
+  ["KRU11796","M02143","in the presence of","presence"],
+  ["KRU06638","H00104","to embrace one another","to embrace"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
