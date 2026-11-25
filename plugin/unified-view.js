@@ -41,6 +41,9 @@
   ['KRU16989::stomach of birds','the thick muscular stomach of birds, craw'],
   ['T00015::appearance in the temple, pilgrimage','appearance in the Temple (on the three festivals)'],
   ['B00794::to be early, produce first fruits','to be first in ripening'],
+  ['I00811::an animal afflicted with a','an animal afflicted with an organic disease'],
+  ['KRU14617::fecal mass','the fecal mass in the rectum'],
+  ['KRU14617::stalk','the central stalk of onions'],
   ["E00092::cutting the animal's throat in a slanting direction","cutting the animal’s throat in a slanting direction (letting the knife slide beyond the space ritually designated for cutting)"],
   ['H00556::claim based on undisturbed possession','claim based on undisturbed possession during a legally fixed period'],
   ['KRU16649::artificial foot','a piece of wood hollowed out for the stump of a leg, a sort of artificial foot'],
@@ -1656,6 +1659,10 @@
   ["KRU17864","T00015","appearance in the Temple (on the three festivals)","appearance in the Temple, pilgrimage"],
   // This maps only the first-ripening sense; the animal-birth and first-fruits senses stay distinct.
   ["KRU02827","B00794","to be first in ripening","to be early, produce first fruits"],
+  // The Jastrow reader phrase is abbreviated; the original entry supplies "organic disease".
+  ["KRU08294","I00811","an animal afflicted with an organic disease","an animal afflicted with a"],
+  // The stalk is a separate sense of עַמּוּד, distinct from its scroll-handle and bodily meanings.
+  ["KRU14617","P00866","stalk","the central stalk of onions"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
@@ -1935,7 +1942,9 @@
   // A second sense in the same Muktzeh entry: the dedicated tool for cutting figs.
   ["KRU10885","M00596","a tool specially intended for cutting figs","the tool specially intended"],
   // Match only the possession-claim segment; "taking possession" stays a separate sense.
-  ["KRU06888","H00556","claim based on undisturbed possession during a legally fixed period","claim based on undisturbed possession"]
+  ["KRU06888","H00556","claim based on undisturbed possession during a legally fixed period","claim based on undisturbed possession"],
+  // Match only the fecal-mass segment; the separate jet-of-urine sense remains independent.
+  ["KRU14617","P00866","fecal mass","the fecal mass in the rectum"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
