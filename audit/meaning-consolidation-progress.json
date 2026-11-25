@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1261 retained whole-gloss mappings and all 269 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1263 retained whole-gloss mappings and all 269 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1261,
+    "reviewedSourceGlossPairCount": 1263,
     "reviewedSourceAlternativePairCount": 269,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -4156,5 +4156,28 @@
       ]
     ],
     "currentTotal": 1261
+  },
+  "thirteenthReviewedTranche": {
+    "attemptedCandidates": 2,
+    "addedUniqueSourceGlossPairs": 2,
+    "acceptedPairs": [
+      [
+        "KRU19531",
+        "U02126",
+        "skilled in boring",
+        "one known to be skilled in boring"
+      ],
+      [
+        "KRU20125",
+        "V01040",
+        "to make rebellious",
+        "to make discontented, rebellious"
+      ]
+    ],
+    "evidence": [
+      "KRU19531 and U02126 both cite Tosefta Avodah Zarah VII (VIII), 14, and both define the term as an expert in boring/opening wine barrels.",
+      "KRU20125 and V01040 both cite Pesikta Rabbati s. 43, end, and both describe making the woman rebellious; Jastrow retains its fuller 'discontented' wording."
+    ],
+    "currentTotal": 1263
   }
 }
