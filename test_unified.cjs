@@ -83,6 +83,29 @@ assert.equal(U.sharesReviewedSynonym('burn','to burn'),false,'noun and infinitiv
 // Alternative-level review: match the shared phrase while retaining
 // comma-listed synonyms in the same sense and Jastrow's semicolon-separated
 // second sense separately.
+
+const coordinatedAlternativeMatch=U.merge([
+ {id:401,entry:{h:'חוּץ I',r:'H00428'},meanings:[{text:'to wedge in, form a partition; to intervene',label:'',section:'verb'}]},
+ {id:402,entry:{h:'חוּץ I',r:'KRU06819',source:'krupnik'},meanings:[{text:'to form a partition',label:''}]}
+],'חוץ');
+assert.equal(coordinatedAlternativeMatch.length,2,'an omitted repeated infinitive marker should allow the matching alternative to consolidate while the extra semicolon sense remains separate');
+const coordinatedPartition=coordinatedAlternativeMatch.find(group=>group.sources.some(source=>source.entry.r==='KRU06819'));
+assert(coordinatedPartition,'the shared partition meaning should be identified');
+assert.equal(coordinatedPartition.sources.length,2,'the coordinated alternative match must preserve both dictionary sources');
+const separateIntervention=coordinatedAlternativeMatch.find(group=>group.text==='to intervene');
+assert(separateIntervention&&separateIntervention.sources.length===1,'the unrelated second Jastrow sense must remain separate');
+
+const activePassiveMismatch=U.merge([
+ {id:403,entry:{h:'בדיקה',r:'J-ACT'},meanings:[{text:'to crush',label:'',section:'verb'}]},
+ {id:404,entry:{h:'בדיקה',r:'KRU-ACT',source:'krupnik'},meanings:[{text:'to be crushed',label:''}]}
+],'בדיקה');
+assert.equal(activePassiveMismatch.length,2,'active and passive verbs must never consolidate through alternative normalization');
+const nounVerbMismatch=U.merge([
+ {id:405,entry:{h:'בדיקה',r:'J-NOUN'},meanings:[{text:'march, procession',label:'',section:'noun'}]},
+ {id:406,entry:{h:'בדיקה',r:'KRU-VERB',source:'krupnik'},meanings:[{text:'to march',label:''}]}
+],'בדיקה');
+assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
+
 assert.equal(U.reviewedSourceAlternativePairs.size,241,'every source-scoped alternative match must be loaded');
 const alternativeScoped=U.merge([
  {id:301,entry:{h:'גָּנַח',r:'KRU04451',source:'krupnik'},meanings:[{text:'to sigh heavily under an attack of angina pectoris, to expectorate',label:''}]},
