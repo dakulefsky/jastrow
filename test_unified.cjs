@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1289,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1290,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -126,7 +126,7 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,271,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,272,'every source-scoped alternative match must be loaded');
 
 const likenessVariant=U.merge([
  {id:1100,entry:{h:'דִּכְוָת',r:'KRU05268',source:'krupnik'},meanings:[{text:'like, as',label:''}]},
@@ -1090,4 +1090,22 @@ const makerAndDealerRemainDistinct=U.merge([
  {id:6546,entry:sourceByRef.get('G00654'),meanings:[{text:'maker of and dealer in leather bags',label:''}]}
 ],S.normalize(sourceByRef.get('KRU06547').h));
 assert.equal(makerAndDealerRemainDistinct.length,2,'maker and dealer are not equivalent occupational definitions and must not merge');
+
+const slantingCutConsolidation=U.merge([
+ {id:5633,entry:sourceByRef.get('KRU05633'),meanings:[{text:'cutting the animal’s throat in a slanting direction (letting the knife slide beyond the space ritually designated for cutting)',label:''}]},
+ {id:92,entry:sourceByRef.get('E00092'),meanings:[{text:'cutting the animal’s throat in a slanting direction',label:''}]}
+],S.normalize(sourceByRef.get('KRU05633').h));
+assert.equal(slantingCutConsolidation.length,1,'the two source definitions of the slanting slaughter cut should consolidate');
+assert.equal(slantingCutConsolidation[0].sources.length,2,'both legal source records should remain available');
+assert.equal(slantingCutConsolidation[0].text,'cutting the animal’s throat in a slanting direction (letting the knife slide beyond the space ritually designated for cutting)','the fuller legal definition should display once');
+
+const legalPossessionSegments=U.merge([
+ {id:6888,entry:sourceByRef.get('KRU06888'),meanings:[{text:'claim based on undisturbed possession during a legally fixed period',label:'2'}]},
+ {id:556,entry:sourceByRef.get('H00556'),meanings:[{text:'taking possession, possession, usucaption; claim based on undisturbed possession',label:'2'}]}
+],S.normalize(sourceByRef.get('KRU06888').h));
+assert.equal(legalPossessionSegments.length,2,'only the shared legal-possession claim should merge; taking possession remains a separate sense');
+const legalPossessionClaim=legalPossessionSegments.find(group=>group.sources.length===2);
+assert(legalPossessionClaim,'the undisturbed-possession claim should consolidate across both sources');
+assert.equal(legalPossessionClaim.text,'claim based on undisturbed possession during a legally fixed period','the fuller legal definition should display once');
+assert(legalPossessionSegments.some(group=>group.text==='taking possession, possession, usucaption'&&group.sources.length===1),'the separate taking-possession sense must remain independent');
 
