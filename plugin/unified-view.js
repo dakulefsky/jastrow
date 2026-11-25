@@ -1749,7 +1749,13 @@
   ["KRU15920","Q01677","detail number","detail number"],
   ["KRU15965","Q01763","to change money","to change money"],
   ["KRU15983","Q01791","single pigeon","single pigeon"],
-  ["KRU15983","Q01791","a single berry","a single berry"]
+  ["KRU15983","Q01791","a single berry","a single berry"],
+  // Reviewed from the regenerated semantic queue: fuller wording and its concise counterpart describe the same sense.
+  ["KRU13933","O01464","leather apron","also leather apron."],
+  ["KRU19454","U01930","easily enticed","one easily enticed"],
+  ["KRU19540","U02141","to lay the foundation","to lay the foundation of"],
+  ["KRU19659","V00245","one who writes plene","who writes plene"],
+  ["KRU01153","A01744","in the lump","in a lump"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
