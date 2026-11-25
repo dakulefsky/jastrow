@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1290,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1292,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -1108,4 +1108,26 @@ const legalPossessionClaim=legalPossessionSegments.find(group=>group.sources.len
 assert(legalPossessionClaim,'the undisturbed-possession claim should consolidate across both sources');
 assert.equal(legalPossessionClaim.text,'claim based on undisturbed possession during a legally fixed period','the fuller legal definition should display once');
 assert(legalPossessionSegments.some(group=>group.text==='taking possession, possession, usucaption'&&group.sources.length===1),'the separate taking-possession sense must remain independent');
+
+const customaryMeasure=U.merge([
+ {id:6183,entry:sourceByRef.get('KRU06183'),meanings:[{text:'relinquishment, addition to exact measure',label:''}]},
+ {id:50,entry:sourceByRef.get('F00050'),meanings:[{text:'the retailer’s customary addition to exact measure',label:''}]}
+],S.normalize(sourceByRef.get('KRU06183').h));
+assert.equal(customaryMeasure.length,1,'the retailer’s customary extra measure should consolidate across both dictionaries');
+assert.equal(customaryMeasure[0].sources.length,2,'both Nedarim source records should remain available');
+assert.equal(customaryMeasure[0].text,'the retailer’s customary addition to exact measure','the precise commercial meaning should display once');
+
+const breadAndOlives=U.merge([
+ {id:4289,entry:sourceByRef.get('KRU04289'),meanings:[
+  {text:'a white and delicate bread',label:'1'},
+  {text:'a superior sort of olives',label:'2'}
+ ]},
+ {id:907,entry:sourceByRef.get('C00907'),meanings:[
+  {text:'a white and delicate bread',label:''},
+  {text:'a superior sort of olives already pressed when appearing in the market',label:''}
+ ]}
+],S.normalize(sourceByRef.get('KRU04289').h));
+assert.equal(breadAndOlives.length,2,'the bread and olive meanings of this headword must remain separate');
+assert(breadAndOlives.every(group=>group.sources.length===2),'each independently matching food sense should retain both sources');
+assert.equal(breadAndOlives.find(group=>group.text.includes('olives'))?.text,'a superior sort of olives already pressed when appearing in the market','the fuller olive definition should display once');
 
