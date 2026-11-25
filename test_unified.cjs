@@ -718,6 +718,15 @@ const musafOnly=U.merge([
 assert.equal(musafOnly.length,2,'the Musaf prayer meaning must consolidate without absorbing the separate New Year’s day sense');
 assert.equal(musafOnly.filter(g=>g.sources.length===2).length,1,'only the source-attested Musaf sense should join across dictionaries');
 
+const learningK=sourceByRef.get('KRU04223'),learningJ=sourceByRef.get('C01376');
+const learningLookup=S.normalize(learningJ.h);
+const learningPairKey=['KRU04223','C01376'].sort().join('|')+'::'+[
+ 'acquired learning, tradition, study by heart','acquired learning, study of tradition'
+].map(cleanGloss).sort().join(' | ');
+assert(U.reviewedSourceGlossPairs.has(learningPairKey),'the reviewed learning pair must be present in the runtime map: '+learningPairKey);
+assert.equal(U.compatible(S.displayHeadword(learningK,learningLookup),S.displayHeadword(learningJ,learningLookup),learningLookup),true,
+ 'the source headword variants must be compatible for unpointed lookup: '+JSON.stringify({k:S.displayHeadword(learningK,learningLookup),j:S.displayHeadword(learningJ,learningLookup),lookup:learningLookup}));
+
 const reviewedSourcePairs=[
  ['KRU04223','C01376','acquired learning, tradition, study by heart','acquired learning, study of tradition',1,2],
  ['KRU04725','D00045','dripping grapes','lumps of dripping grapes',1,1],
