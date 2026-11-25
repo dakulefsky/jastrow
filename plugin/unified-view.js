@@ -6,6 +6,9 @@
   ['KRU08370::desparing of recovering a lost object','despairing of recovering a lost object'],
   ['KRU15837::to declare ownerless','declare a property ownerless'],
   ["P00680::'erub, a symbolical act by which the legal fiction of community",'a symbolical act by which the legal fiction of community or continuity is established'],
+  ["K01324::to adapt one's self, to work with zeal and conscientiousness",'to adapt one’s self, to work with zeal and conscientiousness'],
+  ['R00053::to raise one or more fingers','to raise the fingers as a signal'],
+  ['KRU14845::trough for kneading etc.','trough, tub, kneading trough'],
  ]);
  const displayGloss=(ref,value)=>displayCorrections.get(ref+'::'+clean(value))||value;
  const stem=label=>{
@@ -211,6 +214,9 @@
   ['KRU08370','J00009','desparing of recovering a lost object','despairing of recovering a lost object, resignation'],
   ['KRU15837','Q01517','to declare ownerless','to declare free, to renounce ownership, declare a property ownerless'],
   ['KRU14478','P00680','a symbolical act by which the legal fiction of community or continuity is established','‘Erub, a symbolical act by which the legal fiction of community'],
+  ['KRU09880','K01324','to work with zeal','to adapt one’s self, to work with zeal and conscientiousness'],
+  ['KRU16236','R00053','to raise the fingers as a signal','to raise one or more fingers'],
+  ['KRU14845','P01349','trough for kneading etc.','trough, tub, kneading trough'],
   ['KRU18341','T00991','to bore through','to bore'],
   ['KRU18343','T00995','to press, to crush','to press, crush'],
   ['KRU18343','T00995','to be squeezed','to be squeezed, crushed'],
