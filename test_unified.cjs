@@ -126,7 +126,24 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,257,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,261,'every source-scoped alternative match must be loaded');
+
+const finalSemanticFixtures=[
+ {word:'יֵבָא',kr:'KRU08390',jr:'J00028',k:'it corresponds to',j:'it agrees with, corresponds to'},
+ {word:'נוֹחַ II',kr:'KRU12467',jr:'N00343',k:'good, better (for)',j:'it is good'},
+ {word:'גָּרַע I',kr:'KRU04637',jr:'C01379',k:'to deduct from',j:'to scrape off, to diminish, deduct'},
+ {word:'חֲתַם',kr:'KRU07673',jr:'H01900',k:'to close, to end',j:'to close up'}
+];
+for(const [n,item] of finalSemanticFixtures.entries()){
+ const groups=U.merge([
+  {id:800+n*2,entry:{h:item.word,r:item.kr,source:'krupnik'},meanings:[{text:item.k,label:''}]},
+  {id:801+n*2,entry:{h:item.word,r:item.jr},meanings:[{text:item.j,label:''}]}
+ ],item.word);
+ const matched=groups.find(group=>group.sources.some(source=>source.entry.r===item.kr)&&group.sources.some(source=>source.entry.r===item.jr));
+ assert(matched,'reviewed semantic equivalent should consolidate: '+item.jr+' / '+item.kr);
+ assert.equal(matched.sources.length,2,'both original dictionary sources must be preserved: '+item.jr+' / '+item.kr);
+}
+
 
 const finalReviewedAlternativeFixtures=[
  {word:'רְחֵם',kr:'KRU18096',jr:'T00517',k:'to have pity',j:'to have compassion on, pity'},
