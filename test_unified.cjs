@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1266,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1269,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -539,6 +539,34 @@ const eruvConsolidation=U.merge([
 assert.equal(eruvConsolidation.length,1,'the split reader phrases together describe one Erub sense');
 assert.equal(eruvConsolidation[0].sources.length,2,'the consolidated Erub sense must retain the actual reader phrase and the Krupnik source');
 assert.equal(eruvConsolidation[0].text,'a symbolical act by which the legal fiction of community or continuity is established','the complete source definition should display once, not as three overlapping fragments');
+
+const zealConsolidation=U.merge([
+ {id:9880,entry:{h:'כָּשֵׁר',r:'KRU09880',source:'krupnik'},meanings:[{text:'to work with zeal',label:''}]},
+ {id:1324,entry:{h:'כָּשֵׁר I',r:'K01324'},meanings:[{text:'to adapt one’s self, to work with zeal and conscientiousness',label:'Hithpa. הִתְכַּשֵּׁר'}]}
+],'כשר');
+assert.equal(zealConsolidation.length,1,'the matching Hithpa zeal sense should consolidate');
+assert.equal(zealConsolidation[0].sources.length,2,'the zeal sense must retain both source records');
+assert.equal(zealConsolidation[0].text,'to adapt one’s self, to work with zeal and conscientiousness','the fuller Hithpa wording should display once');
+
+const fingerConsolidation=U.merge([
+ {id:16236,entry:{h:'צָבַע',r:'KRU16236',source:'krupnik'},meanings:[{text:'to raise the fingers as a signal',label:''}]},
+ {id:53,entry:{h:'צָבַע I',r:'R00053'},meanings:[{text:'to raise one or more fingers',label:'Hif. הִצְבִּיעַ'}]}
+],'צבע');
+assert.equal(fingerConsolidation.length,1,'the same finger-raising Hifil sense should consolidate');
+assert.equal(fingerConsolidation[0].sources.length,2,'both dictionary sources should remain available');
+assert.equal(fingerConsolidation[0].text,'to raise the fingers as a signal','the shared finger-raising definition should display once');
+
+const troughConsolidation=U.merge([
+ {id:14845,entry:{h:'עֲרֵיבָה',r:'KRU14845',source:'krupnik'},meanings:[{text:'trough for kneading etc.',label:''}]},
+ {id:1349,entry:{h:'עֲרֵיבָה',r:'P01349'},meanings:[
+  {text:'trough, tub, kneading trough',label:'1)'},
+  {text:'boat, skiff',label:'2)'}
+ ]}
+],'עריבה');
+assert.equal(troughConsolidation.length,2,'the separate boat sense must not merge with the kneading-trough sense');
+assert.equal(troughConsolidation.find(g=>g.sources.length===2)?.text,'trough, tub, kneading trough','the shared kneading-trough sense should consolidate');
+assert(troughConsolidation.some(g=>g.text==='boat, skiff'&&g.sources.length===1),'the unrelated boat sense must remain separate');
+
 
 
 
