@@ -1780,7 +1780,8 @@
   ["KRU09370","K00616","in what manner? how?","in what manner?"],
   ["KRU12418","N00250","to conduct o. s.","to demean one’s self"],
   ["KRU11796","M02143","in the presence of","presence"],
-  ["KRU06638","H00104","to embrace one another","to embrace"]
+  ["KRU06638","H00104","to embrace one another","to embrace"],
+  ["KRU05268","D00769","like","the like of"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
