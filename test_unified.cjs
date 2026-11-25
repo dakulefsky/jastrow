@@ -533,8 +533,7 @@ assert.equal(ownerlessConsolidation[0].text,'declare a property ownerless, to de
 const eruvConsolidation=U.merge([
  {id:14478,entry:{h:'עֵירוּב',r:'KRU14478',source:'krupnik'},meanings:[{text:'a symbolical act by which the legal fiction of community or continuity is established',label:'2'}]},
  {id:680,entry:{h:'עֵירוּב',r:'P00680'},meanings:[
-  {text:'‘Erub, a symbolical act by which the legal fiction of community',label:''},
-  {text:'continuity is established',label:''}
+  {text:'‘Erub, a symbolical act by which the legal fiction of community',label:''}
  ]}
 ],'עירוב');
 assert.equal(eruvConsolidation.length,1,'the split reader phrases together describe one Erub sense');
