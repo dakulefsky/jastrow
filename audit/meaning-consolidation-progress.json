@@ -913,7 +913,7 @@
       },
       "ranking": "Exact English glosses and exact shared Hebrew alternatives first; English evidence only prioritizes candidates and never approves Hebrew synonym merges."
     },
-    "note": "All eight high-evidence same-headword candidate pairs were screened. One source-scoped synonym was accepted, two multi-sense records were deferred rather than over-merged, five were rejected as distinct meanings/entities/actions, and one exact shared alternative is handled by the runtime rule.",
+    "note": "All nine prioritized candidates (one exact-English-gloss and eight shared-content-term pairs) were screened. One source-scoped synonym was accepted, two multi-sense records were deferred rather than over-merged, five were rejected as distinct meanings/entities/actions, and one exact shared Hebrew alternative is handled by the runtime rule.",
     "latestApprovedPair": [
       "KRU09162",
       "KRU09163",
