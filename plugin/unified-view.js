@@ -31,6 +31,14 @@
   ['L00537::juice of a plant','juice of a plant used for dyeing'],
   ['D00175::a species of figs or sycamore','a species of sycamore'],
   ['KRU11938::an upper garment','the upper garment with the girdle, walking cloak'],
+  ['KRU04375::a branch used for caprification','branches used for caprification'],
+  ['KRU04462::removal of sacred object','removal of sacred objects'],
+  ['D01107::a marmelade of quinces and roses','a marmalade of quinces and roses'],
+  ['KRU05597::watching ownerless objects','superintendence, watching ownerless objects'],
+  ['H00665::that which is sqeezed in to fill a gap, repair, insertion','stopper, insertion (to fill a gap)'],
+  ['KRU04552::to let the olives shrivel','to let the olive shrivel'],
+  ['KRU16989::stomach of birds','the thick muscular stomach of birds, craw'],
+  ['T00015::appearance in the Temple, pilgrimage','appearance in the Temple (on the three festivals)'],
   ["E00092::cutting the animal's throat in a slanting direction","cutting the animal’s throat in a slanting direction (letting the knife slide beyond the space ritually designated for cutting)"],
   ['H00556::claim based on undisturbed possession','claim based on undisturbed possession during a legally fixed period'],
   ['KRU16649::artificial foot','a piece of wood hollowed out for the stump of a leg, a sort of artificial foot'],
@@ -1628,6 +1636,22 @@
   ["KRU04824","D00175","a species of sycamore","a species of figs or sycamore"],
   // Both entries cite Yerushalmi Bava Metzia II:8b for the same upper garment.
   ["KRU11938","M02411","an upper garment","the upper garment with the girdle, walking cloak"],
+  // Both sources cite Pesachim IV:8 for the branch used in caprification.
+  ["KRU04375","C01017","a branch used for caprification","branches used for caprification"],
+  // Both sources cite Shabbat XVI:1 for the removal of sacred objects.
+  ["KRU04462","C01140","removal of sacred object","removal of sacred objects"],
+  // Both sources cite Yerushalmi Sheviit II:37b for the quince-and-rose marmalade.
+  ["KRU05533","D01107","a marmalade of quinces and roses","a marmelade of quinces and roses"],
+  // Both sources cite Bava Metzia 118a for watching ownerless property.
+  ["KRU05597","E00033","watching ownerless objects","superintendence, watching owner-less objects"],
+  // Both sources cite Hullin 57b for the stopper inserted to repair a gap.
+  ["KRU06956","H00665","stopper, insertion (to fill a gap)","that which is sqeezed in to fill a gap, repair, insertion"],
+  // Both sources cite Menachot VIII:4 for letting olives shrivel.
+  ["KRU04552","C01255","to let the olives shrivel","to let the olive shrivel"],
+  // Match the bird-craw sense only; the human-stomach sense remains separate.
+  ["KRU16989","S00640","stomach of birds","the thick muscular stomach of birds, craw"],
+  // Both entries define the Temple-appearance obligation on the festivals.
+  ["KRU17864","T00015","appearance in the Temple (on the three festivals)","appearance in the Temple, pilgrimage"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
