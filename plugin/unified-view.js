@@ -6,7 +6,7 @@
   ['KRU08370::desparing of recovering a lost object','despairing of recovering a lost object'],
   ['KRU15837::to declare ownerless','declare a property ownerless'],
   ["P00680::'erub, a symbolical act by which the legal fiction of community",'a symbolical act by which the legal fiction of community or continuity is established'],
-  ["K01324::to adapt one's self, to work with zeal and conscientiousness",'to adapt one’s self, to work with zeal and conscientiousness'],
+  ["KRU09880::to work with zeal",'to adapt one’s self, to work with zeal and conscientiousness'],
   ['R00053::to raise one or more fingers','to raise the fingers as a signal'],
   ['KRU14845::trough for kneading etc.','trough, tub, kneading trough'],
  ]);
