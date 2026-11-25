@@ -1772,7 +1772,12 @@
   ["KRU08390","J00028","it corresponds to","corresponds to"],
   ["KRU12467","N00343","good","it is good"],
   ["KRU04637","C01379","to deduct from","deduct"],
-  ["KRU07673","H01900","to close","to close up"]
+  ["KRU07673","H01900","to close","to close up"],
+  ["KRU05163","D00634","to have a law-suit","have a law-suit with"],
+  ["KRU11129","M00995","to arrive","to arrive at"],
+  ["KRU07227","H01112","to differ with","to differ."],
+  ["KRU19569","V00067","to ask for","to ask"],
+  ["KRU09370","K00616","in what manner? how?","in what manner?"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
