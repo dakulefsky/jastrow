@@ -104,14 +104,16 @@
  ];
  const synonymKey=text=>{
   const value=clean(text);
-  return synonymGroups.find(group=>group.includes(value))?.[0]||value;
+  const group=synonymGroups.find(group=>group.some(item=>clean(item)===value));
+  return group?clean(group[0]):value;
  };
  // Match curated synonyms at the individual-gloss level as well as when the
  // whole gloss is a synonym. This lets "to happen" match the "occur" item in
  // "to occur, to take place" without treating arbitrary shared words as equal.
  const synonymGroupKey=text=>{
   const value=clean(text);
-  return synonymGroups.find(group=>group.includes(value))?.[0]||null;
+  const group=synonymGroups.find(group=>group.some(item=>clean(item)===value));
+  return group?clean(group[0]):null;
  };
  // A whole gloss may merge through a curated synonym group only when every
  // alternative on both sides belongs to that same group. One shared synonym
