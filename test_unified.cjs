@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1311,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1312,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -1322,4 +1322,20 @@ assert.equal(templeAppearance.length,3,'the Temple-appearance sense should merge
 assert.equal(templeAppearance.find(group=>group.sources.length===2)?.text,'appearance in the Temple (on the three festivals)','the festival obligation should display with its precise scope');
 assert(templeAppearance.some(group=>group.text==='seeing'&&group.sources.length===1),'the seeing sense must not be absorbed');
 assert(templeAppearance.some(group=>group.text==='attack of pollution, menstruation'&&group.sources.length===1),'the separate medical sense must not be absorbed');
+
+const firstRipeningSense=U.merge([
+ {id:2827,entry:sourceByRef.get('KRU02827'),meanings:[
+  {text:'to bear for the first time',label:'1'},
+  {text:'to bear first fruits',label:'2'},
+  {text:'to be first in ripening',label:'3'}
+ ]},
+ {id:794,entry:sourceByRef.get('B00794'),meanings:[
+  {text:'to bear for the first time',label:'1'},
+  {text:'to be early, produce first fruits',label:'3'}
+ ]}
+],S.normalize(sourceByRef.get('KRU02827').h));
+const firstRipeningGroup=firstRipeningSense.find(group=>group.sources.length===2&&group.text==='to be first in ripening');
+assert(firstRipeningGroup,'the first-ripening definitions should consolidate');
+assert(firstRipeningSense.some(group=>group.text==='to bear first fruits'&&group.sources.length===1),'the separate first-fruits sense must remain independent');
+assert(!firstRipeningSense.some(group=>group.text.includes('to bear first fruits')&&group.sources.length===2),'the first-fruits sense must not be absorbed into the first-ripening match');
 
