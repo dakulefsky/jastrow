@@ -60,7 +60,7 @@
     "published": false
   },
   "candidateInventory": {
-    "generatedFromCommit": "ef269e4eb6bb4b7c219241e2c575b312418bf32e",
+    "generatedFromCommit": "5c3dfd2a140d9b24d1b45d178bca51fa8b711fd1",
     "sourceEntries": 47919,
     "jastrowEntries": 32508,
     "krupnikEntries": 15407,
@@ -71,7 +71,7 @@
     "runtimeRuleHandledCandidates": 2456,
     "ambiguityFlaggedExactCandidates": 534,
     "nonExactSemanticCandidates": 1413,
-    "note": "Regenerated after contextual infinitive, reflexive spelling, and terminal punctuation normalization. One formerly lexical-overlap case moved into the exact-but-ambiguous queue because a single Krupnik gloss maps to two separate Jastrow senses; it is correctly not auto-merged."
+    "note": "Regenerated after the question-gloss pair KRU09370/K00616 was deferred. The inventory keeps 534 ambiguous exact matches and 1,413 non-exact semantic candidates in human review; only one-to-one guarded matches are runtime-handled."
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -3993,7 +3993,7 @@
     "generatedFromCommit": "e9b26b7180d9351aa9e8bf89902b8f0c66631b03",
     "strongAlternativeOverlapCandidates": 41,
     "ambiguityFlaggedExactCandidates": 534,
-    "nonExactSemanticCandidates": 1414,
+    "nonExactSemanticCandidates": 1413,
     "status": "pending-human-review",
     "note": "The question-gloss pair KRU09370/K00616 was deliberately returned to pending review because its source text does not expose a clean alternative boundary and merging it risks duplicate display wording.",
     "ambiguousCandidateExamples": [
