@@ -735,8 +735,8 @@ for(const [kRef,jRef,kGloss,jGloss,kCount,jCount] of reviewedSourcePairs){
  const merged=U.merge([
   {id:401,entry:k,meanings:[{text:kGloss,label:''}]},
   {id:402,entry:j,meanings:[{text:jGloss,label:'',section:'noun'}]}
- ],j.h);
- assert.equal(merged.length,1,'reviewed source pair should consolidate: '+kRef+'/'+jRef);
+ ],S.normalize(j.h));
+ assert.equal(merged.length,1,'reviewed source pair should consolidate for the shared consonantal lookup: '+kRef+'/'+jRef);
  assert.equal(merged[0].sources.length,2,'both source citations should remain: '+kRef+'/'+jRef);
 }
 const learning=U.merge([
