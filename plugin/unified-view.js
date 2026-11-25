@@ -14,6 +14,12 @@
   ['D00765::an elevated spot','an elevated spot on the hearth'],
   ['KRU01971::long bedside','long board, longside of bedstead, bedside'],
   ['KRU01236::diagonal','diagonal line, diameter'],
+  ['KRU16649::artificial foot','a piece of wood hollowed out for the stump of a leg, a sort of artificial foot'],
+  ['S02038::covered with a crust','covered with a crust of sediments'],
+  ['KRU17738::formation of a crust','formation of a light crust'],
+  ['KRU01645::van-guard','forerunner, the commander’s van-guard'],
+  ['A02164::Antiochian, native of Antiochia, resident of A','of Antiochia'],
+  ['KRU16409::with lang dependent ears','a goat with long hair lumps and long, dependent ears'],
  ]);
  const displayGloss=(ref,value)=>displayCorrections.get(ref+'::'+clean(value))||value;
  const stem=label=>{
@@ -227,6 +233,12 @@
   ['KRU05265','D00765','an elevated spot on the hearth','an elevated spot'],
   ['KRU01971','A03028','long bedside','long board, longside of bedstead, bedside'],
   ['KRU01236','A01891','diagonal','diagonal line, diameter'],
+  ['KRU16649','S00025','artificial foot','a piece of wood hollowed out for the stump of a leg, a sort of artificial foot'],
+  ['KRU17729','S02038','covered with a crust of sediments','covered with a crust'],
+  ['KRU17738','S02061','formation of a crust','formation of a light crust'],
+  ['KRU01645','A02519','van-guard','forerunner, the commander’s van-guard'],
+  ['KRU01430','A02164','of Antiochia','Antiochian, native of Antiochia, resident of A'],
+  ['KRU16409','R00377','with lang dependent ears','a goat with long hair lumps and long, dependent ears'],
   ['KRU18341','T00991','to bore through','to bore'],
   ['KRU18343','T00995','to press, to crush','to press, crush'],
   ['KRU18343','T00995','to be squeezed','to be squeezed, crushed'],
