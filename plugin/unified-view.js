@@ -1803,7 +1803,9 @@
   ["KRU12418","N00250","to conduct o. s.","to demean one’s self"],
   ["KRU11796","M02143","in the presence of","presence"],
   ["KRU06638","H00104","to embrace one another","to embrace"],
-  ["KRU05268","D00769","like","the like of"]
+  ["KRU05268","D00769","like","the like of"],
+  // Map only the Niphal "to be cut into" sense; the separate cut-off sense stays apart.
+  ["KRU07668","H01896","to be cut","to be cut into"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
