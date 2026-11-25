@@ -126,7 +126,23 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,266,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,269,'every source-scoped alternative match must be loaded');
+
+const lastReviewedSemanticFixtures=[
+ {word:'נָהַג',kr:'KRU12418',jr:'N00250',k:'to conduct o. s.',j:'to lead, conduct; to demean one’s self; to be guided by, be wont to; to apply, be practiced'},
+ {word:'מַעֲמָד',kr:'KRU11796',jr:'M02143',k:'in the presence of',j:'presence'},
+ {word:'חָבַק',kr:'KRU06638',jr:'H00104',k:'to embrace one another',j:'to embrace, press, fasten.'}
+];
+for(const [n,item] of lastReviewedSemanticFixtures.entries()){
+ const groups=U.merge([
+  {id:1000+n*2,entry:{h:item.word,r:item.kr,source:'krupnik'},meanings:[{text:item.k,label:''}]},
+  {id:1001+n*2,entry:{h:item.word,r:item.jr},meanings:[{text:item.j,label:''}]}
+ ],item.word);
+ const matched=groups.find(group=>group.sources.some(source=>source.entry.r===item.kr)&&group.sources.some(source=>source.entry.r===item.jr));
+ assert(matched,'reviewed semantic equivalence should consolidate: '+item.jr+' / '+item.kr);
+ assert.equal(matched.sources.length,2,'both dictionary sources must be retained: '+item.jr+' / '+item.kr);
+}
+
 
 const finalReviewedGlossVariants=[
  {word:'דִּין',kr:'KRU05163',jr:'D00634',k:'to have a law-suit',j:'to argue, dispute, have a law-suit with'},
