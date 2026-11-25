@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1252 retained whole-gloss mappings and all 269 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1261 retained whole-gloss mappings and all 269 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1252,
+    "reviewedSourceGlossPairCount": 1261,
     "reviewedSourceAlternativePairCount": 269,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -4070,5 +4070,91 @@
       ]
     ],
     "currentTotal": 1252
+  },
+  "twelfthReviewedTranche": {
+    "attemptedCandidates": 9,
+    "addedUniqueSourceGlossPairs": 9,
+    "acceptedPairs": [
+      [
+        "KRU04223",
+        "C01376",
+        "acquired learning, tradition, study by heart",
+        "acquired learning, study of tradition"
+      ],
+      [
+        "KRU04725",
+        "D00045",
+        "dripping grapes",
+        "lumps of dripping grapes"
+      ],
+      [
+        "KRU04974",
+        "D00392",
+        "fat, fat ground",
+        "fat pasture ground"
+      ],
+      [
+        "KRU05975",
+        "E00697",
+        "the transfer of property",
+        "the transfer of landed property from one tribe to another"
+      ],
+      [
+        "KRU06140",
+        "E00959",
+        "sounding the alarm",
+        "sounding the alarm on public fast-days"
+      ],
+      [
+        "KRU06285",
+        "G00147",
+        "a silver coin (one fourth of a Shekel)",
+        "a silver coin"
+      ],
+      [
+        "KRU17350",
+        "S01302",
+        "to rise in a column (fire)",
+        "to rise in a column"
+      ],
+      [
+        "KRU19505",
+        "U02081",
+        "one that is silent when reproached with spurious decent",
+        "silenced, one that is silent when reproached with spurious descent"
+      ],
+      [
+        "KRU19720",
+        "V00350",
+        "a shoot for inoculation",
+        "a shoot used for inoculation."
+      ]
+    ],
+    "evidence": [
+      "Every pair is scoped to the two matching source records and was checked against the original Hebrew entry and reader-displayed Jastrow phrase.",
+      "The source citations align for each pair: Megillah/Shabbat for acquired learning; Avodah Zarah 39b for dripping grapes; Sifrei Numbers 81 for fat pasture ground; Bava Batra 111b for property transfer; Taanit 14a for the alarm; Ketubot I:5 for the coin; Bava Kamma 61a for the column of fire; Ketubot 14b for the silence-on-reproach term; and Tosefta Sheviit I:9 for the inoculation shoot.",
+      "KRU04223/C01376 preserves Jastrow's separate editorial 'version' sense. KRU06285/G00147 preserves coin and weight as two separate matching senses."
+    ],
+    "rejectedOrDeferred": [
+      [
+        "KRU17059",
+        "S00787",
+        "to cover embers with ashes versus to cover with ashes",
+        "Deferred: the exact phrase 'to cover embers with ashes' is already handled by the guarded exact-alternative rule; adding the broader phrase risks mapping two reader phrases onto the same Krupnik sense."
+      ],
+      [
+        "KRU19531",
+        "U02126",
+        "skilled in boring versus one known to be skilled in boring",
+        "Deferred: no source-citation check completed in this tranche."
+      ],
+      [
+        "KRU05975",
+        "E00697",
+        "transfer of property",
+        "Accepted only the one specific landed-property sense; any separate property-transfer readings remain distinct."
+      ]
+    ],
+    "currentTotal": 1261
   }
 }
