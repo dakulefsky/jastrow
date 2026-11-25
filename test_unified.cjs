@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1252,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1261,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -717,6 +717,50 @@ const musafOnly=U.merge([
 ],'תקיעתא');
 assert.equal(musafOnly.length,2,'the Musaf prayer meaning must consolidate without absorbing the separate New Year’s day sense');
 assert.equal(musafOnly.filter(g=>g.sources.length===2).length,1,'only the source-attested Musaf sense should join across dictionaries');
+
+const reviewedSourcePairs=[
+ ['KRU04223','C01376','acquired learning, tradition, study by heart','acquired learning, study of tradition',1,2],
+ ['KRU04725','D00045','dripping grapes','lumps of dripping grapes',1,1],
+ ['KRU04974','D00392','fat, fat ground','fat pasture ground',1,1],
+ ['KRU05975','E00697','the transfer of property','the transfer of landed property from one tribe to another',1,1],
+ ['KRU06140','E00959','sounding the alarm','sounding the alarm on public fast-days',1,1],
+ ['KRU06285','G00147','a silver coin (one fourth of a Shekel)','a silver coin',2,2],
+ ['KRU17350','S01302','to rise in a column (fire)','to rise in a column',1,1],
+ ['KRU19505','U02081','one that is silent when reproached with spurious decent','silenced, one that is silent when reproached with spurious descent',1,1],
+ ['KRU19720','V00350','a shoot for inoculation','a shoot used for inoculation.',1,1]
+];
+for(const [kRef,jRef,kGloss,jGloss,kCount,jCount] of reviewedSourcePairs){
+ const k=sourceByRef.get(kRef),j=sourceByRef.get(jRef);
+ assert(k&&j,'both source entries must exist for '+kRef+'/'+jRef);
+ const merged=U.merge([
+  {id:401,entry:k,meanings:[{text:kGloss,label:''}]},
+  {id:402,entry:j,meanings:[{text:jGloss,label:'',section:'noun'}]}
+ ],j.h);
+ assert.equal(merged.length,1,'reviewed source pair should consolidate: '+kRef+'/'+jRef);
+ assert.equal(merged[0].sources.length,2,'both source citations should remain: '+kRef+'/'+jRef);
+}
+const learning=U.merge([
+ {id:403,entry:sourceByRef.get('KRU04223'),meanings:[{text:'acquired learning, tradition, study by heart',label:''}]},
+ {id:404,entry:sourceByRef.get('C01376'),meanings:[
+  {text:'acquired learning, study of tradition',label:'1',section:'noun'},
+  {text:'version',label:'2',section:'noun'}
+ ]}
+],'גירסא');
+assert.equal(learning.length,2,'the separate editorial sense "version" must remain distinct');
+assert.equal(learning.filter(g=>g.sources.length===2).length,1,'only the acquired-learning sense should consolidate');
+
+const coinAndWeight=U.merge([
+ {id:405,entry:sourceByRef.get('KRU06285'),meanings:[
+  {text:'a silver coin (one fourth of a Shekel)',label:'1'},
+  {text:'a weight',label:'2'}
+ ]},
+ {id:406,entry:sourceByRef.get('G00147'),meanings:[
+  {text:'a silver coin',label:'1',section:'noun'},
+  {text:'a weight',label:'2',section:'noun'}
+ ]}
+],'זוז');
+assert.equal(coinAndWeight.length,2,'coin and weight must remain separate senses');
+assert(coinAndWeight.every(g=>g.sources.length===2),'both matching coin and weight senses should preserve both sources');
 
 const movementSenses=U.merge([
  {id:100,entry:{h:'טִלְטוּל',r:'KRU08043',source:'krupnik'},meanings:[{text:'moving',label:''},{text:'migration',label:''}]},
