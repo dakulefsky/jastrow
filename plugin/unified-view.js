@@ -23,7 +23,7 @@
   ['KRU01645::van-guard','forerunner, the commander’s van-guard'],
   ['A02164::antiochian, native of antiochia, resident of a','of Antiochia'],
   ['KRU16409::with lang dependent ears','a goat with long hair lumps and long, dependent ears'],
-  ['Q02074::the plain heir's right, single share','single share of the heir, opp. to the double share of the first-born son'],
+  ["Q02074::the plain heir's right, single share","single share of the heir, opp. to the double share of the first-born son"],
   ['KRU07518::a pap made of fruits and spices with wine (used as sauce on the passover-night)','a pap made of fruits and spices with wine or vinegar'],
   ['KRU09233::a dish consisting of sour milk, bread and salt','a preserve consisting of sour milk, bread-crusts and salt'],
  ]);
