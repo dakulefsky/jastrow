@@ -62,8 +62,11 @@ const senseSegments=value=>{
  return out;
 };
 const segmentIds=(ref,text,label,section,alternative,side)=>{
- const segments=senseSegments(text),out=[];
- for(let i=0;i<segments.length;i++)if(alternatives(segments[i]).some(value=>clean(value)===clean(alternative))){
+ const segments=senseSegments(text),out=[],target=U.alternativeMatchKey(alternative,text);
+ for(let i=0;i<segments.length;i++)if(alternatives(segments[i]).some(value=>{
+  const match=U.alternativeMatchKey(value,text);
+  return match.key===target.key&&match.voice===target.voice;
+ })){
   out.push(side==='j'?[ref,clean(text),stem(label),clean(section),i,clean(segments[i])].join('::'):[ref,clean(text),stem(label),i,clean(segments[i])].join('::'));
  }
  return out;
@@ -128,6 +131,15 @@ assert(oneToManyFixture.every(item=>item.reviewFlags.includes('one-jastrow-sense
 
 if(samePartOfSpeech('to lament','lament'))throw new Error('Candidate queue must preserve verb/noun distinctions');
 if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speech synonyms should remain reviewable');
+
+// Coordinated verb alternatives may omit a repeated infinitive marker.
+// The runtime and review inventory must classify the same pair consistently.
+const coordinatedA=U.alternativeMatchKey('form a partition','to wedge in, form a partition');
+const coordinatedB=U.alternativeMatchKey('to form a partition','to form a partition');
+if(coordinatedA.key!==coordinatedB.key||coordinatedA.voice!==coordinatedB.voice)throw new Error('Coordinated verb alternatives should match the runtime normalization');
+const active=U.alternativeMatchKey('to crush','to crush');
+const passive=U.alternativeMatchKey('to be crushed','to be crushed');
+if(active.key===passive.key&&active.voice===passive.voice)throw new Error('Active and passive alternatives must remain distinct');
 (async()=>{
  const browser=await chromium.launch({executablePath,args:['--no-sandbox']});
  let phrasesByRef=new Map();
@@ -163,9 +175,11 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
     const partPairs=[];
     for(const ja of alternatives(jp.text))for(const ka of alternatives(kg.text)){
      const evidence=partEvidence(ja,ka);
-     if(evidence&&evidence.overlap>=0.5)partPairs.push(evidence);
+     const left=U.alternativeMatchKey(ja,jp.text),right=U.alternativeMatchKey(ka,kg.text);
+     const canonicalEquivalent=!!left.key&&left.key===right.key&&left.voice===right.voice;
+     if(evidence&&evidence.overlap>=0.5)partPairs.push({...evidence,canonicalEquivalent});
     }
-    partPairs.sort((a,b)=>(Number(clean(b.jastrow)===clean(b.krupnik))-Number(clean(a.jastrow)===clean(a.krupnik)))||b.jaccard-a.jaccard||b.overlap-a.overlap||b.sharedTerms.length-a.sharedTerms.length);
+    partPairs.sort((a,b)=>(Number(b.canonicalEquivalent)-Number(a.canonicalEquivalent))||b.jaccard-a.jaccard||b.overlap-a.overlap||b.sharedTerms.length-a.sharedTerms.length);
     if(!partPairs.length)continue;
     const overlap=jt.filter(t=>kt.includes(t));
     const wholeOverlap=overlap.length/Math.min(jt.length,kt.length);
@@ -180,7 +194,7 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
     });
     if(!alternativeMatches.length)continue;
     const best=alternativeMatches[0];
-    const exactAlternativeMatch=clean(best.jastrow)===clean(best.krupnik);
+    const exactAlternativeMatch=best.canonicalEquivalent;
     const tier=exactAlternativeMatch?'exact-alternative-match':best.jaccard>=0.75?'strong-alternative-overlap':best.jaccard>=0.5?'moderate-alternative-overlap':'weak-alternative-overlap';
     const key=[j.r,k.r,clean(jp.text),clean(kg.text),clean(jp.label),clean(kg.label)].join('::');
     candidates.set(key,{
@@ -195,7 +209,7 @@ if(!samePartOfSpeech('to lament','to mourn'))throw new Error('Same-part-of-speec
      wholeGlossJaccard:Number(wholeJaccard.toFixed(3)),
      bestAlternativeMatch:best,
      alternativeMatches:alternativeMatches.slice(0,10),
-     exactAlternativeMatches:alternativeMatches.filter(match=>clean(match.jastrow)===clean(match.krupnik)),
+     exactAlternativeMatches:alternativeMatches.filter(match=>match.canonicalEquivalent),
      alternativePairCount:alternativeMatches.length,
      exactAlternativeMatch,
      candidateTier:tier,
