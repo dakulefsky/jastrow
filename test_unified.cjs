@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1251,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1252,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -698,6 +698,15 @@ assert.equal(flourPulp.length,1,'the two source-attested flour-pulp definitions 
 assert.equal(flourPulp[0].sources.length,2,'the flour-pulp consolidation must retain both source records');
 assert.match(flourPulp[0].text,/hot oil/,'the original Krupnik wording must remain visible');
 assert.match(flourPulp[0].text,/hot water and oil/,'the original Jastrow wording must remain visible');
+
+const sonOf=U.merge([
+ {id:305,entry:sourceByRef.get('KRU02534'),meanings:[
+  {text:'son',label:'1'},{text:'house',label:'2'},{text:'place',label:'3'},{text:'between',label:'4'}
+ ]},
+ {id:306,entry:sourceByRef.get('B00536'),meanings:[{text:'son of;',label:'',section:'noun'}]}
+],'בי');
+assert.equal(sonOf.length,4,'only the matching "son of" sense should merge; house/place/between stay distinct');
+assert.equal(sonOf.filter(g=>g.sources.length===2).length,1,'the son sense alone should carry both dictionary sources');
 
 const musafOnly=U.merge([
  {id:303,entry:sourceByRef.get('KRU20035'),meanings:[
