@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1294,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1301,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -1160,4 +1160,66 @@ assert(likeGroup,'the comparative "like that which" sense should consolidate');
 assert.equal(likeGroup.text,'like that which','the more precise prepositional definition should display once');
 assert(comparativeLike.some(group=>group.text.toLowerCase().includes('how!')),'the separate interrogative sense must remain visible');
 assert(comparativeLike.length>=2,'the comparative and interrogative senses must not collapse into one result');
+
+const siegeEngines=U.merge([
+ {id:3174,entry:sourceByRef.get('KRU03174'),meanings:[{text:'engines of siege or defence',label:''}]},
+ {id:1081,entry:sourceByRef.get('B01081'),meanings:[{text:'engines of siege',label:''}]}
+],S.normalize(sourceByRef.get('KRU03174').h));
+assert.equal(siegeEngines.length,1,'the two siege-engine definitions should consolidate');
+assert.equal(siegeEngines[0].sources.length,2,'both Pesikta source records should remain available');
+assert.equal(siegeEngines[0].text,'engines of siege or defence','the fuller definition should display once');
+
+const priestlyDescent=U.merge([
+ {id:9073,entry:sourceByRef.get('KRU09073'),meanings:[{text:'of priestly descent',label:''}]},
+ {id:168,entry:sourceByRef.get('K00168'),meanings:[{text:'one proving priestly descent, belonging to the priestly caste',label:''}]}
+],S.normalize(sourceByRef.get('KRU09073').h));
+assert.equal(priestlyDescent.length,1,'the priestly-descent definitions should consolidate');
+assert.equal(priestlyDescent[0].sources.length,2,'both Kiddushin source records should remain available');
+assert.equal(priestlyDescent[0].text,'one proving priestly descent, belonging to the priestly caste','the fuller definition should display once');
+
+const ashCoveringSenses=U.merge([
+ {id:17059,entry:sourceByRef.get('KRU17059'),meanings:[
+  {text:'to cut, to clip',label:'1'},
+  {text:'to cover embers with ashes',label:'2'},
+  {text:'to be broken off',label:'3'}
+ ]},
+ {id:787,entry:sourceByRef.get('S00787'),meanings:[{text:'to cover with ashes',label:''}]}
+],S.normalize(sourceByRef.get('KRU17059').h));
+assert.equal(ashCoveringSenses.length,3,'the ash-covering sense should merge without absorbing cutting or breaking off');
+assert.equal(ashCoveringSenses.find(group=>group.sources.length===2)?.text,'to cover embers with ashes','the specific Sabbath use should display once');
+assert(ashCoveringSenses.some(group=>group.text==='to cut, to clip'&&group.sources.length===1),'the cutting sense must remain separate');
+assert(ashCoveringSenses.some(group=>group.text==='to be broken off'&&group.sources.length===1),'the broken-off sense must remain separate');
+
+const clayDamLayer=U.merge([
+ {id:8204,entry:sourceByRef.get('KRU08204'),meanings:[{text:'second layer of a clay dam',label:''}]},
+ {id:688,entry:sourceByRef.get('I00688'),meanings:[{text:'additional, second layer',label:''}]}
+],S.normalize(sourceByRef.get('KRU08204').h));
+assert.equal(clayDamLayer.length,1,'the additional clay-dam layer should consolidate');
+assert.equal(clayDamLayer[0].sources.length,2,'both Bava Metzia source records should remain available');
+assert.equal(clayDamLayer[0].text,'additional, second layer of a clay dam','the combined technical definition should display once');
+
+const priceAndSpreading=U.merge([
+ {id:15393,entry:sourceByRef.get('KRU15393'),meanings:[
+  {text:'setting a price',label:'2'},
+  {text:'spreading, straddling',label:'3'}
+ ]},
+ {id:751,entry:sourceByRef.get('Q00751'),meanings:[
+  {text:'the division of words into clauses in accordance with the sense, punctuation',label:'2'},
+  {text:'setting a price on fruits before they are harvested',label:'3'},
+  {text:'spreading the feet',label:'4'}
+ ]}
+],S.normalize(sourceByRef.get('KRU15393').h));
+assert.equal(priceAndSpreading.length,3,'price-setting and spreading are separate senses; punctuation remains independent');
+assert.equal(priceAndSpreading.filter(group=>group.sources.length===2).length,2,'both source-attested price and spreading senses should consolidate');
+assert(priceAndSpreading.some(group=>group.text.includes('setting a price on fruits before they are harvested')&&group.sources.length===2),'the specific fruit-price sense should display once');
+assert(priceAndSpreading.some(group=>group.text==='spreading the feet'&&group.sources.length===2),'the physical spreading sense should display once');
+assert(priceAndSpreading.some(group=>group.text.includes('punctuation')&&group.sources.length===1),'the punctuation sense must remain independent');
+
+const dyePlantJuice=U.merge([
+ {id:10283,entry:sourceByRef.get('KRU10283'),meanings:[{text:'juice of a plant used for dyeing',label:''}]},
+ {id:537,entry:sourceByRef.get('L00537'),meanings:[{text:'juice of a plant',label:''}]}
+],S.normalize(sourceByRef.get('KRU10283').h));
+assert.equal(dyePlantJuice.length,1,'the dye-producing plant juice should consolidate');
+assert.equal(dyePlantJuice[0].sources.length,2,'both Hullin source records should remain available');
+assert.equal(dyePlantJuice[0].text,'juice of a plant used for dyeing','the full technical definition should display once');
 
