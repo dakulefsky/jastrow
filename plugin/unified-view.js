@@ -1542,6 +1542,8 @@
   ["KRU14926", "P01470", "hard ground", "hard and level ground"],
   // Both entries cite Bava Kamma 2b for the legal category of animal lying down.
   ["KRU17914", "T00110", "lying down of animals", "lying down"],
+  // Both entries cite Targum Yonatan Exodus 24:10 for the same Ithpael form.
+  ["KRU02531", "B00534", "to be stamped", "to be stamped in, mixed up"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
