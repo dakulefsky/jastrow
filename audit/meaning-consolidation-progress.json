@@ -260,7 +260,7 @@
     "sources": "Krupnik/Silbermann Hebrew source records only; the Hebrew plugin does not load Jastrow",
     "safeguards": "Original Krupnik/Silbermann Hebrew wording is authoritative. Exact Hebrew glosses and exact alternative-list variants consolidate; word order within each phrase, explicit grammatical label conflicts, and unreviewed synonyms remain separate. Source-scoped synonym pairs require manual review.",
     "candidateReview": "The initial English-gloss alignment filter found no pairs. The inventory was broadened to list every non-identical meaning pair across repeated normalized headwords for manual review.",
-    "reviewedSynonymPairs": 10,
+    "reviewedSynonymPairs": 12,
     "reviewedPairs": [
       {
         "records": [
@@ -331,6 +331,13 @@
           "KRU04650"
         ],
         "meaning": "incidentally"
+      },
+      {
+        "records": [
+          "KRU09162",
+          "KRU09163"
+        ],
+        "meaning": "straightening / directing"
       }
     ],
     "note": "Added deterministic normalization for exact Hebrew alternative lists: punctuation and alternative order are normalized, while phrase word order is preserved. Regression tests verify that unreviewed synonyms remain separate."
@@ -882,7 +889,7 @@
     "currentTotal": 770
   },
   "hebrewReview": {
-    "reviewedSourceScopedSynonymPairs": 11,
+    "reviewedSourceScopedSynonymPairs": 12,
     "newlyApprovedPair": [
       "KRU02736",
       "KRU02892",
@@ -899,7 +906,13 @@
       },
       "ranking": "exact English glosses first, then shared content-term evidence, then different or missing English glosses; this is prioritization only and does not approve merges"
     },
-    "note": "Hebrew definitions remain authoritative. One same-sense Hebrew pair for the gullet was approved; candidates with extra distinct senses, homographs, or conflicting grammatical voice were left separate."
+    "note": "Hebrew definitions remain authoritative. The reviewed source-scoped pairs now include the straightening sense (KRU09162/KRU09163); entries with additional distinct senses, homographs, or conflicting grammatical voice remain separate.",
+    "latestApprovedPair": [
+      "KRU09162",
+      "KRU09163",
+      "עשה ישר ומכוון",
+      "1) עשה ישר"
+    ]
   },
   "displayConsolidation": {
     "policy": "For a manually reviewed or exact-equivalent group, display the union of unique alternatives from all source glosses, in source order, while retaining complete original source entries in More detail.",
