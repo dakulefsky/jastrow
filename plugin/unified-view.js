@@ -1833,8 +1833,10 @@
   if(!buckets.some(bucket=>bucket.bucketKeys.length))return [{text:meaning.text,bucketKeys:[],bucketId:null}];
   return buckets;
  }
- function reviewedEquivalent(source,item){
-  if(!compatible(source.spelling,item.spelling))return false;
+ function reviewedEquivalent(source,item,word){
+  // Use the same lookup-word-aware vowel compatibility as the outer grouping
+  // check; otherwise a reviewed alternate-headword form can be rejected here.
+  if(!compatible(source.spelling,item.spelling,word))return false;
   const otherMeaning=item.sourceMeaning||item.meaning;
   const ids=[source.entry.r,item.entry.r].sort().join('|');
   const glosses=[clean(source.meaning.text),clean(otherMeaning.text)].sort().join(' | ');
@@ -1853,7 +1855,7 @@
   return canonicalGlossKey(group.text)===canonicalGlossKey(item.meaning.text)||
    synonymKey(group.text)===synonymKey(item.meaning.text)||
    sharesReviewedSynonym(group.text,item.meaning.text)||
-   group.sources.some(s=>reviewedEquivalent(s,item)||reviewedGlossEquivalent(s,item));
+   group.sources.some(s=>reviewedEquivalent(s,item,word)||reviewedGlossEquivalent(s,item));
  }
  function exactAlternativeMappings(records,word){
   const pairs=new Map();
