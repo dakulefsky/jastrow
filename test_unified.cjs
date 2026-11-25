@@ -787,7 +787,7 @@ assert.equal(hardSeaFloor[0].sources.length,2,'both source records for the hard 
 
 const animalLyingDown=U.merge([
  {id:415,entry:sourceByRef.get('KRU17914'),meanings:[{text:'lying down of animals',label:''}]},
- {id:416,entry:sourceByRef.get('T00110'),meanings:[{text:'lying down, esp. damage caused by an animal falling on an object',label:'',section:'noun'}]}
+ {id:416,entry:sourceByRef.get('T00110'),meanings:[{text:'lying down',label:'',section:'noun'}]}
  ],S.normalize(sourceByRef.get('KRU17914').h));
 assert.equal(animalLyingDown.length,1,'the Bava Kamma animal-lying-down definition should consolidate');
 assert.equal(animalLyingDown[0].sources.length,2,'both dictionary sources should remain attached');
