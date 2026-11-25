@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1277 retained whole-gloss mappings and all 271 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1283 retained whole-gloss mappings and all 271 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1277,
+    "reviewedSourceGlossPairCount": 1283,
     "reviewedSourceAlternativePairCount": 271,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -4427,6 +4427,73 @@
       "the separate respite sense in KRU01971 is explicitly regression-tested",
       "the geometric 'athwart, crosswise' sense in A01891 is not included in the mapping"
     ],
-    "currentTotal": 1277
+    "currentTotal": 1283
+  },
+  "twentyFourthReviewedTranche": {
+    "attemptedCandidates": 7,
+    "addedUniqueSourceGlossPairs": 6,
+    "acceptedPairs": [
+      [
+        "KRU16649",
+        "S00025",
+        "artificial foot",
+        "a piece of wood hollowed out for the stump of a leg, a sort of artificial foot"
+      ],
+      [
+        "KRU17729",
+        "S02038",
+        "covered with a crust of sediments",
+        "covered with a crust"
+      ],
+      [
+        "KRU17738",
+        "S02061",
+        "formation of a crust",
+        "formation of a light crust"
+      ],
+      [
+        "KRU01645",
+        "A02519",
+        "van-guard",
+        "forerunner, the commander’s van-guard"
+      ],
+      [
+        "KRU01430",
+        "A02164",
+        "of Antiochia",
+        "Antiochian, native of Antiochia, resident of A"
+      ],
+      [
+        "KRU16409",
+        "R00377",
+        "with lang dependent ears",
+        "a goat with long hair lumps and long, dependent ears"
+      ]
+    ],
+    "rejectedCandidates": [
+      {
+        "pair": [
+          "G00654",
+          "KRU06547"
+        ],
+        "status": "rejected-partial-role-overlap",
+        "reason": "Jastrow says 'maker of and dealer in leather bags', whereas Krupnik says only 'dealer in leather bags'. The additional maker role is a meaningful occupational distinction, so the pair is not merged."
+      }
+    ],
+    "evidence": [
+      "KRU16649 and Jastrow S00025 both define קַב as an artificial foot; Jastrow's other sense is the capacity measure Kab and remains separate.",
+      "KRU17729 and Jastrow S02038 describe the same crust of hardened sediments on a pot and cite Avodah Zarah 76a.",
+      "KRU17738 and Jastrow S02061 describe formation of a crust on dough in baking and cite the Yerushalmi Hallah discussion.",
+      "KRU01645 and Jastrow A02519 both define אִסְפַּרְוָוא as a van-guard/forerunner and cite Ketubot 3b.",
+      "KRU01430 and Jastrow A02164 both identify an Antiochian/native of Antiochia, with shared Yerushalmi Gittin IV:46a evidence.",
+      "KRU16409 and Jastrow R00377 both describe the shaggy goat צִימֵּחַ and cite Bekhorot 44a."
+    ],
+    "safeguards": [
+      "all accepted mappings are scoped to exact source refs and exact sense glosses",
+      "Jastrow's unrelated capacity-measure sense for קַב remains separate",
+      "the G00654/KRU06547 occupational overlap is deliberately rejected because 'maker' is not equivalent to 'dealer'",
+      "the original source records remain available in More detail"
+    ],
+    "currentTotal": 1283
   }
 }
