@@ -913,12 +913,86 @@
       },
       "ranking": "Exact English glosses and exact shared Hebrew alternatives first; English evidence only prioritizes candidates and never approves Hebrew synonym merges."
     },
-    "note": "Hebrew definitions remain authoritative. The reviewed source-scoped pairs now include the straightening sense (KRU09162/KRU09163); entries with additional distinct senses, homographs, or conflicting grammatical voice remain separate.",
+    "note": "All eight high-evidence same-headword candidate pairs were screened. One source-scoped synonym was accepted, two multi-sense records were deferred rather than over-merged, five were rejected as distinct meanings/entities/actions, and one exact shared alternative is handled by the runtime rule.",
     "latestApprovedPair": [
       "KRU09162",
       "KRU09163",
       "עשה ישר ומכוון",
       "1) עשה ישר"
+    ],
+    "reviewedCandidateDecisions": [
+      {
+        "records": [
+          "KRU02691",
+          "KRU02692"
+        ],
+        "decision": "rejected-distinct-entity",
+        "reason": "Place name versus Amora; same consonantal form does not make them the same sense."
+      },
+      {
+        "records": [
+          "KRU17474",
+          "KRU17475"
+        ],
+        "decision": "deferred-numbered-multisense",
+        "reason": "The second entry contains a first sense referring back to the prior entry and a separate 'to loathe' sense; merging the entire source part would absorb a distinct sense."
+      },
+      {
+        "records": [
+          "KRU18231",
+          "KRU18232"
+        ],
+        "decision": "rejected-distinct-voice",
+        "reason": "To make soft versus to become soft; active causative and intransitive meanings remain distinct."
+      },
+      {
+        "records": [
+          "KRU09162",
+          "KRU09163"
+        ],
+        "decision": "accepted-source-scoped-synonym",
+        "reason": "Both original Hebrew glosses describe straightening; the additional senses in KRU09163 remain separate."
+      },
+      {
+        "records": [
+          "KRU12499",
+          "KRU12500"
+        ],
+        "decision": "rejected-distinct-action",
+        "reason": "To rise versus to wave in the wind; related imagery is not synonymy."
+      },
+      {
+        "records": [
+          "KRU07060",
+          "KRU07061"
+        ],
+        "decision": "rejected-distinct-entity",
+        "reason": "Haifa as a place versus an Amora; preserve the homonym distinction."
+      },
+      {
+        "records": [
+          "KRU20037",
+          "KRU20038"
+        ],
+        "decision": "deferred-numbered-multisense",
+        "reason": "The Krupnik entry contains a weighing sense and a stumbling sense; the matching sense must be split explicitly before any merge."
+      },
+      {
+        "records": [
+          "KRU02827",
+          "KRU02828"
+        ],
+        "decision": "rejected-related-but-distinct-action",
+        "reason": "Bearing first fruit versus plucking first fruits are related but not the same action."
+      },
+      {
+        "records": [
+          "KRU11627",
+          "KRU14543"
+        ],
+        "decision": "handled-by-exact-alternative-rule",
+        "reason": "The shared Hebrew alternative 'בתנאי' is consolidated while the additional 'בכוונה' alternative is retained."
+      }
     ]
   },
   "displayConsolidation": {
