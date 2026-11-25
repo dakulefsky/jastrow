@@ -5,6 +5,7 @@ on:
       - 'plugin/data/**'
       - 'plugin/search.js'
       - 'plugin/reading-view.js'
+      - 'plugin/unified-view.js'
       - 'audit/build-meaning-candidates.cjs'
       - '.github/workflows/build-meaning-candidates.yml'
   push:
@@ -13,6 +14,7 @@ on:
       - 'plugin/data/**'
       - 'plugin/search.js'
       - 'plugin/reading-view.js'
+      - 'plugin/unified-view.js'
       - 'audit/build-meaning-candidates.cjs'
       - '.github/workflows/build-meaning-candidates.yml'
 jobs:
