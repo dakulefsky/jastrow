@@ -6,12 +6,12 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1312 retained whole-gloss mappings and all 272 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1314 retained whole-gloss mappings and all 273 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1312,
-    "reviewedSourceAlternativePairCount": 272,
+    "reviewedSourceGlossPairCount": 1314,
+    "reviewedSourceAlternativePairCount": 273,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
     "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions.",
@@ -4880,5 +4880,45 @@
     ],
     "currentTotal": 1312,
     "currentAlternativeTotal": 272
+  },
+  "thirtyFifthReviewedTranche": {
+    "attemptedCandidates": 3,
+    "addedUniqueSourceGlossPairs": 2,
+    "addedUniqueSourceAlternativePairs": 1,
+    "acceptedWholeGlossPairs": [
+      [
+        "KRU08294",
+        "I00811",
+        "an animal afflicted with an organic disease",
+        "an animal afflicted with a"
+      ],
+      [
+        "KRU14617",
+        "P00866",
+        "stalk",
+        "the central stalk of onions"
+      ]
+    ],
+    "acceptedAlternativePairs": [
+      [
+        "KRU14617",
+        "P00866",
+        "fecal mass",
+        "the fecal mass in the rectum"
+      ]
+    ],
+    "evidence": [
+      "KRU08294 and Jastrow I00811 both define an animal afflicted with a fatal organic disease. The Jastrow reader phrase is abbreviated, but its full source entry supplies the missing 'organic disease' wording.",
+      "KRU14617 and Jastrow P00866 both define the botanical central stalk of onions as עַמּוּד, citing Uktzin I:2.",
+      "KRU14617 and Jastrow P00866 both define the fecal-mass sense. The mapping is alternative-level because the Krupnik entry also contains a separate 'jet of urine' sense."
+    ],
+    "safeguards": [
+      "the separate Jastrow 'organic disease' sense remains independent of the animal-disease definition",
+      "the 'jet of urine' segment remains separate from the fecal-mass segment",
+      "the central-stalk sense remains distinct from the other meanings of עַמּוּד",
+      "all three matches are source-scoped and preserve original source records"
+    ],
+    "currentTotal": 1314,
+    "currentAlternativeTotal": 273
   }
 }
