@@ -59,18 +59,18 @@
     "published": false
   },
   "candidateInventory": {
-    "generatedFromCommit": "d2d6029f9fe3cec81d1b18126913368307e29b1c",
+    "generatedFromCommit": "47609fecd35ca96dbd0bb198c23f12037e59e383",
     "sourceEntries": 47919,
     "jastrowEntries": 32508,
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
-    "candidates": 4472,
-    "exactAlternativeCandidates": 2657,
-    "runtimeRuleHandledCandidates": 2264,
-    "ambiguityFlaggedExactCandidates": 393,
-    "nonExactSemanticCandidates": 1815,
-    "note": "Runtime-rule counts mirror the guarded one-to-one exact-alternative matcher. Candidates marked handled are consolidated only when source-sense and grammatical-label ambiguity checks pass. Ambiguous exact matches and non-exact lexical-overlap candidates remain human-review work."
+    "candidates": 4425,
+    "exactAlternativeCandidates": 2988,
+    "runtimeRuleHandledCandidates": 2456,
+    "ambiguityFlaggedExactCandidates": 532,
+    "nonExactSemanticCandidates": 1437,
+    "note": "The inventory is generated from original dictionary data and the real Jastrow reader extractor. Runtime-handled candidates are consolidated only through guarded exact alternative matching, including contextual active/passive infinitive normalization. Ambiguity-flagged exact candidates and non-exact semantic candidates remain human-review work."
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -904,14 +904,14 @@
       "פנים הגרון"
     ],
     "candidateQueue": {
-      "candidates": 634,
+      "candidates": 569,
       "evidenceCounts": {
         "exact-gloss": 1,
-        "shared-content-terms": 14,
-        "different-glosses": 312,
-        "missing-gloss": 307
+        "shared-content-terms": 8,
+        "different-glosses": 269,
+        "missing-gloss": 291
       },
-      "ranking": "exact English glosses first, then shared content-term evidence, then different or missing English glosses; this is prioritization only and does not approve merges"
+      "ranking": "Exact English glosses and exact shared Hebrew alternatives first; English evidence only prioritizes candidates and never approves Hebrew synonym merges."
     },
     "note": "Hebrew definitions remain authoritative. The reviewed source-scoped pairs now include the straightening sense (KRU09162/KRU09163); entries with additional distinct senses, homographs, or conflicting grammatical voice remain separate.",
     "latestApprovedPair": [
