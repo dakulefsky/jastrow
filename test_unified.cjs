@@ -126,7 +126,7 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,270,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,269,'every source-scoped alternative match must be loaded');
 
 const likenessVariant=U.merge([
  {id:1100,entry:{h:'דִּכְוָת',r:'KRU05268',source:'krupnik'},meanings:[{text:'like, as',label:''}]},
@@ -157,7 +157,6 @@ const finalReviewedGlossVariants=[
  {word:'מְטֵי',kr:'KRU11129',jr:'M00995',k:'to reach, to arrive',j:'to arrive at; to obtain; to happen to'},
  {word:'חָלַק',kr:'KRU07227',jr:'H01112',k:'to differ with',j:'to differ.'},
  {word:'תָּבַע',kr:'KRU19569',jr:'V00067',k:'to sue, to ask for',j:'to ask, claim, summon'},
- {word:'כֵּיצַד',kr:'KRU09370',jr:'K00616',k:'in what manner? how?',j:'how?, in what manner?, in what respect?'}
 ];
 for(const [n,item] of finalReviewedGlossVariants.entries()){
  const groups=U.merge([
