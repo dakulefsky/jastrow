@@ -89,6 +89,14 @@ const passiveFull=U.alternativeMatchKey('to be saturated','to be saturated');
 assert.equal(passiveCoordinated.key,passiveFull.key,'a repeated passive marker may be omitted from later alternatives without duplicating "be"');
 assert.equal(passiveCoordinated.voice,'passive','coordinated passive alternatives must retain passive voice');
 
+const passiveAlternativeMerge=U.merge([
+ {id:415,entry:{h:'רוּי',r:'T00358'},meanings:[{text:'to be moist, be saturated, drip',label:'',section:'verb'}]},
+ {id:416,entry:{h:'רוּי',r:'KRU18022',source:'krupnik'},meanings:[{text:'to be saturated',label:''}]}
+],'רוי');
+assert.equal(passiveAlternativeMerge.length,1,'a repeated passive marker omitted from a later alternative should consolidate the same passive sense');
+assert.equal(passiveAlternativeMerge[0].sources.length,2,'passive alternative consolidation must retain both source records');
+
+
 
 
 // Alternative-level review: match the shared phrase while retaining
