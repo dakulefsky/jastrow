@@ -2,7 +2,10 @@
  'use strict';
  const S=root.JastrowSearch||(typeof require==='function'?require('./search.js'):null);
  const clean=text=>String(text).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
- const displayCorrections=new Map([['KRU08370::desparing of recovering a lost object','despairing of recovering a lost object']]);
+ const displayCorrections=new Map([
+  ['KRU08370::desparing of recovering a lost object','despairing of recovering a lost object'],
+  ['KRU15837::to declare ownerless','declare a property ownerless']
+ ]);
  const displayAlternative=(ref,value)=>displayCorrections.get(ref+'::'+clean(value))||value;
  const stem=label=>{
   let value=String(label||'').trim();
@@ -205,6 +208,7 @@
  }
  const reviewedSourceGlossPairs=new Set([
   ['KRU08370','J00009','desparing of recovering a lost object','despairing of recovering a lost object, resignation'],
+  ['KRU15837','Q01517','to declare ownerless','to declare free, to renounce ownership, declare a property ownerless'],
   ['KRU18341','T00991','to bore through','to bore'],
   ['KRU18343','T00995','to press, to crush','to press, crush'],
   ['KRU18343','T00995','to be squeezed','to be squeezed, crushed'],
