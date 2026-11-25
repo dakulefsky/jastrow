@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1263 retained whole-gloss mappings and all 270 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1264 retained whole-gloss mappings and all 270 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1263,
+    "reviewedSourceGlossPairCount": 1264,
     "reviewedSourceAlternativePairCount": 270,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -4198,5 +4198,29 @@
       "other Krupnik meanings remain separate",
       "the real reader extractor verifies the Jastrow phrase"
     ]
+  },
+  "fifteenthReviewedTranche": {
+    "attemptedCandidates": 1,
+    "addedUniqueSourceGlossPairs": 1,
+    "acceptedPairs": [
+      [
+        "KRU08370",
+        "J00009",
+        "desparing of recovering a lost object",
+        "despairing of recovering a lost object, resignation"
+      ]
+    ],
+    "evidence": [
+      "The original Krupnik gloss for KRU08370 is 'desparing of recovering a lost object'; the original Jastrow reader phrase for J00009 is 'despairing of recovering a lost object, resignation'. The difference is a source spelling error, not a semantic distinction.",
+      "Both entries share the headword יֵאוּשׁ. The full source glosses and source records remain available in More detail.",
+      "The consolidated display normalizes the misspelled Krupnik alternative to the correctly spelled Jastrow form so the user sees one definition rather than duplicate near-identical wording."
+    ],
+    "safeguards": [
+      "mapping is scoped only to KRU08370 and J00009",
+      "the original Krupnik wording is preserved in the source detail",
+      "a regression test checks that both sources merge and the displayed gloss is deduplicated",
+      "no global spelling or fuzzy-matching rule was added"
+    ],
+    "currentTotal": 1264
   }
 }
