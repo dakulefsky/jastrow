@@ -719,7 +719,7 @@ assert.equal(musafOnly.length,2,'the Musaf prayer meaning must consolidate witho
 assert.equal(musafOnly.filter(g=>g.sources.length===2).length,1,'only the source-attested Musaf sense should join across dictionaries');
 
 const learningK=sourceByRef.get('KRU04223'),learningJ=sourceByRef.get('C01376');
-const learningLookup=S.normalize(learningJ.h);
+const learningLookup=S.normalize(learningK.h);
 const learningPairKey=['KRU04223','C01376'].sort().join('|')+'::'+[
  'acquired learning, tradition, study by heart','acquired learning, study of tradition'
 ].map(cleanGloss).sort().join(' | ');
@@ -744,7 +744,7 @@ for(const [kRef,jRef,kGloss,jGloss,kCount,jCount] of reviewedSourcePairs){
  const merged=U.merge([
   {id:401,entry:k,meanings:[{text:kGloss,label:''}]},
   {id:402,entry:j,meanings:[{text:jGloss,label:'',section:'noun'}]}
- ],S.normalize(j.h));
+ ],S.normalize(k.h));
  assert.equal(merged.length,1,'reviewed source pair should consolidate for the shared consonantal lookup: '+kRef+'/'+jRef);
  assert.equal(merged[0].sources.length,2,'both source citations should remain: '+kRef+'/'+jRef);
 }
