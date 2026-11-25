@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1264,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1265,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -521,6 +521,15 @@ const despairConsolidation=U.merge([
 assert.equal(despairConsolidation.length,1,'the matching Jastrow and Krupnik definitions should consolidate despite Krupnik’s source typo');
 assert.equal(despairConsolidation[0].sources.length,2,'the consolidated definition must retain both original dictionary records');
 assert.equal(despairConsolidation[0].text,'despairing of recovering a lost object, resignation','the display should correct the obvious source typo without repeating the same definition');
+
+const ownerlessConsolidation=U.merge([
+ {id:15837,entry:{h:'פָּקַר',r:'KRU15837',source:'krupnik'},meanings:[{text:'to declare ownerless',label:''}]},
+ {id:1517,entry:{h:'פָּקַר',r:'Q01517'},meanings:[{text:'to declare free, to renounce ownership, declare a property ownerless',label:'Hif.'}]}
+],'פקר');
+assert.equal(ownerlessConsolidation.length,1,'the same ownerless-property sense should consolidate across both dictionaries');
+assert.equal(ownerlessConsolidation[0].sources.length,2,'both source records should remain available');
+assert.equal(ownerlessConsolidation[0].text,'to declare free, to renounce ownership, declare a property ownerless','the more informative wording should be displayed without repeating the same ownerless definition');
+
 
 
 const nifka=U.merge([{id:42393,entry:{h:'נִפְקָא',r:'KRU12894'},meanings:[{text:'excrements',label:'1'},{text:'outlet',label:'2'}]},{id:20165,entry:{h:'נִפִקָא',r:'N01077'},meanings:[{text:'excrements',label:''},{text:'outlet, opening',label:''}]}],'נפקא');
