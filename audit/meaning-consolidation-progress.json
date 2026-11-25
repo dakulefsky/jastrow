@@ -4325,5 +4325,41 @@
       "the match is scoped to these two source records",
       "the actual Jastrow italic phrase is checked by the reader extractor"
     ]
+  },
+  "twentyFirstReviewedTranche": {
+    "attemptedCandidates": 3,
+    "addedUniqueSourceGlossPairs": 3,
+    "acceptedPairs": [
+      [
+        "KRU09880",
+        "K01324",
+        "to work with zeal",
+        "to adapt one’s self, to work with zeal and conscientiousness"
+      ],
+      [
+        "KRU16236",
+        "R00053",
+        "to raise the fingers as a signal",
+        "to raise one or more fingers"
+      ],
+      [
+        "KRU14845",
+        "P01349",
+        "trough for kneading etc.",
+        "trough, tub, kneading trough"
+      ]
+    ],
+    "evidence": [
+      "KRU09880 and Jastrow K01324 both describe the Hithpa form הִתְכַּשֵּׁר. Both cite Kohelet Rabbah V:11 and the same phrase מתכשר במלאכתו. The Jastrow wording is fuller; the separate Pa'al, Hifil, and Hofal senses remain distinct.",
+      "KRU16236 and Jastrow R00053 both describe Hifil הִצְבִּיעַ and cite Yoma II:1 for the instruction to raise fingers. Jastrow's 'for casting of lots' and Krupnik's 'as a signal' describe the same ritual action.",
+      "KRU14845 and Jastrow P01349 both define עֲרֵיבָה as a trough used for kneading. Jastrow sense 2 'boat, skiff' remains a separate result."
+    ],
+    "safeguards": [
+      "each mapping is scoped to exact source refs and exact gloss text",
+      "grammatical forms are preserved: Hithpa for the zeal sense and Hifil for finger-raising",
+      "the Jastrow boat sense is explicitly regression-tested as separate",
+      "the original source records remain available in More detail"
+    ],
+    "currentTotal": 1269
   }
 }
