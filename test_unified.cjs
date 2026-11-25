@@ -126,7 +126,25 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,261,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,266,'every source-scoped alternative match must be loaded');
+
+const finalReviewedGlossVariants=[
+ {word:'דִּין',kr:'KRU05163',jr:'D00634',k:'to have a law-suit',j:'to argue, dispute, have a law-suit with'},
+ {word:'מְטֵי',kr:'KRU11129',jr:'M00995',k:'to reach, to arrive',j:'to arrive at; to obtain; to happen to'},
+ {word:'חָלַק',kr:'KRU07227',jr:'H01112',k:'to differ with',j:'to differ.'},
+ {word:'תָּבַע',kr:'KRU19569',jr:'V00067',k:'to sue, to ask for',j:'to ask, claim, summon'},
+ {word:'כֵּיצַד',kr:'KRU09370',jr:'K00616',k:'in what manner? how?',j:'how?, in what manner?, in what respect?'}
+];
+for(const [n,item] of finalReviewedGlossVariants.entries()){
+ const groups=U.merge([
+  {id:900+n*2,entry:{h:item.word,r:item.kr,source:'krupnik'},meanings:[{text:item.k,label:''}]},
+  {id:901+n*2,entry:{h:item.word,r:item.jr},meanings:[{text:item.j,label:''}]}
+ ],item.word);
+ const matched=groups.find(group=>group.sources.some(source=>source.entry.r===item.kr)&&group.sources.some(source=>source.entry.r===item.jr));
+ assert(matched,'reviewed source-level variant should consolidate: '+item.jr+' / '+item.kr);
+ assert.equal(matched.sources.length,2,'the source pair must be retained: '+item.jr+' / '+item.kr);
+}
+
 
 const finalSemanticFixtures=[
  {word:'יֵבָא',kr:'KRU08390',jr:'J00028',k:'it corresponds to',j:'it agrees with, corresponds to'},
