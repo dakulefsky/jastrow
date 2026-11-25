@@ -1828,6 +1828,7 @@
      for(const ja of glossAlternatives(jSegment))for(const ka of glossAlternatives(kSegment)){
       const jMatch=alternativeMatchKey(ja,jSegment),kMatch=alternativeMatchKey(ka,kSegment);
       if(!jMatch.key||jMatch.key!==kMatch.key||jMatch.voice!==kMatch.voice)continue;
+      const jAlt=clean(ja),kAlt=clean(ka);
       const key=[jastrow.entry.r,k.entry.r].sort().join('|')+'::'+[jAlt,kAlt].sort().join(' | ');
       if(!pairs.has(key))pairs.set(key,{key,jastrow:new Map(),krupnik:new Map(),matches:[]});
       const pair=pairs.get(key);
