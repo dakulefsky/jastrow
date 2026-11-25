@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1249 retained whole-gloss mappings and all 269 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1251 retained whole-gloss mappings and all 269 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1249,
+    "reviewedSourceGlossPairCount": 1251,
     "reviewedSourceAlternativePairCount": 269,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -4014,5 +4014,54 @@
         "reason": "Krupnik gloss 'in what manner? how?' and Jastrow question alternatives do not share an explicit comma/semicolon boundary; mapping the whole Krupnik phrase risks a repetitive display. Keep separate until question-alternative parsing is reviewed."
       }
     ]
+  },
+  "eleventhReviewedTranche": {
+    "attemptedCandidates": 2,
+    "addedUniqueSourceGlossPairs": 2,
+    "acceptedPairs": [
+      [
+        "KRU17905",
+        "T00094",
+        "pulp of flour mixed with hot oil",
+        "a pulp of flour mixed with hot water and oil"
+      ],
+      [
+        "KRU20035",
+        "V00886",
+        "a section of the Musaf of the New Year’s Day",
+        "the prayers on the New Year interspersed with blowing the Shofar, the Musaf of the New Year’s Day"
+      ]
+    ],
+    "evidence": [
+      "KRU17905 and T00094 describe the same flour-and-oil preparation and cite Menachot 89a; both full source glosses remain in the consolidated result.",
+      "Only KRU20035 sense 2 (the Musaf prayer section) is matched to V00886; KRU20035 sense 1 (New Year's day) remains a separate result."
+    ],
+    "rejectedOrDeferred": [
+      [
+        "KRU06494",
+        "G00538",
+        "at times / at other times versus times",
+        "Deferred: source KRU06494 explicitly distinguishes 'time' (sense 1) and 'times' (sense 2); neither candidate phrase establishes an unambiguous one-to-one sense mapping."
+      ],
+      [
+        "KRU10278",
+        "L00533",
+        "there is versus there is (was) not",
+        "Rejected: the negative particle changes the meaning."
+      ],
+      [
+        "KRU03526",
+        "C00053",
+        "The Most High versus high/exalted",
+        "Rejected: divine title versus ordinary adjective."
+      ],
+      [
+        "KRU06547",
+        "G00654",
+        "dealer in leather bags versus maker and dealer in leather bags",
+        "Deferred: overlapping occupation but not equivalent scope."
+      ]
+    ],
+    "currentTotal": 1251
   }
 }
