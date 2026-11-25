@@ -18,7 +18,7 @@
   ['S02038::covered with a crust','covered with a crust of sediments'],
   ['KRU17738::formation of a crust','formation of a light crust'],
   ['KRU01645::van-guard','forerunner, the commander’s van-guard'],
-  ['A02164::Antiochian, native of Antiochia, resident of A','of Antiochia'],
+  ['A02164::antiochian, native of antiochia, resident of a','of Antiochia'],
   ['KRU16409::with lang dependent ears','a goat with long hair lumps and long, dependent ears'],
  ]);
  const displayGloss=(ref,value)=>displayCorrections.get(ref+'::'+clean(value))||value;
