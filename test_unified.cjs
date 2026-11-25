@@ -111,7 +111,26 @@ const nounVerbMismatch=U.merge([
 ],'בדיקה');
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
-assert.equal(U.reviewedSourceAlternativePairs.size,241,'every source-scoped alternative match must be loaded');
+
+assert.equal(U.reviewedSourceAlternativePairs.size,246,'every source-scoped alternative match must be loaded');
+const reviewedAlternativeFixtures=[
+ {word:'סְקוֹרְטְיָא',kr:'KRU13933',jr:'O01464',k:'leather apron',j:'leather coat; also leather apron.',extra:'leather coat'},
+ {word:'שַׁרְגִּיגָא',kr:'KRU19454',jr:'U01930',k:'easily enticed',j:'one easily enticed, simple'},
+ {word:'שָׁתַת II',kr:'KRU19540',jr:'U02141',k:'to lay the foundation',j:'to lay the foundation of, start'},
+ {word:'תּוֹסְפָאָה',kr:'KRU19659',jr:'V00245',k:'one who writes plene',j:'one who uses the vowel letters freely, who writes plene'},
+ {word:'אַכְסָרָה',kr:'KRU01153',jr:'A01744',k:'in the lump',j:'in a lump, on measuring by sight.'}
+];
+for(const [n,item] of reviewedAlternativeFixtures.entries()){
+ const groups=U.merge([
+  {id:500+n*2,entry:{h:item.word,r:item.kr,source:'krupnik'},meanings:[{text:item.k,label:''}]},
+  {id:501+n*2,entry:{h:item.word,r:item.jr},meanings:[{text:item.j,label:''}]}
+ ],item.word);
+ const matched=groups.find(group=>group.sources.some(source=>source.entry.r===item.kr)&&group.sources.some(source=>source.entry.r===item.jr));
+ assert(matched,'reviewed source alternative should consolidate: '+item.jr+' / '+item.kr);
+ assert.equal(matched.sources.length,2,'both source records must remain attached: '+item.jr+' / '+item.kr);
+ if(item.extra)assert(groups.some(group=>group.text===item.extra&&group.sources.length===1),'an unmatched distinct semicolon sense must remain separate: '+item.jr);
+}
+
 const alternativeScoped=U.merge([
  {id:301,entry:{h:'גָּנַח',r:'KRU04451',source:'krupnik'},meanings:[{text:'to sigh heavily under an attack of angina pectoris, to expectorate',label:''}]},
  {id:302,entry:{h:'גָּנַח',r:'C01128'},meanings:[
