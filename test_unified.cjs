@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1312,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1314,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -132,7 +132,7 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,272,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,273,'every source-scoped alternative match must be loaded');
 
 const likenessVariant=U.merge([
  {id:1100,entry:{h:'דִּכְוָת',r:'KRU05268',source:'krupnik'},meanings:[{text:'like, as',label:''}]},
@@ -1338,4 +1338,31 @@ const firstRipeningGroup=firstRipeningSense.find(group=>group.sources.length===2
 assert(firstRipeningGroup,'the first-ripening definitions should consolidate');
 assert(firstRipeningSense.some(group=>group.text==='to bear first fruits'&&group.sources.length===1),'the separate first-fruits sense must remain independent');
 assert(!firstRipeningSense.some(group=>group.text.includes('to bear first fruits')&&group.sources.length===2),'the first-fruits sense must not be absorbed into the first-ripening match');
+
+const animalAfflictedWithDisease=U.merge([
+ {id:8294,entry:sourceByRef.get('KRU08294'),meanings:[{text:'an animal afflicted with an organic disease',label:'1'}]},
+ {id:811,entry:sourceByRef.get('I00811'),meanings:[
+  {text:'an animal afflicted with a',label:'2'},
+  {text:'organic disease',label:'3'}
+ ]}
+],S.normalize(sourceByRef.get('KRU08294').h));
+assert.equal(animalAfflictedWithDisease.length,2,'the animal-disease sense should merge without absorbing the separate disease definition');
+assert.equal(animalAfflictedWithDisease.find(group=>group.sources.length===2)?.text,'an animal afflicted with an organic disease','the complete animal-disease definition should display once');
+assert(animalAfflictedWithDisease.some(group=>group.text==='organic disease'&&group.sources.length===1),'the separate organic-disease sense must remain independent');
+
+const fecalMassAndUrine=U.merge([
+ {id:14617,entry:sourceByRef.get('KRU14617'),meanings:[{text:'fecal mass; jet of urine',label:'4'}]},
+ {id:866,entry:sourceByRef.get('P00866'),meanings:[{text:'the fecal mass in the rectum;',label:''}]}
+],S.normalize(sourceByRef.get('KRU14617').h));
+assert.equal(fecalMassAndUrine.length,2,'the fecal-mass and urine-jet senses must remain separate');
+assert.equal(fecalMassAndUrine.find(group=>group.sources.length===2)?.text,'the fecal mass in the rectum','only the fecal-mass segment should consolidate');
+assert(fecalMassAndUrine.some(group=>group.text==='jet of urine'&&group.sources.length===1),'the separate urine-jet sense must remain independent');
+
+const centralOnionStalk=U.merge([
+ {id:14617,entry:sourceByRef.get('KRU14617'),meanings:[{text:'stalk',label:'3'}]},
+ {id:866,entry:sourceByRef.get('P00866'),meanings:[{text:'the central stalk of onions',label:''}]}
+],S.normalize(sourceByRef.get('KRU14617').h));
+assert.equal(centralOnionStalk.length,1,'the botanical central-stalk definitions should consolidate');
+assert.equal(centralOnionStalk[0].sources.length,2,'both botanical source records should remain available');
+assert.equal(centralOnionStalk[0].text,'the central stalk of onions','the precise botanical definition should display once');
 
