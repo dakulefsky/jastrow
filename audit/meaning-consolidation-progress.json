@@ -4249,33 +4249,27 @@
   },
   "seventeenthReviewedTranche": {
     "attemptedCandidates": 1,
-    "addedUniqueSourceGlossPairs": 2,
+    "addedUniqueSourceGlossPairs": 1,
     "acceptedPairs": [
       [
         "KRU14478",
         "P00680",
         "a symbolical act by which the legal fiction of community or continuity is established",
         "‘Erub, a symbolical act by which the legal fiction of community"
-      ],
-      [
-        "KRU14478",
-        "P00680",
-        "a symbolical act by which the legal fiction of community or continuity is established",
-        "continuity is established"
       ]
     ],
     "evidence": [
       "Krupnik KRU14478 sense 2 defines an Erub as a symbolical act by which the legal fiction of community or continuity is established.",
-      "KRU17914 and T00110 both cite Bava Kamma 2b for the legal category of animal lying down; the exact Jastrow reader phrase is 'lying down', with the explanatory legal consequence preserved in the original source detail.",
-      "Both Jastrow phrases map to the same Krupnik sense, so they are consolidated into one complete display phrase rather than shown as separate partial definitions."
+      "Jastrow P00680's sense 2 contains the corresponding reader-extracted italic phrase '‘Erub, a symbolical act by which the legal fiction of community'. The rest of the sentence is outside the italic span and is not treated as a second reader phrase.",
+      "The source-specific display correction replaces the partial reader phrase with the fuller Krupnik wording; the complete original Jastrow HTML remains available in More detail."
     ],
     "safeguards": [
-      "both mappings are scoped to KRU14478/P00680 and the same sense number 2",
-      "Jastrow's other Erub meanings, including mixture/conjunction, remain separate",
-      "both reader-extracted italic phrases are validated against the original HTML",
-      "the Krupnik gloss is the canonical display wording; full source records remain available"
+      "mapping is scoped to KRU14478/P00680 and sense 2",
+      "the separate mixture/conjunction sense is mapped to its own Krupnik sense and is not joined to the legal-fiction sense",
+      "only a phrase emitted by the real reader extractor remains in the reviewed mapping",
+      "the full source records remain available"
     ],
-    "currentTotal": 1269
+    "currentTotal": 1266
   },
   "eighteenthAlternativeReviewedTranche": {
     "attemptedPairs": 1,
@@ -4311,5 +4305,28 @@
       "only the phrase emitted by the real reader extractor remains in the reviewed mapping",
       "the Eruv regression now asserts two source records, not a fabricated third reader phrase"
     ]
+  },
+  "twentiethReviewedTranche": {
+    "attemptedCandidates": 1,
+    "addedUniqueSourceGlossPairs": 1,
+    "acceptedPairs": [
+      [
+        "KRU14478",
+        "P00680",
+        "mixture, conjunction",
+        "interweaving, mixture, conjunction"
+      ]
+    ],
+    "evidence": [
+      "Krupnik KRU14478 sense 1 is 'mixture, conjunction'.",
+      "Jastrow P00680 sense 1 is 'interweaving, mixture, conjunction'; it is an explicit italic reader phrase in the original source HTML.",
+      "This is the mixture/conjunction sense only and remains distinct from the separate legal-fiction Erub sense 2."
+    ],
+    "safeguards": [
+      "mapping is scoped to KRU14478/P00680 and sense 1",
+      "sense 2 remains a separate consolidated result",
+      "the Jastrow phrase is verified against the real reader extractor"
+    ],
+    "currentTotal": 1266
   }
 }
