@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1261,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1263,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -748,6 +748,20 @@ for(const [kRef,jRef,kGloss,jGloss,kCount,jCount] of reviewedSourcePairs){
  assert.equal(merged.length,1,'reviewed source pair should consolidate for the shared consonantal lookup: '+kRef+'/'+jRef);
  assert.equal(merged[0].sources.length,2,'both source citations should remain: '+kRef+'/'+jRef);
 }
+const barrelExpert=U.merge([
+ {id:407,entry:sourceByRef.get('KRU19531'),meanings:[{text:'skilled in boring',label:''}]},
+ {id:408,entry:sourceByRef.get('U02126'),meanings:[{text:'one known to be skilled in boring',label:'',section:'noun'}]}
+],'שתם');
+assert.equal(barrelExpert.length,1,'the Tosefta barrel-boring definition should consolidate');
+assert.equal(barrelExpert[0].sources.length,2,'both sources for the barrel-boring term must remain attached');
+
+const rebellious=U.merge([
+ {id:409,entry:sourceByRef.get('KRU20125'),meanings:[{text:'to make rebellious',label:''}]},
+ {id:410,entry:sourceByRef.get('V01040'),meanings:[{text:'to make discontented, rebellious',label:'',section:'verb'}]}
+],'תרעם');
+assert.equal(rebellious.length,1,'the Pesikta Rabbati meaning should consolidate despite Jastrow giving the fuller gloss');
+assert.equal(rebellious[0].sources.length,2,'both source citations should remain on the rebellious meaning');
+
 const learning=U.merge([
  {id:403,entry:sourceByRef.get('KRU04223'),meanings:[{text:'acquired learning, tradition, study by heart',label:''}]},
  {id:404,entry:sourceByRef.get('C01376'),meanings:[
