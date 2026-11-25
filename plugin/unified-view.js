@@ -17,6 +17,8 @@
   ['KRU02095::in accident','accident, occurrence'],
   ['KRU07529::to squeeze','to squeeze into'],
   ['KRU09370::in what manner? how?','how?, in what manner?, in what respect?'],
+  ['KRU06183::relinquishment, addition to exact measure','the retailer’s customary addition to exact measure'],
+  ['KRU04289::a superior sort of olives','a superior sort of olives already pressed when appearing in the market'],
   ["E00092::cutting the animal's throat in a slanting direction","cutting the animal’s throat in a slanting direction (letting the knife slide beyond the space ritually designated for cutting)"],
   ['H00556::claim based on undisturbed possession','claim based on undisturbed possession during a legally fixed period'],
   ['KRU16649::artificial foot','a piece of wood hollowed out for the stump of a leg, a sort of artificial foot'],
@@ -1588,6 +1590,10 @@
   ["KRU02531", "B00534", "to be stamped", "to be stamped in, mixed up"],
   // Both sources cite Hullin 9a for the same slanting slaughter cut.
   ["KRU05633","E00092","cutting the animal’s throat in a slanting direction (letting the knife slide beyond the space ritually designated for cutting)","cutting the animal’s throat in a slanting direction"],
+  // Both sources cite Nedarim 32b for the retailer's customary extra measure.
+  ["KRU06183","F00050","relinquishment, addition to exact measure","the retailer’s customary addition to exact measure"],
+  // Both sources cite Avodah Zarah 39b for this olive preparation.
+  ["KRU04289","C00907","a superior sort of olives","a superior sort of olives already pressed when appearing in the market"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
