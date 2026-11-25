@@ -45,6 +45,12 @@
   ['KRU14617::fecal mass','the fecal mass in the rectum'],
   ['KRU14617::stalk','the central stalk of onions'],
   ['S00873::of the new moon, seasons','proclamation of the New Moon or the New Year'],
+  ['KRU14773::a bale containing the olives to be pressed','a bale of loose texture containing the olive pulp to be pressed'],
+  ['KRU12105::to become bitter','to become sticky and bitter'],
+  ['H00931::tenant','tenant on a fixed rent payable in kind'],
+  ['KRU07103::rent','the fixed annual rent in kind'],
+  ['R00617::a piece as large as can be taken up with a hook','a piece as large as can be taken up with a fork'],
+  ["KRU17632::a ceremony of severing family connections with a man who married beneath his social rank","ḳ’tsatsah, a ceremony attending the sale of an heirloom to an outsider, and the marriage of a man beneath his social rank"],
   ["E00092::cutting the animal's throat in a slanting direction","cutting the animal’s throat in a slanting direction (letting the knife slide beyond the space ritually designated for cutting)"],
   ['H00556::claim based on undisturbed possession','claim based on undisturbed possession during a legally fixed period'],
   ['KRU16649::artificial foot','a piece of wood hollowed out for the stump of a leg, a sort of artificial foot'],
@@ -1666,6 +1672,15 @@
   ["KRU14617","P00866","stalk","the central stalk of onions"],
   // Both sources cite Tosefta Sanhedrin II:1 for New-Moon proclamation.
   ["KRU17105","S00873","proclamation of the New Moon or the New Year","of the New Moon, seasons"],
+  // The two sources describe the same woven olive-press bale.
+  ["KRU14773","P01192","a bale containing the olives to be pressed","a bale of loose texture containing the olive pulp to be pressed"],
+  // The Hithpael myrrh-handling sense is the same; the active "to make bitter" sense stays separate.
+  ["KRU12105","M02773","to become bitter","to become sticky and bitter"],
+  // The tenant and rent are separate senses and map to separate Krupnik records.
+  ["KRU07111","H00931","tenant on a fixed rent payable in kind","tenant"],
+  ["KRU07103","H00931","rent","the fixed annual rent in kind"],
+  // Jastrow itself notes "fork" as the alternative to "hook".
+  ["KRU16546","R00617","a piece as large as can be taken up with a fork","a piece as large as can be taken up with a hook"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
@@ -1947,7 +1962,9 @@
   // Match only the possession-claim segment; "taking possession" stays a separate sense.
   ["KRU06888","H00556","claim based on undisturbed possession during a legally fixed period","claim based on undisturbed possession"],
   // Match only the fecal-mass segment; the separate jet-of-urine sense remains independent.
-  ["KRU14617","P00866","fecal mass","the fecal mass in the rectum"]
+  ["KRU14617","P00866","fecal mass","the fecal mass in the rectum"],
+  // Match only the ceremony segment; the general severing gloss and Krupnik's timber sense remain separate.
+  ["KRU17632","S01839","a ceremony of severing family connections with a man who married beneath his social rank","ḳ’tsatsah, a ceremony attending the sale of an heirloom to an outsider, and the marriage of a man beneath his social rank"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
