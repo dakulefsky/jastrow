@@ -118,7 +118,24 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,253,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,257,'every source-scoped alternative match must be loaded');
+
+const finalReviewedAlternativeFixtures=[
+ {word:'רְחֵם',kr:'KRU18096',jr:'T00517',k:'to have pity',j:'to have compassion on, pity'},
+ {word:'מוּקְצֶה',kr:'KRU10885',jr:'M00596',k:'an animal set aside for a sacrifice',j:'an animal set aside'},
+ {word:'לָקִיט II',kr:'KRU10422',jr:'L00689',k:'bass-relief',j:'pinched out, chiselled, in bass-relief'},
+ {word:'טְרַף I',kr:'KRU08326',jr:'I00860',k:'to knock',j:'to knock at, shake, rap'}
+];
+for(const [n,item] of finalReviewedAlternativeFixtures.entries()){
+ const groups=U.merge([
+  {id:700+n*2,entry:{h:item.word,r:item.kr,source:'krupnik'},meanings:[{text:item.k,label:''}]},
+  {id:701+n*2,entry:{h:item.word,r:item.jr},meanings:[{text:item.j,label:''}]}
+ ],item.word);
+ const matched=groups.find(group=>group.sources.some(source=>source.entry.r===item.kr)&&group.sources.some(source=>source.entry.r===item.jr));
+ assert(matched,'reviewed semantic alternative should consolidate: '+item.jr+' / '+item.kr);
+ assert.equal(matched.sources.length,2,'both original sources must be retained: '+item.jr+' / '+item.kr);
+}
+
 
 const additionalReviewedAlternativeFixtures=[
  {word:'גֵּירוּמִים',kr:'KRU04213',jr:'C00821',k:'customary addition to weight or measure',j:'that which goes along, customary addition to weight'},
