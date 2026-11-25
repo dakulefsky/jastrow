@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1303 retained whole-gloss mappings and all 272 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1311 retained whole-gloss mappings and all 272 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1303,
+    "reviewedSourceGlossPairCount": 1311,
     "reviewedSourceAlternativePairCount": 272,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -4776,6 +4776,78 @@
       "the display corrections normalize both sources to one precise, non-duplicated definition"
     ],
     "currentTotal": 1303,
+    "currentAlternativeTotal": 272
+  },
+  "thirtyThirdReviewedTranche": {
+    "attemptedCandidates": 8,
+    "addedUniqueSourceGlossPairs": 8,
+    "acceptedPairs": [
+      [
+        "KRU04375",
+        "C01017",
+        "a branch used for caprification",
+        "branches used for caprification"
+      ],
+      [
+        "KRU04462",
+        "C01140",
+        "removal of sacred object",
+        "removal of sacred objects"
+      ],
+      [
+        "KRU05533",
+        "D01107",
+        "a marmalade of quinces and roses",
+        "a marmelade of quinces and roses"
+      ],
+      [
+        "KRU05597",
+        "E00033",
+        "watching ownerless objects",
+        "superintendence, watching owner-less objects"
+      ],
+      [
+        "KRU06956",
+        "H00665",
+        "stopper, insertion (to fill a gap)",
+        "that which is sqeezed in to fill a gap, repair, insertion"
+      ],
+      [
+        "KRU04552",
+        "C01255",
+        "to let the olives shrivel",
+        "to let the olive shrivel"
+      ],
+      [
+        "KRU16989",
+        "S00640",
+        "stomach of birds",
+        "the thick muscular stomach of birds, craw"
+      ],
+      [
+        "KRU17864",
+        "T00015",
+        "appearance in the Temple (on the three festivals)",
+        "appearance in the Temple, pilgrimage"
+      ]
+    ],
+    "evidence": [
+      "KRU04375 and Jastrow C01017 both define the branch used for caprification. Jastrow's separate fruit-ripening sense remains independent.",
+      "KRU04462 and Jastrow C01140 both define the removal of sacred objects and cite Shabbat XVI:1.",
+      "KRU05533 and Jastrow D01107 both define the quince-and-rose marmalade and cite Yerushalmi Sheviit II:37b; the standard spelling is displayed.",
+      "KRU05597 and Jastrow E00033 both define the legal watching of ownerless property and cite Bava Metzia 118a.",
+      "KRU06956 and Jastrow H00665 both define the stopper/insertion used to fill a gap and cite Hullin 57b.",
+      "KRU04552 and Jastrow C01255 both define letting olives shrivel and cite Menachot VIII:4.",
+      "KRU16989 and Jastrow S00640 both define the bird's muscular stomach/craw. Only the bird sense is mapped; the human-stomach sense stays separate.",
+      "KRU17864 and Jastrow T00015 both define the obligation of appearance in the Temple on the festivals. The seeing and medical senses stay separate."
+    ],
+    "safeguards": [
+      "all eight matches are scoped to exact source refs and exact glosses",
+      "multiple senses within the same entries remain independent unless a specific pair is reviewed",
+      "the caprification fruit sense, human-stomach sense, seeing sense, and medical sense are explicitly tested as separate",
+      "the original source entries and full citations remain available in More detail"
+    ],
+    "currentTotal": 1311,
     "currentAlternativeTotal": 272
   }
 }
