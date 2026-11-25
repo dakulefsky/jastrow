@@ -64,11 +64,17 @@ assert.equal(mixedSynonymAndDistinctSense.length,2,'a shared curated synonym mus
 assert.equal(U.sharesReviewedSynonym('to happen','to occur, to take place'),true);
 assert.equal(U.sharesReviewedSynonym('to happen','to occur, charge'),false);
 const sourceAttestedSynonyms=[
+ ['sometimes','at times'],['from time to time','occasionally'],
+ ['happen','occur'],['to happen','to take place'],
  ['heap','pile'],['pile','mound'],['present','gift'],['sediment','dregs'],
  ['to frighten','to scare'],['to dwell','to reside'],['edge','rim'],
  ['capital','metropolis'],['gathering','assembly'],['deity','divinity'],
  ['strength','force'],['to glue','to paste'],['glue','paste'],
- ['to grow better','to improve'],['to set on fire','to burn']
+ ['to grow better','to improve'],['to set on fire','to burn'],
+ ['to tremble','to shake'],['indulgence','clemency'],['caterer','purveyor'],
+ ['to be disqualified','to be made unfit'],['to be made unfit','to be declared unfit'],
+ ['to apportion','to assign'],['to recite a Bible verse','to recite a verse'],
+ ['to bubble','to boil']
 ];
 for(const [a,b] of sourceAttestedSynonyms)assert.equal(U.sharesReviewedSynonym(a,b),true,'reviewed synonym group should consolidate: '+a+' / '+b);
 assert.equal(U.sharesReviewedSynonym('to frighten','to scare, to threaten'),false,'an unrelated extra sense must prevent synonym-group consolidation');
