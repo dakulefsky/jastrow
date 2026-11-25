@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1272 retained whole-gloss mappings and all 271 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1273 retained whole-gloss mappings and all 271 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1272,
+    "reviewedSourceGlossPairCount": 1273,
     "reviewedSourceAlternativePairCount": 271,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -4360,6 +4360,30 @@
       "the Jastrow boat sense is explicitly regression-tested as separate",
       "the original source records remain available in More detail"
     ],
-    "currentTotal": 1272
+    "currentTotal": 1273
+  },
+  "twentySecondReviewedTranche": {
+    "attemptedCandidates": 1,
+    "addedUniqueSourceGlossPairs": 1,
+    "acceptedPairs": [
+      [
+        "KRU05871",
+        "E00517",
+        "marking out the road to the city of refuge",
+        "marking out the road"
+      ]
+    ],
+    "evidence": [
+      "Krupnik KRU05871 sense 2 is 'marking out the road to the city of refuge'. Jastrow E00517 sense 2 is 'marking out the road' and explicitly continues in the source text 'to the city of refuge for the involuntary manslayer'.",
+      "Both entries cite Makkot 10b and the same preparation of the road described in Deuteronomy 19:3.",
+      "KRU05871 explicitly lists הֲכָנָה as an alternate headword, linking the Krupnik entry to Jastrow E00517."
+    ],
+    "safeguards": [
+      "mapping is scoped to KRU05871/E00517 and sense 2",
+      "the Jastrow reader-extracted phrase is verified against its original italic span",
+      "the display correction restores the full phrase from the matching Krupnik gloss; original Jastrow context remains available",
+      "the separate readiness/preparation sense 1 is not part of this mapping"
+    ],
+    "currentTotal": 1273
   }
 }
