@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1265,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1267,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -766,6 +766,20 @@ for(const [kRef,jRef,kGloss,jGloss,kCount,jCount] of reviewedSourcePairs){
  assert.equal(merged.length,1,'reviewed source pair should consolidate for the shared consonantal lookup: '+kRef+'/'+jRef);
  assert.equal(merged[0].sources.length,2,'both source citations should remain: '+kRef+'/'+jRef);
 }
+const hardSeaFloor=U.merge([
+ {id:413,entry:sourceByRef.get('KRU14926'),meanings:[{text:'hard ground',label:''}]},
+ {id:414,entry:sourceByRef.get('P01470'),meanings:[{text:'hard and level ground',label:'',section:'noun'}]}
+ ],S.normalize(sourceByRef.get('KRU14926').h));
+assert.equal(hardSeaFloor.length,1,'the Mekhilta hard-ground definition should consolidate');
+assert.equal(hardSeaFloor[0].sources.length,2,'both source records for the hard sea floor should remain');
+
+const animalLyingDown=U.merge([
+ {id:415,entry:sourceByRef.get('KRU17914'),meanings:[{text:'lying down of animals',label:''}]},
+ {id:416,entry:sourceByRef.get('T00110'),meanings:[{text:'lying down, esp. damage caused by an animal falling on an object',label:'',section:'noun'}]}
+ ],S.normalize(sourceByRef.get('KRU17914').h));
+assert.equal(animalLyingDown.length,1,'the Bava Kamma animal-lying-down definition should consolidate');
+assert.equal(animalLyingDown[0].sources.length,2,'both dictionary sources should remain attached');
+
 const barrelExpert=U.merge([
  {id:407,entry:sourceByRef.get('KRU19531'),meanings:[{text:'skilled in boring',label:''}]},
  {id:408,entry:sourceByRef.get('U02126'),meanings:[{text:'one known to be skilled in boring',label:'',section:'noun'}]}
