@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1314,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1315,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -1365,4 +1365,17 @@ const centralOnionStalk=U.merge([
 assert.equal(centralOnionStalk.length,1,'the botanical central-stalk definitions should consolidate');
 assert.equal(centralOnionStalk[0].sources.length,2,'both botanical source records should remain available');
 assert.equal(centralOnionStalk[0].text,'the central stalk of onions','the precise botanical definition should display once');
+
+const newMoonProclamation=U.merge([
+ {id:17105,entry:sourceByRef.get('KRU17105'),meanings:[
+  {text:'sanctification',label:'1'},
+  {text:'the Kiddusch, (proclamation of the sanctity of Sabbath or Holy Day)',label:'2'},
+  {text:'washing hands and feet prior to a priestly function in the Temple',label:'3'},
+  {text:'proclamation of the New Moon or the New Year',label:'4'}
+ ]},
+ {id:873,entry:sourceByRef.get('S00873'),meanings:[{text:'of the New Moon, seasons',label:''}]}
+],S.normalize(sourceByRef.get('KRU17105').h));
+assert.equal(newMoonProclamation.length,4,'the New-Moon proclamation should merge without absorbing other Kiddush senses');
+assert.equal(newMoonProclamation.find(group=>group.sources.length===2)?.text,'proclamation of the New Moon or the New Year','the complete New-Moon definition should display once');
+assert.equal(newMoonProclamation.filter(group=>group.sources.length===1).length,3,'sanctification, Kiddush, and priestly washing remain separate');
 
