@@ -21,7 +21,20 @@
   return out;
  };
  const parts=text=>glossAlternatives(text).map(clean).filter(Boolean);
- const alternativeKey=text=>clean(text).replace(/[()[\]{}]/g,' ').replace(/\s+/g,' ').trim().replace(/^(?:a|an|the)\s+/,'').replace(/^to\s+/,'');
+ const alternativeKey=text=>clean(text).replace(/[()[\]{}]/g,' ').replace(/\s+/g,' ').trim().replace(/^(?:a|an|the)\s+/,'').replace(/^to\s+/,''); 
+ // Restore an infinitive marker omitted from later comma-separated alternatives,
+ // while keeping active, passive, and unmarked readings distinct.
+ const contextualAlternative=(value,segment)=>{
+  const first=clean(glossAlternatives(segment)[0]||'');
+  const marker=/^to\s+be\s+/.test(first)?'to be ':/^to\s+/.test(first)?'to ':'';
+  const item=clean(value);
+  return marker&&!/^to\s+/.test(item)?marker+item:item;
+ };
+ const alternativeVoice=value=>/^to\s+be\s+/.test(clean(value))?'passive':/^to\s+/.test(clean(value))?'active':'unmarked';
+ const alternativeMatchKey=(value,segment)=>{
+  const contextual=contextualAlternative(value,segment);
+  return {key:alternativeKey(contextual),voice:alternativeVoice(contextual)};
+ };
  // Canonicalize formatting variants of a complete gloss list. Alternatives
  // may be reordered; word order within each alternative remains significant.
  // Parenthetical explanations stay attached to their phrase. The first "to"
@@ -1813,8 +1826,8 @@
      const jSegmentId=[jastrow.entry.r,clean(jm.text),stem(jm.label),clean(jm.section),ji,clean(jSegment)].join('::');
      const kSegmentId=[k.entry.r,clean(km.text),stem(km.label),ki,clean(kSegment)].join('::');
      for(const ja of glossAlternatives(jSegment))for(const ka of glossAlternatives(kSegment)){
-      const jAlt=clean(ja),kAlt=clean(ka);
-      if(!jAlt||jAlt!==kAlt||/^to\s+/i.test(jAlt)!==/^to\s+/i.test(kAlt))continue;
+      const jMatch=alternativeMatchKey(ja,jSegment),kMatch=alternativeMatchKey(ka,kSegment);
+      if(!jMatch.key||jMatch.key!==kMatch.key||jMatch.voice!==kMatch.voice)continue;
       const key=[jastrow.entry.r,k.entry.r].sort().join('|')+'::'+[jAlt,kAlt].sort().join(' | ');
       if(!pairs.has(key))pairs.set(key,{key,jastrow:new Map(),krupnik:new Map(),matches:[]});
       const pair=pairs.get(key);
@@ -1940,5 +1953,5 @@
   if(withoutMeanings.length){const details=element('details',undefined,'scholarly-entry original-only');details.append(element('summary','Additional dictionary references'));withoutMeanings.forEach((r,i)=>details.append(sourceBlock({...r,meaning:{text:'',label:''}},i)));section.append(details);}
   return section;
  }
- const api={merge,render,compatible,synonymKey,sharesReviewedSynonym,canonicalGlossKey,reviewedGlossPairs,reviewedSourceGlossPairs,reviewedSourceAlternativePairs,reviewedSourceGlossPairCount:reviewedSourceGlossPairs.size};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.DictionaryMeanings=api;
+ const api={merge,render,compatible,synonymKey,sharesReviewedSynonym,canonicalGlossKey,alternativeMatchKey,reviewedGlossPairs,reviewedSourceGlossPairs,reviewedSourceAlternativePairs,reviewedSourceGlossPairCount:reviewedSourceGlossPairs.size};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.DictionaryMeanings=api;
 })(typeof window!=='undefined'?window:globalThis);
