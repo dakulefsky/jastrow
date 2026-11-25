@@ -1543,7 +1543,7 @@
   // Both entries cite the same Mekhilta B'shallach passage describing the hard sea floor.
   ["KRU14926", "P01470", "hard ground", "hard and level ground"],
   // Both entries cite Bava Kamma 2b for the legal category of animal lying down.
-  ["KRU17914", "T00110", "lying down of animals", "lying down, esp. damage caused by an animal falling on an object"],
+  ["KRU17914", "T00110", "lying down of animals", "lying down"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
