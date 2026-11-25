@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1273 retained whole-gloss mappings and all 271 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1277 retained whole-gloss mappings and all 271 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1273,
+    "reviewedSourceGlossPairCount": 1277,
     "reviewedSourceAlternativePairCount": 271,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -4384,6 +4384,49 @@
       "the display correction restores the full phrase from the matching Krupnik gloss; original Jastrow context remains available",
       "the separate readiness/preparation sense 1 is not part of this mapping"
     ],
-    "currentTotal": 1273
+    "currentTotal": 1277
+  },
+  "twentyThirdReviewedTranche": {
+    "attemptedCandidates": 4,
+    "addedUniqueSourceGlossPairs": 4,
+    "acceptedPairs": [
+      [
+        "KRU05204",
+        "D00689",
+        "pricking pain in the eye",
+        "pricking pain"
+      ],
+      [
+        "KRU05265",
+        "D00765",
+        "an elevated spot on the hearth",
+        "an elevated spot"
+      ],
+      [
+        "KRU01971",
+        "A03028",
+        "long bedside",
+        "long board, longside of bedstead, bedside"
+      ],
+      [
+        "KRU01236",
+        "A01891",
+        "diagonal",
+        "diagonal line, diameter"
+      ]
+    ],
+    "evidence": [
+      "KRU05204 and Jastrow D00689 both define דִּיצָא II as a pricking pain in the eye and cite Beitzah 22a; Jastrow's 'in the eye' qualifier is outside its italic reader phrase.",
+      "KRU05265 and Jastrow D00765 both define דָּכוֹן as an elevated hearth/kitchen stand and cite Kelim VII:2.",
+      "KRU01971 and Jastrow A03028 both define אֲרוּכָה I as the long bedside/side-board of a bedstead and cite Sukkah 15b. Krupnik's separate 'respite' sense remains distinct.",
+      "KRU01236 and Jastrow A01891 both use אלכסון for the geometric diagonal, with shared Bava Batra 101b evidence. Jastrow's separate 'athwart, crosswise' sense remains outside this mapping."
+    ],
+    "safeguards": [
+      "each mapping is scoped to exact source refs and exact glosses",
+      "the original Jastrow/Krupnik source records remain available",
+      "the separate respite sense in KRU01971 is explicitly regression-tested",
+      "the geometric 'athwart, crosswise' sense in A01891 is not included in the mapping"
+    ],
+    "currentTotal": 1277
   }
 }
