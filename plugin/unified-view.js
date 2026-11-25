@@ -1961,7 +1961,7 @@
     const rank=S.vowelRank(entry,matchingWord);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
     if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label)))group.sources.push(sourceItem);
     for(const originalAlternative of glossAlternatives(bucket.text)){
-     const alternative=displayAlternative(id,originalAlternative);
+     const alternative=displayAlternative(entry.r||id,originalAlternative);
      const scoped=group.bucketKeys.length>0;
      const key=scoped?alternativeKey(alternative):clean(alternative).replace(/^(?:a|an|the)\s+/,'');
      const index=group.displayAlternatives.findIndex(value=>(scoped?alternativeKey(value):clean(value).replace(/^(?:a|an|the)\s+/,''))===key);
