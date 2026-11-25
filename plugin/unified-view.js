@@ -44,7 +44,7 @@
   ['I00811::an animal afflicted with a','an animal afflicted with an organic disease'],
   ['KRU14617::fecal mass','the fecal mass in the rectum'],
   ['KRU14617::stalk','the central stalk of onions'],
-  ['S00873::of the New Moon, seasons','proclamation of the New Moon or the New Year'],
+  ['S00873::of the new moon, seasons','proclamation of the New Moon or the New Year'],
   ["E00092::cutting the animal's throat in a slanting direction","cutting the animal’s throat in a slanting direction (letting the knife slide beyond the space ritually designated for cutting)"],
   ['H00556::claim based on undisturbed possession','claim based on undisturbed possession during a legally fixed period'],
   ['KRU16649::artificial foot','a piece of wood hollowed out for the stump of a leg, a sort of artificial foot'],
