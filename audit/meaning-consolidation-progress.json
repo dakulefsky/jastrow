@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1294 retained whole-gloss mappings and all 272 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1301 retained whole-gloss mappings and all 272 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1294,
+    "reviewedSourceGlossPairCount": 1301,
     "reviewedSourceAlternativePairCount": 272,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -4681,6 +4681,72 @@
       "both original source records and their full wording remain available in More detail"
     ],
     "currentTotal": 1294,
+    "currentAlternativeTotal": 272
+  },
+  "thirtyFirstReviewedTranche": {
+    "attemptedCandidates": 6,
+    "addedUniqueSourceGlossPairs": 7,
+    "acceptedPairs": [
+      [
+        "KRU03174",
+        "B01081",
+        "engines of siege or defence",
+        "engines of siege"
+      ],
+      [
+        "KRU09073",
+        "K00168",
+        "of priestly descent",
+        "one proving priestly descent, belonging to the priestly caste"
+      ],
+      [
+        "KRU17059",
+        "S00787",
+        "to cover embers with ashes",
+        "to cover with ashes"
+      ],
+      [
+        "KRU08204",
+        "I00688",
+        "second layer of a clay dam",
+        "additional, second layer"
+      ],
+      [
+        "KRU15393",
+        "Q00751",
+        "setting a price",
+        "setting a price on fruits before they are harvested"
+      ],
+      [
+        "KRU15393",
+        "Q00751",
+        "spreading, straddling",
+        "spreading the feet"
+      ],
+      [
+        "KRU10283",
+        "L00537",
+        "juice of a plant used for dyeing",
+        "juice of a plant"
+      ]
+    ],
+    "evidence": [
+      "KRU03174 and Jastrow B01081 both define בְּצוֹצְרִיּוֹת as siege engines and cite Pesikta HaChodesh p. 47a; the fuller 'siege or defence' wording is displayed once.",
+      "KRU09073 and Jastrow K00168 both define כֹּהֲנִי as belonging to the priestly caste and cite Kiddushin IV:1.",
+      "KRU17059 and Jastrow S00787 both define the act of covering embers with ashes; both cite Shabbat 37a. The separate cutting and broken-off senses in the Krupnik entry remain independent.",
+      "KRU08204 and Jastrow I00688 both define the additional second layer of a clay dam and cite Bava Metzia 103b.",
+      "KRU15393 and Jastrow Q00751 both define setting a price on fruit before harvest and cite Yerushalmi Bava Metzia V:10c.",
+      "KRU15393 and Jastrow Q00751 both define spreading the feet and cite Ketubot 39b. The punctuation sense in the same Jastrow entry remains separate.",
+      "KRU10283 and Jastrow L00537 both define the juice of a plant used for dyeing and cite Hullin 28a."
+    ],
+    "safeguards": [
+      "each accepted match is scoped to exact source refs and exact glosses",
+      "multiple meanings within one headword are matched one-to-one, not merged by shared headword",
+      "the separate cutting and broken-off senses in KRU17059 remain independent",
+      "the punctuation sense in Q00751 remains independent",
+      "original source records and full definitions remain available in More detail"
+    ],
+    "currentTotal": 1301,
     "currentAlternativeTotal": 272
   }
 }
