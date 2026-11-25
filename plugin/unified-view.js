@@ -21,7 +21,7 @@
   return out;
  };
  const parts=text=>glossAlternatives(text).map(clean).filter(Boolean);
- const alternativeKey=text=>clean(text).replace(/[()[\]{}]/g,' ').replace(/\s+/g,' ').trim().replace(/\bone's self\b/g,'oneself').replace(/^(?:a|an|the)\s+/,'').replace(/^to\s+/,''); 
+ const alternativeKey=text=>clean(text).replace(/[()[\]{}]/g,' ').replace(/\s+/g,' ').trim().replace(/[.,;:!?]+$/,'').replace(/\bone's self\b/g,'oneself').replace(/^(?:a|an|the)\s+/,'').replace(/^to\s+/,''); 
  // Restore an infinitive marker omitted from later comma-separated alternatives,
  // while keeping active, passive, and unmarked readings distinct.
  const contextualAlternative=(value,segment)=>{
@@ -1755,7 +1755,14 @@
   ["KRU19454","U01930","easily enticed","one easily enticed"],
   ["KRU19540","U02141","to lay the foundation","to lay the foundation of"],
   ["KRU19659","V00245","one who writes plene","who writes plene"],
-  ["KRU01153","A01744","in the lump","in a lump"]
+  ["KRU01153","A01744","in the lump","in a lump"],
+  ["KRU04213","C00821","customary addition to weight or measure","customary addition to weight"],
+  ["KRU04374","C01015","a fig ripened through caprification","a fig or carob ripened through caprification"],
+  ["KRU05017","D00453","cut glass vessels","cut or engraved glass vessels"],
+  ["KRU10126","L00307","one having thick eye-brows","one having thick and connected eye-brows"],
+  ["KRU14250","P00294","a period of twelve hours","a period of twelve astronomical hours"],
+  ["KRU12583","N00545","an animal in whose body an organ is found to be absent or destroyed","the case of an animal in whose body an organ is found to be absent"],
+  ["KRU19830","V00526","the body of an animal stuffed with its loose pieces and roasted","the body of an animal stuffed with its loose pieces"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
