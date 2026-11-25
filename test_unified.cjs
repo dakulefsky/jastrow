@@ -112,7 +112,28 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,246,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,253,'every source-scoped alternative match must be loaded');
+
+const additionalReviewedAlternativeFixtures=[
+ {word:'גֵּירוּמִים',kr:'KRU04213',jr:'C00821',k:'customary addition to weight or measure',j:'that which goes along, customary addition to weight'},
+ {word:'גַּמְזוּז',kr:'KRU04374',jr:'C01015',k:'a fig ripened through caprification',j:'a fig or carob ripened through caprification'},
+ {word:'דִּיאַטְרִיטָא',kr:'KRU05017',jr:'D00453',k:'cut glass vessels',j:'cut or engraved glass vessels'},
+ {word:'לוֹפְיָן',kr:'KRU10126',jr:'L00307',k:'one having thick eye-brows',j:'one having thick and connected eye-brows'},
+ {word:'עוֹנָה I',kr:'KRU14250',jr:'P00294',k:'a period of twelve hours',j:'‘Onah, a period of twelve astronomical hours, one half of the natural day and of the natural night'},
+ {word:'נְטוּלָה',kr:'KRU12583',jr:'N00545',k:'an animal in whose body an organ is found to be absent or destroyed',j:'the case of an animal in whose body an organ is found to be absent'},
+ {word:'תַּכְבְּרָא',kr:'KRU19830',jr:'V00526',k:'the body of an animal stuffed with its loose pieces and roasted',j:'the body of an animal stuffed with its loose pieces'}
+];
+for(const [n,item] of additionalReviewedAlternativeFixtures.entries()){
+ const groups=U.merge([
+  {id:600+n*2,entry:{h:item.word,r:item.kr,source:'krupnik'},meanings:[{text:item.k,label:''}]},
+  {id:601+n*2,entry:{h:item.word,r:item.jr},meanings:[{text:item.j,label:''}]}
+ ],item.word);
+ const matched=groups.find(group=>group.sources.some(source=>source.entry.r===item.kr)&&group.sources.some(source=>source.entry.r===item.jr));
+ assert(matched,'reviewed expanded alternative should consolidate: '+item.jr+' / '+item.kr);
+ assert.equal(matched.sources.length,2,'both original sources must be retained: '+item.jr+' / '+item.kr);
+}
+assert.equal(U.alternativeMatchKey('conqueror!','conqueror!').key,U.alternativeMatchKey('conqueror','conqueror').key,'terminal punctuation must not prevent an otherwise identical gloss match');
+
 const reviewedAlternativeFixtures=[
  {word:'סְקוֹרְטְיָא',kr:'KRU13933',jr:'O01464',k:'leather apron',j:'leather coat; also leather apron.',extra:'leather coat'},
  {word:'שַׁרְגִּיגָא',kr:'KRU19454',jr:'U01930',k:'easily enticed',j:'one easily enticed, simple'},
