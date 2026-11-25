@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1277,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1283,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -609,6 +609,58 @@ const diagonalConsolidation=U.merge([
 assert.equal(diagonalConsolidation.length,1,'the geometric diagonal sense should consolidate');
 assert.equal(diagonalConsolidation[0].sources.length,2,'the geometric diagonal should retain both sources');
 assert.equal(diagonalConsolidation[0].text,'diagonal line, diameter','the fuller geometric definition should display once');
+
+const artificialFootConsolidation=U.merge([
+ {id:16649,entry:{h:'קַב',r:'KRU16649',source:'krupnik'},meanings:[{text:'artificial foot',label:''}]},
+ {id:25,entry:{h:'קַב',r:'S00025'},meanings:[
+  {text:'Kab, a measure of capacity, one sixth of a S’ah',label:'1)'},
+  {text:'a piece of wood hollowed out for the stump of a leg, a sort of artificial foot',label:'—2)'}
+ ]}
+],'קב');
+assert.equal(artificialFootConsolidation.length,2,'the Kab measure and artificial-foot senses must remain separate');
+assert.equal(artificialFootConsolidation.find(g=>g.sources.length===2)?.text,'a piece of wood hollowed out for the stump of a leg, a sort of artificial foot','the artificial-foot definition should consolidate with the fuller Jastrow description');
+assert(artificialFootConsolidation.some(g=>g.text.startsWith('Kab, a measure')&&g.sources.length===1),'the unrelated capacity measure must remain separate');
+
+const sedimentCrustConsolidation=U.merge([
+ {id:17729,entry:{h:'קָרִיד',r:'KRU17729',source:'krupnik'},meanings:[{text:'covered with a crust of sediments',label:''}]},
+ {id:2038,entry:{h:'קָרִיד',r:'S02038'},meanings:[{text:'covered with a crust',label:''}]}
+],'קריד');
+assert.equal(sedimentCrustConsolidation.length,1,'the crusted-pot sense should consolidate');
+assert.equal(sedimentCrustConsolidation[0].sources.length,2,'both crusted-pot sources should remain available');
+assert.equal(sedimentCrustConsolidation[0].text,'covered with a crust of sediments','the specific sediment wording should display once');
+
+const lightCrustConsolidation=U.merge([
+ {id:17738,entry:{h:'קְרִימָה',r:'KRU17738',source:'krupnik'},meanings:[{text:'formation of a crust',label:''}]},
+ {id:2061,entry:{h:'קְרִימָה',r:'S02061'},meanings:[{text:'formation of a light crust',label:''}]}
+],'קרימה');
+assert.equal(lightCrustConsolidation.length,1,'the crust-formation sense should consolidate');
+assert.equal(lightCrustConsolidation[0].sources.length,2,'both crust-formation sources should remain available');
+assert.equal(lightCrustConsolidation[0].text,'formation of a light crust','the fuller baking definition should display once');
+
+const vanguardConsolidation=U.merge([
+ {id:1645,entry:{h:'אִסְפַּרְוָוא',r:'KRU01645',source:'krupnik'},meanings:[{text:'van-guard',label:''}]},
+ {id:2519,entry:{h:'אִסְפַּרְוָוא',r:'A02519'},meanings:[{text:'forerunner, the commander’s van-guard',label:''}]}
+],'אספרווא');
+assert.equal(vanguardConsolidation.length,1,'the forerunner/van-guard sense should consolidate');
+assert.equal(vanguardConsolidation[0].sources.length,2,'both van-guard sources should remain available');
+assert.equal(vanguardConsolidation[0].text,'forerunner, the commander’s van-guard','the fuller military definition should display once');
+
+const antiochianConsolidation=U.merge([
+ {id:1430,entry:{h:'אַנְטוּכִי',r:'KRU01430',source:'krupnik'},meanings:[{text:'of Antiochia',label:''}]},
+ {id:2164,entry:{h:'אַנְטוּכִי',r:'A02164'},meanings:[{text:'Antiochian, native of Antiochia, resident of A',label:''}]}
+],'אנטוכי');
+assert.equal(antiochianConsolidation.length,1,'the Antiochian demonym sense should consolidate');
+assert.equal(antiochianConsolidation[0].sources.length,2,'both Antiochia source records should remain available');
+assert.equal(antiochianConsolidation[0].text,'of Antiochia','the complete city-origin meaning should display without the reader fragment');
+
+const shaggyGoatConsolidation=U.merge([
+ {id:16409,entry:{h:'צִימֵּחַ',r:'KRU16409',source:'krupnik'},meanings:[{text:'with lang dependent ears',label:''}]},
+ {id:377,entry:{h:'צִימֵּחַ',r:'R00377'},meanings:[{text:'a goat with long hair lumps and long, dependent ears',label:'—2)'}]}
+],'צימח');
+assert.equal(shaggyGoatConsolidation.length,1,'the shaggy-goat definition should consolidate');
+assert.equal(shaggyGoatConsolidation[0].sources.length,2,'both zoological source records should remain available');
+assert.equal(shaggyGoatConsolidation[0].text,'a goat with long hair lumps and long, dependent ears','the fuller animal description should display once');
+
 
 
 
