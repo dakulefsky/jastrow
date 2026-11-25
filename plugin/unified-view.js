@@ -202,6 +202,7 @@
   return aa.every((x,i)=>!x.marks.length||!bb[i].marks.length||x.marks.join('')===bb[i].marks.join(''));
  }
  const reviewedSourceGlossPairs=new Set([
+  ['KRU08370','J00009','desparing of recovering a lost object','despairing of recovering a lost object, resignation'],
   ['KRU18341','T00991','to bore through','to bore'],
   ['KRU18343','T00995','to press, to crush','to press, crush'],
   ['KRU18343','T00995','to be squeezed','to be squeezed, crushed'],
