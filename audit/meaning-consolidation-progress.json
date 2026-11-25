@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1268 retained whole-gloss mappings and all 271 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1269 retained whole-gloss mappings and all 271 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1268,
+    "reviewedSourceGlossPairCount": 1269,
     "reviewedSourceAlternativePairCount": 271,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -4311,22 +4311,19 @@
     "addedUniqueSourceGlossPairs": 1,
     "acceptedPairs": [
       [
-        "KRU14478",
-        "P00680",
-        "mixture, conjunction",
-        "interweaving, mixture, conjunction"
+        "KRU02531",
+        "B00534",
+        "to be stamped",
+        "to be stamped in, mixed up"
       ]
     ],
     "evidence": [
-      "Krupnik KRU14478 sense 1 is 'mixture, conjunction'.",
-      "Jastrow P00680 sense 1 is 'interweaving, mixture, conjunction'; it is an explicit italic reader phrase in the original source HTML.",
-      "This is the mixture/conjunction sense only and remains distinct from the separate legal-fiction Erub sense 2."
+      "Both entries share the same headword and explicitly cite Targum Yonatan Exodus 24:10 for the Ithpael form; Jastrow's additional 'in, mixed up' wording is retained in the consolidated display."
     ],
     "safeguards": [
-      "mapping is scoped to KRU14478/P00680 and sense 1",
-      "sense 2 remains a separate consolidated result",
-      "the Jastrow phrase is verified against the real reader extractor"
-    ],
-    "currentTotal": 1266
+      "KRU02531's separate 'to kick' sense remains independent",
+      "the match is scoped to these two source records",
+      "the actual Jastrow italic phrase is checked by the reader extractor"
+    ]
   }
 }
