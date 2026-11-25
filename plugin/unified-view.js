@@ -44,6 +44,7 @@
   ['I00811::an animal afflicted with a','an animal afflicted with an organic disease'],
   ['KRU14617::fecal mass','the fecal mass in the rectum'],
   ['KRU14617::stalk','the central stalk of onions'],
+  ['S00873::of the New Moon, seasons','proclamation of the New Moon or the New Year'],
   ["E00092::cutting the animal's throat in a slanting direction","cutting the animal’s throat in a slanting direction (letting the knife slide beyond the space ritually designated for cutting)"],
   ['H00556::claim based on undisturbed possession','claim based on undisturbed possession during a legally fixed period'],
   ['KRU16649::artificial foot','a piece of wood hollowed out for the stump of a leg, a sort of artificial foot'],
@@ -1663,6 +1664,8 @@
   ["KRU08294","I00811","an animal afflicted with an organic disease","an animal afflicted with a"],
   // The stalk is a separate sense of עַמּוּד, distinct from its scroll-handle and bodily meanings.
   ["KRU14617","P00866","stalk","the central stalk of onions"],
+  // Both sources cite Tosefta Sanhedrin II:1 for New-Moon proclamation.
+  ["KRU17105","S00873","proclamation of the New Moon or the New Year","of the New Moon, seasons"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
