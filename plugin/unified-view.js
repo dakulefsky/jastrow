@@ -19,6 +19,8 @@
   ['KRU09370::in what manner? how?','how?, in what manner?, in what respect?'],
   ['KRU06183::relinquishment, addition to exact measure','the retailer’s customary addition to exact measure'],
   ['KRU04289::a superior sort of olives','a superior sort of olives already pressed when appearing in the market'],
+  ['U00198::to appoint a Sabbath camp','to appoint a Sabbath camp as the center for Sabbath movement'],
+  ['KRU09504::like','like that which'],
   ["E00092::cutting the animal's throat in a slanting direction","cutting the animal’s throat in a slanting direction (letting the knife slide beyond the space ritually designated for cutting)"],
   ['H00556::claim based on undisturbed possession','claim based on undisturbed possession during a legally fixed period'],
   ['KRU16649::artificial foot','a piece of wood hollowed out for the stump of a leg, a sort of artificial foot'],
@@ -1594,6 +1596,10 @@
   ["KRU06183","F00050","relinquishment, addition to exact measure","the retailer’s customary addition to exact measure"],
   // Both sources cite Avodah Zarah 39b for this olive preparation.
   ["KRU04289","C00907","a superior sort of olives","a superior sort of olives already pressed when appearing in the market"],
+  // Both sources cite Pesachim III:7 for appointing a Sabbath camp.
+  ["KRU18541","U00198","to appoint a Sabbath camp as the center for Sabbath movement","to appoint a Sabbath camp"],
+  // The first prepositional sense is "like that which"; the interrogative sense stays separate.
+  ["KRU09504","K00786","like","like that which"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
