@@ -777,6 +777,17 @@ for(const [kRef,jRef,kGloss,jGloss,kCount,jCount] of reviewedSourcePairs){
  assert.equal(merged.length,1,'reviewed source pair should consolidate for the shared consonantal lookup: '+kRef+'/'+jRef);
  assert.equal(merged[0].sources.length,2,'both source citations should remain: '+kRef+'/'+jRef);
 }
+const stampedIn=U.merge([
+ {id:419,entry:sourceByRef.get('KRU02531'),meanings:[
+  {text:'to kick',label:''},{text:'to be stamped',label:''}
+ ]},
+ {id:420,entry:sourceByRef.get('B00534'),meanings:[
+  {text:'to be stamped in, mixed up',label:'',section:'verb'}
+ ]}
+ ],'בטש');
+assert.equal(stampedIn.length,2,'the stamped sense should consolidate while the separate kicking sense remains');
+assert.equal(stampedIn.filter(g=>g.sources.length===2).length,1,'only the Targum Yonatan stamped sense should join across sources');
+
 const hardSeaFloor=U.merge([
  {id:413,entry:sourceByRef.get('KRU14926'),meanings:[{text:'hard ground',label:''}]},
  {id:414,entry:sourceByRef.get('P01470'),meanings:[{text:'hard and level ground',label:'',section:'noun'}]}
