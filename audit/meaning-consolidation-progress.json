@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1290 retained whole-gloss mappings and all 272 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1292 retained whole-gloss mappings and all 272 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1290,
+    "reviewedSourceGlossPairCount": 1292,
     "reviewedSourceAlternativePairCount": 272,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -4623,6 +4623,35 @@
       "both original source records and full wording remain available in More detail"
     ],
     "currentTotal": 1290,
+    "currentAlternativeTotal": 272
+  },
+  "twentyNinthReviewedTranche": {
+    "attemptedCandidates": 2,
+    "addedUniqueSourceGlossPairs": 2,
+    "acceptedPairs": [
+      [
+        "KRU06183",
+        "F00050",
+        "relinquishment, addition to exact measure",
+        "the retailer’s customary addition to exact measure"
+      ],
+      [
+        "KRU04289",
+        "C00907",
+        "a superior sort of olives",
+        "a superior sort of olives already pressed when appearing in the market"
+      ]
+    ],
+    "evidence": [
+      "KRU06183 and Jastrow F00050 both define וִיתּוּר as the retailer's customary extra measure and cite Nedarim 32b. The precise Jastrow wording is used for display.",
+      "KRU04289 and Jastrow C00907 both define the olive sense of גְּלוּסְקָא and cite Avodah Zarah 39b. Jastrow adds the detail that the olives are already pressed when brought to market; the separate bread sense remains distinct."
+    ],
+    "safeguards": [
+      "both mappings are scoped to exact source refs and glosses",
+      "the C00907/KRU04289 mapping applies only to the olive sense; the bread sense remains its own result",
+      "both original source records remain available in More detail"
+    ],
+    "currentTotal": 1292,
     "currentAlternativeTotal": 272
   }
 }
