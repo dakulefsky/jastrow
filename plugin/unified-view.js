@@ -8,7 +8,7 @@
   ["P00680::'erub, a symbolical act by which the legal fiction of community",'a symbolical act by which the legal fiction of community or continuity is established'],
   ['P00680::continuity is established','a symbolical act by which the legal fiction of community or continuity is established']
  ]);
- const displayAlternative=(ref,value)=>displayCorrections.get(ref+'::'+clean(value))||value;
+ const displayGloss=(ref,value)=>displayCorrections.get(ref+'::'+clean(value))||value;
  const stem=label=>{
   let value=String(label||'').trim();
   // Krupnik often prefixes/suffixes grammatical labels with sense numbers;
@@ -1970,8 +1970,7 @@
     if(!group.form)group.form=stem(meaning.label);
     const rank=S.vowelRank(entry,matchingWord);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
     if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label)))group.sources.push(sourceItem);
-    for(const originalAlternative of glossAlternatives(bucket.text)){
-     const alternative=displayAlternative(entry.r||id,originalAlternative);
+    for(const alternative of glossAlternatives(displayGloss(entry.r||id,bucket.text))){
      const scoped=group.bucketKeys.length>0;
      const key=scoped?alternativeKey(alternative):clean(alternative).replace(/^(?:a|an|the)\s+/,'');
      const index=group.displayAlternatives.findIndex(value=>(scoped?alternativeKey(value):clean(value).replace(/^(?:a|an|the)\s+/,''))===key);
