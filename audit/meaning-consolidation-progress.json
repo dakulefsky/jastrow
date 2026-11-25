@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 915,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1311 retained whole-gloss mappings and all 272 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1312 retained whole-gloss mappings and all 272 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1311,
+    "reviewedSourceGlossPairCount": 1312,
     "reviewedSourceAlternativePairCount": 272,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -4848,6 +4848,37 @@
       "the original source entries and full citations remain available in More detail"
     ],
     "currentTotal": 1311,
+    "currentAlternativeTotal": 272
+  },
+  "thirtyFourthReviewedTranche": {
+    "attemptedCandidates": 1,
+    "addedUniqueSourceGlossPairs": 1,
+    "acceptedPairs": [
+      [
+        "KRU02827",
+        "B00794",
+        "to be first in ripening",
+        "to be early, produce first fruits"
+      ]
+    ],
+    "evidence": [
+      "KRU02827 and Jastrow B00794 both define the first-ripening sense of בָּכַר. Their cited Bikkurim III:1 passage describes a fig that is first ripe, with supporting Yerushalmi Maaserot references."
+    ],
+    "rejectedNearbyOverlap": [
+      [
+        "KRU02827",
+        "B00794",
+        "to bear first fruits",
+        "to bear for the first time"
+      ]
+    ],
+    "rejectionRationale": "The nearby 'to bear first fruits' versus 'to bear for the first time' overlap is not merged: the latter is the animal-birth sense, while the reviewed match is the separate first-ripening sense. The test explicitly keeps the first-fruits entry independent.",
+    "safeguards": [
+      "the accepted match is scoped to the exact first-ripening glosses",
+      "the distinct animal-birth and first-fruits meanings remain separate",
+      "both source records and their citations remain available in More detail"
+    ],
+    "currentTotal": 1312,
     "currentAlternativeTotal": 272
   }
 }
