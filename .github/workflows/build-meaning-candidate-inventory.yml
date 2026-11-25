@@ -1,0 +1,31 @@
+name: Build dictionary meaning candidate inventory
+on:
+  pull_request:
+    paths:
+      - 'audit/build-meaning-candidates.cjs'
+      - 'plugin/unified-view.js'
+      - 'plugin/reading-view.js'
+      - 'plugin/search.js'
+      - 'plugin/data/**'
+      - '.github/workflows/build-meaning-candidate-inventory.yml'
+jobs:
+  build-inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium support
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Generate source-grounded review inventory
+        run: node audit/build-meaning-candidates.cjs
+      - name: Upload review inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: meaning-consolidation-candidates
+          path: audit/meaning-consolidation-candidates.json
+          if-no-files-found: error
+          retention-days: 14
