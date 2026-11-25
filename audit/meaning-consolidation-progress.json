@@ -13,7 +13,7 @@
     "reviewedSourceGlossPairCount": 1249,
     "reviewedSourceAlternativePairCount": 241,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
-    "curatedSynonymGroups": 16,
+    "curatedSynonymGroups": 23,
     "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions.",
     "homonymPolicy": "If both source headwords explicitly carry different Roman or superscript Arabic homonym numbers, they are not compatible for consolidation. A numbered headword may still match an unnumbered counterpart, since one dictionary may omit the numbering."
   },
@@ -338,6 +338,13 @@
           "KRU09163"
         ],
         "meaning": "straightening / directing"
+      },
+      {
+        "records": [
+          "KRU02736",
+          "KRU02892"
+        ],
+        "meaning": "gullet"
       }
     ],
     "note": "Added deterministic normalization for exact Hebrew alternative lists: punctuation and alternative order are normalized, while phrase word order is preserved. Regression tests verify that unreviewed synonyms remain separate."
@@ -1874,7 +1881,7 @@
   },
   "synonymGroupReview": {
     "status": "expanded-with-source-attested-groups",
-    "groupCount": 16,
+    "groupCount": 23,
     "newlyAdded": [
       {
         "terms": [
