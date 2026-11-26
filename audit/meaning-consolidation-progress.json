@@ -60,18 +60,20 @@
     "published": false
   },
   "candidateInventory": {
-    "generatedFromCommit": "de213b8af7b17095806d71aa40cceb681d65dbe9",
+    "generatedFromCommit": "452b674454e8be62ba89222ac7eeedab816ea6ef",
     "sourceEntries": 47919,
     "jastrowEntries": 32508,
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
-    "candidates": 4403,
+    "candidates": 4323,
     "exactAlternativeCandidates": 2990,
     "runtimeRuleHandledCandidates": 2456,
     "ambiguityFlaggedExactCandidates": 534,
-    "nonExactSemanticCandidates": 1413,
-    "note": "Inventory regenerated from all original source entries and the real Chromium phrase extractor. Known rejected/deferred English pairs are excluded from pending review with their rationales retained. The Hebrew queue excludes the newly reviewed KRU17474/KRU17475 partial-sense cross-reference."
+    "nonExactSemanticCandidates": 1333,
+    "note": "Generated from all 47,919 source entries and the real Chromium Jastrow phrase extractor. Four known false positives and two deferred time/times candidates are excluded from pending review with their rationales retained. The Hebrew queue now excludes the reviewed KRU17474/KRU17475 partial-sense cross-reference: 567 candidates remain, 566 for manual review.",
+    "rejectedKnownCandidates": 4,
+    "deferredKnownCandidates": 2
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -361,7 +363,17 @@
         "preservedDistinctSense": "KRU17475's second numbered sub-sense קצה נפשו remains a separate result.",
         "safeguard": "The mapping applies only when both exact source records are present and KRU17474 still contains the exact source wording; the complete original KRU17475 part remains attached for More detail."
       }
-    ]
+    ],
+    "candidateInventory": {
+      "generatedFromCommit": "452b674454e8be62ba89222ac7eeedab816ea6ef",
+      "sourceRecords": 20177,
+      "uniqueHeadwordForms": 20104,
+      "repeatedHeadwordForms": 1726,
+      "candidates": 567,
+      "runtimeRuleHandledCandidates": 1,
+      "manualReviewCandidates": 566,
+      "note": "One reviewed partial-sense cross-reference is excluded from the pending queue; exact shared Hebrew alternatives remain handled by the guarded runtime rule."
+    }
   },
   "secondReviewedTranche": {
     "attemptedRows": 46,
