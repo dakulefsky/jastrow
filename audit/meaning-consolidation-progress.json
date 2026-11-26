@@ -369,15 +369,20 @@
       "sourceRecords": 20177,
       "uniqueHeadwordForms": 20104,
       "repeatedHeadwordForms": 1726,
-      "candidates": 567,
+      "candidates": 529,
       "runtimeRuleHandledCandidates": 1,
-      "manualReviewCandidates": 566,
+      "manualReviewCandidates": 528,
       "evidenceCounts": {
         "exact-gloss": 1,
-        "shared-content-terms": 6,
-        "different-glosses": 269,
-        "missing-gloss": 291
-      }
+        "shared-content-terms": 0,
+        "different-glosses": 238,
+        "missing-gloss": 290
+      },
+      "rawCandidates": 567,
+      "reviewedNonSynonymPairs": 36,
+      "deferredSynonymPairs": 2,
+      "latestGeneratedFromCommit": "90500ef21505ff4aac2690895a0ff09c08443933",
+      "note": "Generated from the 20,177 original Hebrew source records. Of 567 raw candidate pairs, 36 source-reviewed false positives and 2 ambiguous pairs are excluded; one guarded exact-alternative candidate is handled by runtime; 528 remain for manual semantic review."
     },
     "reviewedNonSynonymPairs": [
       {
