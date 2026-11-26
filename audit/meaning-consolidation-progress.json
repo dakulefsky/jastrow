@@ -67,16 +67,16 @@
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
     "candidates": 4225,
-    "exactAlternativeCandidates": 2972,
-    "runtimeRuleHandledCandidates": 2457,
-    "ambiguityFlaggedExactCandidates": 515,
-    "nonExactSemanticCandidates": 1253,
-    "note": "Latest inventory: 4,321 original candidates; 2,457 guarded exact-alternative runtime matches, 515 ambiguous exact matches and 1,253 non-exact semantic candidates remain for review. Twenty false positives and thirty-six deferred cases are source-recorded. Thirty-six source-scoped whole-gloss mappings and four alternative-level mappings have been reviewed and added since the original branch baseline.",
+    "exactAlternativeCandidates": 2967,
+    "runtimeRuleHandledCandidates": 2453,
+    "ambiguityFlaggedExactCandidates": 514,
+    "nonExactSemanticCandidates": 1258,
+    "note": "Latest generated inventory: 4,321 original cross-dictionary candidates; 2,453 are handled by guarded exact-alternative runtime matching, 514 ambiguous exact matches and 1,258 non-exact semantic candidates remain for manual review. Twenty false positives and thirty-six deferred cases are recorded with exact source refs and reasons. Thirty-six additional source-scoped whole-gloss mappings and four alternative-level mappings have been reviewed and added since the original branch baseline.",
     "rejectedKnownCandidates": 20,
     "deferredKnownCandidates": 36,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
-    "latestGeneratedFromCommit": "pending-next-validation"
+    "latestGeneratedFromCommit": "24acc4bd094f4b23c835883afd3dd58643bbefc6"
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -394,7 +394,7 @@
       "rawCandidates": 567,
       "reviewedNonSynonymPairs": 36,
       "deferredSynonymPairs": 1,
-      "latestGeneratedFromCommit": "46a3a7de801959bde5394cfccd8b8e6c3fcf598f",
+      "latestGeneratedFromCommit": "24acc4bd094f4b23c835883afd3dd58643bbefc6",
       "note": "Latest generated inventory from 20,177 original Hebrew source records: 529 candidate rows, 36 source-reviewed non-synonyms excluded, 1 deferred pair, 1 guarded exact-alternative runtime match, and 528 candidates still requiring manual semantic review. Two reviewed partial-sense cross-references are tracked separately.",
       "reviewedSenseSegmentPairs": 2,
       "partialHebrewOverlap": 1
