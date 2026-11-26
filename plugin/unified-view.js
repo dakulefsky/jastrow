@@ -8,7 +8,8 @@
   ['C00469::to gnaw','to gnaw (of mice)'],
   ['C00690::to low','to low (of oxen)'],
   ['B01372::mortal','mortal man'],
-  ['C00954::shaping','shaping (of writing)'],
+  ['C00954::shaping','shaping (of writing), impress, poetry'],
+  ['KRU04329::shaping (of writing), impress','shaping (of writing), impress, poetry'],
   ['KRU05585::farther off (of space)','farther off, far (of space)'],
   ['E00016::farther off, far','farther off, far (of space)'],
   ['KRU12418::to conduct o. s','to conduct oneself'],
@@ -1707,6 +1708,8 @@
   ["KRU04099","C00690","to low (of oxen)","to low"],
   // Both entries cite Targum Jeremiah 17:5 for a mortal human being.
   ["KRU03441","B01372","mortal man","mortal"],
+  // Both sources describe shaping of writing and impress; Jastrow also preserves "poetry".
+  ["KRU04329","C00954","shaping (of writing), impress","shaping"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
@@ -2007,8 +2010,6 @@
   // Match only the ceremony segment; the general severing gloss and Krupnik's timber sense remain separate.
   ["KRU17632","S01839","a ceremony of severing family connections with a man who married beneath his social rank","a ceremony attending the sale of an heirloom to an outsider"],
 
-  // The shared Psalms citations describe shaping of writing; "impress" remains its own alternative.
-  ["KRU04329","C00954","shaping (of writing)","shaping"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
