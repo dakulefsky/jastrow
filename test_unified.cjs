@@ -158,14 +158,6 @@ const stingJastrow=cutFruit.find(group=>group.sources.some(source=>source.entry.
 assert(stingJastrow,'the ambiguous Jastrow sting/prick phrase must remain separate until its two KRU senses can be isolated');
 
 assert.equal(U.reviewedSourceGlossPairs.size,1336,'all source-specific whole-gloss mappings must be loaded');
-assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04044','C00632',"earth embankment, steep banks","a steep")),'source-verified whole-gloss mapping must be registered: C00632 / KRU04044');
-assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU14780','P01211',"to cut (fruits) by the stalks","to cut fruit by the stalks.")),'source-verified whole-gloss mapping must be registered: P01211 / KRU14780');
-assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15901','Q01641',"resident of an open place","one residing in an open place")),'source-verified whole-gloss mapping must be registered: Q01641 / KRU15901');
-assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU02398','B00982',"negligence","indifference, willful negligence")),'source-verified whole-gloss mapping must be registered: B00982 / KRU02398');
-assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU01212','A01838',"according to","according to the opinion, in the sense of")),'source-verified whole-gloss mapping must be registered: A01838 / KRU01212');
-assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU01341','A02041',"faith, trust","faith in Providence")),'source-verified whole-gloss mapping must be registered: A02041 / KRU01341');
-assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU01578','A02408',"road, way","paved way, public road")),'source-verified whole-gloss mapping must be registered: A02408 / KRU01578');
-assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03401','B01342',"cypress or pine-tree","cypress")),'source-verified whole-gloss mapping must be registered: B01342 / KRU03401');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -1170,6 +1162,14 @@ assert.equal(howConsolidation[0].text,'how?, in what manner?, in what respect?',
 
 const cleanDecision=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
 const decisionKey=(a,b,x,y)=>[a,b].sort().join('|')+'::'+[cleanDecision(x),cleanDecision(y)].sort().join(' | ');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04044','C00632',"earth embankment, steep banks","a steep")),'source-verified whole-gloss mapping must be registered: C00632 / KRU04044');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU14780','P01211',"to cut (fruits) by the stalks","to cut fruit by the stalks.")),'source-verified whole-gloss mapping must be registered: P01211 / KRU14780');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15901','Q01641',"resident of an open place","one residing in an open place")),'source-verified whole-gloss mapping must be registered: Q01641 / KRU15901');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU02398','B00982',"negligence","indifference, willful negligence")),'source-verified whole-gloss mapping must be registered: B00982 / KRU02398');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU01212','A01838',"according to","according to the opinion, in the sense of")),'source-verified whole-gloss mapping must be registered: A01838 / KRU01212');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU01341','A02041',"faith, trust","faith in Providence")),'source-verified whole-gloss mapping must be registered: A02041 / KRU01341');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU01578','A02408',"road, way","paved way, public road")),'source-verified whole-gloss mapping must be registered: A02408 / KRU01578');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03401','B01342',"cypress or pine-tree","cypress")),'source-verified whole-gloss mapping must be registered: B01342 / KRU03401');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU06547','G00654','dealer in leather bags','maker of and dealer in leather bags')),'known occupational false positives must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU10278','L00533','there is','there is (was) not')),'negative-particle distinctions must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03526','C00053','The Most High','high, exalted, elevated')),'divine titles must not be merged with ordinary adjectives');
