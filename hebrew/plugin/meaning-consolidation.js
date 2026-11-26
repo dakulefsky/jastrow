@@ -62,6 +62,21 @@
   const ids=[a,b].sort().join('|'),glosses=[normalize(x),normalize(y)].sort().join(' | ');
   return ids+'::'+glosses;
  }));
+ // A cross-reference meaning can be one sense inside a larger numbered part.
+ // This reviewed mapping resolves only that exact sub-sense; the other numbered
+ // senses remain independent and the original full part stays attached.
+ const reviewedSenseSegmentPairRecords=[
+  {a:'KRU17474',b:'KRU17475',aMeaning:'הִקְנִיט הרגיז',bPrefix:'כנ״ל',display:'הִקְנִיט הרגיז'}
+ ];
+ const reviewedSenseSegmentPairRefs=new Set(reviewedSenseSegmentPairRecords.map(pair=>[pair.a,pair.b].sort().join('|')));
+ const splitNumberedSenseSegments=value=>{
+  const text=String(value||''),matches=[...text.matchAll(/(?:^|\\s)(\\d+)\\)\\s*/g)];
+  if(matches.length<2||!/^\\s*1\\)/.test(text))return null;
+  return matches.map((match,index)=>{
+   const start=match.index+match[0].length,end=matches[index+1]?.index??text.length;
+   return text.slice(start,end).trim();
+  }).filter(Boolean);
+ };
  function pairKey(a,b){
   const ids=[a.e.rid,b.e.rid].sort().join('|');
   const glosses=[normalize(itemMeaning(a)),normalize(itemMeaning(b))].sort().join(' | ');
@@ -72,10 +87,17 @@
  }
  function merge(sources,word){
   const groups=[],prepared=[];
+  const sourceEntries=(sources||[]).flatMap(source=>source.records||[]);
+  const sourceRefs=new Set(sourceEntries.map(entry=>entry.rid));
   for(const source of sources||[])for(const entry of source.records||[])for(const part of entry.parts||[]){
    const text=part.meaning||part.text||'',label=labelKey(part.label),scope=normalize(source.word||word),homonym=homonymNumber(entry.word);
    if(!normalize(text))continue;
-   prepared.push({source,entry,part,text,label,scope,homonym,alternatives:splitAlternatives(text)});
+   const segmentPair=reviewedSenseSegmentPairRecords.find(pair=>pair.b===entry.rid&&sourceRefs.has(pair.a));
+   const segments=segmentPair?splitNumberedSenseSegments(text):null;
+   if(segmentPair&&segments?.length>1&&normalize(segments[0]).startsWith(normalize(segmentPair.bPrefix))){
+    prepared.push({source,entry,part,text:segmentPair.display,label,scope,homonym,alternatives:splitAlternatives(segmentPair.display)});
+    for(const segment of segments.slice(1))prepared.push({source,entry,part,text:segment,label,scope,homonym,alternatives:splitAlternatives(segment)});
+   }else prepared.push({source,entry,part,text,label,scope,homonym,alternatives:splitAlternatives(text)});
   }
   // If two source parts share an exact Hebrew alternative, split those parts
   // into their individual alternatives for display. This allows a common
@@ -121,5 +143,5 @@
   }
   return groups;
  }
- root.HebrewMeaningConsolidation={merge,normalize,labelKey,canonicalMeaningKey,splitAlternatives,reviewedSynonymPairs,pairKey,equivalent};
+ root.HebrewMeaningConsolidation={merge,normalize,labelKey,canonicalMeaningKey,splitAlternatives,reviewedSynonymPairs,reviewedSenseSegmentPairRefs,pairKey,equivalent};
 })(typeof window==='undefined'?globalThis:window);
