@@ -98,6 +98,7 @@ for(const [key,records] of byWord){
  for(let i=0;i<entries.length;i++)for(let j=i+1;j<entries.length;j++){
   const a=entries[i],b=entries[j];
   if(!headwordCompatible(a,b))continue;
+  if(context.HebrewMeaningConsolidation.reviewedSenseSegmentPairRefs?.has([a.rid,b.rid].sort().join('|')))continue;
   for(const pa of a.parts||[])for(const pb of b.parts||[]){
    const ha=pa.meaning||pa.text||'',hb=pb.meaning||pb.text||'';
    if(!normalize(ha)||!normalize(hb)||context.HebrewMeaningConsolidation.canonicalMeaningKey(ha)===context.HebrewMeaningConsolidation.canonicalMeaningKey(hb))continue;
