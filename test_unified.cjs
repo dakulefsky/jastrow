@@ -265,7 +265,7 @@ const camelStuff=U.merge([
  ]}
 ],'דָּרַס');
 const mappedCamelGroups=camelStuff.filter(group=>group.sources.some(source=>source.entry.r==='KRU05539')&&group.sources.some(source=>source.entry.r==='D01113'));
-assert.equal(mappedCamelGroups.length,3,'the three separately numbered D01113/KRU05539 senses should each consolidate');
+assert.equal(mappedCamelGroups.length,4,'the three reviewed D01113/KRU05539 senses plus the exact throttle sense should consolidate separately');
 
 
 
