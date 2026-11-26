@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1,376 retained whole-gloss mappings and all 278 retained alternative-level mappings (1,654 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1,377 retained whole-gloss mappings and all 278 retained alternative-level mappings (1,655 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1376,
+    "reviewedSourceGlossPairCount": 1377,
     "reviewedSourceAlternativePairCount": 278,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -70,12 +70,12 @@
     "runtimeRuleHandledCandidates": 2451,
     "ambiguityFlaggedExactCandidates": 514,
     "nonExactSemanticCandidates": 1242,
-    "note": "Latest generated inventory: 4,321 original cross-dictionary candidates; 2,451 are handled by guarded exact-alternative runtime matching, 514 ambiguous exact matches and 1,242 non-exact semantic candidates remain for manual review (1,756 total). Twenty false positives and forty-two uncertain cases are recorded with exact source refs and reasons. Forty-eight source-scoped whole-gloss mappings and four alternative-level mappings have been added beyond the original branch baseline.",
+    "note": "Forty-nine source-scoped whole-gloss mappings and four alternative-level mappings have been added beyond the original branch baseline. Forty-three uncertain candidates remain deferred with exact source refs and reasons; known false positives remain separately recorded.",
     "rejectedKnownCandidates": 20,
-    "deferredKnownCandidates": 42,
+    "deferredKnownCandidates": 43,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
-    "latestGeneratedFromCommit": "f3babc54bb995106f129992030fc26ec4f679ae1",
+    "latestGeneratedFromCommit": "pending-next-validation",
     "candidates": 4207
   },
   "reviewedTranche": {
@@ -6209,6 +6209,17 @@
           "compounding, manufacturing; ingredients"
         ],
         "reason": "Deferred: Jastrow's gloss combines the activity of compounding with the ingredients themselves; verify which sub-sense the Krupnik phrase denotes before merging."
+      },
+      {
+        "refs": [
+          "KRU06406",
+          "G00388"
+        ],
+        "glosses": [
+          "trembling",
+          "trembling commotion"
+        ],
+        "reason": "Deferred: Jastrow's phrase describes a trembling commotion in Targum Isaiah/Psalms, while Krupnik's example is fear and trembling in Genesis. The lexical overlap is plausible but the source contexts differ; keep separate pending confirmation."
       }
     ],
     "policy": "Rejected and deferred pairs are excluded from the pending discovery queue but remain recorded here with their source refs and rationale. Reconsider only with new source evidence."
@@ -7596,5 +7607,51 @@
     "safeguards": [
       "The circumcision/feast and circumcised-membrum meanings remain separate; the full original Jastrow gloss is preserved."
     ]
+  },
+  "sixtySecondReviewedTranche": {
+    "attemptedCandidates": 1,
+    "addedUniqueSourceGlossPairs": 1,
+    "acceptedPairs": [
+      [
+        "KRU02166",
+        "A03336",
+        "skin",
+        "dressed skin"
+      ]
+    ],
+    "evidence": [
+      "A03336/KRU02166: both refer to a dressed hide/skin; the original Jastrow and Krupnik entries cite the same phrase גירדא דאשפא describing shavings from a smoothed hide."
+    ],
+    "safeguards": [
+      "Only the exact dressed-skin reader phrase is mapped; original entries and source wording remain intact."
+    ],
+    "currentTotal": 1377,
+    "currentAlternativeTotal": 278
+  },
+  "sixtyThirdReviewedTranche": {
+    "attemptedCandidates": 1,
+    "addedUniqueSourceGlossPairs": 0,
+    "deferredCandidates": 1,
+    "deferredPairs": [
+      {
+        "refs": [
+          "KRU06406",
+          "G00388"
+        ],
+        "glosses": [
+          "trembling",
+          "trembling commotion"
+        ],
+        "reason": "Deferred: Jastrow's phrase describes a trembling commotion in Targum Isaiah/Psalms, while Krupnik's example is fear and trembling in Genesis. The lexical overlap is plausible but the source contexts differ; keep separate pending confirmation."
+      }
+    ],
+    "evidence": [
+      "The Jastrow examples are Targum Isaiah 21:3 and Psalm 48:7, while the Krupnik example is Genesis 22:1; the same broad idea may occur in different contexts."
+    ],
+    "safeguards": [
+      "Do not merge the earthquake/commotion sense with fear/trembling without checking the original contexts."
+    ],
+    "currentTotal": 1377,
+    "currentAlternativeTotal": 278
   }
 }
