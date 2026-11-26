@@ -2058,7 +2058,6 @@
   ["KRU17632","S01839","a ceremony of severing family connections with a man who married beneath his social rank","a ceremony attending the sale of an heirloom to an outsider"],
   // The two sources cite the same Toh. X, 7 passage for emptying the pit; keep "to sprinkle" separate.
   ["KRU06469","G00500","to empty","empty over"],
-,
   ["KRU02534","B00536","house","house of"],
   ["KRU02534","B00536","place","place of"],
   ["KRU15603","Q01116","to roll","to roll in"]
