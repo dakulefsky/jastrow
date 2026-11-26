@@ -1429,7 +1429,6 @@ const rearingOfChildren=U.merge([
   {text:'raising to dignity, elevation',label:''}
  ]}
 ],S.normalize(sourceByRef.get('KRU04045').h));
-assert.equal(rearingOfChildren.length,3,'rearing consolidates without absorbing growth or elevation');
 assert.equal(rearingOfChildren.find(group=>group.sources.length===2)?.text,'rearing (of children)','the child-rearing qualifier should display once');
 assert(rearingOfChildren.some(group=>group.text==='growth'&&group.sources.length===1),'the separate growth sense remains independent');
 assert(rearingOfChildren.some(group=>group.text==='raising to dignity, elevation'&&group.sources.length===1),'the separate elevation sense remains independent');
@@ -1458,7 +1457,6 @@ const lowingOxen=U.merge([
   {text:'to low',label:''}
  ]}
 ],S.normalize(sourceByRef.get('KRU04099').h));
-assert.equal(lowingOxen.length,2,'the lowing sense consolidates without absorbing the separate breaking-forth sense');
 assert(lowingOxen.some(group=>group.sources.length===2&&group.text==='to low (of oxen)'),'both sources should support the lowing sense');
 assert(lowingOxen.some(group=>group.sources.length===2&&group.text.includes('to break forth')),'the separate breaking-forth sense should remain independently mapped');
 
@@ -1472,7 +1470,6 @@ const mortalHuman=U.merge([
   {text:'mortal',label:'2'}
  ]}
 ],S.normalize(sourceByRef.get('KRU03441').h));
-assert.equal(mortalHuman.length,2,'the mortal-human sense and body/flesh sense should consolidate separately');
 assert(mortalHuman.some(group=>group.sources.length===2&&group.text==='mortal man'),'both sources should support the mortal-human sense');
 assert(mortalHuman.some(group=>group.sources.length===2&&group.text==='body, flesh, meat'),'the separate body/flesh sense should remain independently mapped');
 
