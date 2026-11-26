@@ -134,6 +134,31 @@ assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match 
 
 assert.equal(U.reviewedSourceAlternativePairs.size,278,'every source-scoped alternative match must be loaded');
 
+const steepMeaning=U.merge([
+ {id:2401,entry:{h:'גִּידּוּד',r:'KRU04044',source:'krupnik'},meanings:[{text:'earth embankment, steep banks',label:'1'}]},
+ {id:2402,entry:{h:'גִּידּוּד',r:'C00632'},meanings:[{text:'a steep',label:'',section:''}]}
+],'גִּידּוּד');
+assert(steepMeaning.some(group=>group.sources.some(source=>source.entry.r==='KRU04044')&&group.sources.some(source=>source.entry.r==='C00632')),'the shared Eruvin 93b embankment sense should consolidate');
+
+const cutFruit=U.merge([
+ {id:2411,entry:{h:'עָקַץ',r:'KRU14780',source:'krupnik'},meanings:[
+  {text:'to cut (fruits) by the stalks',label:'1'},
+  {text:'to sting',label:'2'},
+  {text:'to prick, to taunt',label:'3'}
+ ]},
+ {id:2412,entry:{h:'עָקַץ',r:'P01211'},meanings:[
+  {text:'to cut fruit by the stalks.',label:'',section:'1)'},
+  {text:'to sting, prick',label:'',section:'—2)'}
+ ]}
+],'עָקַץ');
+const cutFruitGroup=cutFruit.find(group=>group.sources.some(source=>source.entry.r==='KRU14780')&&group.sources.some(source=>source.entry.r==='P01211'));
+assert(cutFruitGroup,'the shared Sanhedrin 41a fruit-cutting sense should consolidate');
+assert.equal(cutFruitGroup.sources.length,2,'the original fruit-cutting source records should both remain');
+const stingJastrow=cutFruit.find(group=>group.sources.some(source=>source.entry.r==='P01211')&&!group.sources.some(source=>source.entry.r==='KRU14780'));
+assert(stingJastrow,'the ambiguous Jastrow sting/prick phrase must remain separate until its two KRU senses can be isolated');
+
+assert.equal(U.reviewedSourceGlossPairs.size,1330,'all source-specific whole-gloss mappings must be loaded');
+
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
   {text:'house',label:'2'},
@@ -1140,6 +1165,7 @@ const decisionKey=(a,b,x,y)=>[a,b].sort().join('|')+'::'+[cleanDecision(x),clean
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU06547','G00654','dealer in leather bags','maker of and dealer in leather bags')),'known occupational false positives must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU10278','L00533','there is','there is (was) not')),'negative-particle distinctions must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03526','C00053','The Most High','high, exalted, elevated')),'divine titles must not be merged with ordinary adjectives');
+assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU04694','D00017',"to flow out","to flow")),'reviewed decision must remain rejected: D00017 / KRU04694');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03682','C00244',"to cut, esp: to harvest dates","to cut into")),'reviewed false positive must remain rejected: C00244 / KRU03682');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03956','C00538',"to cut, to shear","to cut into, interrupt")),'reviewed false positive must remain rejected: C00538 / KRU03956');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU04094','C00577',"cut, wound","what is to be cut")),'reviewed false positive must remain rejected: C00577 / KRU04094');
@@ -1156,6 +1182,8 @@ assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU18302','T00918',"to be bro
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU20168','V01113',"from below","below")),'reviewed false positive must remain rejected: V01113 / KRU20168');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU16710','S00123',"holiness","his holiness")),'reviewed false positive must remain rejected: S00123 / KRU16710');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06494','G00538','at times','times')),'ambiguous time/times candidates must remain deferred');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU14780','P01211',"to sting","to sting, prick")),'reviewed decision must remain deferred: P01211 / KRU14780');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU14780','P01211',"to prick, to taunt","to sting, prick")),'reviewed decision must remain deferred: P01211 / KRU14780');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU19012','U01042',"covering","sinking, covering up")),'reviewed ambiguous candidate must remain deferred: U01042 / KRU19012');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU01114','A01696',"to be burnt","to be consumed, burnt up, digested")),'reviewed candidate must remain deferred: A01696 / KRU01114');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06564','G00686',"to arm o. s.","to tie around, gird, arm; to harness, saddle")),'reviewed candidate must remain deferred: G00686 / KRU06564');
