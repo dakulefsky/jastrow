@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1376,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1377,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -323,13 +323,20 @@ const circumcisionSense1=circumcisionSenses.find(group=>group.sources.some(sourc
 const circumcisionSense2=circumcisionSenses.find(group=>group.sources.some(source=>source.entry.r==='KRU03954'&&source.meaning.text==='the circumcised membrum')&&group.sources.some(source=>source.entry.r==='C00536'));
 assert(circumcisionSense1&&circumcisionSense2&&circumcisionSense1!==circumcisionSense2,'the two circumcision sub-senses must consolidate separately without swallowing each other');
 
+const dressedSkin=U.merge([
+ {id:3101,entry:{h:'אַשְׁפָּא',r:'KRU02166',source:'krupnik'},meanings:[{text:'skin'}]},
+ {id:3102,entry:{h:'אַשְׁפָּא',r:'A03336'},meanings:[{text:'dressed skin'}]}
+],'אַשְׁפָּא');
+assert(dressedSkin.some(group=>group.sources.some(source=>source.entry.r==='KRU02166')&&group.sources.some(source=>source.entry.r==='A03336')),'the shared hide-shavings source phrase should consolidate the dressed-skin sense');
 
 
 
 
 
 
-assert.equal(U.reviewedSourceGlossPairs.size,1376,'all source-specific whole-gloss mappings must be loaded');
+
+
+assert.equal(U.reviewedSourceGlossPairs.size,1377,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -1382,6 +1389,7 @@ assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU07276','H01186',"leavened 
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03500','C00016',"to grow","to grow high")),'source-verified mapping must be registered: C00016 / KRU03500');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03500','C00016',"to be elated, to be exalted","to be exalted; to be proud")),'source-verified mapping must be registered: C00016 / KRU03500');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03320','B01237',"to recover, to get strong","to get well, strong")),'source-verified mapping must be registered: B01237 / KRU03320');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU02166','A03336',"skin","dressed skin")),'source-verified mapping must be registered: A03336 / KRU02166');
 assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU03954','C00536',"circumcision","circumcision")),'source-verified alternative mapping must be registered: C00536 / KRU03954');
 assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU03954','C00536',"feast of circumcision","feast of circumcision")),'source-verified alternative mapping must be registered: C00536 / KRU03954');
 assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU03954','C00536',"the circumcised membrum","the circumcised membrum")),'source-verified alternative mapping must be registered: C00536 / KRU03954');
@@ -1414,6 +1422,7 @@ assert(U.deferredSourceGlossPairs.has(decisionKey('KRU19048','U01132',"apartment
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU19048','U01132',"tent dwelling","dwelling, tent; apartment.")),'one-to-many or source-uncertain candidate must remain deferred: U01132 / KRU19048');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03320','B01237',"to hollow out, to perforate","to permeate, perforate")),'one-to-many or source-uncertain candidate must remain deferred: B01237 / KRU03320');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU07233','H01124','to be fine','to be smooth and fine')),'the potentially different smooth-edge sense must remain deferred');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06406','G00388','trembling','trembling commotion')),'source-context-dependent trembling candidate must remain deferred');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03613','C00166',"to cut off, to level","to cut, cut off.")),'morphology/one-to-many candidate must remain deferred: C00166 / KRU03613');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03613','C00166',"to cut, to cut off","to cut off, level")),'morphology/one-to-many candidate must remain deferred: C00166 / KRU03613');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU18284','T00889',"to lead to pasture","to lead, pasture, feed")),'morphology/one-to-many candidate must remain deferred: T00889 / KRU18284');
