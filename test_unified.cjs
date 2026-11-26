@@ -459,8 +459,6 @@ const bubblingForth=U.merge([
 ],'בִּצְבֵּץ');
 assert.equal(bubblingForth.length,1,'the same bubble/burst-forth verbal sense should consolidate');
 assert.equal(bubblingForth[0].sources.length,2,'both sources citing the same verbal usage should remain available');
-assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03803','C00364','rough untrimmed stone, cobble','a rolling stone, rough untrimmed stone, cobble')),'source-verified mapping should be registered for the Bava Batra rough-stone sense');
-assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03169','B01075','to bubble forth, to burst forth','to break through, bubble forth, burst forth')),'source-verified mapping should be registered for the bubble/burst-forth sense');
 
 assert.equal(U.reviewedSourceGlossPairs.size,1416,'all source-specific whole-gloss mappings must be loaded');
 
@@ -1467,6 +1465,8 @@ assert.equal(howConsolidation[0].text,'how?, in what manner?, in what respect?',
 
 const cleanDecision=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
 const decisionKey=(a,b,x,y)=>[a,b].sort().join('|')+'::'+[cleanDecision(x),cleanDecision(y)].sort().join(' | ');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03803','C00364','rough untrimmed stone, cobble','a rolling stone, rough untrimmed stone, cobble')),'source-verified mapping should be registered for the Bava Batra rough-stone sense');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03169','B01075','to bubble forth, to burst forth','to break through, bubble forth, burst forth')),'source-verified mapping should be registered for the bubble/burst-forth sense');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04044','C00632',"earth embankment, steep banks","a steep")),'source-verified whole-gloss mapping must be registered: C00632 / KRU04044');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU14780','P01211',"to cut (fruits) by the stalks","to cut fruit by the stalks.")),'source-verified whole-gloss mapping must be registered: P01211 / KRU14780');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15901','Q01641',"resident of an open place","one residing in an open place")),'source-verified whole-gloss mapping must be registered: Q01641 / KRU15901');
