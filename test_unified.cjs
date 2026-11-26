@@ -1423,11 +1423,16 @@ assert(fixedRentAndTenant.some(group=>group.text==='the fixed annual rent in kin
 
 const spatialFarMeaning=U.merge([
  {id:5585,entry:sourceByRef.get('KRU05585'),meanings:[{text:'farther off (of space)',label:''}]},
- {id:16,entry:sourceByRef.get('E00016'),meanings:[{text:'farther off, far',label:''}]}
+ {id:16,entry:sourceByRef.get('E00016'),meanings:[
+  {text:'farther off, far',label:''},
+  {text:'onward',label:''}
+ ]}
 ],S.normalize(sourceByRef.get('KRU05585').h));
-assert.equal(spatialFarMeaning.length,1,'the shared spatial meaning of הלאה should consolidate');
-assert.equal(spatialFarMeaning[0].sources.length,2,'both sources citing Targum Jonathan Genesis 32:25 must remain available');
-assert.equal(spatialFarMeaning[0].text,'farther off, far (of space)','the spatial qualifier should be retained without duplicate wording');
+assert.equal(spatialFarMeaning.length,2,'the shared spatial meaning should consolidate while the temporal sense remains separate');
+const spatialFarGroup=spatialFarMeaning.find(group=>group.sources.length===2);
+assert(spatialFarGroup,'both sources citing Targum Jonathan Genesis 32:25 must remain available');
+assert.equal(spatialFarGroup.text,'farther off, far (of space)','the spatial qualifier should be retained without duplicate wording');
+assert(spatialFarMeaning.some(group=>group.text==='onward'&&group.sources.length===1),'Jastrow’s separate temporal sense must remain independent');
 
 const selfConductMeaning=U.merge([
  {id:12418,entry:sourceByRef.get('KRU12418'),meanings:[{text:'to conduct o. s.',label:''}]},
