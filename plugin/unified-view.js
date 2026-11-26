@@ -2145,6 +2145,10 @@
   ["KRU02534","B00536","house","house of"],
   ["KRU02534","B00536","place","place of"],
   ["KRU15603","Q01116","to roll","to roll in"]
+,
+  ["KRU03954","C00536","circumcision","circumcision"],
+  ["KRU03954","C00536","feast of circumcision","feast of circumcision"],
+  ["KRU03954","C00536","the circumcised membrum","the circumcised membrum"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
