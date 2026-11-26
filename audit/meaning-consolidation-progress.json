@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1,437 retained whole-gloss mappings and all 281 retained alternative-level mappings (1,718 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1,468 retained whole-gloss mappings and all 281 retained alternative-level mappings (1,749 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1437,
+    "reviewedSourceGlossPairCount": 1468,
     "reviewedSourceAlternativePairCount": 281,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -66,17 +66,17 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
-    "exactAlternativeCandidates": 2956,
-    "runtimeRuleHandledCandidates": 2444,
+    "exactAlternativeCandidates": 2953,
+    "runtimeRuleHandledCandidates": 2441,
     "ambiguityFlaggedExactCandidates": 512,
-    "nonExactSemanticCandidates": 1173,
-    "note": "One hundred and nine source-scoped whole-gloss mappings and seven alternative-level mappings have been added beyond the original branch baseline. The latest regenerated inventory contains 4,129 candidate rows: 2,444 exact-alternative runtime matches, 512 ambiguity-flagged exact candidates, and 1,173 non-exact semantic candidates. Twenty known false positives are rejected and 57 uncertain cases remain deferred.",
+    "nonExactSemanticCandidates": 1147,
+    "note": "One hundred and forty source-scoped whole-gloss mappings and seven alternative-level mappings have been added beyond the original branch baseline. The latest regenerated inventory contains 4,100 candidate rows: 2,441 exact-alternative runtime matches, 512 ambiguity-flagged exact candidates, and 1,147 non-exact semantic candidates. Twenty known false positives are rejected and 58 uncertain or extractor-limited cases remain deferred.",
     "rejectedKnownCandidates": 20,
-    "deferredKnownCandidates": 57,
+    "deferredKnownCandidates": 58,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
-    "latestGeneratedFromCommit": "3f37b5e6a781a71f76361880344ba823be0115a6",
-    "candidates": 4129
+    "latestGeneratedFromCommit": "199bdd5c0062a502d3080e66b531ba47af4fe260",
+    "candidates": 4100
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -353,7 +353,7 @@
         "meaning": "gullet"
       }
     ],
-    "note": "Hebrew consolidation uses original Krupnik/Silbermann Hebrew source records only; it does not load Jastrow English source entries or generate Hebrew translations. Current reviewed work: 12 source-scoped synonym pairs, 2 exact partial-sense cross-references, 81 source-reviewed non-synonym candidates excluded from the review queue, and 7 ambiguous pairs explicitly deferred. The KRU20037/KRU20038 mapping isolates the second numbered sense 2) נכשל from the original full Hebrew source text while keeping the first sense 1) שקל separate.",
+    "note": "Hebrew consolidation uses original Krupnik/Silbermann Hebrew source records only; it does not load Jastrow English source entries or generate Hebrew translations. Current reviewed work: 12 source-scoped synonym pairs, 2 exact partial-sense cross-references, 84 source-reviewed non-synonym candidates excluded from the review queue, and 9 ambiguous pairs explicitly deferred. The KRU20037/KRU20038 mapping isolates the second numbered sense 2) נכשל from the original full Hebrew source text while keeping the first sense 1) שקל separate.",
     "reviewedSenseSegmentPairs": 2,
     "reviewedSenseSegmentPairDetails": [
       {
@@ -382,20 +382,20 @@
       "sourceRecords": 20177,
       "uniqueHeadwordForms": 20104,
       "repeatedHeadwordForms": 1726,
-      "candidates": 479,
+      "candidates": 475,
       "runtimeRuleHandledCandidates": 1,
-      "manualReviewCandidates": 478,
+      "manualReviewCandidates": 474,
       "evidenceCounts": {
         "exact-gloss": 1,
         "shared-content-terms": 0,
-        "different-glosses": 193,
-        "missing-gloss": 285
+        "different-glosses": 191,
+        "missing-gloss": 283
       },
       "rawCandidates": 567,
-      "reviewedNonSynonymPairs": 81,
-      "deferredSynonymPairs": 7,
-      "latestGeneratedFromCommit": "3f37b5e6a781a71f76361880344ba823be0115a6",
-      "note": "Latest generated inventory from 20,177 original Hebrew source records: 479 candidate rows, 81 source-reviewed non-synonyms excluded, 7 deferred pairs, 1 guarded exact-alternative runtime match, and 478 candidates still requiring manual semantic review.",
+      "reviewedNonSynonymPairs": 84,
+      "deferredSynonymPairs": 9,
+      "latestGeneratedFromCommit": "199bdd5c0062a502d3080e66b531ba47af4fe260",
+      "note": "Latest generated inventory from 20,177 original Hebrew source records: 475 candidate rows, 84 source-reviewed non-synonyms excluded, 9 deferred pairs, 1 guarded exact-alternative runtime match, and 474 candidates still requiring manual semantic review.",
       "reviewedSenseSegmentPairs": 2,
       "partialHebrewOverlap": 1
     },
@@ -1290,9 +1290,42 @@
           "אצטדין למרוץ"
         ],
         "reason": "A governor/official versus a race-course; unrelated meanings."
+      },
+      {
+        "records": [
+          "KRU14875",
+          "KRU14876"
+        ],
+        "meanings": [
+          "עשה ערימה, גדש",
+          "התחכם, עשה בערמה"
+        ],
+        "reason": "Heap/pile up versus act cunningly; the shared consonantal form is homonymous."
+      },
+      {
+        "records": [
+          "KRU14875",
+          "KRU14876"
+        ],
+        "meanings": [
+          "עשה ערימה, גדש",
+          "נעשה חכם"
+        ],
+        "reason": "To heap up versus become prudent/wise; distinct senses and forms."
+      },
+      {
+        "records": [
+          "KRU17544",
+          "KRU17546"
+        ],
+        "meanings": [
+          "נקפא ונקרש",
+          "עי׳ קִיפָה. ספרא שמיני פרק ג׳ פרשה ד׳: צירן ורוטבן ואת הקפה שלהן."
+        ],
+        "reason": "To coagulate/become thick versus the separate Kippa² food/liquid term; distinct homonymous senses."
       }
     ],
-    "reviewedNonSynonymPairCount": 81,
+    "reviewedNonSynonymPairCount": 84,
     "deferredSynonymPairs": [
       {
         "records": [
@@ -1370,9 +1403,31 @@
           "ליחה האדוקה במעיים פס׳ ס״ח ע״א: מיחוי קרביו - שירקא דמעיא."
         ],
         "reason": "Deferred: the second entry is explicitly numbered as a separate homonym; 'mucus discharge' and 'mucus adhering in the intestines' overlap contextually but have different semantic scope."
+      },
+      {
+        "records": [
+          "KRU06489",
+          "KRU06491"
+        ],
+        "meanings": [
+          "עי׳ זָמַם. תרג׳ יב״ע בר׳ י״ג ז׳: הוון זממין בעירהון; שם דב׳ כ״ה כ׳ (לא תחסום שור): לא תזממון פום תורא. אֵזֵּים אפ׳, עי׳ הֵזִים ( זָמַם ). ב״ק ע״ג: דאפכינהו ואזמינהו. אִתְּזַם, אִתְּזוֹם אתפ׳ עי׳ נִזְדַּמֵּם (זָמַּם). שם: אטבוחה דקא מיתזמי איתזום. אִתְזְמִים אתפ׳ נדהם תרג׳ יש׳ כ״ט ט׳ (השתעשעו): אתזמימו.",
+          "כנ״ל 2. תרג׳ יש׳ ל״ז כ״ט (ומתגי בשפתיך): וזמם בשפוותך; שבת קי״א ע״ב: קיטרא דזממא."
+        ],
+        "reason": "KRU06491 is explicitly a separately numbered homonym and cross-refers to sense 2; KRU06489 contains several forms and meanings, so the shared headword alone cannot establish which sense is intended."
+      },
+      {
+        "records": [
+          "KRU17544",
+          "KRU17546"
+        ],
+        "meanings": [
+          "עי׳ נִכְפָּה 1. (כפה) ירוש׳ נד׳ פ״ח מ׳ ע״ג: דרגש נזקפת ואינה ניקפת.",
+          "עי׳ קִיפָה. ספרא שמיני פרק ג׳ פרשה ד׳: צירן ורוטבן ואת הקפה שלהן."
+        ],
+        "reason": "Both entries are cross-references to different headwords/forms with no shared explicit gloss; the relation cannot be resolved safely from these source lines alone."
       }
     ],
-    "deferredSynonymPairCount": 7
+    "deferredSynonymPairCount": 9
   },
   "secondReviewedTranche": {
     "attemptedRows": 46,
@@ -9124,6 +9179,276 @@
       "Numbered and grammatical senses remain separate, including parchment versus stone, make-poor versus become-poor, Pelusium versus Pelusian linen, and spoon versus palm-branch."
     ],
     "currentTotal": 1437,
+    "currentAlternativeTotal": 281
+  },
+  "seventyFourthReviewedTranche": {
+    "attemptedCandidates": 9,
+    "addedUniqueSourceGlossPairs": 9,
+    "acceptedPairs": [
+      [
+        "KRU19564",
+        "V00058",
+        "shawl fastened on the shoulder",
+        "cloaks or shawls fastened on the shoulder"
+      ],
+      [
+        "KRU09110",
+        "K00226",
+        "pitcher",
+        "wine pitcher, jug"
+      ],
+      [
+        "KRU09554",
+        "K00842",
+        "brazier",
+        "stand, a portable brazier"
+      ],
+      [
+        "KRU13751",
+        "O01132",
+        "a jewel",
+        "red jewel, carnelian"
+      ],
+      [
+        "KRU15513",
+        "Q00957",
+        "a cloak",
+        "Brundisian cloak, travelling cloak"
+      ],
+      [
+        "KRU16327",
+        "R00213",
+        "dish",
+        "banqueting dish, plate."
+      ],
+      [
+        "KRU16979",
+        "S00624",
+        "hammer",
+        "mallet; smith’s hammer"
+      ],
+      [
+        "KRU18521",
+        "U00170",
+        "shoot",
+        "isolated, single shoot."
+      ],
+      [
+        "KRU05047",
+        "D00493",
+        "guards",
+        "relays, guards at stations"
+      ]
+    ],
+    "evidence": [
+      "V00058/KRU19564: same shoulder-fastened shawl in Sifrei Deuteronomy 234.",
+      "K00226/KRU09110: same wine pitcher/jug in the shared Shabbat/Tamid usage.",
+      "K00842/KRU09554: same portable brazier in Beitzah 21b.",
+      "O01132/KRU13751: same red jewel/carnelian in Targum Exodus 28:17.",
+      "Q00957/KRU15513: same Brundisian travelling cloak in Tosefta Megillah IV:30.",
+      "R00213/KRU16327: same banqueting dish/plate in Yerushalmi Ketubot X:33d.",
+      "S00624/KRU16979: same mallet/blacksmith hammer in Shabbat XII:1.",
+      "U00170/KRU18521: same isolated shoot in Targum Ezekiel 17:6; the undressed-vine sense remains separate.",
+      "D00493/KRU05047: same relay/guard at stations in Yoma VI:8; the separate messenger sense remains distinct."
+    ],
+    "safeguards": [
+      "All pairs are scoped to exact source refs and exact reader-extracted phrases.",
+      "Distinct neighboring senses are kept separate, including shoot versus undressed vine, guards versus messengers, and basket versus twig."
+    ],
+    "currentTotal": 1446,
+    "currentAlternativeTotal": 281
+  },
+  "seventyFifthReviewedTranche": {
+    "attemptedCandidates": 10,
+    "addedUniqueSourceGlossPairs": 10,
+    "acceptedPairs": [
+      [
+        "KRU13534",
+        "O00760",
+        "basket",
+        "basket made of twigs."
+      ],
+      [
+        "KRU14185",
+        "P00174",
+        "ramification",
+        "the full ramification of a tree"
+      ],
+      [
+        "KRU14197",
+        "P00191",
+        "cavity dug around a tree",
+        "cavity"
+      ],
+      [
+        "KRU14770",
+        "P01185",
+        "cutting",
+        "cutting fruit by the stalk"
+      ],
+      [
+        "KRU14857",
+        "P01358",
+        "arrangement of the speech or of prayer",
+        "arrangement"
+      ],
+      [
+        "KRU15093",
+        "Q00250",
+        "seam",
+        "the seam between a garment and its border"
+      ],
+      [
+        "KRU15386",
+        "Q00743",
+        "lump",
+        "lump of brittle stone"
+      ],
+      [
+        "KRU15821",
+        "Q01497",
+        "to paint",
+        "to paint the face with rouge"
+      ],
+      [
+        "KRU15821",
+        "Q01497",
+        "to curl",
+        "to make small curls pasted on the forehead"
+      ],
+      [
+        "KRU09798",
+        "K01181",
+        "divorce",
+        "divorce by means of a deed"
+      ]
+    ],
+    "evidence": [
+      "O00760/KRU13534: same basket made of twigs; the twig sense remains independently represented.",
+      "P00174/KRU14185: same tree ramification in Job 15:32.",
+      "P00191/KRU14197: same cavity dug around a tree; the separate cake sense remains distinct.",
+      "P01185/KRU14770: same fruit-cutting sense in Yerushalmi Maaser Sheni V:56b; the sting sense remains distinct.",
+      "P01358/KRU14857: same arrangement of speech/prayer in Genesis Rabbah 49.",
+      "Q00250/KRU15093: same seam between garment and border in Kiddushin 32a.",
+      "Q00743/KRU15386: same lump of brittle stone in Sanhedrin 64a; lot and bread senses remain distinct.",
+      "Q01497/KRU15821: two separate Shabbat grooming senses (rouging and hair-curling) are mapped independently; the open-forcibly sense remains distinct.",
+      "K01181/KRU09798: same divorce-by-document sense in Gittin 10b; the separate mutilation sense remains distinct."
+    ],
+    "safeguards": [
+      "All pairs are source-scoped; one-to-many and numbered senses remain independent.",
+      "The Q01497 grooming senses are mapped separately, and the Q00743 lot/bread meanings remain distinct."
+    ],
+    "currentTotal": 1456,
+    "currentAlternativeTotal": 281
+  },
+  "seventySixthReviewedTranche": {
+    "attemptedCandidates": 13,
+    "addedUniqueSourceGlossPairs": 12,
+    "acceptedPairs": [
+      [
+        "KRU04680",
+        "C01432",
+        "woman engaged in the wine-press",
+        "woman engaged in the wine press, wine treader"
+      ],
+      [
+        "KRU13073",
+        "N01375",
+        "the status of the N’thinim (Josh. IX. 27)",
+        "the legal status of the Nathin; the class of N’thinim"
+      ],
+      [
+        "KRU05607",
+        "E00048",
+        "destruction",
+        "removal, destruction"
+      ],
+      [
+        "KRU08552",
+        "J00234",
+        "weight, heaviness",
+        "weight"
+      ],
+      [
+        "KRU08816",
+        "J00581",
+        "to be dear",
+        "to be dear, precious"
+      ],
+      [
+        "KRU08816",
+        "J00581",
+        "to be heavy",
+        "to be heavy"
+      ],
+      [
+        "KRU13241",
+        "O00258",
+        "to plaster with lime",
+        "to plaster, whitewash"
+      ],
+      [
+        "KRU06499",
+        "G00560",
+        "voluptuous man",
+        "adulterer; voluptuous"
+      ],
+      [
+        "KRU06852",
+        "H00496",
+        "wrapper, envelope",
+        "wrapper of reed-matting"
+      ],
+      [
+        "KRU07458",
+        "H01522",
+        "adze, pick-axe",
+        "carpenter’s adze"
+      ],
+      [
+        "KRU07512",
+        "H01611",
+        "carob-tree and–pod",
+        "carob-pod; carob-tree"
+      ],
+      [
+        "KRU08782",
+        "J00533",
+        "wing of a building",
+        "extension, wing"
+      ]
+    ],
+    "evidence": [
+      "C01432/KRU04680: same woman wine-treader in Genesis Rabbah 71 and Esther Rabbah I:10.",
+      "N01375/KRU13073: same legal status of the Nethinim in Tosefta Kiddushin V:4.",
+      "E00048/KRU05607: same removal/destruction sense in Yerushalmi Sanhedrin VII:24b; Sabbath law and altar-fire senses remain separate.",
+      "J00234/KRU08552: same weight sense in Menachot 94b; high-price/respect and asthma senses remain separate.",
+      "J00581/KRU08816: the heavy and dear meanings are separately mapped, preserving the two distinct lexical senses.",
+      "O00258/KRU13241: only the explicit plaster/whitewash phrase is mapped; the secondary depilatory wording is not emitted as a complete phrase by the actual reader extractor and is deferred.",
+      "G00560/KRU06499: same voluptuous/adulterer sense in Shabbat 156a.",
+      "H00496/KRU06852: same wrapper/bale in Kelim XVI:5.",
+      "H01522/KRU07458: same carpenter’s adze/pick-axe tool.",
+      "H01611/KRU07512: same carob tree/pod sense; Jastrow’s bean variety and Krupnik’s place-name sense remain separate.",
+      "J00533/KRU08782: same wing/extension of a building in Bava Batra IV:1."
+    ],
+    "deferredCandidates": [
+      {
+        "records": [
+          "KRU13241",
+          "O00258"
+        ],
+        "meanings": [
+          "to paint the skin with a depilatory",
+          "to paint the skin with a depilatory"
+        ],
+        "reason": "The secondary Jastrow wording is not emitted as a complete explicit phrase by the actual JastrowReadingView.phrases extractor. It is not safe to register a source mapping until the reader extractor can surface the complete phrase."
+      }
+    ],
+    "safeguards": [
+      "The actual reader phrase extractor is authoritative; no mapping is accepted if its Jastrow phrase is not emitted.",
+      "Multiple numbered senses within one source entry are mapped independently; no cross-sense merging is permitted."
+    ],
+    "currentTotal": 1468,
     "currentAlternativeTotal": 281
   }
 }
