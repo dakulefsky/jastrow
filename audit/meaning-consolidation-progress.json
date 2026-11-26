@@ -351,7 +351,7 @@
       }
     ],
     "note": "Added deterministic normalization for exact Hebrew alternative lists: punctuation and alternative order are normalized, while phrase word order is preserved. Regression tests verify that unreviewed synonyms remain separate. A source-reviewed non-synonym registry now excludes nineteen clear homonym, grammatical-form, and unrelated-meaning false positives from the Hebrew review queue; it does not change runtime consolidation. A second Hebrew review tranche adds fourteen more exact source-pair rejections for clearly unrelated homonyms and meanings; the registry is review-only and does not alter runtime lookup. The Hebrew review queue also records two ambiguous pairs for later source-sense review; they are excluded from the pending queue but not treated as synonyms or runtime merges.",
-    "reviewedSenseSegmentPairs": 1,
+    "reviewedSenseSegmentPairs": 2,
     "reviewedSenseSegmentPairDetails": [
       {
         "records": [
@@ -362,6 +362,16 @@
         "display": "הִקְנִיט הרגיז",
         "preservedDistinctSense": "KRU17475's second numbered sub-sense קצה נפשו remains a separate result.",
         "safeguard": "The mapping applies only when both exact source records are present and KRU17474 still contains the exact source wording; the complete original KRU17475 part remains attached for More detail."
+      },
+      {
+        "records": [
+          "KRU20037",
+          "KRU20038"
+        ],
+        "sharedSense": "KRU20038's second numbered Hebrew sub-sense 2) נכשל matches KRU20037's הִתְקִיל נכשל gloss; the candidate builder had previously surfaced only KRU20038's first sense 1) שקל.",
+        "display": "הִתְקִיל נכשל",
+        "preservedDistinctSense": "KRU20038's first numbered sense 1) שקל (weigh) and its other derived forms remain separate; the full original source part and citations remain attached.",
+        "safeguard": "The mapping reads the exact second numbered segment from KRU20038's original fullHebrew text, uses bSenseIndex=1, and only applies when both exact source records and KRU20037's original Hebrew wording are present."
       }
     ],
     "candidateInventory": {
@@ -369,9 +379,9 @@
       "sourceRecords": 20177,
       "uniqueHeadwordForms": 20104,
       "repeatedHeadwordForms": 1726,
-      "candidates": 529,
+      "candidates": 528,
       "runtimeRuleHandledCandidates": 1,
-      "manualReviewCandidates": 528,
+      "manualReviewCandidates": 527,
       "evidenceCounts": {
         "exact-gloss": 1,
         "shared-content-terms": 0,
@@ -381,8 +391,10 @@
       "rawCandidates": 567,
       "reviewedNonSynonymPairs": 36,
       "deferredSynonymPairs": 2,
-      "latestGeneratedFromCommit": "90500ef21505ff4aac2690895a0ff09c08443933",
-      "note": "Generated from the 20,177 original Hebrew source records. Of 567 raw candidate pairs, 36 source-reviewed false positives and 2 ambiguous pairs are excluded; one guarded exact-alternative candidate is handled by runtime; 528 remain for manual semantic review."
+      "latestGeneratedFromCommit": "pending-next-validation",
+      "note": "The Hebrew candidate inventory now excludes 36 reviewed non-synonyms, 2 deferred cases, and 2 reviewed partial-sense mappings; one exact-alternative candidate is handled by runtime, and 527 candidates remain for manual semantic review.",
+      "reviewedSenseSegmentPairs": 2,
+      "partialHebrewOverlap": 2
     },
     "reviewedNonSynonymPairs": [
       {
