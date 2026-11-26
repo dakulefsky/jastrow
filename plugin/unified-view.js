@@ -1694,6 +1694,7 @@
   // Both entries cite Sifré Deut. 323 for the Hithpael sense of conducting oneself.
   ["KRU12418","N00250","to conduct o. s.","to conduct one’s self"],
   // Both entries cite Targum Jonathan Genesis 32:25 for the spatial sense.
+  // The following additions are likewise source-checked and limited to one sense each.
   ["KRU05585","E00016","farther off (of space)","farther off, far"],
   // Both entries cite Sanhedrin 19b for the rearing of children.
   ["KRU04045","C00635","rearing (of children)","rearing"],
