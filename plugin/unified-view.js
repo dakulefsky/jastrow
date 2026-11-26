@@ -1775,6 +1775,9 @@
   ["KRU03320","B01237","to recover, to get strong","to get well, strong"]
 ,
   ["KRU02166","A03336","skin","dressed skin"]
+,
+  ["KRU04385","C01038","to do one good or evil","to do one good"],
+  ["KRU04979","D00406","to remove","to remove hurriedly"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
@@ -1861,6 +1864,9 @@
   ["KRU15318","Q00616","compounding ingredients","compounding, manufacturing; ingredients","Deferred: Jastrow's gloss combines the activity of compounding with the ingredients themselves; verify which sub-sense the Krupnik phrase denotes before merging."]
 ,
   ["KRU06406","G00388","trembling","trembling commotion","Deferred: Jastrow's phrase describes a trembling commotion in Targum Isaiah/Psalms, while Krupnik's example is fear and trembling in Genesis. The lexical overlap is plausible but the source contexts differ; keep separate pending confirmation."]
+,
+  ["KRU09361","K00605","extremely tall","an extremely tall and unshapely person","Deferred: Krupnik gives an adjective ('extremely tall'), while Jastrow describes a person ('an extremely tall and unshapely person'); the examples differ and the grammatical focus is not yet secure."],
+  ["KRU04979","D00406","to push, to hurry","to push away, thrust","Deferred: the two sources use different contextual senses (pushing/hurrying versus thrusting away); do not merge on the shared root alone."]
 
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const reviewedSourceAlternativePairRecords=[
@@ -2149,6 +2155,10 @@
   ["KRU02534","B00536","house","house of"],
   ["KRU02534","B00536","place","place of"],
   ["KRU15603","Q01116","to roll","to roll in"]
+,
+  ["KRU04385","C01038","to be bestowed","to be bestowed"],
+  ["KRU04979","D00406","to be suspended","to be pushed aside"],
+  ["KRU04979","D00406","to be suspended","suspended"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
