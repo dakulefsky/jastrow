@@ -3,6 +3,8 @@
  const S=root.JastrowSearch||(typeof require==='function'?require('./search.js'):null);
  const clean=text=>String(text).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
  const displayCorrections=new Map([
+  ['KRU05585::farther off (of space)','farther off, far (of space)'],
+  ['E00016::farther off, far','farther off, far (of space)'],
   ['KRU12418::to conduct o. s','to conduct oneself'],
   ["N00250::to conduct one's self","to conduct oneself"],
   ['KRU08370::desparing of recovering a lost object','despairing of recovering a lost object'],
@@ -1685,6 +1687,8 @@
   ["KRU16546","R00617","a piece as large as can be taken up with a fork","a piece as large as can be taken up with a hook"],
   // Both entries cite Sifré Deut. 323 for the Hithpael sense of conducting oneself.
   ["KRU12418","N00250","to conduct o. s.","to conduct one’s self"],
+  // Both entries cite Targum Jonathan Genesis 32:25 for the spatial sense.
+  ["KRU05585","E00016","farther off (of space)","farther off, far"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
