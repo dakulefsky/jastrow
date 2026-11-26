@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1,348 retained whole-gloss mappings and all 278 retained alternative-level mappings (1,626 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1,354 retained whole-gloss mappings and all 278 retained alternative-level mappings (1,632 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1348,
+    "reviewedSourceGlossPairCount": 1354,
     "reviewedSourceAlternativePairCount": 278,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -66,14 +66,14 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
-    "candidates": 4247,
+    "candidates": 4240,
     "exactAlternativeCandidates": 2972,
     "runtimeRuleHandledCandidates": 2457,
     "ambiguityFlaggedExactCandidates": 515,
-    "nonExactSemanticCandidates": 1275,
-    "note": "Latest inventory: 4,321 original candidates; 2,457 guarded exact-alternative runtime matches, 515 ambiguous exact matches and 1,275 non-exact semantic candidates remain for review. Twenty false positives and thirty deferred cases are source-recorded. Twenty additional whole-gloss mappings and four alternative-level mappings have been reviewed and added since the original branch baseline.",
+    "nonExactSemanticCandidates": 1268,
+    "note": "Latest inventory: 4,321 original candidates; 2,457 guarded exact-alternative runtime matches, 515 ambiguous exact matches and 1,268 non-exact semantic candidates remain for review. Twenty false positives and thirty-one deferred cases are source-recorded. Twenty-six source-scoped whole-gloss mappings and four alternative-level mappings have been reviewed and added since the original branch baseline.",
     "rejectedKnownCandidates": 20,
-    "deferredKnownCandidates": 30,
+    "deferredKnownCandidates": 31,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
     "latestGeneratedFromCommit": "pending-next-validation"
@@ -6059,6 +6059,17 @@
           "to sting, prick"
         ],
         "reason": "Deferred: same one-to-many ambiguity; do not map the Jastrow combined phrase to Krupnik's separate figurative 'to prick, to taunt' sense."
+      },
+      {
+        "refs": [
+          "KRU03808",
+          "C00369"
+        ],
+        "glosses": [
+          "clapper of a bell",
+          "clapper"
+        ],
+        "reason": "Deferred: Jastrow's entry is only a cross-reference to גִּיל I and has no independent citation in this record. It likely names the same object, but confirm the referenced Jastrow entry before consolidating."
       }
     ],
     "policy": "Rejected and deferred pairs are excluded from the pending discovery queue but remain recorded here with their source refs and rationale. Reconsider only with new source evidence."
@@ -6971,6 +6982,88 @@
       "Original source wording and citations remain attached."
     ],
     "currentTotal": 1348,
+    "currentAlternativeTotal": 278
+  },
+  "fiftySecondReviewedTranche": {
+    "attemptedCandidates": 6,
+    "addedUniqueSourceGlossPairs": 6,
+    "addedUniqueSourceAlternativePairs": 0,
+    "acceptedPairs": [
+      [
+        "KRU02633",
+        "B00615",
+        "mixture",
+        "thorough mixture, even distribution of mixed objects"
+      ],
+      [
+        "KRU03814",
+        "C00377",
+        "Roman) shoes, which leave the toes uncovered",
+        "shoes"
+      ],
+      [
+        "KRU04215",
+        "C00824",
+        "deduction from the price",
+        "deduction"
+      ],
+      [
+        "KRU04594",
+        "C01305",
+        "grist-maker or dealer",
+        "grist-maker"
+      ],
+      [
+        "KRU04675",
+        "C01425",
+        "to wrestle",
+        "to wrestle, fight"
+      ],
+      [
+        "KRU04973",
+        "D00390",
+        "to tread",
+        "to tread upon, trample"
+      ]
+    ],
+    "evidence": [
+      "B00615/KRU02633: both define a mixture of evenly distributed substances and share Rosh Hashanah 13b.",
+      "C00377/KRU03814: both define the Roman shoes leaving toes uncovered and share Yerushalmi Beitzah V,63a.",
+      "C00824/KRU04215: both define the deduction from redemption price and share Bava Metzia 106a.",
+      "C01305/KRU04594: both define the grist-maker/dealer; the source glosses are equivalent and the headword is identical.",
+      "C01425/KRU04675: both define the Hithpael wrestling/fighting sense and share Genesis Rabbah 22 and related examples.",
+      "D00390/KRU04973: both define the treading sense and share Bava Kamma 9a; the separate threshing senses remain distinct."
+    ],
+    "safeguards": [
+      "Each mapping is scoped to the exact source refs and exact reader-visible glosses; separate numbered senses remain separate."
+    ],
+    "currentTotal": 1354,
+    "currentAlternativeTotal": 278
+  },
+  "fiftyThirdReviewedTranche": {
+    "attemptedCandidates": 1,
+    "addedUniqueSourceGlossPairs": 0,
+    "deferredCandidates": 1,
+    "deferredPairs": [
+      {
+        "refs": [
+          "KRU03808",
+          "C00369"
+        ],
+        "glosses": [
+          "clapper of a bell",
+          "clapper"
+        ],
+        "reason": "Deferred: Jastrow's entry is only a cross-reference to גִּיל I and has no independent citation in this record. It likely names the same object, but confirm the referenced Jastrow entry before consolidating."
+      }
+    ],
+    "evidence": [
+      "Jastrow's C00369 entry only says 'clapper' and points to גִּיל I; it does not independently cite the source. Krupnik KRU03808 cites Tanhuma Amora 5 for a bell clapper."
+    ],
+    "safeguards": [
+      "Keep the candidate deferred until the referenced Jastrow entry גִּיל I is checked against the original context."
+    ],
+    "currentTotal": 1354,
     "currentAlternativeTotal": 278
   }
 }
