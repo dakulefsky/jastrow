@@ -1864,10 +1864,11 @@ const weightSense=U.merge([
   {text:'feeling of heaviness',label:'—3)'}
  ]}
 ],'יוֹקְרָא');
-assert.equal(weightSense.length,3,'the weight sense should consolidate while respect and asthma/heaviness stay separate');
+assert.equal(weightSense.length,4,'the weight sense should consolidate while respect, high price, and asthma/heaviness stay separate');
 assert(weightSense.some(group=>group.sources.length===2&&group.text.includes('weight')),'both Menachot 94b weight definitions should consolidate');
 assert(weightSense.some(group=>group.sources.length===1&&group.text==='respect'),'the separate respect sense must remain independent');
 assert(weightSense.some(group=>group.sources.length===1&&group.text==='high price'),'the separate high-price sense must remain independent');
+assert(weightSense.some(group=>group.sources.length===1&&group.text==='feeling of heaviness'),'the separate asthma/heaviness sense must remain independent');
 
 const dearAndHeavy=U.merge([
  {id:8816,entry:{h:'יְקַר',r:'KRU08816',source:'krupnik'},meanings:[
