@@ -5166,5 +5166,19 @@
     ],
     "currentTotal": 1322,
     "currentAlternativeTotal": 274
+  },
+  "runtimeAliasCompatibility": {
+    "status": "implemented-and-under-validation",
+    "commit": "5ea728db3047ec2d0f481751f6bb3e385340ef74",
+    "finding": "A reviewed source-gloss equivalence could fail at runtime when Jastrow and Krupnik used different primary headwords but one record explicitly listed the other spelling as an alternate form.",
+    "change": "Runtime compatibility now checks the primary and alternate forms attested by both original records. It still rejects conflicting explicit primary homonym numbers and preserves pointed-form comparison.",
+    "regression": "The shaping/impress mapping KRU04329 / C00954 exercises a Krupnik primary form גְּלִיף matched to its attested alternate גְּלִיפָא.",
+    "safeguards": [
+      "No inferred roots or prefix stripping",
+      "Only original primary/alternate headword forms are compared",
+      "Conflicting explicit primary homonym numbers remain incompatible",
+      "Reviewed gloss mappings remain exact and source-scoped"
+    ],
+    "validation": "Unified-meaning tests passed on commit 5ea728db3047ec2d0f481751f6bb3e385340ef74; remaining full phrase, Hebrew, and candidate-inventory checks were still running at ledger update time."
   }
 }
