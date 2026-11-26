@@ -1818,6 +1818,9 @@
   ["KRU17187","S01017","song","rhythmic song."]
   ,["KRU03803","C00364","rough untrimmed stone, cobble","a rolling stone, rough untrimmed stone, cobble"]
   ,["KRU03169","B01075","to bubble forth, to burst forth","to break through, bubble forth, burst forth"]
+  ,["KRU17489","S01587","symbolical form of making an agreement binding","affirmation, making sure; symbolical form of making an agreement binding"]
+  ,["KRU11696","M01949","to make poor","to make poor, make contemptible"]
+  ,["KRU09446","K00711","a species of figs","figs"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
