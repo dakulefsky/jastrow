@@ -6,12 +6,12 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1,377 retained whole-gloss mappings and all 278 retained alternative-level mappings (1,655 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1,379 retained whole-gloss mappings and all 281 retained alternative-level mappings (1,660 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1377,
-    "reviewedSourceAlternativePairCount": 278,
+    "reviewedSourceGlossPairCount": 1379,
+    "reviewedSourceAlternativePairCount": 281,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
     "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions.",
@@ -70,9 +70,9 @@
     "runtimeRuleHandledCandidates": 2451,
     "ambiguityFlaggedExactCandidates": 514,
     "nonExactSemanticCandidates": 1242,
-    "note": "Forty-nine source-scoped whole-gloss mappings and four alternative-level mappings have been added beyond the original branch baseline. Forty-three uncertain candidates remain deferred with exact source refs and reasons; known false positives remain separately recorded.",
+    "note": "Fifty-one source-scoped whole-gloss mappings and seven alternative-level mappings have been added beyond the original branch baseline. Forty-five uncertain candidates remain deferred with exact source refs and reasons; known false positives remain separately recorded.",
     "rejectedKnownCandidates": 20,
-    "deferredKnownCandidates": 43,
+    "deferredKnownCandidates": 45,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
     "latestGeneratedFromCommit": "pending-next-validation",
@@ -2398,7 +2398,7 @@
   },
   "alternativeLevelReview": {
     "status": "expanded-with-269-source-scoped-alternative-matches",
-    "reviewedSourceAlternativePairs": 276,
+    "reviewedSourceAlternativePairs": 279,
     "acceptedPairs": [
       [
         "KRU04451",
@@ -2615,6 +2615,24 @@
         "C00536",
         "the circumcised membrum",
         "the circumcised membrum"
+      ],
+      [
+        "KRU04385",
+        "C01038",
+        "to be bestowed",
+        "to be bestowed"
+      ],
+      [
+        "KRU04979",
+        "D00406",
+        "to be suspended",
+        "to be pushed aside"
+      ],
+      [
+        "KRU04979",
+        "D00406",
+        "to be suspended",
+        "suspended"
       ]
     ],
     "rationale": "Jastrow C01128 has separate phrases for sighing heavily under an attack of angina pectoris and coughing/spitting blood. Krupnik KRU04451 has a combined gloss listing the first phrase plus 'to expectorate'. Only the exact shared phrase is consolidated; the unmatched Krupnik alternative and Jastrow's second sense remain separate. Five additional high-confidence alternatives were reviewed from the regenerated inventory: leather apron, easily enticed, laying the foundation, writing plene, and lump. The original source wording and any unmatched senses remain intact. Seven further high-confidence alternative matches were reviewed against original entries: customary weight addition, caprification-ripened fig, cut glass vessels, thick eyebrows, the twelve-hour period, absent organ, and stuffed animal dish. Each preserves the complete original wording in More detail. Four additional reviewed pairs consolidate the same sense despite concise/full wording variants: pity, an animal set aside for sacrifice, bass-relief, and knocking. Four further reviewed variants consolidate corresponding meanings with concise wording: correspondence, goodness, deduction, and closing. Five more reviewed variants consolidate legal dispute, arrival/reaching, differing, asking, and manner/question glosses while preserving all other source alternatives. Three further high-confidence synonym matches consolidate self-conduct, presence, and reciprocal embracing while preserving separate semicolon-delimited Jastrow senses. One further source-attested likeness variant consolidates the nominal 'the like of' with the prepositional 'like, as' gloss while retaining the full Jastrow wording.",
@@ -6220,6 +6238,28 @@
           "trembling commotion"
         ],
         "reason": "Deferred: Jastrow's phrase describes a trembling commotion in Targum Isaiah/Psalms, while Krupnik's example is fear and trembling in Genesis. The lexical overlap is plausible but the source contexts differ; keep separate pending confirmation."
+      },
+      {
+        "refs": [
+          "KRU09361",
+          "K00605"
+        ],
+        "glosses": [
+          "extremely tall",
+          "an extremely tall and unshapely person"
+        ],
+        "reason": "Deferred: Krupnik gives an adjective ('extremely tall'), while Jastrow describes a person ('an extremely tall and unshapely person'); the examples differ and the grammatical focus is not yet secure."
+      },
+      {
+        "refs": [
+          "KRU04979",
+          "D00406"
+        ],
+        "glosses": [
+          "to push, to hurry",
+          "to push away, thrust"
+        ],
+        "reason": "Deferred: the two sources use different contextual senses (pushing/hurrying versus thrusting away); do not merge on the shared root alone."
       }
     ],
     "policy": "Rejected and deferred pairs are excluded from the pending discovery queue but remain recorded here with their source refs and rationale. Reconsider only with new source evidence."
@@ -7653,5 +7693,104 @@
     ],
     "currentTotal": 1377,
     "currentAlternativeTotal": 278
+  },
+  "sixtyFourthReviewedTranche": {
+    "attemptedCandidates": 2,
+    "addedUniqueSourceGlossPairs": 2,
+    "acceptedPairs": [
+      [
+        "KRU04385",
+        "C01038",
+        "to do one good or evil",
+        "to do one good"
+      ],
+      [
+        "KRU04979",
+        "D00406",
+        "to remove",
+        "to remove hurriedly"
+      ]
+    ],
+    "evidence": [
+      "C01038/KRU04385: both define the act of doing someone good (or evil), with the same Targum I Samuel 24:18 example.",
+      "D00406/KRU04979: both define hurried removal in Hifil and cite Moed Katan 22a."
+    ],
+    "safeguards": [
+      "Each mapping is source-scoped; other verbal forms and senses remain separate."
+    ],
+    "currentTotal": 1379,
+    "currentAlternativeTotal": 281
+  },
+  "sixtyFifthReviewedTranche": {
+    "attemptedCandidates": 2,
+    "addedUniqueSourceGlossPairs": 0,
+    "addedUniqueSourceAlternativePairs": 3,
+    "acceptedPairs": [
+      [
+        "KRU04385",
+        "C01038",
+        "to be bestowed",
+        "to be bestowed"
+      ],
+      [
+        "KRU04979",
+        "D00406",
+        "to be suspended",
+        "to be pushed aside"
+      ],
+      [
+        "KRU04979",
+        "D00406",
+        "to be suspended",
+        "suspended"
+      ]
+    ],
+    "evidence": [
+      "C01038/KRU04385: only the 'to be bestowed' alternative is aligned; Jastrow's 'to be laden with' alternative remains distinct.",
+      "D00406/KRU04979: only the Nifal 'to be pushed aside/suspended' alternatives are aligned; 'to give way' remains separate."
+    ],
+    "safeguards": [
+      "Alternative-level matching preserves the remaining unmatched alternatives and original full source wording."
+    ],
+    "currentTotal": 1379,
+    "currentAlternativeTotal": 281
+  },
+  "sixtySixthReviewedTranche": {
+    "attemptedCandidates": 2,
+    "addedUniqueSourceGlossPairs": 0,
+    "deferredCandidates": 2,
+    "deferredPairs": [
+      {
+        "refs": [
+          "KRU09361",
+          "K00605"
+        ],
+        "glosses": [
+          "extremely tall",
+          "an extremely tall and unshapely person"
+        ],
+        "reason": "Deferred: Krupnik gives an adjective ('extremely tall'), while Jastrow describes a person ('an extremely tall and unshapely person'); the examples differ and the grammatical focus is not yet secure."
+      },
+      {
+        "refs": [
+          "KRU04979",
+          "D00406"
+        ],
+        "glosses": [
+          "to push, to hurry",
+          "to push away, thrust"
+        ],
+        "reason": "Deferred: the two sources use different contextual senses (pushing/hurrying versus thrusting away); do not merge on the shared root alone."
+      }
+    ],
+    "evidence": [
+      "K00605/KRU09361 contrasts a person (Jastrow) with an adjective (Krupnik).",
+      "D00406/KRU04979's push/thrust candidate differs in contextual sense despite the shared root."
+    ],
+    "safeguards": [
+      "Preserve grammatical role and sense boundaries; defer when the source glosses do not establish equivalence."
+    ],
+    "currentTotal": 1379,
+    "currentAlternativeTotal": 281
   }
 }
