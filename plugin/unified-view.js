@@ -1731,7 +1731,14 @@
   ["KRU06547","G00654","dealer in leather bags","maker of and dealer in leather bags","Different occupational scope: Jastrow includes making as well as dealing; Krupnik only says dealer."],
   ["KRU10278","L00533","there is","there is (was) not","The negative particle changes the meaning."],
   ["KRU03526","C00053","The Most High","high, exalted, elevated","Divine title versus ordinary adjective; shared 'high' is not semantic equivalence."],
-  ["KRU02827","B00794","to bear first fruits","to bear for the first time","Different senses: first-fruits production versus first birth; retain the separate first-ripening match."]
+  ["KRU02827","B00794","to bear first fruits","to bear for the first time","Different senses: first-fruits production versus first birth; retain the separate first-ripening match."],
+  ["KRU03023","B00986","royal seat, palace","of the palace","Rejected: Jastrow's phrase is the genitive 'of the palace' (or 'of the royal affairs'), while Krupnik's numbered sense is the palace itself, 'royal seat, palace'. Shared wording does not make these equivalent."],
+  ["KRU03220","B01135","valley","Valley of","Rejected: Jastrow's reader phrase 'Valley of' is a construct/proper-name expression requiring a complement; Krupnik's 'valley' is the standalone noun. The grammatical relation is different."],
+  ["KRU05415","D00950","with the knowledge of, with the consent of","knowledge, mind; temperament, physical disposition, constitution","Rejected: Jastrow defines the noun 'knowledge/mind' and temperament, while Krupnik's phrase is the idiom 'with the knowledge/consent of'. The shared token is not the same sense."],
+  ["KRU17926","T00128","to lie","to lie with, copulate with, cover","Rejected: Jastrow's phrase explicitly means sexual intercourse ('to lie with'); Krupnik's candidate phrase 'to lie' is the separate generic sense of lying/being placed. The related sexual sense in the Krupnik entry is separately numbered."],
+  ["KRU18302","T00918","to be broken in","to be broken","Rejected: the reader-extracted Jastrow phrase is only 'to be broken'; Krupnik's gloss adds the distinct intransitive/figurative sense 'to be broken in'. The longer source note is not a separately extracted reader phrase and cannot justify widening the match."],
+  ["KRU20168","V01113","from below","below","Rejected: 'from below' specifies a source/direction of movement; Jastrow's 'below' is a location. The added preposition changes the meaning."],
+  ["KRU16710","S00123","holiness","his holiness","Rejected: Jastrow's numbered sense is the honorific title 'his holiness' for a person; Krupnik's numbered sense is the abstract noun 'holiness/sanctity'. The title and abstract concept must remain distinct."]
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const deferredSourceGlossPairs=new Map([
   ["KRU06494","G00538","at times","times","Deferred: the Krupnik entry explicitly distinguishes 'time' from 'times'; this phrase pair is not one-to-one."],
