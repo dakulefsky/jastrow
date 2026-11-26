@@ -92,7 +92,7 @@
   for(const source of sources||[])for(const entry of source.records||[])for(const part of entry.parts||[]){
    const text=part.meaning||part.text||'',label=labelKey(part.label),scope=normalize(source.word||word),homonym=homonymNumber(entry.word);
    if(!normalize(text))continue;
-   const segmentPair=reviewedSenseSegmentPairRecords.find(pair=>pair.b===entry.rid&&sourceRefs.has(pair.a));
+   const segmentPair=reviewedSenseSegmentPairRecords.find(pair=>pair.b===entry.rid&&sourceEntries.some(sourceEntry=>sourceEntry.rid===pair.a&&(sourceEntry.parts||[]).some(sourcePart=>normalize(sourcePart.meaning||sourcePart.text)===normalize(pair.aMeaning))));
    const segments=segmentPair?splitNumberedSenseSegments(text):null;
    if(segmentPair&&segments?.length>1&&normalize(segments[0]).startsWith(normalize(segmentPair.bPrefix))){
     prepared.push({source,entry,part,text:segmentPair.display,label,scope,homonym,alternatives:splitAlternatives(segmentPair.display)});
