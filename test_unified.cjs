@@ -132,7 +132,37 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,275,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,278,'every source-scoped alternative match must be loaded');
+
+const houseAndPlace=U.merge([
+ {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
+  {text:'house',label:'2'},
+  {text:'place',label:'3'}
+ ]},
+ {id:2302,entry:{h:'בֵּי',r:'B00536'},meanings:[
+  {text:'house of, school of; home, place of',label:'',section:'—4)'}
+ ]}
+],'בֵּי');
+assert.equal(houseAndPlace.length,2,'the house-of and place-of senses must remain separate');
+const houseOfGroup=houseAndPlace.find(group=>group.text.toLowerCase().includes('house'));
+const placeOfGroup=houseAndPlace.find(group=>group.text.toLowerCase().includes('place'));
+assert(houseOfGroup&&houseOfGroup.sources.length===2,'the house-of sense should consolidate with Krupnik sense 2');
+assert(placeOfGroup&&placeOfGroup.sources.length===2,'the place-of sense should consolidate with Krupnik sense 3');
+assert.notEqual(houseOfGroup,placeOfGroup,'the two numbered senses must not collapse into one');
+
+const rollIn=U.merge([
+ {id:2311,entry:{h:'פַּלְפֵּל II',r:'KRU15603',source:'krupnik'},meanings:[{text:'to roll',label:''}]},
+ {id:2312,entry:{h:'פַּלְפֵּל II',r:'Q01116'},meanings:[
+  {text:'to roll in, cover with',label:'',section:''},
+  {text:'to roll oneself',label:'Ithpalp. אִתְפַּלְפֵּל',section:''}
+ ]}
+],'פַּלְפֵּל II');
+const rollInGroup=rollIn.find(group=>group.sources.some(source=>source.entry.r==='KRU15603')&&group.sources.some(source=>source.entry.r==='Q01116'));
+assert(rollInGroup,'the shared Targum Job XVI, 15 rolling sense should consolidate');
+assert.equal(rollInGroup.sources.length,2,'both original rolling source records must remain available');
+const reflexiveRoll=rollIn.find(group=>group.text==='to roll oneself');
+assert(reflexiveRoll&&reflexiveRoll.sources.length===1,'the separate reflexive rolling sense must remain independent');
+
 
 const pourAndEmpty=U.merge([
  {id:2101,entry:{h:'זָלַף',r:'KRU06469',source:'krupnik'},meanings:[{text:'to empty',label:'2'}]},
@@ -1110,6 +1140,11 @@ const decisionKey=(a,b,x,y)=>[a,b].sort().join('|')+'::'+[cleanDecision(x),clean
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU06547','G00654','dealer in leather bags','maker of and dealer in leather bags')),'known occupational false positives must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU10278','L00533','there is','there is (was) not')),'negative-particle distinctions must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03526','C00053','The Most High','high, exalted, elevated')),'divine titles must not be merged with ordinary adjectives');
+assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU12418','N00250',"to conduct o. s.","to lead, conduct")),'reviewed candidate must remain rejected: N00250 / KRU12418');
+assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU15603','Q01116',"to roll onself","to roll in, cover with")),'reviewed candidate must remain rejected: Q01116 / KRU15603');
+assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU18682','U00438',"in the name of","name")),'reviewed candidate must remain rejected: U00438 / KRU18682');
+assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU18682','U00437',"in the name of","name, title;")),'reviewed candidate must remain rejected: U00437 / KRU18682');
+assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU20035','V00886',"the New Year’s day","the prayers on the New Year interspersed with blowing the Shofar, the Musaf of the New Year’s Day")),'reviewed candidate must remain rejected: V00886 / KRU20035');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03023','B00986',"royal seat, palace","of the palace")),'reviewed false positive must remain rejected: B00986 / KRU03023');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03220','B01135',"valley","Valley of")),'reviewed false positive must remain rejected: B01135 / KRU03220');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU05415','D00950',"with the knowledge of, with the consent of","knowledge, mind; temperament, physical disposition, constitution")),'reviewed false positive must remain rejected: D00950 / KRU05415');
@@ -1118,6 +1153,18 @@ assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU18302','T00918',"to be bro
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU20168','V01113',"from below","below")),'reviewed false positive must remain rejected: V01113 / KRU20168');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU16710','S00123',"holiness","his holiness")),'reviewed false positive must remain rejected: S00123 / KRU16710');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06494','G00538','at times','times')),'ambiguous time/times candidates must remain deferred');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU01114','A01696',"to be burnt","to be consumed, burnt up, digested")),'reviewed candidate must remain deferred: A01696 / KRU01114');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06564','G00686',"to arm o. s.","to tie around, gird, arm; to harness, saddle")),'reviewed candidate must remain deferred: G00686 / KRU06564');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU09659','K01007',"to bend","to bend over, invert, turn upside down")),'reviewed candidate must remain deferred: K01007 / KRU09659');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU11079','M00922',"half to half; at an equal distance from each","division, half.")),'reviewed candidate must remain deferred: M00922 / KRU11079');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU12418','N00250',"to apply, to be wont to","to lead, conduct; to demean one’s self; to be guided by, be wont to; to apply, be practiced")),'reviewed candidate must remain deferred: N00250 / KRU12418');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU12418','N00250',"to conduct o. s.","to lead, conduct; to demean one’s self; to be guided by, be wont to; to apply, be practiced")),'reviewed candidate must remain deferred: N00250 / KRU12418');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU15633','Q01188',"to turn","to turn around, go away")),'reviewed candidate must remain deferred: Q01188 / KRU15633');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU15633','Q01188',"to turn","to turn aside, go out")),'reviewed candidate must remain deferred: Q01188 / KRU15633');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU15633','Q01188',"to ease nature","to ease one’s self")),'reviewed candidate must remain deferred: Q01188 / KRU15633');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU15633','Q01188',"to be removed","to be removed, to die")),'reviewed candidate must remain deferred: Q01188 / KRU15633');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU15633','Q01188',"to be removed","to be vacated, cleared, removed")),'reviewed candidate must remain deferred: Q01188 / KRU15633');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU17819','S02236',"to be hard","to be hard on, press heavily")),'reviewed candidate must remain deferred: S02236 / KRU17819');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU12466','N00341',"to put down","to rest, put down; to leave alone")),'reviewed ambiguous candidate must remain deferred: N00341 / KRU12466');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU12466','N00341',"to rest","to rest, put down; to leave alone")),'reviewed ambiguous candidate must remain deferred: N00341 / KRU12466');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU13990','O01573',"to smell badly","to evaporate, be decomposed; to decay; to smell badly")),'reviewed ambiguous candidate must remain deferred: O01573 / KRU13990');
