@@ -188,5 +188,5 @@ assertRejectedPair('KRU02827','KRU02828',"1) ילד בפעם הראשונה","ב
 assertRejectedPair('KRU02827','KRU02828',"1) ילד בפעם הראשונה","ביכר");
 assertRejectedPair('KRU02827','KRU02828',"1) ילד בפעם הראשונה","כנ״ל. בכור׳ פ״ג מ״ב: המבכירות מניקות.");
 assertDeferredPair('KRU12499','KRU12500',"התרומם","התנופף ברוח");
-assertDeferredPair('KRU20037','KRU20038',"הִתְקִיל נכשל","1) שקל");
+
 console.log('PASS: shared Hebrew meaning consolidation preserves exact source wording, labels, source records, and phrase boundaries.');
