@@ -350,7 +350,7 @@
         "meaning": "gullet"
       }
     ],
-    "note": "Added deterministic normalization for exact Hebrew alternative lists: punctuation and alternative order are normalized, while phrase word order is preserved. Regression tests verify that unreviewed synonyms remain separate. A source-reviewed non-synonym registry now excludes nineteen clear homonym, grammatical-form, and unrelated-meaning false positives from the Hebrew review queue; it does not change runtime consolidation. A second Hebrew review tranche adds fourteen more exact source-pair rejections for clearly unrelated homonyms and meanings; the registry is review-only and does not alter runtime lookup.",
+    "note": "Added deterministic normalization for exact Hebrew alternative lists: punctuation and alternative order are normalized, while phrase word order is preserved. Regression tests verify that unreviewed synonyms remain separate. A source-reviewed non-synonym registry now excludes nineteen clear homonym, grammatical-form, and unrelated-meaning false positives from the Hebrew review queue; it does not change runtime consolidation. A second Hebrew review tranche adds fourteen more exact source-pair rejections for clearly unrelated homonyms and meanings; the registry is review-only and does not alter runtime lookup. The Hebrew review queue also records two ambiguous pairs for later source-sense review; they are excluded from the pending queue but not treated as synonyms or runtime merges.",
     "reviewedSenseSegmentPairs": 1,
     "reviewedSenseSegmentPairDetails": [
       {
@@ -742,9 +742,67 @@
           "פרי האלון"
         ],
         "reason": "Key-bit versus acorn; distinct meanings."
+      },
+      {
+        "records": [
+          "KRU02827",
+          "KRU02828"
+        ],
+        "meanings": [
+          "1) ילד בפעם הראשונה",
+          "בשל (הפרי)"
+        ],
+        "reason": "Bearing for the first time versus fruit ripening/maturing; different senses."
+      },
+      {
+        "records": [
+          "KRU02827",
+          "KRU02828"
+        ],
+        "meanings": [
+          "1) ילד בפעם הראשונה",
+          "ביכר"
+        ],
+        "reason": "Bearing for the first time versus recognizing something as first-born; different grammatical senses."
+      },
+      {
+        "records": [
+          "KRU02827",
+          "KRU02828"
+        ],
+        "meanings": [
+          "1) ילד בפעם הראשונה",
+          "כנ״ל. בכור׳ פ״ג מ״ב: המבכירות מניקות."
+        ],
+        "reason": "The first-time-bearing sense is not equivalent to the separate firstborn/citation sense in the Hifil entry."
       }
     ],
-    "reviewedNonSynonymPairCount": 33
+    "reviewedNonSynonymPairCount": 36,
+    "deferredSynonymPairs": [
+      {
+        "records": [
+          "KRU12499",
+          "KRU12500"
+        ],
+        "meanings": [
+          "התרומם",
+          "התנופף ברוח"
+        ],
+        "reason": "Deferred: the source meanings 'to rise/swing oneself' and 'to wave in the wind' are related motions but not demonstrably equivalent; the cited passages differ."
+      },
+      {
+        "records": [
+          "KRU20037",
+          "KRU20038"
+        ],
+        "meanings": [
+          "הִתְקִיל נכשל",
+          "1) שקל"
+        ],
+        "reason": "Deferred: the candidate builder exposes only KRU20038's first Hebrew sense '1) שקל', while the full source text contains a later '2) נכשל' that may be relevant. The source has multiple numbered and derived forms; improve sense extraction before deciding."
+      }
+    ],
+    "deferredSynonymPairCount": 2
   },
   "secondReviewedTranche": {
     "attemptedRows": 46,
