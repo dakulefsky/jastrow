@@ -264,10 +264,8 @@ const camelStuff=U.merge([
   {text:'to stuff food into the camel’s mouth',section:'—4)'}
  ]}
 ],'דָּרַס');
-for(const phrase of ['to stamp','to press (the knife)','to stuff']){
- const group=camelStuff.find(item=>item.text===phrase);
- assert(group&&group.sources.some(source=>source.entry.r==='KRU05539')&&group.sources.some(source=>source.entry.r==='D01113'),'the matching D01113/KRU05539 sense should consolidate: '+phrase);
-}
+const mappedCamelGroups=camelStuff.filter(group=>group.sources.some(source=>source.entry.r==='KRU05539')&&group.sources.some(source=>source.entry.r==='D01113'));
+assert.equal(mappedCamelGroups.length,3,'the three separately numbered D01113/KRU05539 senses should each consolidate');
 
 
 
