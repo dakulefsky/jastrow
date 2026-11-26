@@ -109,7 +109,7 @@
  // Ambiguous Hebrew pairs retained for later source-level review; no runtime merge is implied.
  const deferredSynonymPairs=new Map([
   ["KRU12499","KRU12500","התרומם","התנופף ברוח","Deferred: the source meanings 'to rise/swing oneself' and 'to wave in the wind' are related motions but not demonstrably equivalent; the cited passages differ."],
-  ["KRU20037","KRU20038","הִתְקִיל נכשל","1) שקל","Deferred: the candidate builder exposes only KRU20038's first Hebrew sense '1) שקל', while the full source text contains a later '2) נכשל' that may be relevant. The source has multiple numbered and derived forms; improve sense extraction before deciding."]
+
  ].map(([a,b,x,y,reason])=>{
   const ids=[a,b].sort().join('|'),glosses=[normalize(x),normalize(y)].sort().join(' | ');
   return [ids+'::'+glosses,reason];
