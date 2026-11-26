@@ -3,6 +3,7 @@
  const S=root.JastrowSearch||(typeof require==='function'?require('./search.js'):null);
  const clean=text=>String(text).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
  const displayCorrections=new Map([
+  ['KRU12418::to conduct o. s.','to conduct oneself'],
   ['KRU08370::desparing of recovering a lost object','despairing of recovering a lost object'],
   ['KRU15837::to declare ownerless','declare a property ownerless'],
   ["P00680::'erub, a symbolical act by which the legal fiction of community",'a symbolical act by which the legal fiction of community or continuity is established'],
@@ -1681,6 +1682,8 @@
   ["KRU07111","H00931","rent","the fixed annual rent in kind"],
   // Jastrow itself notes "fork" as the alternative to "hook".
   ["KRU16546","R00617","a piece as large as can be taken up with a fork","a piece as large as can be taken up with a hook"],
+  // Both entries cite Sifré Deut. 323 for the Hithpael sense of conducting oneself.
+  ["KRU12418","N00250","to conduct o. s.","to conduct one’s self"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
