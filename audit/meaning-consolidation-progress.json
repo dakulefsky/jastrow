@@ -71,9 +71,9 @@
     "runtimeRuleHandledCandidates": 2456,
     "ambiguityFlaggedExactCandidates": 534,
     "nonExactSemanticCandidates": 1331,
-    "note": "Regenerated from 47,919 original source entries and the real Chromium Jastrow phrase extractor. Sixteen known false positives and twenty-seven deferred candidates are recorded with their source refs and reasons preserved. Recent tranches added four source-scoped alternative mappings, deferred twenty-seven ambiguous/underspecified cases, and rejected sixteen source-gloss false positives. Hebrew inventory: 567 candidate pairs, 566 manual-review, one guarded exact-alternative runtime match; the reviewed KRU17474/KRU17475 partial-sense mapping is excluded from pending review.",
-    "rejectedKnownCandidates": 16,
-    "deferredKnownCandidates": 27
+    "note": "Regenerated from 47,919 original source entries and the real Chromium Jastrow phrase extractor. Nineteen known false positives and twenty-eight deferred candidates are recorded with source refs and reasons preserved. Four source-scoped alternative mappings were added; the latest review tranche rejected three remaining strong-overlap false positives and deferred one ambiguous multi-sense case. Hebrew review separately records thirty-six non-synonym pairs and two deferred cases.",
+    "rejectedKnownCandidates": 19,
+    "deferredKnownCandidates": 28
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -5663,6 +5663,39 @@
           "the prayers on the New Year interspersed with blowing the Shofar, the Musaf of the New Year’s Day"
         ],
         "reason": "Rejected: Jastrow defines the New Year prayer service (Musaf), whereas Krupnik sense 1 defines the calendar day itself. Krupnik's separate sense 2 is the prayer-service meaning."
+      },
+      {
+        "refs": [
+          "KRU03682",
+          "C00244"
+        ],
+        "glosses": [
+          "to cut, esp: to harvest dates",
+          "to cut into"
+        ],
+        "reason": "Rejected: Jastrow's Pi. sense is 'to cut into'; Krupnik's primary sense is the Qal 'to cut, especially to harvest dates'. The exact base-form 'to cut' match is already handled separately; this derived sense is not equivalent."
+      },
+      {
+        "refs": [
+          "KRU03956",
+          "C00538"
+        ],
+        "glosses": [
+          "to cut, to shear",
+          "to cut into, interrupt"
+        ],
+        "reason": "Rejected: Jastrow's Pa. gloss refers to interrupting a study (Lam. R. I, 3); Krupnik's gloss refers to cutting/shearing (e.g. myrtle). Shared 'cut' is not the same action."
+      },
+      {
+        "refs": [
+          "KRU04094",
+          "C00577"
+        ],
+        "glosses": [
+          "cut, wound",
+          "what is to be cut"
+        ],
+        "reason": "Rejected: Jastrow's numbered sense is the legal category 'what is to be cut' (foreskin); Krupnik's gloss is 'cut, wound'. These are different meanings and grammatical uses."
       }
     ],
     "deferredSourceGlossPairs": [
@@ -5973,6 +6006,17 @@
           "to be hard on, press heavily"
         ],
         "reason": "Deferred: Jastrow explicitly labels an Af. form and adds 'on/press heavily'; Krupnik's extracted gloss is the broader 'to be hard'. The source records do not establish the same specific sense."
+      },
+      {
+        "refs": [
+          "KRU19012",
+          "U01042"
+        ],
+        "glosses": [
+          "covering",
+          "sinking, covering up"
+        ],
+        "reason": "Deferred: Jastrow combines 'sinking' and 'covering up' in one reader phrase, while Krupnik separates 'submergence' and 'covering' into numbered senses. A source-scoped mapping could bridge two distinct KRU senses without a finer Jastrow boundary."
       }
     ],
     "policy": "Rejected and deferred pairs are excluded from the pending discovery queue but remain recorded here with their source refs and rationale. Reconsider only with new source evidence."
@@ -6573,6 +6617,81 @@
     "safeguards": [
       "Rejected decisions are review metadata only and never cause runtime merging.",
       "A separate source-specific gloss pair may still be reviewed independently."
+    ],
+    "currentTotal": 1322,
+    "currentAlternativeTotal": 278
+  },
+  "fortySixthReviewedTranche": {
+    "attemptedCandidates": 3,
+    "addedUniqueSourceGlossPairs": 0,
+    "rejectedCandidates": 3,
+    "rejectedPairs": [
+      {
+        "refs": [
+          "KRU03682",
+          "C00244"
+        ],
+        "glosses": [
+          "to cut, esp: to harvest dates",
+          "to cut into"
+        ],
+        "reason": "Rejected: Jastrow's Pi. sense is 'to cut into'; Krupnik's primary sense is the Qal 'to cut, especially to harvest dates'. The exact base-form 'to cut' match is already handled separately; this derived sense is not equivalent."
+      },
+      {
+        "refs": [
+          "KRU03956",
+          "C00538"
+        ],
+        "glosses": [
+          "to cut, to shear",
+          "to cut into, interrupt"
+        ],
+        "reason": "Rejected: Jastrow's Pa. gloss refers to interrupting a study (Lam. R. I, 3); Krupnik's gloss refers to cutting/shearing (e.g. myrtle). Shared 'cut' is not the same action."
+      },
+      {
+        "refs": [
+          "KRU04094",
+          "C00577"
+        ],
+        "glosses": [
+          "cut, wound",
+          "what is to be cut"
+        ],
+        "reason": "Rejected: Jastrow's numbered sense is the legal category 'what is to be cut' (foreskin); Krupnik's gloss is 'cut, wound'. These are different meanings and grammatical uses."
+      }
+    ],
+    "evidence": [
+      "Reviewed the final three strong-overlap English candidates against their original reader-extracted phrases and source examples.",
+      "The apparent overlap was caused by the shared word 'cut', but the source senses were different: date harvesting versus cutting into, interrupting study versus shearing, and a legal category versus a wound."
+    ],
+    "safeguards": [
+      "Rejected decisions are source-ref and gloss specific; the exact base-form 'to cut' mapping remains handled independently."
+    ],
+    "currentTotal": 1322,
+    "currentAlternativeTotal": 278
+  },
+  "fortySeventhReviewedTranche": {
+    "attemptedCandidates": 1,
+    "addedUniqueSourceGlossPairs": 0,
+    "deferredCandidates": 1,
+    "deferredPairs": [
+      {
+        "refs": [
+          "KRU19012",
+          "U01042"
+        ],
+        "glosses": [
+          "covering",
+          "sinking, covering up"
+        ],
+        "reason": "Deferred: Jastrow combines 'sinking' and 'covering up' in one reader phrase, while Krupnik separates 'submergence' and 'covering' into numbered senses. A source-scoped mapping could bridge two distinct KRU senses without a finer Jastrow boundary."
+      }
+    ],
+    "evidence": [
+      "Jastrow's single phrase spans 'sinking' and 'covering up', while Krupnik divides the corresponding material into separate numbered senses ('submergence' and 'covering')."
+    ],
+    "safeguards": [
+      "Do not create a record-level mapping until the exact Jastrow sub-sense can be isolated."
     ],
     "currentTotal": 1322,
     "currentAlternativeTotal": 278
