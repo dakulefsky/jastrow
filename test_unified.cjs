@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1469,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1468,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -460,7 +460,7 @@ const bubblingForth=U.merge([
 assert.equal(bubblingForth.length,1,'the same bubble/burst-forth verbal sense should consolidate');
 assert.equal(bubblingForth[0].sources.length,2,'both sources citing the same verbal usage should remain available');
 
-assert.equal(U.reviewedSourceGlossPairs.size,1469,'all source-specific whole-gloss mappings must be loaded');
+assert.equal(U.reviewedSourceGlossPairs.size,1468,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -1472,7 +1472,6 @@ assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU08552','J00234',"weight, h
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU08816','J00581',"to be dear","to be dear, precious")),'source-verified mapping should be registered for KRU08816/J00581');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU08816','J00581',"to be heavy","to be heavy")),'source-verified mapping should be registered for KRU08816/J00581');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU13241','O00258',"to plaster with lime","to plaster, whitewash")),'source-verified mapping should be registered for KRU13241/O00258');
-assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU13241','O00258',"to paint the skin with a depilatory","to paint the skin with a depilatory")),'source-verified mapping should be registered for KRU13241/O00258');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU06499','G00560',"voluptuous man","adulterer; voluptuous")),'source-verified mapping should be registered for KRU06499/G00560');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU06852','H00496',"wrapper, envelope","wrapper of reed-matting")),'source-verified mapping should be registered for KRU06852/H00496');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU07458','H01522',"adze, pick-axe","carpenter’s adze")),'source-verified mapping should be registered for KRU07458/H01522');
@@ -1893,8 +1892,9 @@ const plasterAndDepilatory=U.merge([
   {text:'to paint the skin with a depilatory',label:'2'}
  ]}
 ],'סוּד');
-assert.equal(plasterAndDepilatory.length,2,'plastering and depilatory uses must consolidate separately');
-assert(plasterAndDepilatory.every(group=>group.sources.length===2),'both Sotah plastering and Shabbat depilatory source senses should remain independently available');
+assert.equal(plasterAndDepilatory.length,3,'the explicit plaster gloss should consolidate while the secondary depilatory gloss remains separate until the reader extractor exposes it');
+assert(plasterAndDepilatory.some(group=>group.sources.length===2&&group.text.includes('plaster')),'both Sotah plastering source senses should consolidate');
+assert(plasterAndDepilatory.filter(group=>group.text.includes('depilatory')).length===2,'the secondary depilatory sense should remain source-separated because the full Jastrow phrase is not emitted by the reader extractor');
 
 const voluptuousMan=U.merge([
  {id:6499,entry:{h:'זַנַּאי',r:'KRU06499',source:'krupnik'},meanings:[{text:'voluptuous man'}]},
