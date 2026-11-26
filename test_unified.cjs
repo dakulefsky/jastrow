@@ -1421,6 +1421,72 @@ assert.equal(fixedRentAndTenant.filter(group=>group.sources.length===2).length,2
 assert(fixedRentAndTenant.some(group=>group.text==='tenant on a fixed rent payable in kind'&&group.sources.length===2),'the tenant definition should consolidate independently');
 assert(fixedRentAndTenant.some(group=>group.text==='the fixed annual rent in kind'&&group.sources.length===2),'the annual-rent definition should consolidate independently');
 
+const rearingOfChildren=U.merge([
+ {id:4045,entry:sourceByRef.get('KRU04045'),meanings:[{text:'rearing (of children)',label:''}]},
+ {id:635,entry:sourceByRef.get('C00635'),meanings:[
+  {text:'rearing',label:''},
+  {text:'growth',label:''},
+  {text:'raising to dignity, elevation',label:''}
+ ]}
+],S.normalize(sourceByRef.get('KRU04045').h));
+assert.equal(rearingOfChildren.length,3,'rearing consolidates without absorbing growth or elevation');
+assert.equal(rearingOfChildren.find(group=>group.sources.length===2)?.text,'rearing (of children)','the child-rearing qualifier should display once');
+assert(rearingOfChildren.some(group=>group.text==='growth'&&group.sources.length===1),'the separate growth sense remains independent');
+assert(rearingOfChildren.some(group=>group.text==='raising to dignity, elevation'&&group.sources.length===1),'the separate elevation sense remains independent');
+
+const peatAndTurf=U.merge([
+ {id:4194,entry:sourceByRef.get('KRU04194'),meanings:[{text:'turf or peat',label:''}]},
+ {id:799,entry:sourceByRef.get('C00799'),meanings:[{text:'peat',label:''}]}
+],S.normalize(sourceByRef.get('KRU04194').h));
+assert.equal(peatAndTurf.length,1,'the two definitions of the peat/turf material should consolidate');
+assert.equal(peatAndTurf[0].text,'turf or peat','the fuller source wording should display once');
+
+const gnawingByMice=U.merge([
+ {id:3897,entry:sourceByRef.get('KRU03897'),meanings:[{text:'to gnaw (of mice)',label:''}]},
+ {id:469,entry:sourceByRef.get('C00469'),meanings:[{text:'to gnaw',label:''}]}
+],S.normalize(sourceByRef.get('KRU03897').h));
+assert.equal(gnawingByMice.length,1,'the definitions of gnawing by mice should consolidate');
+assert.equal(gnawingByMice[0].text,'to gnaw (of mice)','the zoological qualifier should be retained');
+
+const lowingOxen=U.merge([
+ {id:4099,entry:sourceByRef.get('KRU04099'),meanings:[
+  {text:'to break forth',label:''},
+  {text:'to low (of oxen)',label:''}
+ ]},
+ {id:690,entry:sourceByRef.get('C00690'),meanings:[
+  {text:'to break forth, stir up',label:''},
+  {text:'to low',label:''}
+ ]}
+],S.normalize(sourceByRef.get('KRU04099').h));
+assert.equal(lowingOxen.length,2,'the lowing sense consolidates without absorbing the separate breaking-forth sense');
+assert(lowingOxen.some(group=>group.sources.length===2&&group.text==='to low (of oxen)'),'both sources should support the lowing sense');
+assert(lowingOxen.some(group=>group.sources.length===2&&group.text.includes('to break forth')),'the separate breaking-forth sense should remain independently mapped');
+
+const mortalHuman=U.merge([
+ {id:3441,entry:sourceByRef.get('KRU03441'),meanings:[
+  {text:'flesh, meat, body',label:'1'},
+  {text:'mortal man',label:'2'}
+ ]},
+ {id:1372,entry:sourceByRef.get('B01372'),meanings:[
+  {text:'body, flesh, meat',label:'1'},
+  {text:'mortal',label:'2'}
+ ]}
+],S.normalize(sourceByRef.get('KRU03441').h));
+assert.equal(mortalHuman.length,2,'the mortal-human sense and body/flesh sense should consolidate separately');
+assert(mortalHuman.some(group=>group.sources.length===2&&group.text==='mortal man'),'both sources should support the mortal-human sense');
+assert(mortalHuman.some(group=>group.sources.length===2&&group.text==='body, flesh, meat'),'the separate body/flesh sense should remain independently mapped');
+
+const shapingOfWriting=U.merge([
+ {id:4329,entry:sourceByRef.get('KRU04329'),meanings:[{text:'shaping (of writing), impress',label:''}]},
+ {id:954,entry:sourceByRef.get('C00954'),meanings:[
+  {text:'shaping',label:''},
+  {text:'impress, poetry',label:''}
+ ]}
+],S.normalize(sourceByRef.get('KRU04329').h));
+const shapingGroup=shapingOfWriting.find(group=>group.sources.length===2&&group.text==='shaping (of writing)');
+assert(shapingGroup,'the reviewed alternative-level mapping should consolidate shaping of writing');
+assert(shapingOfWriting.some(group=>group.text.includes('impress')&&!group.text.includes('shaping')),'the separate impress alternative must not be absorbed into shaping');
+
 const spatialFarMeaning=U.merge([
  {id:5585,entry:sourceByRef.get('KRU05585'),meanings:[{text:'farther off (of space)',label:''}]},
  {id:16,entry:sourceByRef.get('E00016'),meanings:[
