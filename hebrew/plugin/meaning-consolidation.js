@@ -88,7 +88,6 @@
  function merge(sources,word){
   const groups=[],prepared=[];
   const sourceEntries=(sources||[]).flatMap(source=>source.records||[]);
-  const sourceRefs=new Set(sourceEntries.map(entry=>entry.rid));
   for(const source of sources||[])for(const entry of source.records||[])for(const part of entry.parts||[]){
    const text=part.meaning||part.text||'',label=labelKey(part.label),scope=normalize(source.word||word),homonym=homonymNumber(entry.word);
    if(!normalize(text))continue;
