@@ -71,9 +71,9 @@
     "runtimeRuleHandledCandidates": 2456,
     "ambiguityFlaggedExactCandidates": 534,
     "nonExactSemanticCandidates": 1331,
-    "note": "Regenerated from 47,919 original source entries and the real Chromium Jastrow phrase extractor. Four known false positives and two unresolved time/times candidates are excluded from pending review with their reasons preserved. Hebrew inventory: 567 candidate pairs, 566 manual-review, one guarded exact-alternative runtime match; the reviewed KRU17474/KRU17475 partial-sense mapping is excluded from pending review.",
+    "note": "Regenerated from 47,919 original source entries and the real Chromium Jastrow phrase extractor. Four known false positives and fifteen deferred candidates are recorded with their source refs and reasons preserved. The latest review tranche added no automatic mappings; it deferred thirteen ambiguous one-to-many cases. Hebrew inventory: 567 candidate pairs, 566 manual-review, one guarded exact-alternative runtime match; the reviewed KRU17474/KRU17475 partial-sense mapping is excluded from pending review.",
     "rejectedKnownCandidates": 4,
-    "deferredKnownCandidates": 2
+    "deferredKnownCandidates": 15
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -5118,6 +5118,149 @@
           "one known to be skilled in boring"
         ],
         "reason": "Source-citation verification was not completed."
+      },
+      {
+        "refs": [
+          "KRU12466",
+          "N00341"
+        ],
+        "glosses": [
+          "to put down",
+          "to rest, put down; to leave alone"
+        ],
+        "reason": "Deferred: the Jastrow Af. gloss spans multiple meanings, while Krupnik separates the matching wording across distinct forms/sense segments. A record-level alternative mapping cannot safely isolate the active 'put down' sense from the other 'rest' sense."
+      },
+      {
+        "refs": [
+          "KRU12466",
+          "N00341"
+        ],
+        "glosses": [
+          "to rest",
+          "to rest, put down; to leave alone"
+        ],
+        "reason": "Deferred: the Jastrow Af. gloss spans multiple meanings, while Krupnik separates the matching wording across distinct forms/sense segments. A record-level alternative mapping cannot safely isolate the active 'rest' sense from the other 'put down' sense."
+      },
+      {
+        "refs": [
+          "KRU13990",
+          "O01573"
+        ],
+        "glosses": [
+          "to smell badly",
+          "to evaporate, be decomposed; to decay; to smell badly"
+        ],
+        "reason": "Deferred: the exact phrase 'to smell badly' occurs in Jastrow's base-form entry and again in its separately labeled Hif. sense. The same Krupnik gloss cannot be attached to both without collapsing distinct grammatical forms."
+      },
+      {
+        "refs": [
+          "KRU13990",
+          "O01573"
+        ],
+        "glosses": [
+          "to smell badly",
+          "to become vapid, putrid; to smell badly"
+        ],
+        "reason": "Deferred: the exact phrase 'to smell badly' occurs in Jastrow's base-form entry and again in its separately labeled Hif. sense. The same Krupnik gloss cannot be attached to both without collapsing distinct grammatical forms."
+      },
+      {
+        "refs": [
+          "KRU16803",
+          "S00315"
+        ],
+        "glosses": [
+          "light matter), lenient practice",
+          "light matter."
+        ],
+        "reason": "Deferred: Jastrow explicitly separates 'light matter' and 'lenient practice' into numbered senses, while Krupnik combines both in one gloss. Mapping the shared record-level phrase would bridge two distinct senses."
+      },
+      {
+        "refs": [
+          "KRU16803",
+          "S00315"
+        ],
+        "glosses": [
+          "light matter), lenient practice",
+          "lenient practice"
+        ],
+        "reason": "Deferred: Jastrow explicitly separates 'light matter' and 'lenient practice' into numbered senses, while Krupnik combines both in one gloss. Mapping the shared record-level phrase would bridge two distinct senses."
+      },
+      {
+        "refs": [
+          "KRU01042",
+          "A01574"
+        ],
+        "glosses": [
+          "pressure",
+          "squeezing, pressure"
+        ],
+        "reason": "Deferred: Jastrow groups 'squeezing, pressure' in one gloss, but this Krupnik candidate uses the attested alternate איצצא; the companion 'squeezing' candidate uses איצצתא. Do not merge the two Krupnik records through the Jastrow entry unless their own primary/alternate forms are mutually compatible."
+      },
+      {
+        "refs": [
+          "KRU01043",
+          "A01574"
+        ],
+        "glosses": [
+          "squeezing",
+          "squeezing, pressure"
+        ],
+        "reason": "Deferred: Jastrow groups 'squeezing, pressure' in one gloss, but this Krupnik candidate uses the attested alternate איצצתא; the companion 'pressure' candidate uses איצצא. Do not merge the two Krupnik records through the Jastrow entry unless their own primary/alternate forms are mutually compatible."
+      },
+      {
+        "refs": [
+          "KRU01145",
+          "A01737"
+        ],
+        "glosses": [
+          "stranger",
+          "stranger, guest, lodger;"
+        ],
+        "reason": "Deferred: Jastrow bundles 'stranger, guest, lodger' in one phrase, while Krupnik divides 'stranger' and 'guest' into separate numbered senses. The current mapping granularity cannot preserve that one-to-many distinction safely."
+      },
+      {
+        "refs": [
+          "KRU01145",
+          "A01737"
+        ],
+        "glosses": [
+          "guest",
+          "stranger, guest, lodger;"
+        ],
+        "reason": "Deferred: Jastrow bundles 'stranger, guest, lodger' in one phrase, while Krupnik divides 'stranger' and 'guest' into separate numbered senses. The current mapping granularity cannot preserve that one-to-many distinction safely."
+      },
+      {
+        "refs": [
+          "KRU01172",
+          "A01772"
+        ],
+        "glosses": [
+          "rather, but",
+          "if not, except, but, only"
+        ],
+        "reason": "Deferred: Jastrow uses the exact alternative 'but' in its first numbered sense and again in a separate logical-inference sense; Krupnik's 'rather, but' is one numbered sense. A record-level mapping would merge both Jastrow senses."
+      },
+      {
+        "refs": [
+          "KRU01172",
+          "A01772"
+        ],
+        "glosses": [
+          "rather, but",
+          "but"
+        ],
+        "reason": "Deferred: Jastrow uses the exact alternative 'but' in its first numbered sense and again in a separate logical-inference sense; Krupnik's 'rather, but' is one numbered sense. A record-level mapping would merge both Jastrow senses."
+      },
+      {
+        "refs": [
+          "KRU15729",
+          "Q01325"
+        ],
+        "glosses": [
+          "to disqualify, to declare unfit, to reject",
+          "to disqualify, to be the cause of disqualification of; to declare unfit"
+        ],
+        "reason": "Deferred: the candidate is flagged as one Krupnik sense matching multiple Jastrow senses in an entry that also distinguishes active disqualification from passive being made unfit. The exact phrase-level overlap needs a finer sense boundary before it can be approved."
       }
     ],
     "policy": "Rejected and deferred pairs are excluded from the pending discovery queue but remain recorded here with their source refs and rationale. Reconsider only with new source evidence."
@@ -5180,5 +5323,167 @@
       "Reviewed gloss mappings remain exact and source-scoped"
     ],
     "validation": "Unified-meaning tests passed on commit 5ea728db3047ec2d0f481751f6bb3e385340ef74; remaining full phrase, Hebrew, and candidate-inventory checks were still running at ledger update time."
+  },
+  "fortiethReviewedTranche": {
+    "attemptedCandidates": 13,
+    "addedUniqueSourceGlossPairs": 0,
+    "deferredCandidates": 13,
+    "deferredPairs": [
+      {
+        "refs": [
+          "KRU12466",
+          "N00341"
+        ],
+        "glosses": [
+          "to put down",
+          "to rest, put down; to leave alone"
+        ],
+        "reason": "Deferred: the Jastrow Af. gloss spans multiple meanings, while Krupnik separates the matching wording across distinct forms/sense segments. A record-level alternative mapping cannot safely isolate the active 'put down' sense from the other 'rest' sense."
+      },
+      {
+        "refs": [
+          "KRU12466",
+          "N00341"
+        ],
+        "glosses": [
+          "to rest",
+          "to rest, put down; to leave alone"
+        ],
+        "reason": "Deferred: the Jastrow Af. gloss spans multiple meanings, while Krupnik separates the matching wording across distinct forms/sense segments. A record-level alternative mapping cannot safely isolate the active 'rest' sense from the other 'put down' sense."
+      },
+      {
+        "refs": [
+          "KRU13990",
+          "O01573"
+        ],
+        "glosses": [
+          "to smell badly",
+          "to evaporate, be decomposed; to decay; to smell badly"
+        ],
+        "reason": "Deferred: the exact phrase 'to smell badly' occurs in Jastrow's base-form entry and again in its separately labeled Hif. sense. The same Krupnik gloss cannot be attached to both without collapsing distinct grammatical forms."
+      },
+      {
+        "refs": [
+          "KRU13990",
+          "O01573"
+        ],
+        "glosses": [
+          "to smell badly",
+          "to become vapid, putrid; to smell badly"
+        ],
+        "reason": "Deferred: the exact phrase 'to smell badly' occurs in Jastrow's base-form entry and again in its separately labeled Hif. sense. The same Krupnik gloss cannot be attached to both without collapsing distinct grammatical forms."
+      },
+      {
+        "refs": [
+          "KRU16803",
+          "S00315"
+        ],
+        "glosses": [
+          "light matter), lenient practice",
+          "light matter."
+        ],
+        "reason": "Deferred: Jastrow explicitly separates 'light matter' and 'lenient practice' into numbered senses, while Krupnik combines both in one gloss. Mapping the shared record-level phrase would bridge two distinct senses."
+      },
+      {
+        "refs": [
+          "KRU16803",
+          "S00315"
+        ],
+        "glosses": [
+          "light matter), lenient practice",
+          "lenient practice"
+        ],
+        "reason": "Deferred: Jastrow explicitly separates 'light matter' and 'lenient practice' into numbered senses, while Krupnik combines both in one gloss. Mapping the shared record-level phrase would bridge two distinct senses."
+      },
+      {
+        "refs": [
+          "KRU01042",
+          "A01574"
+        ],
+        "glosses": [
+          "pressure",
+          "squeezing, pressure"
+        ],
+        "reason": "Deferred: Jastrow groups 'squeezing, pressure' in one gloss, but this Krupnik candidate uses the attested alternate איצצא; the companion 'squeezing' candidate uses איצצתא. Do not merge the two Krupnik records through the Jastrow entry unless their own primary/alternate forms are mutually compatible."
+      },
+      {
+        "refs": [
+          "KRU01043",
+          "A01574"
+        ],
+        "glosses": [
+          "squeezing",
+          "squeezing, pressure"
+        ],
+        "reason": "Deferred: Jastrow groups 'squeezing, pressure' in one gloss, but this Krupnik candidate uses the attested alternate איצצתא; the companion 'pressure' candidate uses איצצא. Do not merge the two Krupnik records through the Jastrow entry unless their own primary/alternate forms are mutually compatible."
+      },
+      {
+        "refs": [
+          "KRU01145",
+          "A01737"
+        ],
+        "glosses": [
+          "stranger",
+          "stranger, guest, lodger;"
+        ],
+        "reason": "Deferred: Jastrow bundles 'stranger, guest, lodger' in one phrase, while Krupnik divides 'stranger' and 'guest' into separate numbered senses. The current mapping granularity cannot preserve that one-to-many distinction safely."
+      },
+      {
+        "refs": [
+          "KRU01145",
+          "A01737"
+        ],
+        "glosses": [
+          "guest",
+          "stranger, guest, lodger;"
+        ],
+        "reason": "Deferred: Jastrow bundles 'stranger, guest, lodger' in one phrase, while Krupnik divides 'stranger' and 'guest' into separate numbered senses. The current mapping granularity cannot preserve that one-to-many distinction safely."
+      },
+      {
+        "refs": [
+          "KRU01172",
+          "A01772"
+        ],
+        "glosses": [
+          "rather, but",
+          "if not, except, but, only"
+        ],
+        "reason": "Deferred: Jastrow uses the exact alternative 'but' in its first numbered sense and again in a separate logical-inference sense; Krupnik's 'rather, but' is one numbered sense. A record-level mapping would merge both Jastrow senses."
+      },
+      {
+        "refs": [
+          "KRU01172",
+          "A01772"
+        ],
+        "glosses": [
+          "rather, but",
+          "but"
+        ],
+        "reason": "Deferred: Jastrow uses the exact alternative 'but' in its first numbered sense and again in a separate logical-inference sense; Krupnik's 'rather, but' is one numbered sense. A record-level mapping would merge both Jastrow senses."
+      },
+      {
+        "refs": [
+          "KRU15729",
+          "Q01325"
+        ],
+        "glosses": [
+          "to disqualify, to declare unfit, to reject",
+          "to disqualify, to be the cause of disqualification of; to declare unfit"
+        ],
+        "reason": "Deferred: the candidate is flagged as one Krupnik sense matching multiple Jastrow senses in an entry that also distinguishes active disqualification from passive being made unfit. The exact phrase-level overlap needs a finer sense boundary before it can be approved."
+      }
+    ],
+    "evidence": [
+      "Reviewed the exact-alternative ambiguity queue against original Jastrow and Krupnik source HTML.",
+      "Deferred cases where a phrase occurs in multiple numbered senses or grammatical forms, where one Krupnik gloss bridges separate Jastrow senses, or where distinct Krupnik alternate headwords cannot safely be merged transitively.",
+      "No uncertain pair was promoted to a runtime synonym mapping."
+    ],
+    "safeguards": [
+      "Deferred decisions are review metadata only and never cause runtime merging.",
+      "Original source wording, citations, numbered senses, and grammatical forms remain unchanged.",
+      "Reconsider only if a future sense-scoped mapping can isolate the intended sub-sense without bridging unrelated meanings."
+    ],
+    "currentTotal": 1322,
+    "currentAlternativeTotal": 274
   }
 }
