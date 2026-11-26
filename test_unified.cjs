@@ -1475,14 +1475,11 @@ assert(mortalHuman.some(group=>group.sources.length===2&&['body','flesh','meat']
 
 const shapingOfWriting=U.merge([
  {id:4329,entry:sourceByRef.get('KRU04329'),meanings:[{text:'shaping (of writing), impress',label:''}]},
- {id:954,entry:sourceByRef.get('C00954'),meanings:[
-  {text:'shaping',label:''},
-  {text:'impress, poetry',label:''}
- ]}
+ {id:954,entry:sourceByRef.get('C00954'),meanings:[{text:'shaping',label:''}]}
 ],S.normalize(sourceByRef.get('KRU04329').h));
-const shapingGroup=shapingOfWriting.find(group=>group.sources.length===2&&group.text==='shaping (of writing)');
-assert(shapingGroup,'the reviewed alternative-level mapping should consolidate shaping of writing');
-assert(shapingOfWriting.some(group=>group.text.includes('impress')&&!group.text.includes('shaping')),'the separate impress alternative must not be absorbed into shaping');
+assert.equal(shapingOfWriting.length,1,'the two source descriptions of shaping/impress/poetry belong to one cited sense');
+assert.equal(shapingOfWriting[0].sources.length,2,'both Psalms source entries must remain available');
+assert.equal(shapingOfWriting[0].text,'shaping (of writing), impress, poetry','the fuller Jastrow alternative list should be retained in the consolidated display');
 
 const spatialFarMeaning=U.merge([
  {id:5585,entry:sourceByRef.get('KRU05585'),meanings:[{text:'farther off (of space)',label:''}]},
