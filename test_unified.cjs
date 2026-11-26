@@ -132,7 +132,7 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,278,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,281,'every source-scoped alternative match must be loaded');
 
 const steepMeaning=U.merge([
  {id:2401,entry:{h:'גִּידּוּד',r:'KRU04044',source:'krupnik'},meanings:[{text:'earth embankment, steep banks',label:'1'}]},
@@ -309,6 +309,20 @@ const recoverStrong=U.merge([
  {id:2912,entry:{h:'בְּרִי',r:'B01237'},meanings:[{text:'to get well, strong',section:'—2)'}]}
 ],'בְּרִי');
 assert(recoverStrong.some(group=>group.sources.some(source=>source.entry.r==='KRU03320')&&group.sources.some(source=>source.entry.r==='B01237')),'the shared recovery/health sense should consolidate');
+
+const circumcisionSenses=U.merge([
+ {id:3001,entry:{h:'גְּזוּרְתָּא',r:'KRU03954',source:'krupnik'},meanings:[
+  {text:'circumcision, feast of circumcision',label:'1'},
+  {text:'the circumcised membrum',label:'2'}
+ ]},
+ {id:3002,entry:{h:'גְּזוּרְתָּא',r:'C00536'},meanings:[
+  {text:'circumcision, feast of circumcision; the circumcised membrum',section:'1)'}
+ ]}
+],'גְּזוּרְתָּא');
+const circumcisionSense1=circumcisionSenses.find(group=>group.sources.some(source=>source.entry.r==='KRU03954'&&source.meaning.text==='circumcision, feast of circumcision')&&group.sources.some(source=>source.entry.r==='C00536'));
+const circumcisionSense2=circumcisionSenses.find(group=>group.sources.some(source=>source.entry.r==='KRU03954'&&source.meaning.text==='the circumcised membrum')&&group.sources.some(source=>source.entry.r==='C00536'));
+assert(circumcisionSense1&&circumcisionSense2&&circumcisionSense1!==circumcisionSense2,'the two circumcision sub-senses must consolidate separately without swallowing each other');
+
 
 
 
@@ -1368,6 +1382,9 @@ assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU07276','H01186',"leavened 
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03500','C00016',"to grow","to grow high")),'source-verified mapping must be registered: C00016 / KRU03500');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03500','C00016',"to be elated, to be exalted","to be exalted; to be proud")),'source-verified mapping must be registered: C00016 / KRU03500');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03320','B01237',"to recover, to get strong","to get well, strong")),'source-verified mapping must be registered: B01237 / KRU03320');
+assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU03954','C00536',"circumcision","circumcision")),'source-verified alternative mapping must be registered: C00536 / KRU03954');
+assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU03954','C00536',"feast of circumcision","feast of circumcision")),'source-verified alternative mapping must be registered: C00536 / KRU03954');
+assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU03954','C00536',"the circumcised membrum","the circumcised membrum")),'source-verified alternative mapping must be registered: C00536 / KRU03954');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU06547','G00654','dealer in leather bags','maker of and dealer in leather bags')),'known occupational false positives must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU10278','L00533','there is','there is (was) not')),'negative-particle distinctions must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03526','C00053','The Most High','high, exalted, elevated')),'divine titles must not be merged with ordinary adjectives');
