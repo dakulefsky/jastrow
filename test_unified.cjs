@@ -1091,7 +1091,8 @@ assert.equal(howConsolidation.length,1,'the equivalent interrogative glosses sho
 assert.equal(howConsolidation[0].sources.length,2,'both interrogative source entries should remain available');
 assert.equal(howConsolidation[0].text,'how?, in what manner?, in what respect?','the fuller definition should display once');
 
-const decisionKey=(a,b,x,y)=>[a,b].sort().join('|')+'::'+[x.toLowerCase(),y.toLowerCase()].sort().join(' | ');
+const cleanDecision=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\\s]+$/,'').trim().replace(/\\s+/g,' ');
+const decisionKey=(a,b,x,y)=>[a,b].sort().join('|')+'::'+[cleanDecision(x),cleanDecision(y)].sort().join(' | ');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU06547','G00654','dealer in leather bags','maker of and dealer in leather bags')),'known occupational false positives must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU10278','L00533','there is','there is (was) not')),'negative-particle distinctions must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03526','C00053','The Most High','high, exalted, elevated')),'divine titles must not be merged with ordinary adjectives');
