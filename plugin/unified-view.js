@@ -1748,6 +1748,17 @@
   ["KRU04594","C01305","grist-maker or dealer","grist-maker"],
   ["KRU04675","C01425","to wrestle","to wrestle, fight"],
   ["KRU04973","D00390","to tread","to tread upon, trample"]
+,
+  ["KRU03320","B01237","to recover, to get strong","to become strong"],
+  ["KRU03518","C00041","rakings heap","rakings"],
+  ["KRU04203","C00806","shoot (of a plant)","shoot"],
+  ["KRU04556","C01259","wheel-works of a well","wheel-works"],
+  ["KRU18037","T00354","soft date","soft, green date"],
+  ["KRU09533","K00817","to lay a net","to lay a trap, net"],
+  ["KRU09533","K00817","to lay a net","to lay a trap"],
+  ["KRU05539","D01113","to stamp","to tread, stamp"],
+  ["KRU05539","D01113","to press (the knife)","to press"],
+  ["KRU05539","D01113","to stuff","to stuff food into the camel’s mouth"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
@@ -1818,6 +1829,12 @@
   ["KRU14780","P01211","to sting","to sting, prick","Deferred: Jastrow's single reader-visible sense 'to sting, prick' matches both Krupnik sense 2 'to sting' and sense 3 'to prick, to taunt'. The current source phrase boundary cannot safely choose one without merging distinct Krupnik senses."],
   ["KRU14780","P01211","to prick, to taunt","to sting, prick","Deferred: same one-to-many ambiguity; do not map the Jastrow combined phrase to Krupnik's separate figurative 'to prick, to taunt' sense."],
   ["KRU03808","C00369","clapper of a bell","clapper","Deferred: Jastrow's entry is only a cross-reference to גִּיל I and has no independent citation in this record. It likely names the same object, but confirm the referenced Jastrow entry before consolidating."]
+,
+  ["KRU06441","G00462","claim","possession, taking possession, claim","Deferred: Jastrow's single gloss combines possession, taking possession, and claim, while Krupnik splits claim into a separate numbered sense. The exact Jastrow phrase cannot safely be assigned to this KRU sense alone."],
+  ["KRU06441","G00462","taking possession","possession, taking possession, claim","Deferred: same one-to-many issue; Krupnik separates claim and taking possession, while Jastrow combines both in one gloss."],
+  ["KRU19048","U01132","apartment","dwelling, tent; apartment.","Deferred: Jastrow's phrase combines tent dwelling and apartment, while Krupnik separates them into numbered senses. Do not map the combined Jastrow phrase to one KRU sense."],
+  ["KRU19048","U01132","tent dwelling","dwelling, tent; apartment.","Deferred: same one-to-many ambiguity between the combined Jastrow phrase and Krupnik's distinct tent-dwelling/apartment senses."],
+  ["KRU03320","B01237","to hollow out, to perforate","to permeate, perforate","Deferred: both glosses contain 'perforate', but the source examples differ substantially (Targ Job 26:13 versus Yalkut Shimoni Exodus 182). Verify whether these are the same action before merging."]
 
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const reviewedSourceAlternativePairRecords=[
