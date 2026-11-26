@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1419,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1429,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -460,7 +460,7 @@ const bubblingForth=U.merge([
 assert.equal(bubblingForth.length,1,'the same bubble/burst-forth verbal sense should consolidate');
 assert.equal(bubblingForth[0].sources.length,2,'both sources citing the same verbal usage should remain available');
 
-assert.equal(U.reviewedSourceGlossPairs.size,1419,'all source-specific whole-gloss mappings must be loaded');
+assert.equal(U.reviewedSourceGlossPairs.size,1429,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -1465,6 +1465,16 @@ assert.equal(howConsolidation[0].text,'how?, in what manner?, in what respect?',
 
 const cleanDecision=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
 const decisionKey=(a,b,x,y)=>[a,b].sort().join('|')+'::'+[cleanDecision(x),cleanDecision(y)].sort().join(' | ');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09772','K01132',"a species of bats","bats")),'source-verified mapping should be registered for KRU09772/K01132');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09776','K01139',"a species of locusts","locusts")),'source-verified mapping should be registered for KRU09776/K01139');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09842','K01255',"a species of locusts","locusts")),'source-verified mapping should be registered for KRU09842/K01255');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU10810','M00481',"a species of figs","figs")),'source-verified mapping should be registered for KRU10810/M00481');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU10897','M00621',"a species of locusts","locusts")),'source-verified mapping should be registered for KRU10897/M00621');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU13428','O00579',"ration","the daily ration")),'source-verified mapping should be registered for KRU13428/O00579');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU13489','O00677',"chip","kindling chip")),'source-verified mapping should be registered for KRU13489/O00677');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15100','Q00260',"a coin (Dupondium)","Dupondium")),'source-verified mapping should be registered for KRU15100/Q00260');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15358','Q00688',"Pelusium in Egypt","Pelusium")),'source-verified mapping should be registered for KRU15358/Q00688');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15604','Q01117',"grain of pepper","pepper")),'source-verified mapping should be registered for KRU15604/Q01117');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03803','C00364','rough untrimmed stone, cobble','a rolling stone, rough untrimmed stone, cobble')),'source-verified mapping should be registered for the Bava Batra rough-stone sense');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03169','B01075','to bubble forth, to burst forth','to break through, bubble forth, burst forth')),'source-verified mapping should be registered for the bubble/burst-forth sense');
 
@@ -1492,6 +1502,85 @@ const makePoor=U.merge([
 assert.equal(makePoor.length,2,'the active and intransitive poor-making senses must remain separate');
 assert(makePoor.some(group=>group.sources.length===2&&group.text.includes('to make poor')),'the active transitive sense should consolidate');
 assert(makePoor.some(group=>group.sources.length===2&&group.text==='to become poor'),'the separate intransitive sense should also remain independently aligned');
+
+
+const batSpecies=U.merge([
+ {id:9772,entry:{h:'כְּרוּשְׁתֵּינָא',r:'KRU09772',source:'krupnik'},meanings:[{text:'a species of bats'}]},
+ {id:1132,entry:{h:'כְּרוּשְׁתֵּינָא',r:'K01132'},meanings:[{text:'bats'}]}
+],'כְּרוּשְׁתֵּינָא');
+assert.equal(batSpecies.length,1,'the same Shabbat bat species should consolidate');
+assert.equal(batSpecies[0].sources.length,2,'both Shabbat 78a source records should remain available');
+
+const locustSpeciesA=U.merge([
+ {id:9776,entry:{h:'כַּרְזְבָא',r:'KRU09776',source:'krupnik'},meanings:[{text:'a species of locusts'}]},
+ {id:1139,entry:{h:'כַּרְזְבָא',r:'K01139'},meanings:[{text:'locusts'}]}
+],'כַּרְזְבָא');
+assert.equal(locustSpeciesA.length,1,'the Targum locust species should consolidate');
+assert.equal(locustSpeciesA[0].sources.length,2,'both Targum citations should remain available');
+
+const locustSpeciesB=U.merge([
+ {id:9842,entry:{h:'כַּרְסֶפֶת',r:'KRU09842',source:'krupnik'},meanings:[{text:'a species of locusts'}]},
+ {id:1255,entry:{h:'כַּרְסֶפֶת',r:'K01255'},meanings:[{text:'locusts'}]}
+],'כַּרְסֶפֶת');
+assert.equal(locustSpeciesB.length,1,'the Hullin locust species should consolidate');
+assert.equal(locustSpeciesB[0].sources.length,2,'both Hullin 65b source records should remain available');
+
+const figSpecies=U.merge([
+ {id:10810,entry:{h:'מוֹכְסָסִים',r:'KRU10810',source:'krupnik'},meanings:[{text:'a species of figs'}]},
+ {id:481,entry:{h:'מוֹכְסָסִים',r:'M00481'},meanings:[{text:'figs'}]}
+],'מוֹכְסָסִים');
+assert.equal(figSpecies.length,1,'the Bekhorot fig variety should consolidate');
+assert.equal(figSpecies[0].sources.length,2,'both Bekhorot 8a records should remain available');
+
+const locustSpeciesC=U.merge([
+ {id:10897,entry:{h:'מוֹרָד',r:'KRU10897',source:'krupnik'},meanings:[{text:'a species of locusts'}]},
+ {id:621,entry:{h:'מוֹרָד',r:'M00621'},meanings:[{text:'locusts'}]}
+],'מוֹרָד');
+assert.equal(locustSpeciesC.length,1,'the Tosefta locust species should consolidate');
+assert.equal(locustSpeciesC[0].sources.length,2,'both Tosefta Hullin III:25 records should remain available');
+
+const dailyRation=U.merge([
+ {id:13428,entry:{h:'סִידּוּר',r:'KRU13428',source:'krupnik'},meanings:[{text:'ration',label:'3'}]},
+ {id:579,entry:{h:'סִידּוּר',r:'O00579'},meanings:[{text:'the daily ration',label:'—4)'}]}
+],'סִידּוּר');
+assert.equal(dailyRation.length,1,'the Lev. Rabbah ration sense should consolidate');
+assert.equal(dailyRation[0].sources.length,2,'both ration sense records should remain available');
+
+const kindlingChip=U.merge([
+ {id:13489,entry:{h:'סִילְתָּא',r:'KRU13489',source:'krupnik'},meanings:[{text:'chip'}]},
+ {id:677,entry:{h:'סִילְתָּא',r:'O00677'},meanings:[
+  {text:'kindling chip',label:'1'},
+  {text:'log',label:'2'}
+ ]}
+],'סִילְתָּא');
+assert.equal(kindlingChip.length,2,'the kindling-chip sense should consolidate without absorbing the separate log sense');
+assert(kindlingChip.some(group=>group.sources.length===2&&group.text.includes('chip')),'both Bava Kamma kindling-chip records should consolidate');
+assert(kindlingChip.some(group=>group.sources.length===1&&group.text==='log'),'the separate log sense must remain independent');
+
+const dupondium=U.merge([
+ {id:15100,entry:{h:'פּוּנְדְּיוֹן',r:'KRU15100',source:'krupnik'},meanings:[{text:'a coin (Dupondium)'}]},
+ {id:260,entry:{h:'פּוּנְדְּיוֹן',r:'Q00260'},meanings:[{text:'Dupondium'}]}
+],'פּוּנְדְּיוֹן');
+assert.equal(dupondium.length,1,'the Roman Dupondium coin definitions should consolidate');
+assert.equal(dupondium[0].sources.length,2,'both monetary source records should remain available');
+
+const pelusium=U.merge([
+ {id:15358,entry:{h:'פִּילוּסִין',r:'KRU15358',source:'krupnik'},meanings:[
+  {text:'Pelusium in Egypt',label:'1'},
+  {text:'Pelusian linen',label:'2'}
+ ]},
+ {id:688,entry:{h:'פִּילוּסִין',r:'Q00688'},meanings:[{text:'Pelusium',label:'1'}]}
+],'פִּילוּסִין');
+assert.equal(pelusium.length,2,'Pelusium should consolidate without absorbing the separate linen sense');
+assert(pelusium.some(group=>group.sources.length===2&&group.text.includes('Pelusium')),'the Targum place-name sense should consolidate');
+assert(pelusium.some(group=>group.sources.length===1&&group.text==='Pelusian linen'),'the separate linen sense must remain independent');
+
+const pepperGrain=U.merge([
+ {id:15604,entry:{h:'פִּלְפָּל',r:'KRU15604',source:'krupnik'},meanings:[{text:'grain of pepper'}]},
+ {id:1117,entry:{h:'פִּלְפָּל',r:'Q01117'},meanings:[{text:'pepper'}]}
+],'פִּלְפָּל');
+assert.equal(pepperGrain.length,1,'the Shabbat grain-of-pepper definitions should consolidate');
+assert.equal(pepperGrain[0].sources.length,2,'both Shabbat pepper source records should remain available');
 
 const figVariety=U.merge([
  {id:9446,entry:{h:'כְּלוּפְסִין',r:'KRU09446',source:'krupnik'},meanings:[{text:'a species of figs',label:''}]},
