@@ -1759,6 +1759,16 @@
   ["KRU05539","D01113","to stamp","to tread, stamp"],
   ["KRU05539","D01113","to press (the knife)","to press"],
   ["KRU05539","D01113","to stuff","to stuff food into the camel’s mouth"]
+,
+  ["KRU03800","C00362","creature","inner body, creature"],
+  ["KRU06435","G00440","entitled","entitled to possession"],
+  ["KRU02813","B00781","a species of pears","pears"],
+  ["KRU03037","B01005","dealer in spices","dealer in"],
+  ["KRU06628","H00082","a sort of cakes","cakes"],
+  ["KRU06642","H00112","Parsee priest","Parsee"],
+  ["KRU06720","H00248","cheese","soft cheese"],
+  ["KRU06775","H00358","knife","slaughtering knife"],
+  ["KRU07276","H01186","leavened (bread)","leavened"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
@@ -1835,6 +1845,8 @@
   ["KRU19048","U01132","apartment","dwelling, tent; apartment.","Deferred: Jastrow's phrase combines tent dwelling and apartment, while Krupnik separates them into numbered senses. Do not map the combined Jastrow phrase to one KRU sense."],
   ["KRU19048","U01132","tent dwelling","dwelling, tent; apartment.","Deferred: same one-to-many ambiguity between the combined Jastrow phrase and Krupnik's distinct tent-dwelling/apartment senses."],
   ["KRU03320","B01237","to hollow out, to perforate","to permeate, perforate","Deferred: both glosses contain 'perforate', but the source examples differ substantially (Targ Job 26:13 versus Yalkut Shimoni Exodus 182). Verify whether these are the same action before merging."]
+,
+  ["KRU07233","H01124","to be fine","to be smooth and fine","Deferred: the Jastrow source describes cutting with a sharp, smooth edge, while Krupnik describes an edge being fine. The grammatical direction and semantic focus may differ; verify the exact source sense before merging."]
 
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const reviewedSourceAlternativePairRecords=[
