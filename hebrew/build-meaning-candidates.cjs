@@ -105,6 +105,7 @@ for(const [key,records] of byWord){
    if(label(pa.label)&&label(pb.label)&&label(pa.label)!==label(pb.label))continue;
    const itemA={e:a,p:pa},itemB={e:b,p:pb};
    if(context.HebrewMeaningConsolidation.reviewedSynonymPairs.has(context.HebrewMeaningConsolidation.pairKey(itemA,itemB)))continue;
+    if(context.HebrewMeaningConsolidation.reviewedNonSynonymPairs?.has(context.HebrewMeaningConsolidation.pairKey(itemA,itemB)))continue;
    const ea=clean(pa.english),eb=clean(pb.english);
    if(ea&&eb&&!grammaticalCompatible(ea,eb))continue;
    const ta=tokens(ea),tb=tokens(eb);
@@ -143,10 +144,10 @@ const report={
   source:'Original Krupnik and Silbermann Hebrew definitions with their embedded original English gloss metadata',
   headwordMatching:'HebrewLookup.normalize across primary and alternate headwords, with conflicts between two explicitly pointed forms excluded',
   alignment:'Non-identical Hebrew meanings from repeated normalized headwords are queued; English gloss overlap ranks candidates, and obvious verb/non-verb or active/passive mismatches are excluded',
-  safeguards:'Different explicit grammatical labels are excluded; identical Hebrew glosses are already handled by exact grouping; approved source-scoped synonym pairs are excluded from the queue',
+  safeguards:'Different explicit grammatical labels are excluded; identical Hebrew glosses are already handled by exact grouping; approved source-scoped synonym pairs and source-reviewed false positives are excluded from the queue',
   limitation:'English overlap is only an alignment clue. Reviewers must confirm the Hebrew definitions express the same sense before approving a merge.'
  },
-  totals:{sourceRecords:dictionary.entries.length,uniqueHeadwordForms:byWord.size,repeatedHeadwordForms:[...byWord.values()].filter(group=>group.size>1).length,candidates:list.length,partialHebrewOverlap:list.filter(x=>x.partialHebrewOverlap).length,runtimeRuleHandledCandidates:list.filter(x=>x.reviewStatus==='handled-by-runtime-exact-Hebrew-alternative-rule').length,manualReviewCandidates:list.filter(x=>x.reviewStatus==='pending-human-review').length,evidenceCounts:Object.fromEntries(['exact-gloss','shared-content-terms','different-glosses','missing-gloss'].map(level=>[level,list.filter(x=>x.englishEvidence===level).length]))},
+  totals:{sourceRecords:dictionary.entries.length,uniqueHeadwordForms:byWord.size,repeatedHeadwordForms:[...byWord.values()].filter(group=>group.size>1).length,candidates:list.length,reviewedNonSynonymPairs:context.HebrewMeaningConsolidation.reviewedNonSynonymPairs?.size||0,partialHebrewOverlap:list.filter(x=>x.partialHebrewOverlap).length,runtimeRuleHandledCandidates:list.filter(x=>x.reviewStatus==='handled-by-runtime-exact-Hebrew-alternative-rule').length,manualReviewCandidates:list.filter(x=>x.reviewStatus==='pending-human-review').length,evidenceCounts:Object.fromEntries(['exact-gloss','shared-content-terms','different-glosses','missing-gloss'].map(level=>[level,list.filter(x=>x.englishEvidence===level).length]))},
  candidates:list
 };
 const output=path.join(__dirname,'meaning-consolidation-candidates.json');
