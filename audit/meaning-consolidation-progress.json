@@ -350,7 +350,7 @@
         "meaning": "gullet"
       }
     ],
-    "note": "Added deterministic normalization for exact Hebrew alternative lists: punctuation and alternative order are normalized, while phrase word order is preserved. Regression tests verify that unreviewed synonyms remain separate.",
+    "note": "Added deterministic normalization for exact Hebrew alternative lists: punctuation and alternative order are normalized, while phrase word order is preserved. Regression tests verify that unreviewed synonyms remain separate. A source-reviewed non-synonym registry now excludes nineteen clear homonym, grammatical-form, and unrelated-meaning false positives from the Hebrew review queue; it does not change runtime consolidation.",
     "reviewedSenseSegmentPairs": 1,
     "reviewedSenseSegmentPairDetails": [
       {
@@ -378,7 +378,219 @@
         "different-glosses": 269,
         "missing-gloss": 291
       }
-    }
+    },
+    "reviewedNonSynonymPairs": [
+      {
+        "records": [
+          "KRU02691",
+          "KRU02692"
+        ],
+        "meanings": [
+          "ירוש׳ שבי׳ פ״ו ל״ו ע״ג: ביריי רבתא.",
+          "שם אמורא"
+        ],
+        "reason": "Different proper-name classes: the first record identifies a place, while the second explicitly identifies an Amora."
+      },
+      {
+        "records": [
+          "KRU18231",
+          "KRU18232"
+        ],
+        "meanings": [
+          "ריכך, עשה רך",
+          "כנ״ל. תרג׳ איוב כ״ג ט״ז (הרך לבי): רכך לבבי. אִתְרַכֵּךְ אתפ׳, נעשה רך"
+        ],
+        "reason": "Different grammatical voice and meaning: 'to make soft' is causative/transitive; 'to become soft' is intransitive/reflexive."
+      },
+      {
+        "records": [
+          "KRU07060",
+          "KRU07061"
+        ],
+        "meanings": [
+          "שם עיר בארץ ישראל",
+          "שם אמורא"
+        ],
+        "reason": "Different referents: Haifa is a town; the other record is a personal name of an Amora."
+      },
+      {
+        "records": [
+          "KRU02827",
+          "KRU02828"
+        ],
+        "meanings": [
+          "1) ילד בפעם הראשונה",
+          "ליקט בכורים"
+        ],
+        "reason": "Different senses and forms: bearing for the first time is not the Hifil act of plucking first fruits."
+      },
+      {
+        "records": [
+          "KRU00180",
+          "KRU04150"
+        ],
+        "meanings": [
+          "פ״י, כתת",
+          "אפע׳, שמר, הגין"
+        ],
+        "reason": "Different meanings: crushing versus covering/protecting; shared headword normalization is insufficient."
+      },
+      {
+        "records": [
+          "KRU00207",
+          "KRU00208"
+        ],
+        "meanings": [
+          "שכר",
+          "חולין ק״ד ע״ב: אגרא חמוה דר׳ אבא."
+        ],
+        "reason": "Reward versus a proper personal name; these are distinct homonymous senses."
+      },
+      {
+        "records": [
+          "KRU00372",
+          "KRU00373"
+        ],
+        "meanings": [
+          "אוזן",
+          "נאד"
+        ],
+        "reason": "Ear versus skin bag; distinct lexical meanings."
+      },
+      {
+        "records": [
+          "KRU00372",
+          "KRU00373"
+        ],
+        "meanings": [
+          "אוזן",
+          "הדום, שרפרף"
+        ],
+        "reason": "Ear versus footstool; distinct lexical meanings."
+      },
+      {
+        "records": [
+          "KRU00467",
+          "KRU00468"
+        ],
+        "meanings": [
+          "שטר מכירה או מתנה",
+          "פקעת"
+        ],
+        "reason": "Contract/deed versus skein; distinct lexical meanings."
+      },
+      {
+        "records": [
+          "KRU00585",
+          "KRU00586"
+        ],
+        "meanings": [
+          "יסוד",
+          "שם עיר בגליל"
+        ],
+        "reason": "Foundation versus a town in Galilee; distinct lexical meanings."
+      },
+      {
+        "records": [
+          "KRU00594",
+          "KRU00595"
+        ],
+        "meanings": [
+          "אכסניא",
+          "בעל אכסניא"
+        ],
+        "reason": "Inn versus innkeeper; related concepts but not synonyms."
+      },
+      {
+        "records": [
+          "KRU00722",
+          "KRU00724"
+        ],
+        "meanings": [
+          "חג של עכו״ם",
+          "איזו"
+        ],
+        "reason": "Heathen holiday versus the interrogative 'which?'; distinct homonymous forms."
+      },
+      {
+        "records": [
+          "KRU00728",
+          "KRU00729"
+        ],
+        "meanings": [
+          "שם אמורא",
+          "מערב"
+        ],
+        "reason": "Personal name of an Amora versus 'west'; distinct lexical meanings."
+      },
+      {
+        "records": [
+          "KRU00751",
+          "KRU00752"
+        ],
+        "meanings": [
+          "שליח",
+          "תל, גבעה"
+        ],
+        "reason": "Messenger versus hill; distinct lexical meanings."
+      },
+      {
+        "records": [
+          "KRU00848",
+          "KRU00850"
+        ],
+        "meanings": [
+          "בר׳ י״ח ע״ב: אימא לה לאימא; ירוש׳ נדה פ״א מ״ט ע״א: אבא טבי ואימה טביתה.",
+          "פלך לטויה"
+        ],
+        "reason": "Mother versus distaff; distinct lexical meanings."
+      },
+      {
+        "records": [
+          "KRU00985",
+          "KRU00986"
+        ],
+        "meanings": [
+          "אגודה, חבילה",
+          "שר של מעלה, מלאך"
+        ],
+        "reason": "Bunch/bundle versus angel; distinct lexical meanings."
+      },
+      {
+        "records": [
+          "KRU01073",
+          "KRU01074"
+        ],
+        "meanings": [
+          "נשואין",
+          "חפרפרת"
+        ],
+        "reason": "Matrimony versus mole; distinct homonymous senses."
+      },
+      {
+        "records": [
+          "KRU01341",
+          "KRU01342"
+        ],
+        "meanings": [
+          "– אמונה",
+          "הר בצפונה של א״י"
+        ],
+        "reason": "Faith/trust versus Mount Amanus; distinct lexical meanings."
+      },
+      {
+        "records": [
+          "KRU01562",
+          "KRU01563"
+        ],
+        "meanings": [
+          "בגד",
+          "ציון לדרך וגבול"
+        ],
+        "reason": "Robe/garment versus landmark/boundary marker; distinct lexical meanings."
+      }
+    ],
+    "reviewedNonSynonymPairCount": 19
   },
   "secondReviewedTranche": {
     "attemptedRows": 46,
