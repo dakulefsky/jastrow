@@ -1738,7 +1738,12 @@
   ["KRU17926","T00128","to lie","to lie with, copulate with, cover","Rejected: Jastrow's phrase explicitly means sexual intercourse ('to lie with'); Krupnik's candidate phrase 'to lie' is the separate generic sense of lying/being placed. The related sexual sense in the Krupnik entry is separately numbered."],
   ["KRU18302","T00918","to be broken in","to be broken","Rejected: the reader-extracted Jastrow phrase is only 'to be broken'; Krupnik's gloss adds the distinct intransitive/figurative sense 'to be broken in'. The longer source note is not a separately extracted reader phrase and cannot justify widening the match."],
   ["KRU20168","V01113","from below","below","Rejected: 'from below' specifies a source/direction of movement; Jastrow's 'below' is a location. The added preposition changes the meaning."],
-  ["KRU16710","S00123","holiness","his holiness","Rejected: Jastrow's numbered sense is the honorific title 'his holiness' for a person; Krupnik's numbered sense is the abstract noun 'holiness/sanctity'. The title and abstract concept must remain distinct."]
+  ["KRU16710","S00123","holiness","his holiness","Rejected: Jastrow's numbered sense is the honorific title 'his holiness' for a person; Krupnik's numbered sense is the abstract noun 'holiness/sanctity'. The title and abstract concept must remain distinct."],
+  ["KRU12418","N00250","to conduct o. s.","to lead, conduct","Rejected: Jastrow's Hif. sense is active 'to lead, conduct'; Krupnik's candidate is reflexive 'to conduct oneself'. The entry's separate Hithpael sense is the relevant reflexive form and must not be collapsed into the Hif."],
+  ["KRU15603","Q01116","to roll onself","to roll in, cover with","Rejected: Jastrow's base-form phrase 'to roll in, cover with' and Krupnik's reflexive 'to roll oneself' are different constructions. The separate Jastrow/Krupnik reflexive phrase is handled independently."],
+  ["KRU18682","U00438","in the name of","name","Rejected: Jastrow's 'name' is a noun; Krupnik's phrase 'in the name of' is a prepositional idiom. Shared headword letters do not make the glosses equivalent."],
+  ["KRU18682","U00437","in the name of","name, title;","Rejected: Jastrow's 'name, title' is a noun sense; Krupnik's 'in the name of' is a prepositional idiom. The distinct syntactic function must remain separate."],
+  ["KRU20035","V00886","the New Year’s day","the prayers on the New Year interspersed with blowing the Shofar, the Musaf of the New Year’s Day","Rejected: Jastrow defines the New Year prayer service (Musaf), whereas Krupnik sense 1 defines the calendar day itself. Krupnik's separate sense 2 is the prayer-service meaning."]
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const deferredSourceGlossPairs=new Map([
   ["KRU06494","G00538","at times","times","Deferred: the Krupnik entry explicitly distinguishes 'time' from 'times'; this phrase pair is not one-to-one."],
@@ -1756,7 +1761,19 @@
   ["KRU01145","A01737","guest","stranger, guest, lodger;","Deferred: Jastrow bundles 'stranger, guest, lodger' in one phrase, while Krupnik divides 'stranger' and 'guest' into separate numbered senses. The current mapping granularity cannot preserve that one-to-many distinction safely."],
   ["KRU01172","A01772","rather, but","if not, except, but, only","Deferred: Jastrow uses the exact alternative 'but' in its first numbered sense and again in a separate logical-inference sense; Krupnik's 'rather, but' is one numbered sense. A record-level mapping would merge both Jastrow senses."],
   ["KRU01172","A01772","rather, but","but","Deferred: Jastrow uses the exact alternative 'but' in its first numbered sense and again in a separate logical-inference sense; Krupnik's 'rather, but' is one numbered sense. A record-level mapping would merge both Jastrow senses."],
-  ["KRU15729","Q01325","to disqualify, to declare unfit, to reject","to disqualify, to be the cause of disqualification of; to declare unfit","Deferred: the candidate is flagged as one Krupnik sense matching multiple Jastrow senses in an entry that also distinguishes active disqualification from passive being made unfit. The exact phrase-level overlap needs a finer sense boundary before it can be approved."]
+  ["KRU15729","Q01325","to disqualify, to declare unfit, to reject","to disqualify, to be the cause of disqualification of; to declare unfit","Deferred: the candidate is flagged as one Krupnik sense matching multiple Jastrow senses in an entry that also distinguishes active disqualification from passive being made unfit. The exact phrase-level overlap needs a finer sense boundary before it can be approved."],
+  ["KRU01114","A01696","to be burnt","to be consumed, burnt up, digested","Deferred: Jastrow's one Hithpael/Nithpael gloss combines consumption, burning, and digestion, while Krupnik separates 'to be burnt' from 'to be consumed' (money spent). A record-level mapping could bridge distinct numbered Krupnik senses."],
+  ["KRU06564","G00686","to arm o. s.","to tie around, gird, arm; to harness, saddle","Deferred: Jastrow's reader phrase is a transitive/general gloss, while Krupnik's phrase is explicitly reflexive ('to arm oneself'). The forms and semantic scope need a more precise sub-sense boundary."],
+  ["KRU09659","K01007","to bend","to bend over, invert, turn upside down","Deferred: Jastrow specifies inversion/turning upside down, while Krupnik gives the broader 'to bend'. The source examples do not yet establish a one-to-one equivalence."],
+  ["KRU11079","M00922","half to half; at an equal distance from each","division, half.","Deferred: Jastrow's noun gloss ('division, half') and Krupnik's relational/adverbial gloss ('half to half; at an equal distance from each') are related but not demonstrably the same sense."],
+  ["KRU12418","N00250","to apply, to be wont to","to lead, conduct; to demean one’s self; to be guided by, be wont to; to apply, be practiced","Deferred: one Krupnik gloss matches two separate semicolon-delimited Jastrow senses ('be wont to' and 'apply'). The current mapping granularity cannot isolate which Jastrow sense Krupnik intends without bridging them."],
+  ["KRU12418","N00250","to conduct o. s.","to lead, conduct; to demean one’s self; to be guided by, be wont to; to apply, be practiced","Deferred: the Jastrow record contains several senses and forms, including a separate Hithpael 'to conduct oneself'; this broad root gloss cannot safely be mapped to Krupnik's reflexive form at record level."],
+  ["KRU15633","Q01188","to turn","to turn around, go away","Deferred: the Jastrow gloss is a specific motion ('turn around, go away'), while Krupnik's extracted gloss is broader ('to turn') and the source examples differ. Do not infer equivalence from the shared verb alone."],
+  ["KRU15633","Q01188","to turn","to turn aside, go out","Deferred: Jastrow's 'turn aside, go out' is one numbered sense, while Krupnik's 'to turn' is another extracted sense. The source entry contains several numbered forms and meanings; this needs sense-scoped review."],
+  ["KRU15633","Q01188","to ease nature","to ease one’s self","Deferred: the KRU source record contains both a base-form phrase and a separate Nif. sense with this wording; Jastrow likewise distinguishes base and Nif. forms. The current KRU extraction does not expose the exact sub-sense boundary needed for a safe mapping."],
+  ["KRU15633","Q01188","to be removed","to be removed, to die","Deferred: Krupnik's single extracted phrase overlaps Jastrow's separately numbered Nif. sense; the same KRU gloss also overlaps another Jastrow derived form. Preserve the grammatical distinction until it can be isolated."],
+  ["KRU15633","Q01188","to be removed","to be vacated, cleared, removed","Deferred: the same Krupnik 'to be removed' gloss overlaps Jastrow's distinct Hithpael sense as well as its Nif. sense. A record-level mapping would bridge different grammatical forms."],
+  ["KRU17819","S02236","to be hard","to be hard on, press heavily","Deferred: Jastrow explicitly labels an Af. form and adds 'on/press heavily'; Krupnik's extracted gloss is the broader 'to be hard'. The source records do not establish the same specific sense."]
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const reviewedSourceAlternativePairRecords=[
   ["KRU04451","C01128","to sigh heavily under an attack of angina pectoris","to sigh heavily under an attack of angina pectoris"],
@@ -2041,7 +2058,10 @@
   ["KRU17632","S01839","a ceremony of severing family connections with a man who married beneath his social rank","a ceremony attending the sale of an heirloom to an outsider"],
   // The two sources cite the same Toh. X, 7 passage for emptying the pit; keep "to sprinkle" separate.
   ["KRU06469","G00500","to empty","empty over"],
-
+,
+  ["KRU02534","B00536","house","house of"],
+  ["KRU02534","B00536","place","place of"],
+  ["KRU15603","Q01116","to roll","to roll in"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
