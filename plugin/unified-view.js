@@ -1821,6 +1821,16 @@
   ,["KRU17489","S01587","symbolical form of making an agreement binding","affirmation, making sure; symbolical form of making an agreement binding"]
   ,["KRU11696","M01949","to make poor","to make poor, make contemptible"]
   ,["KRU09446","K00711","a species of figs","figs"]
+  ,["KRU09772","K01132","a species of bats","bats"]
+  ,["KRU09776","K01139","a species of locusts","locusts"]
+  ,["KRU09842","K01255","a species of locusts","locusts"]
+  ,["KRU10810","M00481","a species of figs","figs"]
+  ,["KRU10897","M00621","a species of locusts","locusts"]
+  ,["KRU13428","O00579","ration","the daily ration"]
+  ,["KRU13489","O00677","chip","kindling chip"]
+  ,["KRU15100","Q00260","a coin (Dupondium)","Dupondium"]
+  ,["KRU15358","Q00688","Pelusium in Egypt","Pelusium"]
+  ,["KRU15604","Q01117","grain of pepper","pepper"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
