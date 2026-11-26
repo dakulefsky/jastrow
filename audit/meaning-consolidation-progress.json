@@ -66,17 +66,17 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
-    "exactAlternativeCandidates": 2963,
-    "runtimeRuleHandledCandidates": 2449,
+    "exactAlternativeCandidates": 2959,
+    "runtimeRuleHandledCandidates": 2445,
     "ambiguityFlaggedExactCandidates": 514,
-    "nonExactSemanticCandidates": 1236,
-    "note": "Sixty-six source-scoped whole-gloss mappings and seven alternative-level mappings have been added beyond the original branch baseline. Fifty-two uncertain candidates remain deferred with exact source refs and reasons; known false positives remain separately recorded.",
+    "nonExactSemanticCandidates": 1218,
+    "note": "Latest generated inventory: 4,321 original cross-dictionary candidates; 2,445 are handled by guarded exact-alternative runtime matching, 514 ambiguous exact matches and 1,218 non-exact semantic candidates remain for manual review (1,732 total). Twenty false positives and fifty-two uncertain cases are recorded with exact source refs and reasons. Sixty-six source-scoped whole-gloss mappings and seven alternative-level mappings have been added beyond the original branch baseline.",
     "rejectedKnownCandidates": 20,
     "deferredKnownCandidates": 52,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
-    "latestGeneratedFromCommit": "pending-next-validation",
-    "candidates": 4199
+    "latestGeneratedFromCommit": "ff5d1f0863e5c91f76837c63483f04a2879ea2c8",
+    "candidates": 4177
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -394,7 +394,7 @@
       "rawCandidates": 567,
       "reviewedNonSynonymPairs": 36,
       "deferredSynonymPairs": 1,
-      "latestGeneratedFromCommit": "099e3d44a73c9f189dba72b1faf9635bf708ae55",
+      "latestGeneratedFromCommit": "ff5d1f0863e5c91f76837c63483f04a2879ea2c8",
       "note": "Latest generated inventory from 20,177 original Hebrew source records: 529 candidate rows, 36 source-reviewed non-synonyms excluded, 1 deferred pair, 1 guarded exact-alternative runtime match, and 528 candidates still requiring manual semantic review. Two reviewed partial-sense cross-references are tracked separately.",
       "reviewedSenseSegmentPairs": 2,
       "partialHebrewOverlap": 1
