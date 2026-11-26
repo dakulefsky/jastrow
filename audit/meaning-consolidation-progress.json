@@ -4,13 +4,13 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 915,
+    "reviewedNonIdenticalGlossPairs": 916,
     "reviewedGlossEquivalenceGroups": 38,
     "realReaderPhraseExtractorAudit": "All 1320 retained whole-gloss mappings and all 274 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1320,
+    "reviewedSourceGlossPairCount": 1321,
     "reviewedSourceAlternativePairCount": 274,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -5116,5 +5116,27 @@
       }
     ],
     "policy": "Rejected and deferred pairs are excluded from the pending discovery queue but remain recorded here with their source refs and rationale. Reconsider only with new source evidence."
+  },
+  "thirtyEighthReviewedTranche": {
+    "attemptedCandidates": 1,
+    "addedUniqueSourceGlossPairs": 1,
+    "acceptedPairs": [
+      [
+        "KRU12418",
+        "N00250",
+        "to conduct o. s.",
+        "to conduct one’s self"
+      ]
+    ],
+    "evidence": [
+      "KRU12418 and Jastrow N00250 both define the Hithpael reflexive sense 'to conduct oneself' and cite Sifré Deut. 323. Krupnik abbreviates the phrase as 'to conduct o. s.'; the reader-extracted Jastrow phrase is 'to conduct one’s self'."
+    ],
+    "safeguards": [
+      "the mapping is scoped to the exact KRU12418/N00250 source records and exact glosses",
+      "both display variants normalize to 'to conduct oneself' while More detail preserves each original source wording",
+      "the other conduct, lead, apply, customary, and passive senses in the same entries remain independent"
+    ],
+    "currentTotal": 1321,
+    "currentAlternativeTotal": 274
   }
 }
