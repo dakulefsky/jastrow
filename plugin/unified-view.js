@@ -3,7 +3,7 @@
  const S=root.JastrowSearch||(typeof require==='function'?require('./search.js'):null);
  const clean=text=>String(text).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
  const displayCorrections=new Map([
-  ['KRU12418::to conduct o. s.','to conduct oneself'],
+  ['KRU12418::to conduct o. s','to conduct oneself'],
   ['N00250::to conduct one’s self','to conduct oneself'],
   ['KRU08370::desparing of recovering a lost object','despairing of recovering a lost object'],
   ['KRU15837::to declare ownerless','declare a property ownerless'],
