@@ -1720,7 +1720,6 @@
   ["KRU03441","B01372","mortal man","mortal"],
   // Both sources describe shaping of writing and impress; Jastrow also preserves "poetry".
   ["KRU04329","C00954","shaping (of writing), impress","shaping"],
-,
   ["KRU04044","C00632","earth embankment, steep banks","a steep"],
   ["KRU14780","P01211","to cut (fruits) by the stalks","to cut fruit by the stalks."],
   ["KRU15901","Q01641","resident of an open place","one residing in an open place"],
