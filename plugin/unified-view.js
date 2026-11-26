@@ -1728,6 +1728,19 @@
   ["KRU01341","A02041","faith, trust","faith in Providence"],
   ["KRU01578","A02408","road, way","paved way, public road"],
   ["KRU03401","B01342","cypress or pine-tree","cypress"]
+,
+  ["KRU07984","I00408","a stand for a stove","receptacle of overflow, a stand for a portable stove"],
+  ["KRU19457","U01938","dry soil","hot and dry soil"],
+  ["KRU03526","C00053","an abnormally tall person","an abnormally tall and slim person with shaking gait"],
+  ["KRU03298","B00711","exact account","exact account of wine measures"],
+  ["KRU03519","C00044","small stubble used as fuel","rakings, small stubble, straw"],
+  ["KRU05768","E00343","upturning, scratching (of chickens)","damage done by scratching chickens"],
+  ["KRU14213","P00224","shrunk reed","shrunk"],
+  ["KRU01926","A02946","a species of fish","fish"],
+  ["KRU15991","Q01805","carriers of the litter","carriers of the"],
+  ["KRU01200","A01818","linen sheet","wrapping cloth, sheet, bathing clothes"],
+  ["KRU02266","B00055","image, shadow","reflected image"],
+  ["KRU02652","B00656","hair","thread, a single hair"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
