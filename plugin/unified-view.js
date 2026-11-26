@@ -1773,6 +1773,8 @@
   ["KRU03500","C00016","to grow","to grow high"],
   ["KRU03500","C00016","to be elated, to be exalted","to be exalted; to be proud"],
   ["KRU03320","B01237","to recover, to get strong","to get well, strong"]
+,
+  ["KRU02166","A03336","skin","dressed skin"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
@@ -1857,6 +1859,8 @@
   ["KRU18284","T00889","to lead to pasture","to lead, pasture, feed","Deferred: Jastrow's combined Peal gloss is being compared with Krupnik's Hifil sense; source morphology and two KRU records need to be reconciled before merging."],
   ["KRU18292","T00889","to lead to pasture","to lead, pasture, feed","Deferred: same combined Jastrow gloss is associated with a second KRU record; do not map one Jastrow phrase to multiple KRU records without confirming the form and sense."],
   ["KRU15318","Q00616","compounding ingredients","compounding, manufacturing; ingredients","Deferred: Jastrow's gloss combines the activity of compounding with the ingredients themselves; verify which sub-sense the Krupnik phrase denotes before merging."]
+,
+  ["KRU06406","G00388","trembling","trembling commotion","Deferred: Jastrow's phrase describes a trembling commotion in Targum Isaiah/Psalms, while Krupnik's example is fear and trembling in Genesis. The lexical overlap is plausible but the source contexts differ; keep separate pending confirmation."]
 
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const reviewedSourceAlternativePairRecords=[
