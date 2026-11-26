@@ -1806,6 +1806,16 @@
   ["KRU15143","Q00341","the festival of Purim","Purim"],
   ["KRU15254","Q00520","jar","wine jar"],
   ["KRU15525","Q00979","chest, box","money chest, jewelry box"]
+,
+  ["KRU16416","R00391","bundle","tight bundle"],
+  ["KRU16742","S00205","bluntness","bluntness of teeth"],
+  ["KRU16888","S00457","cup","a rough-edged cup."],
+  ["KRU16913","S00506","handle","the handle of a hoe"],
+  ["KRU16985","S00631","a kind of cups","cups"],
+  ["KRU16991","S00645","croaking (raven)","croaking"],
+  ["KRU17095","S00855","cluster of dates","cluster"],
+  ["KRU17103","S00870","bowing","bowing to the ground"],
+  ["KRU17187","S01017","song","rhythmic song."]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
@@ -1908,6 +1918,8 @@
   ["KRU14001","O01596","to smell badly, to be spoiled","to decay, be spoiled; to smell offensively","Deferred: the Jastrow gloss combines decay/spoilage and offensive smell; Krupnik splits the meanings and uses distinct source examples."],
   ["KRU14001","O01596","to corrupt","to make offensive, unsavory; to corrupt","Deferred: the combined Jastrow gloss spans corruption and making unsavory; do not assign it to one KRU sense alone."],
   ["KRU14001","O01596","to make unsavory","to make offensive, unsavory; to corrupt","Deferred: same one-to-many ambiguity between the combined Jastrow gloss and separate Krupnik senses."]
+,
+  ["KRU17477","S01557","court","large court","Deferred: Jastrow's 'large court' is explained as centenaria/large weights or a large court in different contexts, while Krupnik's entry is a courtyard. The source examples and semantic focus do not establish equivalence."]
 
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const reviewedSourceAlternativePairRecords=[
