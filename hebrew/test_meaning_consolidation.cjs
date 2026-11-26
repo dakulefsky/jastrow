@@ -119,6 +119,12 @@ const loatheGroup=crossReferencedSenses.find(group=>group.items.some(item=>item.
 assert(loatheGroup&&ctx.HebrewMeaningConsolidation.normalize(loatheGroup.text).includes(ctx.HebrewMeaningConsolidation.normalize('קצה נפשו')),'the separate loathing sense must remain independent');
 assert(loatheGroup.items.some(item=>item.p.meaning.includes('2) קצה נפשו')),'the original complete source part must remain attached');
 assert(ctx.HebrewMeaningConsolidation.reviewedSenseSegmentPairRefs.has(['KRU17474','KRU17475'].sort().join('|')),'the partial mapping must be recorded for candidate discovery');
+const crossReferenceWithoutTarget=merge([{word:'קנט',records:[crossReferencedSenseRecords.find(entry=>entry.rid==='KRU17475')]}],'קנט');
+assert(!crossReferenceWithoutTarget.some(group=>group.text==='הִקְנִיט הרגיז'),'the shorthand must not be expanded unless its exact referenced source record is present');
+const changedReferenceTarget=crossReferencedSenseRecords.map(entry=>entry.rid==='KRU17474'?{...entry,parts:entry.parts.map(part=>({...part,meaning:'different source wording'}))}:entry);
+const changedReferenceGroups=merge([{word:'קנט',records:changedReferenceTarget}],'קנט');
+assert(!changedReferenceGroups.some(group=>group.text==='הִקְנִיט הרגיז'),'the cross-reference must not be expanded if the attested source wording changes');
+
 
 const segments=merge([{word:'נפקא מינה',records:lookup.lookup('נפקא מינה')},{word:'נפקא',records:lookup.lookup('נפקא')}],'נפקא מינה נפקא');
 assert(segments.some(g=>g.scope==='נפקא מינה')&&segments.some(g=>g.scope==='נפקא'),'separate words in a multiword selection must never be merged together');
