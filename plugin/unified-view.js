@@ -1769,6 +1769,10 @@
   ["KRU06720","H00248","cheese","soft cheese"],
   ["KRU06775","H00358","knife","slaughtering knife"],
   ["KRU07276","H01186","leavened (bread)","leavened"]
+,
+  ["KRU03500","C00016","to grow","to grow high"],
+  ["KRU03500","C00016","to be elated, to be exalted","to be exalted; to be proud"],
+  ["KRU03320","B01237","to recover, to get strong","to get well, strong"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
@@ -1847,6 +1851,12 @@
   ["KRU03320","B01237","to hollow out, to perforate","to permeate, perforate","Deferred: both glosses contain 'perforate', but the source examples differ substantially (Targ Job 26:13 versus Yalkut Shimoni Exodus 182). Verify whether these are the same action before merging."]
 ,
   ["KRU07233","H01124","to be fine","to be smooth and fine","Deferred: the Jastrow source describes cutting with a sharp, smooth edge, while Krupnik describes an edge being fine. The grammatical direction and semantic focus may differ; verify the exact source sense before merging."]
+,
+  ["KRU03613","C00166","to cut off, to level","to cut, cut off.","Deferred: the Jastrow and Krupnik candidates refer to different verbal stems/senses (simple cutting versus intensive/leveling). Shared cut/cut-off vocabulary is insufficient to merge them."],
+  ["KRU03613","C00166","to cut, to cut off","to cut off, level","Deferred: this candidate reverses the stem/sense pairing in the same entry; keep the two numbered verbal senses separate until source morphology is reconciled."],
+  ["KRU18284","T00889","to lead to pasture","to lead, pasture, feed","Deferred: Jastrow's combined Peal gloss is being compared with Krupnik's Hifil sense; source morphology and two KRU records need to be reconciled before merging."],
+  ["KRU18292","T00889","to lead to pasture","to lead, pasture, feed","Deferred: same combined Jastrow gloss is associated with a second KRU record; do not map one Jastrow phrase to multiple KRU records without confirming the form and sense."],
+  ["KRU15318","Q00616","compounding ingredients","compounding, manufacturing; ingredients","Deferred: Jastrow's gloss combines the activity of compounding with the ingredients themselves; verify which sub-sense the Krupnik phrase denotes before merging."]
 
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const reviewedSourceAlternativePairRecords=[
