@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1,379 retained whole-gloss mappings and all 281 retained alternative-level mappings (1,660 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1,394 retained whole-gloss mappings and all 281 retained alternative-level mappings (1,675 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1379,
+    "reviewedSourceGlossPairCount": 1394,
     "reviewedSourceAlternativePairCount": 281,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -70,12 +70,12 @@
     "runtimeRuleHandledCandidates": 2449,
     "ambiguityFlaggedExactCandidates": 514,
     "nonExactSemanticCandidates": 1236,
-    "note": "Latest generated inventory: 4,321 original cross-dictionary candidates; 2,449 are handled by guarded exact-alternative runtime matching, 514 ambiguous exact matches and 1,236 non-exact semantic candidates remain for manual review (1,750 total). Twenty false positives and forty-five uncertain cases are recorded with exact source refs and reasons. Fifty-one source-scoped whole-gloss mappings and seven alternative-level mappings have been added beyond the original branch baseline.",
+    "note": "Sixty-six source-scoped whole-gloss mappings and seven alternative-level mappings have been added beyond the original branch baseline. Fifty-two uncertain candidates remain deferred with exact source refs and reasons; known false positives remain separately recorded.",
     "rejectedKnownCandidates": 20,
-    "deferredKnownCandidates": 45,
+    "deferredKnownCandidates": 52,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
-    "latestGeneratedFromCommit": "099e3d44a73c9f189dba72b1faf9635bf708ae55",
+    "latestGeneratedFromCommit": "pending-next-validation",
     "candidates": 4199
   },
   "reviewedTranche": {
@@ -6260,6 +6260,83 @@
           "to push away, thrust"
         ],
         "reason": "Deferred: the two sources use different contextual senses (pushing/hurrying versus thrusting away); do not merge on the shared root alone."
+      },
+      {
+        "refs": [
+          "KRU10160",
+          "L00353"
+        ],
+        "glosses": [
+          "whisper",
+          "whisper; spell, charm"
+        ],
+        "reason": "Deferred: Jastrow's combined gloss covers whispering and spell/charm, while Krupnik separates ordinary whispering from charm-whispering. One Jastrow phrase cannot safely be assigned to the ordinary-whisper sense alone."
+      },
+      {
+        "refs": [
+          "KRU10170",
+          "L00372"
+        ],
+        "glosses": [
+          "to whisper",
+          "to whisper, hiss"
+        ],
+        "reason": "Deferred: Jastrow's Pi. gloss combines whispering and hissing; Krupnik separates ordinary whispering, charm-whispering, and other senses."
+      },
+      {
+        "refs": [
+          "KRU10170",
+          "L00372"
+        ],
+        "glosses": [
+          "to whisper a charm",
+          "to whisper"
+        ],
+        "reason": "Deferred: the KRU gloss is a specific charm-whispering sense, while the Jastrow phrase is a broader verb gloss; preserve until the original form/context is reconciled."
+      },
+      {
+        "refs": [
+          "KRU10170",
+          "L00372"
+        ],
+        "glosses": [
+          "to whisper a charm",
+          "to whisper, hiss"
+        ],
+        "reason": "Deferred: the Jastrow gloss spans more than one action; do not merge the combined phrase with the specific KRU charm sense."
+      },
+      {
+        "refs": [
+          "KRU11063",
+          "M00885"
+        ],
+        "glosses": [
+          "to be forgiven, to be pardoned",
+          "to be cancelled; to be forgiven, pardoned"
+        ],
+        "reason": "Deferred: the Jastrow Nifal gloss combines forgiveness and cancellation, while Krupnik splits these into distinct numbered meanings."
+      },
+      {
+        "refs": [
+          "KRU11063",
+          "M00885"
+        ],
+        "glosses": [
+          "to be cancelled",
+          "to be cancelled; to be forgiven, pardoned"
+        ],
+        "reason": "Deferred: same combined-Jastrow/numbered-Krupnik ambiguity; preserve both separate Nifal senses."
+      },
+      {
+        "refs": [
+          "KRU11886",
+          "M02309"
+        ],
+        "glosses": [
+          "to suck",
+          "to give suck"
+        ],
+        "reason": "Deferred: Krupnik's 'to suck' and Jastrow's Pa. 'to give suck' differ in grammatical direction/valency; do not merge without stronger source evidence."
       }
     ],
     "policy": "Rejected and deferred pairs are excluded from the pending discovery queue but remain recorded here with their source refs and rationale. Reconsider only with new source evidence."
@@ -7791,6 +7868,218 @@
       "Preserve grammatical role and sense boundaries; defer when the source glosses do not establish equivalence."
     ],
     "currentTotal": 1379,
+    "currentAlternativeTotal": 281
+  },
+  "sixtySeventhReviewedTranche": {
+    "attemptedCandidates": 15,
+    "addedUniqueSourceGlossPairs": 15,
+    "acceptedPairs": [
+      [
+        "KRU09387",
+        "K00643",
+        "beating (of flax)",
+        "beating"
+      ],
+      [
+        "KRU09415",
+        "K00673",
+        "guard-house",
+        "guard-house at the gate"
+      ],
+      [
+        "KRU09459",
+        "K00723",
+        "calyx of flowers",
+        "calyx"
+      ],
+      [
+        "KRU09473",
+        "K00741",
+        "a mantle",
+        "a fine mantle"
+      ],
+      [
+        "KRU17797",
+        "K01225",
+        "bell",
+        "the shepherd’s bell"
+      ],
+      [
+        "KRU10160",
+        "L00353",
+        "hissing (of the serpent)",
+        "hissing"
+      ],
+      [
+        "KRU10695",
+        "M00327",
+        "whip",
+        "chastising whip"
+      ],
+      [
+        "KRU10985",
+        "M00759",
+        "channel",
+        "irrigating channel"
+      ],
+      [
+        "KRU11012",
+        "M00857",
+        "to protest",
+        "to protest against"
+      ],
+      [
+        "KRU11063",
+        "M00885",
+        "to remit (a debt)",
+        "to remit"
+      ],
+      [
+        "KRU11381",
+        "M01370",
+        "a kind of boat",
+        "boat"
+      ],
+      [
+        "KRU11815",
+        "M02185",
+        "cave",
+        "burial cave"
+      ],
+      [
+        "KRU11881",
+        "M02294",
+        "mouthpiece",
+        "overlaid mouthpiece"
+      ],
+      [
+        "KRU11886",
+        "M02309",
+        "to wring out",
+        "to wring"
+      ],
+      [
+        "KRU11964",
+        "M02459",
+        "teacher",
+        "primary teacher"
+      ]
+    ],
+    "evidence": [
+      "K00643/KRU09387: both define beating of flax and cite Shabbat 140b.",
+      "K00673/KRU09415: both define the guard-house at the gate and cite Nedarim 91b.",
+      "K00723/KRU09459: both define the calyx of flowers and cite Targum Exodus 25:33.",
+      "K00741/KRU09473: both define the mantle and cite Yerushalmi Sanhedrin 10:29a.",
+      "K01225/KRU17797: both define the shepherd's bell and cite Bava Kamma 52a.",
+      "L00353/KRU10160: both define serpent hissing; the separate whisper/charm gloss remains deferred.",
+      "M00327/KRU10695: both define the chastising whip and cite Yoma 23a.",
+      "M00759/KRU10985: both define the irrigating channel and cite Targum I Kings 18:35.",
+      "M00857/KRU11012: both define protesting and cite Tosefta Sukkah II,5.",
+      "M00885/KRU11063: both define remitting a debt and cite Ketubot 85b.",
+      "M01370/KRU11381: both define the same kind of boat and cite Ketubot 69b.",
+      "M02185/KRU11815: both define the cave of burial and cite Bava Batra 58a.",
+      "M02294/KRU11881: both define a musical-instrument mouthpiece and cite Kelim XI,7.",
+      "M02309/KRU11886: both define wringing out and cite Zevachim 65b; the separate suck/give-suck forms remain deferred.",
+      "M02459/KRU11964: both define the primary teacher and cite Bava Batra 21b."
+    ],
+    "safeguards": [
+      "Each mapping is tied to exact source records and reader phrases; unrelated senses in the same entries remain separate."
+    ],
+    "currentTotal": 1394,
+    "currentAlternativeTotal": 281
+  },
+  "sixtyEighthReviewedTranche": {
+    "attemptedCandidates": 7,
+    "addedUniqueSourceGlossPairs": 0,
+    "deferredCandidates": 7,
+    "deferredPairs": [
+      {
+        "refs": [
+          "KRU10160",
+          "L00353"
+        ],
+        "glosses": [
+          "whisper",
+          "whisper; spell, charm"
+        ],
+        "reason": "Deferred: Jastrow's combined gloss covers whispering and spell/charm, while Krupnik separates ordinary whispering from charm-whispering. One Jastrow phrase cannot safely be assigned to the ordinary-whisper sense alone."
+      },
+      {
+        "refs": [
+          "KRU10170",
+          "L00372"
+        ],
+        "glosses": [
+          "to whisper",
+          "to whisper, hiss"
+        ],
+        "reason": "Deferred: Jastrow's Pi. gloss combines whispering and hissing; Krupnik separates ordinary whispering, charm-whispering, and other senses."
+      },
+      {
+        "refs": [
+          "KRU10170",
+          "L00372"
+        ],
+        "glosses": [
+          "to whisper a charm",
+          "to whisper"
+        ],
+        "reason": "Deferred: the KRU gloss is a specific charm-whispering sense, while the Jastrow phrase is a broader verb gloss; preserve until the original form/context is reconciled."
+      },
+      {
+        "refs": [
+          "KRU10170",
+          "L00372"
+        ],
+        "glosses": [
+          "to whisper a charm",
+          "to whisper, hiss"
+        ],
+        "reason": "Deferred: the Jastrow gloss spans more than one action; do not merge the combined phrase with the specific KRU charm sense."
+      },
+      {
+        "refs": [
+          "KRU11063",
+          "M00885"
+        ],
+        "glosses": [
+          "to be forgiven, to be pardoned",
+          "to be cancelled; to be forgiven, pardoned"
+        ],
+        "reason": "Deferred: the Jastrow Nifal gloss combines forgiveness and cancellation, while Krupnik splits these into distinct numbered meanings."
+      },
+      {
+        "refs": [
+          "KRU11063",
+          "M00885"
+        ],
+        "glosses": [
+          "to be cancelled",
+          "to be cancelled; to be forgiven, pardoned"
+        ],
+        "reason": "Deferred: same combined-Jastrow/numbered-Krupnik ambiguity; preserve both separate Nifal senses."
+      },
+      {
+        "refs": [
+          "KRU11886",
+          "M02309"
+        ],
+        "glosses": [
+          "to suck",
+          "to give suck"
+        ],
+        "reason": "Deferred: Krupnik's 'to suck' and Jastrow's Pa. 'to give suck' differ in grammatical direction/valency; do not merge without stronger source evidence."
+      }
+    ],
+    "evidence": [
+      "L00353 and L00372 contain combined whisper/charm/hiss glosses that overlap multiple distinct Krupnik senses.",
+      "M00885's combined Nifal gloss spans both forgiveness and cancellation, which Krupnik numbers separately.",
+      "M02309's Pa. 'to give suck' differs in valency from Krupnik's 'to suck'."
+    ],
+    "safeguards": [
+      "Preserve numbered senses, verbal forms, and grammatical direction; do not force one-to-many equivalences."
+    ],
+    "currentTotal": 1394,
     "currentAlternativeTotal": 281
   }
 }
