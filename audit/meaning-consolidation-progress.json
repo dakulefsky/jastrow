@@ -4,13 +4,13 @@
   "branch": "improve-meaning-consolidation-and-evaluation",
   "pullRequest": 48,
   "baseline": {
-    "reviewedNonIdenticalGlossPairs": 916,
+    "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
     "realReaderPhraseExtractorAudit": "All 1320 retained whole-gloss mappings and all 274 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1321,
+    "reviewedSourceGlossPairCount": 1322,
     "reviewedSourceAlternativePairCount": 274,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -66,11 +66,11 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
-    "candidates": 4323,
+    "candidates": 4321,
     "exactAlternativeCandidates": 2990,
     "runtimeRuleHandledCandidates": 2456,
     "ambiguityFlaggedExactCandidates": 534,
-    "nonExactSemanticCandidates": 1333,
+    "nonExactSemanticCandidates": 1331,
     "note": "Generated from all 47,919 source entries and the real Chromium Jastrow phrase extractor. Four known false positives and two deferred time/times candidates are excluded from pending review with their rationales retained. The Hebrew queue now excludes the reviewed KRU17474/KRU17475 partial-sense cross-reference: 567 candidates remain, 566 for manual review.",
     "rejectedKnownCandidates": 4,
     "deferredKnownCandidates": 2
@@ -5137,6 +5137,29 @@
       "the other conduct, lead, apply, customary, and passive senses in the same entries remain independent"
     ],
     "currentTotal": 1321,
+    "currentAlternativeTotal": 274
+  },
+  "thirtyNinthReviewedTranche": {
+    "attemptedCandidates": 1,
+    "addedUniqueSourceGlossPairs": 1,
+    "acceptedPairs": [
+      [
+        "KRU05585",
+        "E00016",
+        "farther off (of space)",
+        "farther off, far"
+      ]
+    ],
+    "evidence": [
+      "Krupnik KRU05585 and Jastrow E00016 both define the spatial sense of הלאה and cite Targum Jonathan Genesis 32:25. Jastrow's reader-visible phrase is 'farther off, far'; Krupnik clarifies '(of space)'."
+    ],
+    "safeguards": [
+      "the mapping is scoped to the exact source records and exact glosses",
+      "the display combines the two source phrasings as 'farther off, far (of space)' without repeating the same meaning",
+      "Jastrow's separate temporal sense 'onward' remains independent",
+      "both original source definitions and citations remain available"
+    ],
+    "currentTotal": 1322,
     "currentAlternativeTotal": 274
   }
 }
