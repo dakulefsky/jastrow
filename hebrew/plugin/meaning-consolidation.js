@@ -62,6 +62,31 @@
   const ids=[a,b].sort().join('|'),glosses=[normalize(x),normalize(y)].sort().join(' | ');
   return ids+'::'+glosses;
  }));
+ // Source-reviewed false positives for the candidate queue. This registry never changes runtime meanings.
+ const reviewedNonSynonymPairs=new Map([
+  ["KRU02691","KRU02692","ירוש׳ שבי׳ פ״ו ל״ו ע״ג: ביריי רבתא.","שם אמורא","Different proper-name classes: the first record identifies a place, while the second explicitly identifies an Amora."],
+  ["KRU18231","KRU18232","ריכך, עשה רך","כנ״ל. תרג׳ איוב כ״ג ט״ז (הרך לבי): רכך לבבי. אִתְרַכֵּךְ אתפ׳, נעשה רך","Different grammatical voice and meaning: 'to make soft' is causative/transitive; 'to become soft' is intransitive/reflexive."],
+  ["KRU07060","KRU07061","שם עיר בארץ ישראל","שם אמורא","Different referents: Haifa is a town; the other record is a personal name of an Amora."],
+  ["KRU02827","KRU02828","1) ילד בפעם הראשונה","ליקט בכורים","Different senses and forms: bearing for the first time is not the Hifil act of plucking first fruits."],
+  ["KRU00180","KRU04150","פ״י, כתת","אפע׳, שמר, הגין","Different meanings: crushing versus covering/protecting; shared headword normalization is insufficient."],
+  ["KRU00207","KRU00208","שכר","חולין ק״ד ע״ב: אגרא חמוה דר׳ אבא.","Reward versus a proper personal name; these are distinct homonymous senses."],
+  ["KRU00372","KRU00373","אוזן","נאד","Ear versus skin bag; distinct lexical meanings."],
+  ["KRU00372","KRU00373","אוזן","הדום, שרפרף","Ear versus footstool; distinct lexical meanings."],
+  ["KRU00467","KRU00468","שטר מכירה או מתנה","פקעת","Contract/deed versus skein; distinct lexical meanings."],
+  ["KRU00585","KRU00586","יסוד","שם עיר בגליל","Foundation versus a town in Galilee; distinct lexical meanings."],
+  ["KRU00594","KRU00595","אכסניא","בעל אכסניא","Inn versus innkeeper; related concepts but not synonyms."],
+  ["KRU00722","KRU00724","חג של עכו״ם","איזו","Heathen holiday versus the interrogative 'which?'; distinct homonymous forms."],
+  ["KRU00728","KRU00729","שם אמורא","מערב","Personal name of an Amora versus 'west'; distinct lexical meanings."],
+  ["KRU00751","KRU00752","שליח","תל, גבעה","Messenger versus hill; distinct lexical meanings."],
+  ["KRU00848","KRU00850","בר׳ י״ח ע״ב: אימא לה לאימא; ירוש׳ נדה פ״א מ״ט ע״א: אבא טבי ואימה טביתה.","פלך לטויה","Mother versus distaff; distinct lexical meanings."],
+  ["KRU00985","KRU00986","אגודה, חבילה","שר של מעלה, מלאך","Bunch/bundle versus angel; distinct lexical meanings."],
+  ["KRU01073","KRU01074","נשואין","חפרפרת","Matrimony versus mole; distinct homonymous senses."],
+  ["KRU01341","KRU01342","– אמונה","הר בצפונה של א״י","Faith/trust versus Mount Amanus; distinct lexical meanings."],
+  ["KRU01562","KRU01563","בגד","ציון לדרך וגבול","Robe/garment versus landmark/boundary marker; distinct lexical meanings."]
+ ].map(([a,b,x,y,reason])=>{
+  const ids=[a,b].sort().join('|'),glosses=[normalize(x),normalize(y)].sort().join(' | ');
+  return [ids+'::'+glosses,reason];
+ }));
  // A cross-reference meaning can be one sense inside a larger numbered part.
  // This reviewed mapping resolves only that exact sub-sense; the other numbered
  // senses remain independent and the original full part stays attached.
@@ -142,5 +167,5 @@
   }
   return groups;
  }
- root.HebrewMeaningConsolidation={merge,normalize,labelKey,canonicalMeaningKey,splitAlternatives,reviewedSynonymPairs,reviewedSenseSegmentPairRefs,pairKey,equivalent};
+ root.HebrewMeaningConsolidation={merge,normalize,labelKey,canonicalMeaningKey,splitAlternatives,reviewedSynonymPairs,reviewedNonSynonymPairs,reviewedSenseSegmentPairRefs,pairKey,equivalent};
 })(typeof window==='undefined'?globalThis:window);
