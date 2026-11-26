@@ -60,7 +60,7 @@
     "published": false
   },
   "candidateInventory": {
-    "generatedFromCommit": "9f0ecc46b835f92696e62834c4cfe57b78f72b88",
+    "generatedFromCommit": "de213b8af7b17095806d71aa40cceb681d65dbe9",
     "sourceEntries": 47919,
     "jastrowEntries": 32508,
     "krupnikEntries": 15407,
@@ -71,7 +71,7 @@
     "runtimeRuleHandledCandidates": 2456,
     "ambiguityFlaggedExactCandidates": 534,
     "nonExactSemanticCandidates": 1413,
-    "note": "Inventory regenerated from all 47,919 original source entries and the real Chromium phrase extractor. The candidate generator now records and excludes known rejected/deferred pairs from pending review while preserving their rationales in the report."
+    "note": "Inventory regenerated from all original source entries and the real Chromium phrase extractor. Known rejected/deferred English pairs are excluded from pending review with their rationales retained. The Hebrew queue excludes the newly reviewed KRU17474/KRU17475 partial-sense cross-reference."
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -260,7 +260,7 @@
     "status": "shared grouping layer in Hebrew reader and quick lookup; exact Hebrew alternative lists now consolidate despite punctuation/order differences",
     "sources": "Krupnik/Silbermann Hebrew source records only; the Hebrew plugin does not load Jastrow",
     "safeguards": "Original Krupnik/Silbermann Hebrew wording is authoritative. Exact Hebrew glosses and exact alternative-list variants consolidate; word order within each phrase, explicit grammatical label conflicts, and unreviewed synonyms remain separate. Source-scoped synonym pairs require manual review.",
-    "candidateReview": "The initial English-gloss alignment filter found no pairs. The inventory was broadened to list every non-identical meaning pair across repeated normalized headwords for manual review.",
+    "candidateReview": "The inventory is review-only. Exact Hebrew alternative overlaps are handled separately from manually reviewed source-scoped synonyms. One additional partial-sense cross-reference is now resolved without absorbing the other numbered meaning in the same source part.",
     "reviewedSynonymPairs": 12,
     "reviewedPairs": [
       {
@@ -348,7 +348,20 @@
         "meaning": "gullet"
       }
     ],
-    "note": "Added deterministic normalization for exact Hebrew alternative lists: punctuation and alternative order are normalized, while phrase word order is preserved. Regression tests verify that unreviewed synonyms remain separate."
+    "note": "Added deterministic normalization for exact Hebrew alternative lists: punctuation and alternative order are normalized, while phrase word order is preserved. Regression tests verify that unreviewed synonyms remain separate.",
+    "reviewedSenseSegmentPairs": 1,
+    "reviewedSenseSegmentPairDetails": [
+      {
+        "records": [
+          "KRU17474",
+          "KRU17475"
+        ],
+        "sharedSense": "KRU17475's first numbered sub-sense is an explicit כנ״ל cross-reference to KRU17474's הִקְנִיט הרגיז meaning.",
+        "display": "הִקְנִיט הרגיז",
+        "preservedDistinctSense": "KRU17475's second numbered sub-sense קצה נפשו remains a separate result.",
+        "safeguard": "The mapping applies only when both exact source records are present and KRU17474 still contains the exact source wording; the complete original KRU17475 part remains attached for More detail."
+      }
+    ]
   },
   "secondReviewedTranche": {
     "attemptedRows": 46,
