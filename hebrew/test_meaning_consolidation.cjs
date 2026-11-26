@@ -42,6 +42,8 @@ assert(sharedCondition&&separateIntention,'the shared condition and additional i
 assert.equal(sharedCondition.items.length,2,'the exact shared alternative should retain both source records');
 assert.equal(separateIntention.items.length,1,'the additional intention sense should remain on its own');
 assert.equal(separateIntention.items[0].p.meaning,'בתנאי, בכוונה','the original complete Hebrew source wording must remain accessible');
+assert.equal(sharedCondition.items.map(item=>item.displayMeaning).join(', '),'בתנאי, בתנאי','the shared condition group should carry only its own display sense into recommendation evidence');
+assert.equal(separateIntention.items[0].displayMeaning,'בכוונה','the extra intention group should carry only its separated display sense into recommendation evidence');
 assert.deepEqual(Array.from(ctx.HebrewMeaningConsolidation.splitAlternatives('תנאי (כך, וכך), דבר נוסף')),['תנאי (כך, וכך)','דבר נוסף'],'commas inside parenthetical explanations must not split Hebrew alternatives');
 
 const distinctHebrewHomonyms=merge([{word:'ברא',records:[
