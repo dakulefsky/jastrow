@@ -109,6 +109,17 @@ assertReviewedPair('KRU15796','KRU15797','פצל','ביקע, הפריד','חיל
 assertReviewedPair('KRU00145','KRU04650','אגב גררא','בהזדמנות','על ידי המשך הדבור, דרך אגב');
 assertReviewedPair('KRU02736','KRU02892','בית הבליעה','מקום הבליעה בגרון','פנים הגרון');
 assertReviewedPair('KRU09162','KRU09163','כון','עשה ישר ומכוון','1) עשה ישר');
+const crossReferencedSenseRecords=ctx.HEBREW_DICTIONARY.entries.filter(entry=>['KRU17474','KRU17475'].includes(entry.rid));
+assert.equal(crossReferencedSenseRecords.length,2,'both source records for the קנט cross-reference must exist');
+const crossReferencedSenses=merge([{word:'קנט',records:crossReferencedSenseRecords}],'קנט');
+const vexGroup=crossReferencedSenses.find(group=>group.items.some(item=>item.e.rid==='KRU17474')&&group.items.some(item=>item.e.rid==='KRU17475'));
+assert(vexGroup,'the explicit כנ״ל cross-reference should consolidate with the preceding vex sense');
+assert.equal(vexGroup.text,'הִקְנִיט הרגיז','the cross-reference should display the actual Hebrew meaning, not the shorthand כנ״ל');
+const loatheGroup=crossReferencedSenses.find(group=>group.items.some(item=>item.e.rid==='KRU17475')&&!group.items.some(item=>item.e.rid==='KRU17474'));
+assert(loatheGroup&&ctx.HebrewMeaningConsolidation.normalize(loatheGroup.text).includes(ctx.HebrewMeaningConsolidation.normalize('קצה נפשו')),'the separate loathing sense must remain independent');
+assert(loatheGroup.items.some(item=>item.p.meaning.includes('2) קצה נפשו')),'the original complete source part must remain attached');
+assert(ctx.HebrewMeaningConsolidation.reviewedSenseSegmentPairRefs.has(['KRU17474','KRU17475'].sort().join('|')),'the partial mapping must be recorded for candidate discovery');
+
 const segments=merge([{word:'נפקא מינה',records:lookup.lookup('נפקא מינה')},{word:'נפקא',records:lookup.lookup('נפקא')}],'נפקא מינה נפקא');
 assert(segments.some(g=>g.scope==='נפקא מינה')&&segments.some(g=>g.scope==='נפקא'),'separate words in a multiword selection must never be merged together');
 assert.equal(ctx.HebrewMeaningConsolidation.reviewedSynonymPairs.size,12,'only the manually reviewed Hebrew synonym pairs should be active');
