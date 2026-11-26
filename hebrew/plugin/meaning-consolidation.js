@@ -154,7 +154,7 @@
  }));
  // Ambiguous Hebrew pairs retained for later source-level review; no runtime merge is implied.
  const deferredSynonymPairs=new Map([
-  ["KRU12499","KRU12500","התרומם","התנופף ברוח","Deferred: the source meanings 'to rise/swing oneself' and 'to wave in the wind' are related motions but not demonstrably equivalent; the cited passages differ."],,
+  ["KRU12499","KRU12500","התרומם","התנופף ברוח","Deferred: the source meanings 'to rise/swing oneself' and 'to wave in the wind' are related motions but not demonstrably equivalent; the cited passages differ."],
   ["KRU03032","KRU03041","י׳, כנ״ל. כלי׳ פב״ד מ״ו: שלש בססיות הן; במ״ר י׳: יש להם קופליות מלמעלן ובסיסיות מלמטן.","עי׳ בְּסִיסִית. כלי׳ פכ״ד מ״ו: שלש בססיות הן.","Deferred: both entries point to the same Kelim passage and likely variant spellings, but neither supplies a clear standalone Hebrew definition; verify the exact lexical form before merging."],
   ["KRU03136","KRU03138","בערב שבת.","ב״ה בערב שבת בין השמשות.","Deferred: the second entry is explicitly numbered as a separate homonym and narrows the time to twilight; do not collapse it into the broader Friday-eve expression without stronger evidence."],
   ["KRU03979","KRU03980","גזירה לגזירה.","ל״ג גזירה לגזירה לא גזרינן.","Deferred: one entry gives the legal term while the other gives an abbreviated Talmudic rule statement; their relationship is not a demonstrated synonym pair."],
