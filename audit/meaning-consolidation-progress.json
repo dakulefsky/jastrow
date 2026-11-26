@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1,394 retained whole-gloss mappings and all 281 retained alternative-level mappings (1,675 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1,405 retained whole-gloss mappings and all 281 retained alternative-level mappings (1,686 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1394,
+    "reviewedSourceGlossPairCount": 1405,
     "reviewedSourceAlternativePairCount": 281,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -70,12 +70,12 @@
     "runtimeRuleHandledCandidates": 2445,
     "ambiguityFlaggedExactCandidates": 514,
     "nonExactSemanticCandidates": 1218,
-    "note": "Latest generated inventory: 4,321 original cross-dictionary candidates; 2,445 are handled by guarded exact-alternative runtime matching, 514 ambiguous exact matches and 1,218 non-exact semantic candidates remain for manual review (1,732 total). Twenty false positives and fifty-two uncertain cases are recorded with exact source refs and reasons. Sixty-six source-scoped whole-gloss mappings and seven alternative-level mappings have been added beyond the original branch baseline.",
+    "note": "Seventy-seven source-scoped whole-gloss mappings and seven alternative-level mappings have been added beyond the original branch baseline. Fifty-six uncertain candidates remain deferred with exact source refs and reasons; known false positives remain separately recorded.",
     "rejectedKnownCandidates": 20,
-    "deferredKnownCandidates": 52,
+    "deferredKnownCandidates": 56,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
-    "latestGeneratedFromCommit": "ff5d1f0863e5c91f76837c63483f04a2879ea2c8",
+    "latestGeneratedFromCommit": "pending-next-validation",
     "candidates": 4177
   },
   "reviewedTranche": {
@@ -6337,6 +6337,50 @@
           "to give suck"
         ],
         "reason": "Deferred: Krupnik's 'to suck' and Jastrow's Pa. 'to give suck' differ in grammatical direction/valency; do not merge without stronger source evidence."
+      },
+      {
+        "refs": [
+          "KRU12863",
+          "N01026"
+        ],
+        "glosses": [
+          "to blow (fire)",
+          "to blow"
+        ],
+        "reason": "Deferred: the Krupnik gloss is Afal 'to blow fire', while the Jastrow phrase is the simple 'to blow'; preserve the distinct verbal stem and sense."
+      },
+      {
+        "refs": [
+          "KRU14001",
+          "O01596"
+        ],
+        "glosses": [
+          "to smell badly, to be spoiled",
+          "to decay, be spoiled; to smell offensively"
+        ],
+        "reason": "Deferred: the Jastrow gloss combines decay/spoilage and offensive smell; Krupnik splits the meanings and uses distinct source examples."
+      },
+      {
+        "refs": [
+          "KRU14001",
+          "O01596"
+        ],
+        "glosses": [
+          "to corrupt",
+          "to make offensive, unsavory; to corrupt"
+        ],
+        "reason": "Deferred: the combined Jastrow gloss spans corruption and making unsavory; do not assign it to one KRU sense alone."
+      },
+      {
+        "refs": [
+          "KRU14001",
+          "O01596"
+        ],
+        "glosses": [
+          "to make unsavory",
+          "to make offensive, unsavory; to corrupt"
+        ],
+        "reason": "Deferred: same one-to-many ambiguity between the combined Jastrow gloss and separate Krupnik senses."
       }
     ],
     "policy": "Rejected and deferred pairs are excluded from the pending discovery queue but remain recorded here with their source refs and rationale. Reconsider only with new source evidence."
@@ -8080,6 +8124,156 @@
       "Preserve numbered senses, verbal forms, and grammatical direction; do not force one-to-many equivalences."
     ],
     "currentTotal": 1394,
+    "currentAlternativeTotal": 281
+  },
+  "sixtyNinthReviewedTranche": {
+    "attemptedCandidates": 11,
+    "addedUniqueSourceGlossPairs": 11,
+    "acceptedPairs": [
+      [
+        "KRU12686",
+        "N00704",
+        "libation",
+        "the act of libation"
+      ],
+      [
+        "KRU12707",
+        "N00737",
+        "the constellation of Orion",
+        "Orion"
+      ],
+      [
+        "KRU12741",
+        "N00795",
+        "marriage",
+        "taking in marriage"
+      ],
+      [
+        "KRU12768",
+        "N00854",
+        "wooden) lid",
+        "lid"
+      ],
+      [
+        "KRU12837",
+        "N00969",
+        "tank of the press",
+        "tank"
+      ],
+      [
+        "KRU13548",
+        "O00788",
+        "clapping of the hands",
+        "clapping"
+      ],
+      [
+        "KRU14428",
+        "P00605",
+        "clapper",
+        "clapper of a bell."
+      ],
+      [
+        "KRU14762",
+        "P01174",
+        "tying the sacrifice",
+        "tying"
+      ],
+      [
+        "KRU15143",
+        "Q00341",
+        "the festival of Purim",
+        "Purim"
+      ],
+      [
+        "KRU15254",
+        "Q00520",
+        "jar",
+        "wine jar"
+      ],
+      [
+        "KRU15525",
+        "Q00979",
+        "chest, box",
+        "money chest, jewelry box"
+      ]
+    ],
+    "evidence": [
+      "N00704/KRU12686: both define the act of libation; Jastrow also preserves the separate liquid-used-for-libation gloss.",
+      "N00737/KRU12707: both identify Orion as a constellation and cite Targum Job 9:9.",
+      "N00795/KRU12741: both define marriage/taking in marriage and cite Ketubot I,4.",
+      "N00854/KRU12768: both define the wooden lid of a pitcher and cite Bava Batra 26a.",
+      "N00969/KRU12837: both define the tank of a press and cite Targum Exodus 22:28.",
+      "O00788/KRU13548: both define clapping and share Yerushalmi Beitzah V,63a.",
+      "P00605/KRU14428: both define a bell clapper and cite Shabbat 58b.",
+      "P01174/KRU14762: both define the tying of the sacrifice and cite Tamid IV,1.",
+      "Q00341/KRU15143: both identify the festival of Purim and cite Megillah 7b.",
+      "Q00520/KRU15254: both define the wine jar and cite Lamentations Rabbah III,16.",
+      "Q00979/KRU15525: both define a money/jewelry chest and cite Yerushalmi Beitzah I,60c."
+    ],
+    "safeguards": [
+      "Each mapping is scoped to the exact source phrase; neighboring meanings remain attached to their original records."
+    ],
+    "currentTotal": 1405,
+    "currentAlternativeTotal": 281
+  },
+  "seventiethReviewedTranche": {
+    "attemptedCandidates": 4,
+    "addedUniqueSourceGlossPairs": 0,
+    "deferredCandidates": 4,
+    "deferredPairs": [
+      {
+        "refs": [
+          "KRU12863",
+          "N01026"
+        ],
+        "glosses": [
+          "to blow (fire)",
+          "to blow"
+        ],
+        "reason": "Deferred: the Krupnik gloss is Afal 'to blow fire', while the Jastrow phrase is the simple 'to blow'; preserve the distinct verbal stem and sense."
+      },
+      {
+        "refs": [
+          "KRU14001",
+          "O01596"
+        ],
+        "glosses": [
+          "to smell badly, to be spoiled",
+          "to decay, be spoiled; to smell offensively"
+        ],
+        "reason": "Deferred: the Jastrow gloss combines decay/spoilage and offensive smell; Krupnik splits the meanings and uses distinct source examples."
+      },
+      {
+        "refs": [
+          "KRU14001",
+          "O01596"
+        ],
+        "glosses": [
+          "to corrupt",
+          "to make offensive, unsavory; to corrupt"
+        ],
+        "reason": "Deferred: the combined Jastrow gloss spans corruption and making unsavory; do not assign it to one KRU sense alone."
+      },
+      {
+        "refs": [
+          "KRU14001",
+          "O01596"
+        ],
+        "glosses": [
+          "to make unsavory",
+          "to make offensive, unsavory; to corrupt"
+        ],
+        "reason": "Deferred: same one-to-many ambiguity between the combined Jastrow gloss and separate Krupnik senses."
+      }
+    ],
+    "evidence": [
+      "N01026/KRU12863 compares simple 'to blow' with Afal 'to blow fire'.",
+      "O01596/KRU14001 contains a combined Jastrow gloss that spans spoilage, offensive smell, corruption, and making unsavory; Krupnik splits these meanings."
+    ],
+    "safeguards": [
+      "Preserve verbal stems and distinct numbered meanings; do not map combined glosses to one of multiple KRU senses."
+    ],
+    "currentTotal": 1405,
     "currentAlternativeTotal": 281
   }
 }
