@@ -1847,8 +1847,9 @@ const destructionSense=U.merge([
   {text:'heating, fire',label:'—3)'}
  ]}
 ],'הַבְעָרָה');
-assert.equal(destructionSense.length,3,'the destruction sense should consolidate while kindling and altar-fire senses stay separate');
+assert.equal(destructionSense.length,4,'the destruction sense should consolidate while the distinct law, kindling, and altar-fire glosses stay separate');
 assert(destructionSense.some(group=>group.sources.length===2&&group.text.includes('destruction')),'both Yerushalmi Sanhedrin destruction definitions should consolidate');
+assert(destructionSense.some(group=>group.sources.length===1&&group.text.includes('law')),'the separate Sabbath-law sense must remain independent');
 assert(destructionSense.some(group=>group.sources.length===1&&group.text.includes('kindling')),'the separate kindling-of-fire sense must remain independent');
 assert(destructionSense.some(group=>group.sources.length===1&&group.text==='heating, fire'),'the separate altar-fire sense must remain independent');
 
