@@ -1816,6 +1816,8 @@
   ["KRU17095","S00855","cluster of dates","cluster"],
   ["KRU17103","S00870","bowing","bowing to the ground"],
   ["KRU17187","S01017","song","rhythmic song."]
+  ,["KRU03803","C00364","rough untrimmed stone, cobble","a rolling stone, rough untrimmed stone, cobble"]
+  ,["KRU03169","B01075","to bubble forth, to burst forth","to break through, bubble forth, burst forth"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
