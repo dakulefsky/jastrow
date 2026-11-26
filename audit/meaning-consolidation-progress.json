@@ -60,7 +60,7 @@
     "published": false
   },
   "candidateInventory": {
-    "generatedFromCommit": "452b674454e8be62ba89222ac7eeedab816ea6ef",
+    "generatedFromCommit": "bcdf2f42aa57f84128feafa879a28752be5bb3da",
     "sourceEntries": 47919,
     "jastrowEntries": 32508,
     "krupnikEntries": 15407,
@@ -71,7 +71,7 @@
     "runtimeRuleHandledCandidates": 2456,
     "ambiguityFlaggedExactCandidates": 534,
     "nonExactSemanticCandidates": 1331,
-    "note": "Generated from all 47,919 source entries and the real Chromium Jastrow phrase extractor. Four known false positives and two deferred time/times candidates are excluded from pending review with their rationales retained. The Hebrew queue now excludes the reviewed KRU17474/KRU17475 partial-sense cross-reference: 567 candidates remain, 566 for manual review.",
+    "note": "Regenerated from 47,919 original source entries and the real Chromium Jastrow phrase extractor. Four known false positives and two unresolved time/times candidates are excluded from pending review with their reasons preserved. Hebrew inventory: 567 candidate pairs, 566 manual-review, one guarded exact-alternative runtime match; the reviewed KRU17474/KRU17475 partial-sense mapping is excluded from pending review.",
     "rejectedKnownCandidates": 4,
     "deferredKnownCandidates": 2
   },
@@ -365,14 +365,19 @@
       }
     ],
     "candidateInventory": {
-      "generatedFromCommit": "452b674454e8be62ba89222ac7eeedab816ea6ef",
+      "generatedFromCommit": "bcdf2f42aa57f84128feafa879a28752be5bb3da",
       "sourceRecords": 20177,
       "uniqueHeadwordForms": 20104,
       "repeatedHeadwordForms": 1726,
       "candidates": 567,
       "runtimeRuleHandledCandidates": 1,
       "manualReviewCandidates": 566,
-      "note": "One reviewed partial-sense cross-reference is excluded from the pending queue; exact shared Hebrew alternatives remain handled by the guarded runtime rule."
+      "evidenceCounts": {
+        "exact-gloss": 1,
+        "shared-content-terms": 6,
+        "different-glosses": 269,
+        "missing-gloss": 291
+      }
     }
   },
   "secondReviewedTranche": {
