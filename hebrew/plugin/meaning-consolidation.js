@@ -70,8 +70,8 @@
  ];
  const reviewedSenseSegmentPairRefs=new Set(reviewedSenseSegmentPairRecords.map(pair=>[pair.a,pair.b].sort().join('|')));
  const splitNumberedSenseSegments=value=>{
-  const text=String(value||''),matches=[...text.matchAll(/(?:^|\\s)(\\d+)\\)\\s*/g)];
-  if(matches.length<2||!/^\\s*1\\)/.test(text))return null;
+  const text=String(value||''),matches=[...text.matchAll(/(?:^|\s)(\d+)\)\s*/g)];
+  if(matches.length<2||!/^\s*1\)/.test(text))return null;
   return matches.map((match,index)=>{
    const start=match.index+match[0].length,end=matches[index+1]?.index??text.length;
    return text.slice(start,end).trim();
