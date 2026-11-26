@@ -1697,6 +1697,7 @@
   // The following additions are likewise source-checked and limited to one sense each.
   ["KRU05585","E00016","farther off (of space)","farther off, far"],
   // Both entries cite Sanhedrin 19b for the rearing of children.
+  // Keep the same entries' growth and elevation senses separate.
   ["KRU04045","C00635","rearing (of children)","rearing"],
   // Both entries cite Jerusalem Shabbat IV:6d for the same peat/turf material.
   ["KRU04194","C00799","turf or peat","peat"],
