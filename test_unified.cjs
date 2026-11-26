@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1364,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1373,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -267,10 +267,36 @@ const camelStuff=U.merge([
 const mappedCamelGroups=camelStuff.filter(group=>group.sources.some(source=>source.entry.r==='KRU05539')&&group.sources.some(source=>source.entry.r==='D01113'));
 assert.equal(mappedCamelGroups.length,4,'the three reviewed D01113/KRU05539 senses plus the exact throttle sense should consolidate separately');
 
+const creatureMeaning=U.merge([
+ {id:2801,entry:{h:'גְּוִיָּה',r:'KRU03800',source:'krupnik'},meanings:[
+  {text:'creature',label:'1'},
+  {text:'membrum virile',label:'2'}
+ ]},
+ {id:2802,entry:{h:'גְּוִיָּה',r:'C00362'},meanings:[
+  {text:'inner body, creature',section:'1)'},
+  {text:'membrum',section:'—2)'}
+ ]}
+],'גְּוִיָּה');
+assert(creatureMeaning.some(group=>group.sources.some(source=>source.entry.r==='KRU03800')&&group.sources.some(source=>source.entry.r==='C00362')),'the shared Yerushalmi Berakhot creature sense should consolidate');
+const membrumGroup=creatureMeaning.find(group=>group.text==='membrum virile');
+assert(membrumGroup&&membrumGroup.sources.length===1,'the separate membrum sense must not be absorbed into creature');
+
+const cheeseMeaning=U.merge([
+ {id:2811,entry:{h:'חוּבָּץ II',r:'KRU06720',source:'krupnik'},meanings:[
+  {text:'cheese',label:'1'},
+  {text:'a mash of pressed dates',label:'2'}
+ ]},
+ {id:2812,entry:{h:'חוּבָּץ II',r:'H00248'},meanings:[{text:'soft cheese',section:'1)'}]}
+],'חוּבָּץ II');
+assert(cheeseMeaning.some(group=>group.sources.some(source=>source.entry.r==='KRU06720')&&group.sources.some(source=>source.entry.r==='H00248')),'the shared Yerushalmi Pesachim cheese sense should consolidate');
+const dateMash=cheeseMeaning.find(group=>group.text==='a mash of pressed dates');
+assert(dateMash&&dateMash.sources.length===1,'the separate pressed-date mash sense must remain separate');
 
 
 
-assert.equal(U.reviewedSourceGlossPairs.size,1364,'all source-specific whole-gloss mappings must be loaded');
+
+
+assert.equal(U.reviewedSourceGlossPairs.size,1373,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -1311,6 +1337,15 @@ assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09533','K00817',"to lay a 
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU05539','D01113',"to stamp","to tread, stamp")),'source-verified mapping must be registered: D01113 / KRU05539');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU05539','D01113',"to press (the knife)","to press")),'source-verified mapping must be registered: D01113 / KRU05539');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU05539','D01113',"to stuff","to stuff food into the camel’s mouth")),'source-verified mapping must be registered: D01113 / KRU05539');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03800','C00362',"creature","inner body, creature")),'source-verified mapping must be registered: C00362 / KRU03800');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU06435','G00440',"entitled","entitled to possession")),'source-verified mapping must be registered: G00440 / KRU06435');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU02813','B00781',"a species of pears","pears")),'source-verified mapping must be registered: B00781 / KRU02813');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03037','B01005',"dealer in spices","dealer in")),'source-verified mapping must be registered: B01005 / KRU03037');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU06628','H00082',"a sort of cakes","cakes")),'source-verified mapping must be registered: H00082 / KRU06628');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU06642','H00112',"Parsee priest","Parsee")),'source-verified mapping must be registered: H00112 / KRU06642');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU06720','H00248',"cheese","soft cheese")),'source-verified mapping must be registered: H00248 / KRU06720');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU06775','H00358',"knife","slaughtering knife")),'source-verified mapping must be registered: H00358 / KRU06775');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU07276','H01186',"leavened (bread)","leavened")),'source-verified mapping must be registered: H01186 / KRU07276');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU06547','G00654','dealer in leather bags','maker of and dealer in leather bags')),'known occupational false positives must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU10278','L00533','there is','there is (was) not')),'negative-particle distinctions must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03526','C00053','The Most High','high, exalted, elevated')),'divine titles must not be merged with ordinary adjectives');
@@ -1339,6 +1374,7 @@ assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06441','G00462',"taking po
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU19048','U01132',"apartment","dwelling, tent; apartment.")),'one-to-many or source-uncertain candidate must remain deferred: U01132 / KRU19048');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU19048','U01132',"tent dwelling","dwelling, tent; apartment.")),'one-to-many or source-uncertain candidate must remain deferred: U01132 / KRU19048');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03320','B01237',"to hollow out, to perforate","to permeate, perforate")),'one-to-many or source-uncertain candidate must remain deferred: B01237 / KRU03320');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU07233','H01124','to be fine','to be smooth and fine')),'the potentially different smooth-edge sense must remain deferred');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU19012','U01042',"covering","sinking, covering up")),'reviewed ambiguous candidate must remain deferred: U01042 / KRU19012');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU01114','A01696',"to be burnt","to be consumed, burnt up, digested")),'reviewed candidate must remain deferred: A01696 / KRU01114');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06564','G00686',"to arm o. s.","to tie around, gird, arm; to harness, saddle")),'reviewed candidate must remain deferred: G00686 / KRU06564');
