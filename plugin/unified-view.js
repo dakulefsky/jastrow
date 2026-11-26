@@ -3,6 +3,12 @@
  const S=root.JastrowSearch||(typeof require==='function'?require('./search.js'):null);
  const clean=text=>String(text).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
  const displayCorrections=new Map([
+  ['C00635::rearing','rearing (of children)'],
+  ['C00799::peat','turf or peat'],
+  ['C00469::to gnaw','to gnaw (of mice)'],
+  ['C00690::to low','to low (of oxen)'],
+  ['B01372::mortal','mortal man'],
+  ['C00954::shaping','shaping (of writing)'],
   ['KRU05585::farther off (of space)','farther off, far (of space)'],
   ['E00016::farther off, far','farther off, far (of space)'],
   ['KRU12418::to conduct o. s','to conduct oneself'],
@@ -1689,6 +1695,16 @@
   ["KRU12418","N00250","to conduct o. s.","to conduct one’s self"],
   // Both entries cite Targum Jonathan Genesis 32:25 for the spatial sense.
   ["KRU05585","E00016","farther off (of space)","farther off, far"],
+  // Both entries cite Sanhedrin 19b for the rearing of children.
+  ["KRU04045","C00635","rearing (of children)","rearing"],
+  // Both entries cite Jerusalem Shabbat IV:6d for the same peat/turf material.
+  ["KRU04194","C00799","turf or peat","peat"],
+  // Both entries cite Horayot 13a for gnawing by mice.
+  ["KRU03897","C00469","to gnaw (of mice)","to gnaw"],
+  // Both entries cite Targum Job 6:5 for the lowing of oxen.
+  ["KRU04099","C00690","to low (of oxen)","to low"],
+  // Both entries cite Targum Jeremiah 17:5 for a mortal human being.
+  ["KRU03441","B01372","mortal man","mortal"],
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
@@ -1987,7 +2003,10 @@
   // Match only the fecal-mass segment; the separate jet-of-urine sense remains independent.
   ["KRU14617","P00866","fecal mass","the fecal mass in the rectum"],
   // Match only the ceremony segment; the general severing gloss and Krupnik's timber sense remain separate.
-  ["KRU17632","S01839","a ceremony of severing family connections with a man who married beneath his social rank","a ceremony attending the sale of an heirloom to an outsider"]
+  ["KRU17632","S01839","a ceremony of severing family connections with a man who married beneath his social rank","a ceremony attending the sale of an heirloom to an outsider"],
+
+  // The shared Psalms citations describe shaping of writing; "impress" remains its own alternative.
+  ["KRU04329","C00954","shaping (of writing)","shaping"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
