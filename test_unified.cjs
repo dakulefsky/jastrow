@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1377,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1379,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -132,7 +132,7 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,278,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,281,'every source-scoped alternative match must be loaded');
 
 const steepMeaning=U.merge([
  {id:2401,entry:{h:'גִּידּוּד',r:'KRU04044',source:'krupnik'},meanings:[{text:'earth embankment, steep banks',label:'1'}]},
@@ -329,6 +329,31 @@ const dressedSkin=U.merge([
 ],'אַשְׁפָּא');
 assert(dressedSkin.some(group=>group.sources.some(source=>source.entry.r==='KRU02166')&&group.sources.some(source=>source.entry.r==='A03336')),'the shared hide-shavings source phrase should consolidate the dressed-skin sense');
 
+const gemalSenses=U.merge([
+ {id:3201,entry:{h:'גְּמַל',r:'KRU04385',source:'krupnik'},meanings:[
+  {text:'to do one good or evil'},
+  {text:'to be bestowed',label:'Ithpeal'}
+ ]},
+ {id:3202,entry:{h:'גְּמַל',r:'C01038'},meanings:[
+  {text:'to do one good'},
+  {text:'to be laden with; to be bestowed',label:'Ithpeal'}
+ ]}
+],'גְּמַל');
+assert.equal(gemalSenses.filter(group=>group.sources.some(source=>source.entry.r==='KRU04385')&&group.sources.some(source=>source.entry.r==='C01038')).length,2,'the good-deed and bestowed senses should consolidate separately');
+
+const dachiSenses=U.merge([
+ {id:3211,entry:{h:'דחי',r:'KRU04979',source:'krupnik'},meanings:[
+  {text:'to be suspended',label:'Nifal'},
+  {text:'to push, to hurry'},
+  {text:'to remove',label:'Hifil'}
+ ]},
+ {id:3212,entry:{h:'דחי',r:'D00406'},meanings:[
+  {text:'to be pushed aside, suspended; to give way',label:'Nifal'},
+  {text:'to push away, thrust'},
+  {text:'to remove hurriedly',label:'Hifil'}
+ ]}
+],'דחי');
+assert(dachiSenses.some(group=>group.sources.some(source=>source.entry.r==='KRU04979')&&group.sources.some(source=>source.entry.r==='D00406')),'the suspended and hurried-removal senses should consolidate with their exact alternatives');
 
 
 
@@ -336,7 +361,9 @@ assert(dressedSkin.some(group=>group.sources.some(source=>source.entry.r==='KRU0
 
 
 
-assert.equal(U.reviewedSourceGlossPairs.size,1377,'all source-specific whole-gloss mappings must be loaded');
+
+
+assert.equal(U.reviewedSourceGlossPairs.size,1379,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -1390,9 +1417,14 @@ assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03500','C00016',"to grow",
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03500','C00016',"to be elated, to be exalted","to be exalted; to be proud")),'source-verified mapping must be registered: C00016 / KRU03500');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03320','B01237',"to recover, to get strong","to get well, strong")),'source-verified mapping must be registered: B01237 / KRU03320');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU02166','A03336',"skin","dressed skin")),'source-verified mapping must be registered: A03336 / KRU02166');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04385','C01038',"to do one good or evil","to do one good")),'source-verified mapping must be registered: C01038 / KRU04385');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04979','D00406',"to remove","to remove hurriedly")),'source-verified mapping must be registered: D00406 / KRU04979');
 assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU03954','C00536',"circumcision","circumcision")),'source-verified alternative mapping must be registered: C00536 / KRU03954');
 assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU03954','C00536',"feast of circumcision","feast of circumcision")),'source-verified alternative mapping must be registered: C00536 / KRU03954');
 assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU03954','C00536',"the circumcised membrum","the circumcised membrum")),'source-verified alternative mapping must be registered: C00536 / KRU03954');
+assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU04385','C01038',"to be bestowed","to be bestowed")),'source-verified alternative mapping must be registered: C01038 / KRU04385');
+assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU04979','D00406',"to be suspended","to be pushed aside")),'source-verified alternative mapping must be registered: D00406 / KRU04979');
+assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU04979','D00406',"to be suspended","suspended")),'source-verified alternative mapping must be registered: D00406 / KRU04979');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU06547','G00654','dealer in leather bags','maker of and dealer in leather bags')),'known occupational false positives must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU10278','L00533','there is','there is (was) not')),'negative-particle distinctions must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03526','C00053','The Most High','high, exalted, elevated')),'divine titles must not be merged with ordinary adjectives');
@@ -1423,6 +1455,8 @@ assert(U.deferredSourceGlossPairs.has(decisionKey('KRU19048','U01132',"tent dwel
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03320','B01237',"to hollow out, to perforate","to permeate, perforate")),'one-to-many or source-uncertain candidate must remain deferred: B01237 / KRU03320');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU07233','H01124','to be fine','to be smooth and fine')),'the potentially different smooth-edge sense must remain deferred');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06406','G00388','trembling','trembling commotion')),'source-context-dependent trembling candidate must remain deferred');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU09361','K00605',"extremely tall","an extremely tall and unshapely person")),'source-uncertain candidate must remain deferred: K00605 / KRU09361');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU04979','D00406',"to push, to hurry","to push away, thrust")),'source-uncertain candidate must remain deferred: D00406 / KRU04979');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03613','C00166',"to cut off, to level","to cut, cut off.")),'morphology/one-to-many candidate must remain deferred: C00166 / KRU03613');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03613','C00166',"to cut, to cut off","to cut off, level")),'morphology/one-to-many candidate must remain deferred: C00166 / KRU03613');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU18284','T00889',"to lead to pasture","to lead, pasture, feed")),'morphology/one-to-many candidate must remain deferred: T00889 / KRU18284');
