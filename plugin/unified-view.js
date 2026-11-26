@@ -1865,7 +1865,6 @@
   ,["KRU08816","J00581","to be dear","to be dear, precious"]
   ,["KRU08816","J00581","to be heavy","to be heavy"]
   ,["KRU13241","O00258","to plaster with lime","to plaster, whitewash"]
-  ,["KRU13241","O00258","to paint the skin with a depilatory","to paint the skin with a depilatory"]
   ,["KRU06499","G00560","voluptuous man","adulterer; voluptuous"]
   ,["KRU06852","H00496","wrapper, envelope","wrapper of reed-matting"]
   ,["KRU07458","H01522","adze, pick-axe","carpenter’s adze"]
