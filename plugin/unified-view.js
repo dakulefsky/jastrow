@@ -1839,6 +1839,15 @@
   ,["KRU19665","V00260","a sort of pastry","pastry"]
   ,["KRU09644","K00981","spoon","pan, spoon"]
   ,["KRU09775","K01137","a species of locusts","locusts"]
+  ,["KRU19564","V00058","shawl fastened on the shoulder","cloaks or shawls fastened on the shoulder"]
+  ,["KRU09110","K00226","pitcher","wine pitcher, jug"]
+  ,["KRU09554","K00842","brazier","stand, a portable brazier"]
+  ,["KRU13751","O01132","a jewel","red jewel, carnelian"]
+  ,["KRU15513","Q00957","a cloak","Brundisian cloak, travelling cloak"]
+  ,["KRU16327","R00213","dish","banqueting dish, plate."]
+  ,["KRU16979","S00624","hammer","mallet; smith’s hammer"]
+  ,["KRU18521","U00170","shoot","isolated, single shoot."]
+  ,["KRU05047","D00493","guards","relays, guards at stations"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
