@@ -1402,8 +1402,10 @@ assert.equal(myrrhBecomesBitter.find(group=>group.sources.length===2)?.text,'to 
 assert(myrrhBecomesBitter.some(group=>group.text==='to make bitter'&&group.sources.length===1),'the active "to make bitter" sense must remain independent');
 
 const fixedRentAndTenant=U.merge([
- {id:7111,entry:sourceByRef.get('KRU07111'),meanings:[{text:'tenant on a fixed rent payable in kind',label:'1'}]},
- {id:7103,entry:sourceByRef.get('KRU07103'),meanings:[{text:'rent',label:'2'}]},
+ {id:7111,entry:sourceByRef.get('KRU07111'),meanings:[
+  {text:'tenant on a fixed rent payable in kind',label:'1'},
+  {text:'rent',label:'2'}
+ ]},
  {id:931,entry:sourceByRef.get('H00931'),meanings:[
   {text:'tenant',label:'1'},
   {text:'the fixed annual rent in kind',label:'2'}
