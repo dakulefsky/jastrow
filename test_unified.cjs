@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1405,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1414,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -410,6 +410,22 @@ const bellClapper=U.merge([
 ],'עִינְבּוֹל');
 assert(bellClapper.some(group=>group.sources.some(source=>source.entry.r==='KRU14428')&&group.sources.some(source=>source.entry.r==='P00605')),'the shared Shabbat 58b bell-clapper sense should consolidate');
 
+const dateCluster=U.merge([
+ {id:3501,entry:{h:'קִיבּוּרָא',r:'KRU17095',source:'krupnik'},meanings:[
+  {text:'coil',label:'1'},
+  {text:'cluster of dates',label:'2'}
+ ]},
+ {id:3502,entry:{h:'קִיבּוּרָא',r:'S00855'},meanings:[{text:'cluster',section:'—2)'}]}
+],'קִיבּוּרָא');
+assert(dateCluster.some(group=>group.sources.some(source=>source.entry.r==='KRU17095')&&group.sources.some(source=>source.entry.r==='S00855')),'the shared cluster-of-dates sense should consolidate');
+const coilSense=dateCluster.find(group=>group.text==='coil');
+assert(coilSense&&coilSense.sources.length===1,'the separate coil sense must remain distinct');
+
+const ravenCroak=U.merge([
+ {id:3511,entry:{h:'קּוּרְקוּר',r:'KRU16991',source:'krupnik'},meanings:[{text:'croaking (raven)'}]},
+ {id:3512,entry:{h:'קּוּרְקוּר',r:'S00645'},meanings:[{text:'croaking'}]}
+],'קּוּרְקוּר');
+assert(ravenCroak.some(group=>group.sources.some(source=>source.entry.r==='KRU16991')&&group.sources.some(source=>source.entry.r==='S00645')),'the shared raven-croaking sense should consolidate');
 
 
 
@@ -420,7 +436,9 @@ assert(bellClapper.some(group=>group.sources.some(source=>source.entry.r==='KRU1
 
 
 
-assert.equal(U.reviewedSourceGlossPairs.size,1405,'all source-specific whole-gloss mappings must be loaded');
+
+
+assert.equal(U.reviewedSourceGlossPairs.size,1414,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -1502,6 +1520,15 @@ assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU14762','P01174',"tying the
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15143','Q00341',"the festival of Purim","Purim")),'source-verified mapping must be registered: Q00341 / KRU15143');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15254','Q00520',"jar","wine jar")),'source-verified mapping must be registered: Q00520 / KRU15254');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15525','Q00979',"chest, box","money chest, jewelry box")),'source-verified mapping must be registered: Q00979 / KRU15525');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU16416','R00391',"bundle","tight bundle")),'source-verified mapping must be registered: R00391 / KRU16416');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU16742','S00205',"bluntness","bluntness of teeth")),'source-verified mapping must be registered: S00205 / KRU16742');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU16888','S00457',"cup","a rough-edged cup.")),'source-verified mapping must be registered: S00457 / KRU16888');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU16913','S00506',"handle","the handle of a hoe")),'source-verified mapping must be registered: S00506 / KRU16913');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU16985','S00631',"a kind of cups","cups")),'source-verified mapping must be registered: S00631 / KRU16985');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU16991','S00645',"croaking (raven)","croaking")),'source-verified mapping must be registered: S00645 / KRU16991');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU17095','S00855',"cluster of dates","cluster")),'source-verified mapping must be registered: S00855 / KRU17095');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU17103','S00870',"bowing","bowing to the ground")),'source-verified mapping must be registered: S00870 / KRU17103');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU17187','S01017',"song","rhythmic song.")),'source-verified mapping must be registered: S01017 / KRU17187');
 assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU03954','C00536',"circumcision","circumcision")),'source-verified alternative mapping must be registered: C00536 / KRU03954');
 assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU03954','C00536',"feast of circumcision","feast of circumcision")),'source-verified alternative mapping must be registered: C00536 / KRU03954');
 assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU03954','C00536',"the circumcised membrum","the circumcised membrum")),'source-verified alternative mapping must be registered: C00536 / KRU03954');
@@ -1551,6 +1578,7 @@ assert(U.deferredSourceGlossPairs.has(decisionKey('KRU12863','N01026',"to blow (
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU14001','O01596',"to smell badly, to be spoiled","to decay, be spoiled; to smell offensively")),'stem or combined-sense candidate must remain deferred: O01596 / KRU14001');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU14001','O01596',"to corrupt","to make offensive, unsavory; to corrupt")),'stem or combined-sense candidate must remain deferred: O01596 / KRU14001');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU14001','O01596',"to make unsavory","to make offensive, unsavory; to corrupt")),'stem or combined-sense candidate must remain deferred: O01596 / KRU14001');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU17477','S01557','court','large court')),'the large-centenaria/courtyard candidate must remain deferred');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03613','C00166',"to cut off, to level","to cut, cut off.")),'morphology/one-to-many candidate must remain deferred: C00166 / KRU03613');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03613','C00166',"to cut, to cut off","to cut off, level")),'morphology/one-to-many candidate must remain deferred: C00166 / KRU03613');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU18284','T00889',"to lead to pasture","to lead, pasture, feed")),'morphology/one-to-many candidate must remain deferred: T00889 / KRU18284');
