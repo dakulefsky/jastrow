@@ -1684,6 +1684,21 @@
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
+ // Explicitly reviewed non-equivalences and deferred decisions. These never
+ // affect runtime merging; they keep the discovery queue from repeatedly
+ // proposing known false positives or unresolved cases.
+ const sourceGlossDecisionKey=(a,b,x,y)=>[a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');
+ const rejectedSourceGlossPairs=new Map([
+  ["KRU06547","G00654","dealer in leather bags","maker of and dealer in leather bags","Different occupational scope: Jastrow includes making as well as dealing; Krupnik only says dealer."],
+  ["KRU10278","L00533","there is","there is (was) not","The negative particle changes the meaning."],
+  ["KRU03526","C00053","The Most High","high, exalted, elevated","Divine title versus ordinary adjective; shared 'high' is not semantic equivalence."],
+  ["KRU02827","B00794","to bear first fruits","to bear for the first time","Different senses: first-fruits production versus first birth; retain the separate first-ripening match."]
+ ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
+ const deferredSourceGlossPairs=new Map([
+  ["KRU06494","G00538","at times","times","Deferred: the Krupnik entry explicitly distinguishes 'time' from 'times'; this phrase pair is not one-to-one."],
+  ["KRU06494","G00538","at other times","times","Deferred: the Krupnik entry explicitly distinguishes 'time' from 'times'; this phrase pair is not one-to-one."],
+  ["KRU19531","U02126","skilled in boring","one known to be skilled in boring","Deferred: source-citation verification was not completed."]
+ ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const reviewedSourceAlternativePairRecords=[
   ["KRU04451","C01128","to sigh heavily under an attack of angina pectoris","to sigh heavily under an attack of angina pectoris"],
   ["KRU17170","S00988","cloth made of Cilician goat’s hair","cloth made of Cilician goat’s hair"],
@@ -2168,5 +2183,5 @@
   if(withoutMeanings.length){const details=element('details',undefined,'scholarly-entry original-only');details.append(element('summary','Additional dictionary references'));withoutMeanings.forEach((r,i)=>details.append(sourceBlock({...r,meaning:{text:'',label:''}},i)));section.append(details);}
   return section;
  }
- const api={merge,render,compatible,synonymKey,sharesReviewedSynonym,canonicalGlossKey,alternativeMatchKey,reviewedGlossPairs,reviewedSourceGlossPairs,reviewedSourceAlternativePairs,reviewedSourceGlossPairCount:reviewedSourceGlossPairs.size};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.DictionaryMeanings=api;
+ const api={merge,render,compatible,synonymKey,sharesReviewedSynonym,canonicalGlossKey,alternativeMatchKey,reviewedGlossPairs,reviewedSourceGlossPairs,reviewedSourceAlternativePairs,rejectedSourceGlossPairs,deferredSourceGlossPairs,reviewedSourceGlossPairCount:reviewedSourceGlossPairs.size};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.DictionaryMeanings=api;
 })(typeof window!=='undefined'?window:globalThis);
