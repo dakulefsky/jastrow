@@ -86,6 +86,10 @@ assert.equal(reviewed.length,1,'only an explicitly reviewed source-scoped Hebrew
 assert.equal(reviewed[0].items.length,2,'reviewed Hebrew synonym consolidation must preserve both source records');
 assert.equal(reviewed[0].text,'הפסד, אובדן','the consolidated Hebrew gloss should visibly preserve both original synonym forms');
 ctx.HebrewMeaningConsolidation.reviewedSynonymPairs.delete(ctx.HebrewMeaningConsolidation.pairKey(reviewedA,reviewedB));
+function assertRejectedPair(a,b,meaningA,meaningB){
+ const key=[a,b].sort().join('|')+'::'+[lookup.normalize(meaningA),lookup.normalize(meaningB)].sort().join(' | ');
+ assert(ctx.HebrewMeaningConsolidation.reviewedNonSynonymPairs.has(key),'source-reviewed non-synonym must be excluded from the candidate queue: '+a+' / '+b);
+}
 function assertReviewedPair(a,b,word,meaningA,meaningB){
  const records=ctx.HEBREW_DICTIONARY.entries.filter(entry=>entry.rid===a||entry.rid===b);
  assert.equal(records.length,2,'both original Hebrew source records must exist: '+a+' / '+b);
@@ -129,4 +133,23 @@ assert(!changedReferenceGroups.some(group=>group.text==='הִקְנִיט הרג
 const segments=merge([{word:'נפקא מינה',records:lookup.lookup('נפקא מינה')},{word:'נפקא',records:lookup.lookup('נפקא')}],'נפקא מינה נפקא');
 assert(segments.some(g=>g.scope==='נפקא מינה')&&segments.some(g=>g.scope==='נפקא'),'separate words in a multiword selection must never be merged together');
 assert.equal(ctx.HebrewMeaningConsolidation.reviewedSynonymPairs.size,12,'only the manually reviewed Hebrew synonym pairs should be active');
+assertRejectedPair('KRU02691','KRU02692',"ירוש׳ שבי׳ פ״ו ל״ו ע״ג: ביריי רבתא.","שם אמורא");
+assertRejectedPair('KRU18231','KRU18232',"ריכך, עשה רך","כנ״ל. תרג׳ איוב כ״ג ט״ז (הרך לבי): רכך לבבי. אִתְרַכֵּךְ אתפ׳, נעשה רך");
+assertRejectedPair('KRU07060','KRU07061',"שם עיר בארץ ישראל","שם אמורא");
+assertRejectedPair('KRU02827','KRU02828',"1) ילד בפעם הראשונה","ליקט בכורים");
+assertRejectedPair('KRU00180','KRU04150',"פ״י, כתת","אפע׳, שמר, הגין");
+assertRejectedPair('KRU00207','KRU00208',"שכר","חולין ק״ד ע״ב: אגרא חמוה דר׳ אבא.");
+assertRejectedPair('KRU00372','KRU00373',"אוזן","נאד");
+assertRejectedPair('KRU00372','KRU00373',"אוזן","הדום, שרפרף");
+assertRejectedPair('KRU00467','KRU00468',"שטר מכירה או מתנה","פקעת");
+assertRejectedPair('KRU00585','KRU00586',"יסוד","שם עיר בגליל");
+assertRejectedPair('KRU00594','KRU00595',"אכסניא","בעל אכסניא");
+assertRejectedPair('KRU00722','KRU00724',"חג של עכו״ם","איזו");
+assertRejectedPair('KRU00728','KRU00729',"שם אמורא","מערב");
+assertRejectedPair('KRU00751','KRU00752',"שליח","תל, גבעה");
+assertRejectedPair('KRU00848','KRU00850',"בר׳ י״ח ע״ב: אימא לה לאימא; ירוש׳ נדה פ״א מ״ט ע״א: אבא טבי ואימה טביתה.","פלך לטויה");
+assertRejectedPair('KRU00985','KRU00986',"אגודה, חבילה","שר של מעלה, מלאך");
+assertRejectedPair('KRU01073','KRU01074',"נשואין","חפרפרת");
+assertRejectedPair('KRU01341','KRU01342',"– אמונה","הר בצפונה של א״י");
+assertRejectedPair('KRU01562','KRU01563',"בגד","ציון לדרך וגבול");
 console.log('PASS: shared Hebrew meaning consolidation preserves exact source wording, labels, source records, and phrase boundaries.');
