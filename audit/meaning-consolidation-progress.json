@@ -10,7 +10,7 @@
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1322,
+    "reviewedSourceGlossPairCount": 1330,
     "reviewedSourceAlternativePairCount": 278,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -71,9 +71,9 @@
     "runtimeRuleHandledCandidates": 2456,
     "ambiguityFlaggedExactCandidates": 534,
     "nonExactSemanticCandidates": 1331,
-    "note": "Regenerated from 47,919 original source entries and the real Chromium Jastrow phrase extractor. Nineteen known false positives and twenty-eight deferred candidates are recorded with source refs and reasons preserved. Four source-scoped alternative mappings were added; the latest review tranche rejected three remaining strong-overlap false positives and deferred one ambiguous multi-sense case. Hebrew review separately records thirty-six non-synonym pairs and two deferred cases.",
-    "rejectedKnownCandidates": 19,
-    "deferredKnownCandidates": 28
+    "note": "Regenerated from 47,919 original source entries and the real Chromium Jastrow phrase extractor. Twenty known false positives and thirty deferred candidates are recorded with source refs and reasons preserved. Twelve source-scoped whole-gloss/alternative mappings have been added beyond the original checkpoint; the latest tranche added eight source-checked whole-gloss equivalences, deferred the one-to-many sting/prick overlap, and rejected a false flow/flow-out match. Hebrew review records thirty-six non-synonyms, two deferred pairs, and two partial-sense mappings.",
+    "rejectedKnownCandidates": 20,
+    "deferredKnownCandidates": 30
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -5713,6 +5713,17 @@
           "what is to be cut"
         ],
         "reason": "Rejected: Jastrow's numbered sense is the legal category 'what is to be cut' (foreskin); Krupnik's gloss is 'cut, wound'. These are different meanings and grammatical uses."
+      },
+      {
+        "refs": [
+          "KRU04694",
+          "D00017"
+        ],
+        "glosses": [
+          "to flow out",
+          "to flow"
+        ],
+        "reason": "Rejected: Krupnik explicitly separates 'to flow' (sense 1) from 'to flow out' (sense 2). Jastrow's phrase 'to flow' matches the first sense, not the more specific second sense."
       }
     ],
     "deferredSourceGlossPairs": [
@@ -6034,6 +6045,28 @@
           "sinking, covering up"
         ],
         "reason": "Deferred: Jastrow combines 'sinking' and 'covering up' in one reader phrase, while Krupnik separates 'submergence' and 'covering' into numbered senses. A source-scoped mapping could bridge two distinct KRU senses without a finer Jastrow boundary."
+      },
+      {
+        "refs": [
+          "KRU14780",
+          "P01211"
+        ],
+        "glosses": [
+          "to sting",
+          "to sting, prick"
+        ],
+        "reason": "Deferred: Jastrow's single reader-visible sense 'to sting, prick' matches both Krupnik sense 2 'to sting' and sense 3 'to prick, to taunt'. The current source phrase boundary cannot safely choose one without merging distinct Krupnik senses."
+      },
+      {
+        "refs": [
+          "KRU14780",
+          "P01211"
+        ],
+        "glosses": [
+          "to prick, to taunt",
+          "to sting, prick"
+        ],
+        "reason": "Deferred: same one-to-many ambiguity; do not map the Jastrow combined phrase to Krupnik's separate figurative 'to prick, to taunt' sense."
       }
     ],
     "policy": "Rejected and deferred pairs are excluded from the pending discovery queue but remain recorded here with their source refs and rationale. Reconsider only with new source evidence."
@@ -6711,6 +6744,141 @@
       "Do not create a record-level mapping until the exact Jastrow sub-sense can be isolated."
     ],
     "currentTotal": 1322,
+    "currentAlternativeTotal": 278
+  },
+  "fortyEighthReviewedTranche": {
+    "attemptedCandidates": 8,
+    "addedUniqueSourceGlossPairs": 8,
+    "addedUniqueSourceAlternativePairs": 0,
+    "acceptedPairs": [
+      [
+        "KRU04044",
+        "C00632",
+        "earth embankment, steep banks",
+        "a steep"
+      ],
+      [
+        "KRU14780",
+        "P01211",
+        "to cut (fruits) by the stalks",
+        "to cut fruit by the stalks."
+      ],
+      [
+        "KRU15901",
+        "Q01641",
+        "resident of an open place",
+        "one residing in an open place"
+      ],
+      [
+        "KRU02398",
+        "B00982",
+        "negligence",
+        "indifference, willful negligence"
+      ],
+      [
+        "KRU01212",
+        "A01838",
+        "according to",
+        "according to the opinion, in the sense of"
+      ],
+      [
+        "KRU01341",
+        "A02041",
+        "faith, trust",
+        "faith in Providence"
+      ],
+      [
+        "KRU01578",
+        "A02408",
+        "road, way",
+        "paved way, public road"
+      ],
+      [
+        "KRU03401",
+        "B01342",
+        "cypress or pine-tree",
+        "cypress"
+      ]
+    ],
+    "evidence": [
+      "C00632/KRU04044: both entries describe an earth/steep embankment and cite Eruvin 93b for the same גידוד חמשה example.",
+      "P01211/KRU14780: both entries define cutting fruit by its stalks and cite Sanhedrin 41a for עקץ תאנה.",
+      "Q01641/KRU15901: both define a resident of an unwalled/open settlement and cite Megillah 19a for פרוז בן יומו.",
+      "B00982/KRU02398: both define negligence; Jastrow's examples include Y. Bava Metzia V,10b, matching Krupnik's citation.",
+      "A01838/KRU01212: both define according to/in the sense of, with Sotah 21a cited in both entries.",
+      "A02041/KRU01341: Jastrow's second sense 'faith in Providence' and Krupnik's 'faith, trust' share Sotah 48b examples.",
+      "A02408/KRU01578: both define the public road/way sense; the separate promenade/theatre senses in Jastrow remain separate.",
+      "B01342/KRU03401: both identify the cypress tree and share Rosh Hashanah 23a and Y. Peah VIII,20 citations."
+    ],
+    "safeguards": [
+      "Each mapping is scoped to the exact source records and exact reader-visible gloss strings.",
+      "The mappings do not merge other numbered senses in the same source entries.",
+      "All original source wording and citations remain attached."
+    ],
+    "currentTotal": 1330,
+    "currentAlternativeTotal": 278
+  },
+  "fortyNinthReviewedTranche": {
+    "attemptedCandidates": 2,
+    "addedUniqueSourceGlossPairs": 0,
+    "deferredCandidates": 2,
+    "deferredPairs": [
+      {
+        "refs": [
+          "KRU14780",
+          "P01211"
+        ],
+        "glosses": [
+          "to sting",
+          "to sting, prick"
+        ],
+        "reason": "Deferred: Jastrow's single reader-visible sense 'to sting, prick' matches both Krupnik sense 2 'to sting' and sense 3 'to prick, to taunt'. The current source phrase boundary cannot safely choose one without merging distinct Krupnik senses."
+      },
+      {
+        "refs": [
+          "KRU14780",
+          "P01211"
+        ],
+        "glosses": [
+          "to prick, to taunt",
+          "to sting, prick"
+        ],
+        "reason": "Deferred: same one-to-many ambiguity; do not map the Jastrow combined phrase to Krupnik's separate figurative 'to prick, to taunt' sense."
+      }
+    ],
+    "evidence": [
+      "Jastrow P01211's single phrase 'to sting, prick' overlaps two separate Krupnik numbered senses: 'to sting' and 'to prick, to taunt'."
+    ],
+    "safeguards": [
+      "Do not merge one Jastrow phrase into both Krupnik senses until the source phrase can be split without collapsing their distinct meanings."
+    ],
+    "currentTotal": 1330,
+    "currentAlternativeTotal": 278
+  },
+  "fiftiethReviewedTranche": {
+    "attemptedCandidates": 1,
+    "addedUniqueSourceGlossPairs": 0,
+    "rejectedCandidates": 1,
+    "rejectedPairs": [
+      {
+        "refs": [
+          "KRU04694",
+          "D00017"
+        ],
+        "glosses": [
+          "to flow out",
+          "to flow"
+        ],
+        "reason": "Rejected: Krupnik explicitly separates 'to flow' (sense 1) from 'to flow out' (sense 2). Jastrow's phrase 'to flow' matches the first sense, not the more specific second sense."
+      }
+    ],
+    "evidence": [
+      "Krupnik D00017/KRU04694 explicitly separates 'to flow' from 'to flow out'; Jastrow's 'to flow' corresponds to the first sense, not the second."
+    ],
+    "safeguards": [
+      "The rejected key is limited to the exact second KRU sense; the separate first-sense exact match remains valid."
+    ],
+    "currentTotal": 1330,
     "currentAlternativeTotal": 278
   }
 }
