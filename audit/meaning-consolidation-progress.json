@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1,414 retained whole-gloss mappings and all 281 retained alternative-level mappings (1,695 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1,437 retained whole-gloss mappings and all 281 retained alternative-level mappings (1,718 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1414,
+    "reviewedSourceGlossPairCount": 1437,
     "reviewedSourceAlternativePairCount": 281,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -66,17 +66,17 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
-    "exactAlternativeCandidates": 2959,
-    "runtimeRuleHandledCandidates": 2445,
-    "ambiguityFlaggedExactCandidates": 514,
-    "nonExactSemanticCandidates": 1218,
-    "note": "Eighty-six source-scoped whole-gloss mappings and seven alternative-level mappings have been added beyond the original branch baseline. Fifty-seven uncertain candidates remain deferred with exact source refs and reasons; known false positives remain separately recorded.",
+    "exactAlternativeCandidates": 2956,
+    "runtimeRuleHandledCandidates": 2444,
+    "ambiguityFlaggedExactCandidates": 512,
+    "nonExactSemanticCandidates": 1173,
+    "note": "One hundred and nine source-scoped whole-gloss mappings and seven alternative-level mappings have been added beyond the original branch baseline. The latest regenerated inventory contains 4,129 candidate rows: 2,444 exact-alternative runtime matches, 512 ambiguity-flagged exact candidates, and 1,173 non-exact semantic candidates. Twenty known false positives are rejected and 57 uncertain cases remain deferred.",
     "rejectedKnownCandidates": 20,
     "deferredKnownCandidates": 57,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
-    "latestGeneratedFromCommit": "pending-next-validation",
-    "candidates": 4177
+    "latestGeneratedFromCommit": "3f37b5e6a781a71f76361880344ba823be0115a6",
+    "candidates": 4129
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -353,7 +353,7 @@
         "meaning": "gullet"
       }
     ],
-    "note": "Hebrew consolidation uses the original Krupnik/Silbermann Hebrew source records only; it does not load Jastrow English source entries or generate Hebrew translations. Current reviewed work: 12 source-scoped synonym pairs, 2 exact partial-sense cross-references, 36 source-reviewed non-synonym candidates excluded from the review queue, and 1 ambiguous pair deferred. The KRU20037/KRU20038 mapping isolates the second numbered sense 2) נכשל from the original full Hebrew source text while keeping the first sense 1) שקל separate.",
+    "note": "Hebrew consolidation uses original Krupnik/Silbermann Hebrew source records only; it does not load Jastrow English source entries or generate Hebrew translations. Current reviewed work: 12 source-scoped synonym pairs, 2 exact partial-sense cross-references, 81 source-reviewed non-synonym candidates excluded from the review queue, and 7 ambiguous pairs explicitly deferred. The KRU20037/KRU20038 mapping isolates the second numbered sense 2) נכשל from the original full Hebrew source text while keeping the first sense 1) שקל separate.",
     "reviewedSenseSegmentPairs": 2,
     "reviewedSenseSegmentPairDetails": [
       {
@@ -382,20 +382,20 @@
       "sourceRecords": 20177,
       "uniqueHeadwordForms": 20104,
       "repeatedHeadwordForms": 1726,
-      "candidates": 529,
+      "candidates": 479,
       "runtimeRuleHandledCandidates": 1,
-      "manualReviewCandidates": 528,
+      "manualReviewCandidates": 478,
       "evidenceCounts": {
         "exact-gloss": 1,
         "shared-content-terms": 0,
-        "different-glosses": 238,
-        "missing-gloss": 290
+        "different-glosses": 193,
+        "missing-gloss": 285
       },
       "rawCandidates": 567,
-      "reviewedNonSynonymPairs": 36,
-      "deferredSynonymPairs": 1,
-      "latestGeneratedFromCommit": "ff5d1f0863e5c91f76837c63483f04a2879ea2c8",
-      "note": "Latest generated inventory from 20,177 original Hebrew source records: 529 candidate rows, 36 source-reviewed non-synonyms excluded, 1 deferred pair, 1 guarded exact-alternative runtime match, and 528 candidates still requiring manual semantic review. Two reviewed partial-sense cross-references are tracked separately.",
+      "reviewedNonSynonymPairs": 81,
+      "deferredSynonymPairs": 7,
+      "latestGeneratedFromCommit": "3f37b5e6a781a71f76361880344ba823be0115a6",
+      "note": "Latest generated inventory from 20,177 original Hebrew source records: 479 candidate rows, 81 source-reviewed non-synonyms excluded, 7 deferred pairs, 1 guarded exact-alternative runtime match, and 478 candidates still requiring manual semantic review.",
       "reviewedSenseSegmentPairs": 2,
       "partialHebrewOverlap": 1
     },
@@ -795,9 +795,504 @@
           "כנ״ל. בכור׳ פ״ג מ״ב: המבכירות מניקות."
         ],
         "reason": "The first-time-bearing sense is not equivalent to the separate firstborn/citation sense in the Hifil entry."
+      },
+      {
+        "records": [
+          "KRU02878",
+          "KRU02879"
+        ],
+        "meanings": [
+          "הרבה",
+          "אלף"
+        ],
+        "reason": "Quantity adjective 'many/much' versus the numeral one thousand; not synonymous."
+      },
+      {
+        "records": [
+          "KRU02897",
+          "KRU02898"
+        ],
+        "meanings": [
+          "1) עצר, חסם",
+          "בעט"
+        ],
+        "reason": "To stop or block versus to kick; distinct actions."
+      },
+      {
+        "records": [
+          "KRU03078",
+          "KRU03080"
+        ],
+        "meanings": [
+          "התעקם באמצע ונטה לנפול",
+          "הכה ברגל, סרב"
+        ],
+        "reason": "Bending/leaning versus kicking or refusing; distinct senses."
+      },
+      {
+        "records": [
+          "KRU03083",
+          "KRU03084"
+        ],
+        "meanings": [
+          "1) פ״י שאל",
+          "פיהק"
+        ],
+        "reason": "To ask/inquire versus to yawn; unrelated meanings."
+      },
+      {
+        "records": [
+          "KRU03092",
+          "KRU03093"
+        ],
+        "meanings": [
+          "מצופה או סגור במתכת מרכב מבדיל ועופרת",
+          "בעץ (שם מתכת)"
+        ],
+        "reason": "Tinned or coated with metal versus tin as a metal; adjective/material distinction."
+      },
+      {
+        "records": [
+          "KRU03133",
+          "KRU03135"
+        ],
+        "meanings": [
+          "שרף",
+          "פער פיו"
+        ],
+        "reason": "To burn versus to open one's mouth wide; distinct verbs."
+      },
+      {
+        "records": [
+          "KRU03209",
+          "KRU03210"
+        ],
+        "meanings": [
+          "ברכה קטנה",
+          "בקי"
+        ],
+        "reason": "A small pond versus an expert; unrelated senses."
+      },
+      {
+        "records": [
+          "KRU03228",
+          "KRU03229"
+        ],
+        "meanings": [
+          "עדר בקר, רפת הבקר",
+          "פחזות, זדון"
+        ],
+        "reason": "Cattle herd/cattle-yard versus rashness and malice; distinct meanings."
+      },
+      {
+        "records": [
+          "KRU03235",
+          "KRU03236"
+        ],
+        "meanings": [
+          "1) שדה מחוץ למקום המושב",
+          "בן"
+        ],
+        "reason": "An outside field versus son/offspring; distinct nouns."
+      },
+      {
+        "records": [
+          "KRU03293",
+          "KRU03294"
+        ],
+        "meanings": [
+          "שם אבן טובה",
+          "אור הבוקר"
+        ],
+        "reason": "A precious stone versus morning light; distinct referents."
+      },
+      {
+        "records": [
+          "KRU03441",
+          "KRU03442"
+        ],
+        "meanings": [
+          "בשר, גוף",
+          "בשורה"
+        ],
+        "reason": "Flesh/body versus tidings; unrelated meanings."
+      },
+      {
+        "records": [
+          "KRU03530",
+          "KRU03531"
+        ],
+        "meanings": [
+          "כל ארץ ישראל חוץ מירושלים והמקדש",
+          "שם מקום"
+        ],
+        "reason": "The land outside Jerusalem and the Temple versus a place-name; distinct senses."
+      },
+      {
+        "records": [
+          "KRU03545",
+          "KRU03546"
+        ],
+        "meanings": [
+          "גבוה",
+          "שם צמח"
+        ],
+        "reason": "Tall/high versus a plant name; distinct meanings."
+      },
+      {
+        "records": [
+          "KRU03662",
+          "KRU03664"
+        ],
+        "meanings": [
+          "בא בשנים, נהיה גדול",
+          "עשה מעשה גדיל, קלע"
+        ],
+        "reason": "Growing older versus plaiting/braiding; distinct verbal senses."
+      },
+      {
+        "records": [
+          "KRU03742",
+          "KRU03743"
+        ],
+        "meanings": [
+          "שם מקום",
+          "צנור, תעלה"
+        ],
+        "reason": "A place-name versus a pipe/channel; distinct referents."
+      },
+      {
+        "records": [
+          "KRU03862",
+          "KRU03863"
+        ],
+        "meanings": [
+          "גדוד",
+          "כותל"
+        ],
+        "reason": "A troop/band versus a wall; unrelated nouns."
+      },
+      {
+        "records": [
+          "KRU03936",
+          "KRU03937"
+        ],
+        "meanings": [
+          "דבורה",
+          "שם עוף טורף"
+        ],
+        "reason": "A bee versus a bird of prey; distinct animals."
+      },
+      {
+        "records": [
+          "KRU03993",
+          "KRU03994"
+        ],
+        "meanings": [
+          "נתח, חתיכה",
+          "עדר צאן"
+        ],
+        "reason": "A piece/portion versus a flock of sheep; distinct meanings."
+      },
+      {
+        "records": [
+          "KRU04029",
+          "KRU04030"
+        ],
+        "meanings": [
+          "גבור",
+          "אבר הזכרות"
+        ],
+        "reason": "A strong man/hero versus the male organ; distinct senses."
+      },
+      {
+        "records": [
+          "KRU04039",
+          "KRU04040"
+        ],
+        "meanings": [
+          "מין גרגר זרעונים",
+          "צמח מר וחריף, מין לענה"
+        ],
+        "reason": "A seed/grain versus a bitter herb/wormwood; distinct plants."
+      },
+      {
+        "records": [
+          "KRU04071",
+          "KRU04072"
+        ],
+        "meanings": [
+          "זר",
+          "נואף"
+        ],
+        "reason": "A stranger versus an adulterer; distinct social categories."
+      },
+      {
+        "records": [
+          "KRU04118",
+          "KRU04119"
+        ],
+        "meanings": [
+          "שנות האדם, תקופת החיים, חבורת אנשים שנולדו בזמן אחד",
+          "לשון הפעמון"
+        ],
+        "reason": "Age/cohort versus a bell clapper; unrelated meanings."
+      },
+      {
+        "records": [
+          "KRU04153",
+          "KRU04154"
+        ],
+        "meanings": [
+          "מטָעה במגרש העיר",
+          "שם נהר"
+        ],
+        "reason": "A garden plot within a town versus a river-name; distinct referents."
+      },
+      {
+        "records": [
+          "KRU04171",
+          "KRU04172"
+        ],
+        "meanings": [
+          "מקורב, רגיל אצל־",
+          "בעל אחות האשה"
+        ],
+        "reason": "An intimate/familiar person versus a brother-in-law; related social context but not synonyms."
+      },
+      {
+        "records": [
+          "KRU04202",
+          "KRU04203"
+        ],
+        "meanings": [
+          "מין חולי",
+          "חץ"
+        ],
+        "reason": "A disease versus an arrow/projectile; distinct meanings."
+      },
+      {
+        "records": [
+          "KRU04312",
+          "KRU04313"
+        ],
+        "meanings": [
+          "שם מדינה (באירופא)",
+          "התגלות"
+        ],
+        "reason": "The country of the Gauls versus revelation; unrelated senses."
+      },
+      {
+        "records": [
+          "KRU04383",
+          "KRU04384"
+        ],
+        "meanings": [
+          "שלם",
+          "כלייה"
+        ],
+        "reason": "Complete/perfect versus destruction; distinct meanings."
+      },
+      {
+        "records": [
+          "KRU04399",
+          "KRU04401"
+        ],
+        "meanings": [
+          "בלע משקה",
+          "חפר בור"
+        ],
+        "reason": "To sip/suck up liquid versus to dig a pit; distinct actions."
+      },
+      {
+        "records": [
+          "KRU04435",
+          "KRU04436"
+        ],
+        "meanings": [
+          "זנב",
+          "גניבה"
+        ],
+        "reason": "Tail versus theft/stolen object; unrelated senses."
+      },
+      {
+        "records": [
+          "KRU04557",
+          "KRU04558"
+        ],
+        "meanings": [
+          "זולל וסובא, להוט אחרי שתיה",
+          "בהשאלה: להוט אחרי תשמיש"
+        ],
+        "reason": "A glutton/drinker versus sexual appetite; distinct senses."
+      },
+      {
+        "records": [
+          "KRU04579",
+          "KRU04580"
+        ],
+        "meanings": [
+          "חלק הגוף מן הצואר עד החזה",
+          "אשה שנתיהדה"
+        ],
+        "reason": "The throat/neck region versus a woman who converted; distinct meanings."
+      },
+      {
+        "records": [
+          "KRU04649",
+          "KRU04650"
+        ],
+        "meanings": [
+          "מאכל הלעוס החוזר מן הקיבה אל הפה, גֵרה",
+          "על ידי המשך הדבור, דרך אגב"
+        ],
+        "reason": "Cud/regurgitated food versus an incidental aside in speech; unrelated meanings."
+      },
+      {
+        "records": [
+          "KRU04653",
+          "KRU04654"
+        ],
+        "meanings": [
+          "הוציא, הרחיק, נתן גט לאשה",
+          "העלה, משך למעלה"
+        ],
+        "reason": "To expel/divorce versus to hoist/pull upward; distinct actions."
+      },
+      {
+        "records": [
+          "KRU04870",
+          "KRU04871"
+        ],
+        "meanings": [
+          "מנהיג ונשיא",
+          "מקום"
+        ],
+        "reason": "A leader/chief versus a place; distinct meanings."
+      },
+      {
+        "records": [
+          "KRU04926",
+          "KRU04928"
+        ],
+        "meanings": [
+          "מין חולי בעין",
+          "מוץ"
+        ],
+        "reason": "An eye disease versus chaff; unrelated nouns."
+      },
+      {
+        "records": [
+          "KRU05060",
+          "KRU05061"
+        ],
+        "meanings": [
+          "האח!",
+          "צער"
+        ],
+        "reason": "An exclamation ('Ah!') versus grief/sorrow; distinct meanings."
+      },
+      {
+        "records": [
+          "KRU05113",
+          "KRU05114"
+        ],
+        "meanings": [
+          "יושב בדירה",
+          "גר"
+        ],
+        "reason": "A lodger versus a proselyte; distinct social/legal categories."
+      },
+      {
+        "records": [
+          "KRU05145",
+          "KRU05146"
+        ],
+        "meanings": [
+          "שמא, אולי",
+          "עובדה"
+        ],
+        "reason": "Perhaps/maybe versus a fact; distinct meanings."
+      },
+      {
+        "records": [
+          "KRU05203",
+          "KRU05204"
+        ],
+        "meanings": [
+          "שמחה",
+          "כאב דוקר בעין"
+        ],
+        "reason": "Joy versus a stabbing pain in the eye; unrelated meanings."
+      },
+      {
+        "records": [
+          "KRU05234",
+          "KRU05235"
+        ],
+        "meanings": [
+          "זֵר",
+          "רפת"
+        ],
+        "reason": "A crown/wreath versus a stable; unrelated objects."
+      },
+      {
+        "records": [
+          "KRU05682",
+          "KRU05683"
+        ],
+        "meanings": [
+          "כראוי",
+          "אוגן, שפה לכלי"
+        ],
+        "reason": "Properly/appropriately versus the rim of a vessel; distinct meanings."
+      },
+      {
+        "records": [
+          "KRU05714",
+          "KRU05715"
+        ],
+        "meanings": [
+          "עלה התמר",
+          "שם מקום"
+        ],
+        "reason": "A palm leaf versus a place-name; distinct referents."
+      },
+      {
+        "records": [
+          "KRU05777",
+          "KRU05778"
+        ],
+        "meanings": [
+          "זה, זאת",
+          "איזה?"
+        ],
+        "reason": "This/that (demonstrative) versus which? (interrogative); distinct grammatical meanings."
+      },
+      {
+        "records": [
+          "KRU05954",
+          "KRU05955"
+        ],
+        "meanings": [
+          "קבל הנאה ותועלת",
+          "פיעל, הֶהֱנָה הפ׳, גרם הנאה"
+        ],
+        "reason": "To enjoy/benefit versus to cause another to benefit; different valency and voice."
+      },
+      {
+        "records": [
+          "KRU06019",
+          "KRU06020"
+        ],
+        "meanings": [
+          "נציב",
+          "אצטדין למרוץ"
+        ],
+        "reason": "A governor/official versus a race-course; unrelated meanings."
       }
     ],
-    "reviewedNonSynonymPairCount": 36,
+    "reviewedNonSynonymPairCount": 81,
     "deferredSynonymPairs": [
       {
         "records": [
@@ -809,9 +1304,75 @@
           "התנופף ברוח"
         ],
         "reason": "Deferred: the source meanings 'to rise/swing oneself' and 'to wave in the wind' are related motions but not demonstrably equivalent; the cited passages differ."
+      },
+      {
+        "records": [
+          "KRU03032",
+          "KRU03041"
+        ],
+        "meanings": [
+          "י׳, כנ״ל. כלי׳ פב״ד מ״ו: שלש בססיות הן; במ״ר י׳: יש להם קופליות מלמעלן ובסיסיות מלמטן.",
+          "עי׳ בְּסִיסִית. כלי׳ פכ״ד מ״ו: שלש בססיות הן."
+        ],
+        "reason": "Deferred: both entries point to the same Kelim passage and likely variant spellings, but neither supplies a clear standalone Hebrew definition; verify the exact lexical form before merging."
+      },
+      {
+        "records": [
+          "KRU03136",
+          "KRU03138"
+        ],
+        "meanings": [
+          "בערב שבת.",
+          "ב״ה בערב שבת בין השמשות."
+        ],
+        "reason": "Deferred: the second entry is explicitly numbered as a separate homonym and narrows the time to twilight; do not collapse it into the broader Friday-eve expression without stronger evidence."
+      },
+      {
+        "records": [
+          "KRU03979",
+          "KRU03980"
+        ],
+        "meanings": [
+          "גזירה לגזירה.",
+          "ל״ג גזירה לגזירה לא גזרינן."
+        ],
+        "reason": "Deferred: one entry gives the legal term while the other gives an abbreviated Talmudic rule statement; their relationship is not a demonstrated synonym pair."
+      },
+      {
+        "records": [
+          "KRU12079",
+          "KRU12080"
+        ],
+        "meanings": [
+          "עי׳ מְרַע. תרג׳ דהי״ב י״ח ל״ג (החליתי): אתמרעית.",
+          "תרג׳ יב״ע בר׳ י״ח א׳: מרע מכיבא. ועי׳ שְׁכִיב מְרַע."
+        ],
+        "reason": "Deferred: the first is explicitly an Itpeel verbal form ('to become sick') and the second is a separately numbered sick/sickness sense; preserve the grammatical and homonym distinction."
+      },
+      {
+        "records": [
+          "KRU13129",
+          "KRU13134"
+        ],
+        "meanings": [
+          "עי׳ הִסְבִּיר פָּנִים. תרג׳ איכה ה׳ י״ב (פני זקנים לא נהדרו): אפי סביא לא סברו.",
+          "עי׳ סֵבֶר פָּנִים. ויק״ר פ״ה: סבר אפוי דר׳ יודן."
+        ],
+        "reason": "Deferred: related 'showing/receiving with a face' expressions, but the second entry is explicitly numbered as another homonym and the source references do not prove identical lexical senses."
+      },
+      {
+        "records": [
+          "KRU19026",
+          "KRU19092"
+        ],
+        "meanings": [
+          "זיבת ליחה פס׳ ס״ח ע״א: מיחוי קרביו – שירקא דמעיא.",
+          "ליחה האדוקה במעיים פס׳ ס״ח ע״א: מיחוי קרביו - שירקא דמעיא."
+        ],
+        "reason": "Deferred: the second entry is explicitly numbered as a separate homonym; 'mucus discharge' and 'mucus adhering in the intestines' overlap contextually but have different semantic scope."
       }
     ],
-    "deferredSynonymPairCount": 1
+    "deferredSynonymPairCount": 7
   },
   "secondReviewedTranche": {
     "attemptedRows": 46,
@@ -8387,6 +8948,182 @@
       "Do not merge homonymous or contextually distinct meanings based on the shared word 'court'."
     ],
     "currentTotal": 1414,
+    "currentAlternativeTotal": 281
+  },
+  "seventyThirdReviewedTranche": {
+    "attemptedCandidates": 23,
+    "addedUniqueSourceGlossPairs": 23,
+    "acceptedPairs": [
+      [
+        "KRU03803",
+        "C00364",
+        "rough untrimmed stone, cobble",
+        "a rolling stone, rough untrimmed stone, cobble"
+      ],
+      [
+        "KRU03169",
+        "B01075",
+        "to bubble forth, to burst forth",
+        "to break through, bubble forth, burst forth"
+      ],
+      [
+        "KRU17489",
+        "S01587",
+        "symbolical form of making an agreement binding",
+        "affirmation, making sure; symbolical form of making an agreement binding"
+      ],
+      [
+        "KRU11696",
+        "M01949",
+        "to make poor",
+        "to make poor, make contemptible"
+      ],
+      [
+        "KRU09446",
+        "K00711",
+        "a species of figs",
+        "figs"
+      ],
+      [
+        "KRU09772",
+        "K01132",
+        "a species of bats",
+        "bats"
+      ],
+      [
+        "KRU09776",
+        "K01139",
+        "a species of locusts",
+        "locusts"
+      ],
+      [
+        "KRU09842",
+        "K01255",
+        "a species of locusts",
+        "locusts"
+      ],
+      [
+        "KRU10810",
+        "M00481",
+        "a species of figs",
+        "figs"
+      ],
+      [
+        "KRU10897",
+        "M00621",
+        "a species of locusts",
+        "locusts"
+      ],
+      [
+        "KRU13428",
+        "O00579",
+        "ration",
+        "the daily ration"
+      ],
+      [
+        "KRU13489",
+        "O00677",
+        "chip",
+        "kindling chip"
+      ],
+      [
+        "KRU15100",
+        "Q00260",
+        "a coin (Dupondium)",
+        "Dupondium"
+      ],
+      [
+        "KRU15358",
+        "Q00688",
+        "Pelusium in Egypt",
+        "Pelusium"
+      ],
+      [
+        "KRU15604",
+        "Q01117",
+        "grain of pepper",
+        "pepper"
+      ],
+      [
+        "KRU16245",
+        "R00074",
+        "tongs",
+        "a pair of tongs"
+      ],
+      [
+        "KRU18411",
+        "T01140",
+        "chariot",
+        "chariot with horses"
+      ],
+      [
+        "KRU18746",
+        "U00553",
+        "a sort of shoe",
+        "shoe"
+      ],
+      [
+        "KRU18760",
+        "U00571",
+        "a cloak",
+        "a coarse cloak"
+      ],
+      [
+        "KRU18840",
+        "U00755",
+        "rinsing with water",
+        "rinsing"
+      ],
+      [
+        "KRU19665",
+        "V00260",
+        "a sort of pastry",
+        "pastry"
+      ],
+      [
+        "KRU09644",
+        "K00981",
+        "spoon",
+        "pan, spoon"
+      ],
+      [
+        "KRU09775",
+        "K01137",
+        "a species of locusts",
+        "locusts"
+      ]
+    ],
+    "evidence": [
+      "C00364/KRU03803: both identify the rough, untrimmed stone/cobble sense in Bava Batra; the parchment sense remains separate.",
+      "B01075/KRU03169: both identify bubbling/bursting forth in the same verbal usage, with matching Sotah/Ketubot citations.",
+      "S01587/KRU17489: both identify the symbolic act of making an agreement binding, citing Bava Batra 40a.",
+      "M01949/KRU11696: both identify the active transitive 'to make poor' sense in Sotah 11a; the separate intransitive 'to become poor' sense stays distinct.",
+      "K00711/KRU09446: both identify the fig variety in Nedarim 50b; Jastrow's separate table-olive sense stays distinct.",
+      "K01132/KRU09772: both identify the bat species in Shabbat 78a.",
+      "K01139/KRU09776: both identify the locust term in Hullin 62b.",
+      "K01255/KRU09842: both identify the locust species in Hullin 65b.",
+      "M00481/KRU10810: both identify the fig variety in Bekhorot 8a.",
+      "M00621/KRU10897: both identify the locust species in Tosefta Hullin III:25.",
+      "O00579/KRU13428: both identify the ration sense in Leviticus Rabbah 5.",
+      "O00677/KRU13489: both identify the kindling-chip sense in Bava Kamma 22b; Jastrow's separate log sense stays distinct.",
+      "Q00260/KRU15100: both identify the Roman Dupondium coin in Maaser Sheni IV:8.",
+      "Q00688/KRU15358: both identify Pelusium in Targum Jonathan Genesis 47:11; Krupnik's separate Pelusian-linen sense stays distinct.",
+      "Q01117/KRU15604: both identify pepper as a grain/spice in Shabbat 64b.",
+      "R00074/KRU16245: both identify tongs in Avot V:6.",
+      "T01140/KRU18411: both identify the chariot in Targum Genesis 41:43.",
+      "U00553/KRU18746: both identify the shoe/slipper in Yerushalmi Yevamot XII:12c.",
+      "U00571/KRU18760: both identify the coarse cloak in Targum Isaiah 3:22; the source's additional bed-sheet use is retained.",
+      "U00755/KRU18840: both identify rinsing with water for purification, citing Leviticus VI:21 and Zebahim XI:7.",
+      "V00260/KRU19665: both identify the pastry in Yerushalmi Shekalim VII:50d.",
+      "K00981/KRU09644: both identify the spoon sense in Kelim XIII:2; Jastrow's palm-branch sense stays distinct.",
+      "K01137/KRU09775: both identify the locust species in Hullin 62b."
+    ],
+    "safeguards": [
+      "Every accepted pair is scoped to the exact Jastrow and Krupnik source refs and the exact reader-extracted phrases.",
+      "The original dictionary wording and source citations remain available; the merged display does not rewrite source records.",
+      "Numbered and grammatical senses remain separate, including parchment versus stone, make-poor versus become-poor, Pelusium versus Pelusian linen, and spoon versus palm-branch."
+    ],
+    "currentTotal": 1437,
     "currentAlternativeTotal": 281
   }
 }
