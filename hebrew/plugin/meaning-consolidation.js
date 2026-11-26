@@ -118,7 +118,8 @@
  // This reviewed mapping resolves only that exact sub-sense; the other numbered
  // senses remain independent and the original full part stays attached.
  const reviewedSenseSegmentPairRecords=[
-  {a:'KRU17474',b:'KRU17475',aMeaning:'הִקְנִיט הרגיז',bPrefix:'כנ״ל',display:'הִקְנִיט הרגיז'}
+  {a:'KRU17474',b:'KRU17475',aMeaning:'הִקְנִיט הרגיז',bPrefix:'כנ״ל',display:'הִקְנִיט הרגיז'},
+  {a:'KRU20037',b:'KRU20038',aMeaning:'הִתְקִיל נכשל',bPrefix:'נכשל',bSenseIndex:1,useFullText:true,display:'הִתְקִיל נכשל'}
  ];
  const reviewedSenseSegmentPairRefs=new Set(reviewedSenseSegmentPairRecords.map(pair=>[pair.a,pair.b].sort().join('|')));
  const splitNumberedSenseSegments=value=>{
@@ -141,13 +142,21 @@
   const groups=[],prepared=[];
   const sourceEntries=(sources||[]).flatMap(source=>source.records||[]);
   for(const source of sources||[])for(const entry of source.records||[])for(const part of entry.parts||[]){
-   const text=part.meaning||part.text||'',label=labelKey(part.label),scope=normalize(source.word||word),homonym=homonymNumber(entry.word);
-   if(!normalize(text))continue;
+   const label=labelKey(part.label),scope=normalize(source.word||word),homonym=homonymNumber(entry.word);
    const segmentPair=reviewedSenseSegmentPairRecords.find(pair=>pair.b===entry.rid&&sourceEntries.some(sourceEntry=>sourceEntry.rid===pair.a&&(sourceEntry.parts||[]).some(sourcePart=>normalize(sourcePart.meaning||sourcePart.text)===normalize(pair.aMeaning))));
+   const text=segmentPair?.useFullText&&part.text?part.text:(part.meaning||part.text||'');
+   if(!normalize(text))continue;
    const segments=segmentPair?splitNumberedSenseSegments(text):null;
-   if(segmentPair&&segments?.length>1&&normalize(segments[0]).startsWith(normalize(segmentPair.bPrefix))){
-    prepared.push({source,entry,part,text:segmentPair.display,label,scope,homonym,alternatives:splitAlternatives(segmentPair.display)});
-    for(const segment of segments.slice(1))prepared.push({source,entry,part,text:segment,label,scope,homonym,alternatives:splitAlternatives(segment)});
+   const targetIndex=segmentPair?.bSenseIndex??0;
+   if(segmentPair&&segments?.length>targetIndex&&normalize(segments[targetIndex]).startsWith(normalize(segmentPair.bPrefix))){
+    if(segmentPair.useFullText){
+     const originalMeaning=part.meaning||'';
+     if(normalize(originalMeaning)&&normalize(originalMeaning)!==normalize(segmentPair.display))prepared.push({source,entry,part,text:originalMeaning,label,scope,homonym,alternatives:splitAlternatives(originalMeaning)});
+     prepared.push({source,entry,part,text:segmentPair.display,label,scope,homonym,alternatives:splitAlternatives(segmentPair.display)});
+    }else{
+     prepared.push({source,entry,part,text:segmentPair.display,label,scope,homonym,alternatives:splitAlternatives(segmentPair.display)});
+     for(const [index,segment] of segments.entries())if(index!==targetIndex)prepared.push({source,entry,part,text:segment,label,scope,homonym,alternatives:splitAlternatives(segment)});
+    }
    }else prepared.push({source,entry,part,text,label,scope,homonym,alternatives:splitAlternatives(text)});
   }
   // If two source parts share an exact Hebrew alternative, split those parts
