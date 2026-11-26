@@ -1778,6 +1778,22 @@
 ,
   ["KRU04385","C01038","to do one good or evil","to do one good"],
   ["KRU04979","D00406","to remove","to remove hurriedly"]
+,
+  ["KRU09387","K00643","beating (of flax)","beating"],
+  ["KRU09415","K00673","guard-house","guard-house at the gate"],
+  ["KRU09459","K00723","calyx of flowers","calyx"],
+  ["KRU09473","K00741","a mantle","a fine mantle"],
+  ["KRU17797","K01225","bell","the shepherd’s bell"],
+  ["KRU10160","L00353","hissing (of the serpent)","hissing"],
+  ["KRU10695","M00327","whip","chastising whip"],
+  ["KRU10985","M00759","channel","irrigating channel"],
+  ["KRU11012","M00857","to protest","to protest against"],
+  ["KRU11063","M00885","to remit (a debt)","to remit"],
+  ["KRU11381","M01370","a kind of boat","boat"],
+  ["KRU11815","M02185","cave","burial cave"],
+  ["KRU11881","M02294","mouthpiece","overlaid mouthpiece"],
+  ["KRU11886","M02309","to wring out","to wring"],
+  ["KRU11964","M02459","teacher","primary teacher"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
@@ -1867,6 +1883,14 @@
 ,
   ["KRU09361","K00605","extremely tall","an extremely tall and unshapely person","Deferred: Krupnik gives an adjective ('extremely tall'), while Jastrow describes a person ('an extremely tall and unshapely person'); the examples differ and the grammatical focus is not yet secure."],
   ["KRU04979","D00406","to push, to hurry","to push away, thrust","Deferred: the two sources use different contextual senses (pushing/hurrying versus thrusting away); do not merge on the shared root alone."]
+,
+  ["KRU10160","L00353","whisper","whisper; spell, charm","Deferred: Jastrow's combined gloss covers whispering and spell/charm, while Krupnik separates ordinary whispering from charm-whispering. One Jastrow phrase cannot safely be assigned to the ordinary-whisper sense alone."],
+  ["KRU10170","L00372","to whisper","to whisper, hiss","Deferred: Jastrow's Pi. gloss combines whispering and hissing; Krupnik separates ordinary whispering, charm-whispering, and other senses."],
+  ["KRU10170","L00372","to whisper a charm","to whisper","Deferred: the KRU gloss is a specific charm-whispering sense, while the Jastrow phrase is a broader verb gloss; preserve until the original form/context is reconciled."],
+  ["KRU10170","L00372","to whisper a charm","to whisper, hiss","Deferred: the Jastrow gloss spans more than one action; do not merge the combined phrase with the specific KRU charm sense."],
+  ["KRU11063","M00885","to be forgiven, to be pardoned","to be cancelled; to be forgiven, pardoned","Deferred: the Jastrow Nifal gloss combines forgiveness and cancellation, while Krupnik splits these into distinct numbered meanings."],
+  ["KRU11063","M00885","to be cancelled","to be cancelled; to be forgiven, pardoned","Deferred: same combined-Jastrow/numbered-Krupnik ambiguity; preserve both separate Nifal senses."],
+  ["KRU11886","M02309","to suck","to give suck","Deferred: Krupnik's 'to suck' and Jastrow's Pa. 'to give suck' differ in grammatical direction/valency; do not merge without stronger source evidence."]
 
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const reviewedSourceAlternativePairRecords=[
