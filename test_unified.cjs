@@ -1110,6 +1110,13 @@ const decisionKey=(a,b,x,y)=>[a,b].sort().join('|')+'::'+[cleanDecision(x),clean
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU06547','G00654','dealer in leather bags','maker of and dealer in leather bags')),'known occupational false positives must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU10278','L00533','there is','there is (was) not')),'negative-particle distinctions must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03526','C00053','The Most High','high, exalted, elevated')),'divine titles must not be merged with ordinary adjectives');
+assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03023','B00986',"royal seat, palace","of the palace")),'reviewed false positive must remain rejected: B00986 / KRU03023');
+assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03220','B01135',"valley","Valley of")),'reviewed false positive must remain rejected: B01135 / KRU03220');
+assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU05415','D00950',"with the knowledge of, with the consent of","knowledge, mind; temperament, physical disposition, constitution")),'reviewed false positive must remain rejected: D00950 / KRU05415');
+assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU17926','T00128',"to lie","to lie with, copulate with, cover")),'reviewed false positive must remain rejected: T00128 / KRU17926');
+assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU18302','T00918',"to be broken in","to be broken")),'reviewed false positive must remain rejected: T00918 / KRU18302');
+assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU20168','V01113',"from below","below")),'reviewed false positive must remain rejected: V01113 / KRU20168');
+assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU16710','S00123',"holiness","his holiness")),'reviewed false positive must remain rejected: S00123 / KRU16710');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06494','G00538','at times','times')),'ambiguous time/times candidates must remain deferred');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU12466','N00341',"to put down","to rest, put down; to leave alone")),'reviewed ambiguous candidate must remain deferred: N00341 / KRU12466');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU12466','N00341',"to rest","to rest, put down; to leave alone")),'reviewed ambiguous candidate must remain deferred: N00341 / KRU12466');
