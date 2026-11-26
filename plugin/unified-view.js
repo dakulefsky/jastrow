@@ -1831,6 +1831,14 @@
   ,["KRU15100","Q00260","a coin (Dupondium)","Dupondium"]
   ,["KRU15358","Q00688","Pelusium in Egypt","Pelusium"]
   ,["KRU15604","Q01117","grain of pepper","pepper"]
+  ,["KRU16245","R00074","tongs","a pair of tongs"]
+  ,["KRU18411","T01140","chariot","chariot with horses"]
+  ,["KRU18746","U00553","a sort of shoe","shoe"]
+  ,["KRU18760","U00571","a cloak","a coarse cloak"]
+  ,["KRU18840","U00755","rinsing with water","rinsing"]
+  ,["KRU19665","V00260","a sort of pastry","pastry"]
+  ,["KRU09644","K00981","spoon","pan, spoon"]
+  ,["KRU09775","K01137","a species of locusts","locusts"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
