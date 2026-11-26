@@ -6,12 +6,12 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1320 retained whole-gloss mappings and all 274 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1320 retained whole-gloss mappings and all 275 retained alternative-level mappings are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
     "reviewedSourceGlossPairCount": 1322,
-    "reviewedSourceAlternativePairCount": 274,
+    "reviewedSourceAlternativePairCount": 275,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
     "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions.",
@@ -1965,7 +1965,7 @@
   },
   "alternativeLevelReview": {
     "status": "expanded-with-269-source-scoped-alternative-matches",
-    "reviewedSourceAlternativePairs": 269,
+    "reviewedSourceAlternativePairs": 270,
     "acceptedPairs": [
       [
         "KRU04451",
@@ -2140,6 +2140,12 @@
         "D00769",
         "like",
         "the like of"
+      ],
+      [
+        "KRU06469",
+        "G00500",
+        "to empty",
+        "empty over"
       ]
     ],
     "rationale": "Jastrow C01128 has separate phrases for sighing heavily under an attack of angina pectoris and coughing/spitting blood. Krupnik KRU04451 has a combined gloss listing the first phrase plus 'to expectorate'. Only the exact shared phrase is consolidated; the unmatched Krupnik alternative and Jastrow's second sense remain separate. Five additional high-confidence alternatives were reviewed from the regenerated inventory: leather apron, easily enticed, laying the foundation, writing plene, and lump. The original source wording and any unmatched senses remain intact. Seven further high-confidence alternative matches were reviewed against original entries: customary weight addition, caprification-ripened fig, cut glass vessels, thick eyebrows, the twelve-hour period, absent organ, and stuffed animal dish. Each preserves the complete original wording in More detail. Four additional reviewed pairs consolidate the same sense despite concise/full wording variants: pity, an animal set aside for sacrifice, bass-relief, and knocking. Four further reviewed variants consolidate corresponding meanings with concise wording: correspondence, goodness, deduction, and closing. Five more reviewed variants consolidate legal dispute, arrival/reaching, differing, asking, and manner/question glosses while preserving all other source alternatives. Three further high-confidence synonym matches consolidate self-conduct, presence, and reciprocal embracing while preserving separate semicolon-delimited Jastrow senses. One further source-attested likeness variant consolidates the nominal 'the like of' with the prepositional 'like, as' gloss while retaining the full Jastrow wording.",
@@ -5485,5 +5491,29 @@
     ],
     "currentTotal": 1322,
     "currentAlternativeTotal": 274
+  },
+  "fortyFirstReviewedTranche": {
+    "attemptedCandidates": 1,
+    "addedUniqueSourceGlossPairs": 0,
+    "addedUniqueSourceAlternativePairs": 1,
+    "acceptedPairs": [
+      [
+        "KRU06469",
+        "G00500",
+        "to empty",
+        "empty over"
+      ]
+    ],
+    "evidence": [
+      "Jastrow G00500 and Krupnik KRU06469 both cite Toh. X, 7 for emptying the wine or oil pit.",
+      "Jastrow's reader-extracted sense is 'to pour, empty over'; Krupnik's numbered sense 2 is 'to empty'. The matching alternative is the source-supported 'empty over' / 'to empty' correspondence."
+    ],
+    "safeguards": [
+      "The mapping is scoped to the exact KRU06469/G00500 source records and the exact alternatives.",
+      "Jastrow's separate 'to sprinkle' sense and Krupnik's separate 'to drop' sense remain independent.",
+      "Both original source wording and citations remain available in the reader's source detail."
+    ],
+    "currentTotal": 1322,
+    "currentAlternativeTotal": 275
   }
 }
