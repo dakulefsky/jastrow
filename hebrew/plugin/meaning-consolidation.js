@@ -64,6 +64,7 @@
  }));
  // Source-reviewed false positives for the candidate queue. This registry never changes runtime meanings.
  const reviewedNonSynonymPairs=new Map([
+
   ["KRU02691","KRU02692","ירוש׳ שבי׳ פ״ו ל״ו ע״ג: ביריי רבתא.","שם אמורא","Different proper-name classes: the first record identifies a place, while the second explicitly identifies an Amora."],
   ["KRU18231","KRU18232","ריכך, עשה רך","כנ״ל. תרג׳ איוב כ״ג ט״ז (הרך לבי): רכך לבבי. אִתְרַכֵּךְ אתפ׳, נעשה רך","Different grammatical voice and meaning: 'to make soft' is causative/transitive; 'to become soft' is intransitive/reflexive."],
   ["KRU07060","KRU07061","שם עיר בארץ ישראל","שם אמורא","Different referents: Haifa is a town; the other record is a personal name of an Amora."],
@@ -82,7 +83,21 @@
   ["KRU00985","KRU00986","אגודה, חבילה","שר של מעלה, מלאך","Bunch/bundle versus angel; distinct lexical meanings."],
   ["KRU01073","KRU01074","נשואין","חפרפרת","Matrimony versus mole; distinct homonymous senses."],
   ["KRU01341","KRU01342","– אמונה","הר בצפונה של א״י","Faith/trust versus Mount Amanus; distinct lexical meanings."],
-  ["KRU01562","KRU01563","בגד","ציון לדרך וגבול","Robe/garment versus landmark/boundary marker; distinct lexical meanings."]
+  ["KRU01562","KRU01563","בגד","ציון לדרך וגבול","Robe/garment versus landmark/boundary marker; distinct lexical meanings."],
+  ["KRU01660","KRU01661","תורן","רפסודה, דוברה","Mast-yard versus raft/float; distinct objects."],
+  ["KRU01687","KRU01690","– אַף אֵלָהֵין ובפרט, ומה גם","שם מלאך","Conjunctive/emphatic 'how much rather' versus the name of an angel; distinct senses."],
+  ["KRU01755","KRU01756","הדום, שרפרף","מרדעת, אוכף","Footstool versus saddle; distinct objects."],
+  ["KRU01989","KRU01991","דרך","אור","Way/path versus light; distinct meanings."],
+  ["KRU01989","KRU01991","אורח","אור","Guest versus light; distinct meanings."],
+  ["KRU02026","KRU02027","נעשה ארוך","תקן, הכין","To grow longer versus to prepare; distinct verbal meanings."],
+  ["KRU02026","KRU02027","נעשה ארוך","נקה","To grow longer versus to cleanse; distinct verbal meanings."],
+  ["KRU02581","KRU02582","צנור","יחי!","Duct/channel versus the exclamation 'long live!'; unrelated meanings."],
+  ["KRU02788","KRU02789","אות שניה של אלף בית","בית","The letter Bet versus a house/receptacle; distinct homonymous senses."],
+  ["KRU02788","KRU02789","אות שניה של אלף בית","בת, מדת הלח","The letter Bet versus a liquid measure; distinct homonymous senses."],
+  ["KRU02859","KRU02860","ציר הדלת","אלון","Door hinge versus oak tree; distinct meanings."],
+  ["KRU02859","KRU02860","ציר הדלת","פרי האלון","Door hinge versus acorn; distinct meanings."],
+  ["KRU02859","KRU02860","שן המפתח","אלון","Key-bit versus oak tree; distinct meanings."],
+  ["KRU02859","KRU02860","שן המפתח","פרי האלון","Key-bit versus acorn; distinct meanings."]
  ].map(([a,b,x,y,reason])=>{
   const ids=[a,b].sort().join('|'),glosses=[normalize(x),normalize(y)].sort().join(' | ');
   return [ids+'::'+glosses,reason];
