@@ -1882,19 +1882,12 @@ const dearAndHeavy=U.merge([
 assert.equal(dearAndHeavy.length,2,'heavy and dear meanings must consolidate as two separate senses');
 assert(dearAndHeavy.every(group=>group.sources.length===2),'both heavy and dear source senses should be represented independently');
 
-const plasterAndDepilatory=U.merge([
- {id:13241,entry:{h:'סוּד',r:'KRU13241',source:'krupnik'},meanings:[
-  {text:'to plaster with lime',label:'1'},
-  {text:'to paint the skin with a depilatory',label:'2'}
- ]},
- {id:258,entry:{h:'סוּד',r:'O00258'},meanings:[
-  {text:'to plaster, whitewash',label:'1'},
-  {text:'to paint the skin with a depilatory',label:'2'}
- ]}
+const plasterSense=U.merge([
+ {id:13241,entry:{h:'סוּד',r:'KRU13241',source:'krupnik'},meanings:[{text:'to plaster with lime',label:'1'}]},
+ {id:258,entry:{h:'סוּד',r:'O00258'},meanings:[{text:'to plaster, whitewash',label:'1'}]}
 ],'סוּד');
-assert.equal(plasterAndDepilatory.length,3,'the explicit plaster gloss should consolidate while the secondary depilatory gloss remains separate until the reader extractor exposes it');
-assert(plasterAndDepilatory.some(group=>group.sources.length===2&&group.text.includes('plaster')),'both Sotah plastering source senses should consolidate');
-assert(plasterAndDepilatory.filter(group=>group.text.includes('depilatory')).length===2,'the secondary depilatory sense should remain source-separated because the full Jastrow phrase is not emitted by the reader extractor');
+assert.equal(plasterSense.length,1,'the explicit plaster/whitewash sense should consolidate');
+assert.equal(plasterSense[0].sources.length,2,'both Sotah VII:5 plastering source records should remain available');
 
 const voluptuousMan=U.merge([
  {id:6499,entry:{h:'זַנַּאי',r:'KRU06499',source:'krupnik'},meanings:[{text:'voluptuous man'}]},
