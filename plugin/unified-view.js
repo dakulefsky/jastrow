@@ -1746,7 +1746,16 @@
   ["KRU20035","V00886","the New Year’s day","the prayers on the New Year interspersed with blowing the Shofar, the Musaf of the New Year’s Day","Rejected: Jastrow defines the New Year prayer service (Musaf), whereas Krupnik sense 1 defines the calendar day itself. Krupnik's separate sense 2 is the prayer-service meaning."],
   ["KRU03682","C00244","to cut, esp: to harvest dates","to cut into","Rejected: Jastrow's Pi. sense is 'to cut into'; Krupnik's primary sense is the Qal 'to cut, especially to harvest dates'. The exact base-form 'to cut' match is already handled separately; this derived sense is not equivalent."],
   ["KRU03956","C00538","to cut, to shear","to cut into, interrupt","Rejected: Jastrow's Pa. gloss refers to interrupting a study (Lam. R. I, 3); Krupnik's gloss refers to cutting/shearing (e.g. myrtle). Shared 'cut' is not the same action."],
-  ["KRU04094","C00577","cut, wound","what is to be cut","Rejected: Jastrow's numbered sense is the legal category 'what is to be cut' (foreskin); Krupnik's gloss is 'cut, wound'. These are different meanings and grammatical uses."]
+  ["KRU04094","C00577","cut, wound","what is to be cut","Rejected: Jastrow's numbered sense is the legal category 'what is to be cut' (foreskin); Krupnik's gloss is 'cut, wound'. These are different meanings and grammatical uses."],
+  ["KRU04044","C00632","earth embankment, steep banks","a steep",undefined],
+  ["KRU14780","P01211","to cut (fruits) by the stalks","to cut fruit by the stalks.",undefined],
+  ["KRU15901","Q01641","resident of an open place","one residing in an open place",undefined],
+  ["KRU02398","B00982","negligence","indifference, willful negligence",undefined],
+  ["KRU01212","A01838","according to","according to the opinion, in the sense of",undefined],
+  ["KRU01341","A02041","faith, trust","faith in Providence",undefined],
+  ["KRU01578","A02408","road, way","paved way, public road",undefined],
+  ["KRU03401","B01342","cypress or pine-tree","cypress",undefined],
+  ["KRU04694","D00017","to flow out","to flow","Rejected: Krupnik explicitly separates 'to flow' (sense 1) from 'to flow out' (sense 2). Jastrow's phrase 'to flow' matches the first sense, not the more specific second sense."]
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const deferredSourceGlossPairs=new Map([
   ["KRU06494","G00538","at times","times","Deferred: the Krupnik entry explicitly distinguishes 'time' from 'times'; this phrase pair is not one-to-one."],
@@ -1777,7 +1786,9 @@
   ["KRU15633","Q01188","to be removed","to be removed, to die","Deferred: Krupnik's single extracted phrase overlaps Jastrow's separately numbered Nif. sense; the same KRU gloss also overlaps another Jastrow derived form. Preserve the grammatical distinction until it can be isolated."],
   ["KRU15633","Q01188","to be removed","to be vacated, cleared, removed","Deferred: the same Krupnik 'to be removed' gloss overlaps Jastrow's distinct Hithpael sense as well as its Nif. sense. A record-level mapping would bridge different grammatical forms."],
   ["KRU17819","S02236","to be hard","to be hard on, press heavily","Deferred: Jastrow explicitly labels an Af. form and adds 'on/press heavily'; Krupnik's extracted gloss is the broader 'to be hard'. The source records do not establish the same specific sense."],
-  ["KRU19012","U01042","covering","sinking, covering up","Deferred: Jastrow combines 'sinking' and 'covering up' in one reader phrase, while Krupnik separates 'submergence' and 'covering' into numbered senses. A source-scoped mapping could bridge two distinct KRU senses without a finer Jastrow boundary."]
+  ["KRU19012","U01042","covering","sinking, covering up","Deferred: Jastrow combines 'sinking' and 'covering up' in one reader phrase, while Krupnik separates 'submergence' and 'covering' into numbered senses. A source-scoped mapping could bridge two distinct KRU senses without a finer Jastrow boundary."],
+  ["KRU14780","P01211","to sting","to sting, prick","Deferred: Jastrow's single reader-visible sense 'to sting, prick' matches both Krupnik sense 2 'to sting' and sense 3 'to prick, to taunt'. The current source phrase boundary cannot safely choose one without merging distinct Krupnik senses."],
+  ["KRU14780","P01211","to prick, to taunt","to sting, prick","Deferred: same one-to-many ambiguity; do not map the Jastrow combined phrase to Krupnik's separate figurative 'to prick, to taunt' sense."]
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const reviewedSourceAlternativePairRecords=[
   ["KRU04451","C01128","to sigh heavily under an attack of angina pectoris","to sigh heavily under an attack of angina pectoris"],
