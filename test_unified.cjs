@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1373,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1376,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -292,11 +292,30 @@ assert(cheeseMeaning.some(group=>group.sources.some(source=>source.entry.r==='KR
 const dateMash=cheeseMeaning.find(group=>group.text==='a mash of pressed dates');
 assert(dateMash&&dateMash.sources.length===1,'the separate pressed-date mash sense must remain separate');
 
+const growHigh=U.merge([
+ {id:2901,entry:{h:'גְּאִי',r:'KRU03500',source:'krupnik'},meanings:[
+  {text:'to grow',label:'1'},
+  {text:'to be elated, to be exalted',label:'2'}
+ ]},
+ {id:2902,entry:{h:'גְּאִי',r:'C00016'},meanings:[
+  {text:'to grow high',section:'1)'},
+  {text:'to be exalted; to be proud',section:'—2)'}
+ ]}
+],'גְּאִי');
+assert.equal(growHigh.filter(group=>group.sources.some(source=>source.entry.r==='KRU03500')&&group.sources.some(source=>source.entry.r==='C00016')).length,2,'both numbered Targum Job/Exodus growth senses should consolidate separately');
+
+const recoverStrong=U.merge([
+ {id:2911,entry:{h:'בְּרִי',r:'KRU03320',source:'krupnik'},meanings:[{text:'to recover, to get strong',label:'2'}]},
+ {id:2912,entry:{h:'בְּרִי',r:'B01237'},meanings:[{text:'to get well, strong',section:'—2)'}]}
+],'בְּרִי');
+assert(recoverStrong.some(group=>group.sources.some(source=>source.entry.r==='KRU03320')&&group.sources.some(source=>source.entry.r==='B01237')),'the shared recovery/health sense should consolidate');
 
 
 
 
-assert.equal(U.reviewedSourceGlossPairs.size,1373,'all source-specific whole-gloss mappings must be loaded');
+
+
+assert.equal(U.reviewedSourceGlossPairs.size,1376,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -1346,6 +1365,9 @@ assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU06642','H00112',"Parsee pr
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU06720','H00248',"cheese","soft cheese")),'source-verified mapping must be registered: H00248 / KRU06720');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU06775','H00358',"knife","slaughtering knife")),'source-verified mapping must be registered: H00358 / KRU06775');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU07276','H01186',"leavened (bread)","leavened")),'source-verified mapping must be registered: H01186 / KRU07276');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03500','C00016',"to grow","to grow high")),'source-verified mapping must be registered: C00016 / KRU03500');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03500','C00016',"to be elated, to be exalted","to be exalted; to be proud")),'source-verified mapping must be registered: C00016 / KRU03500');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03320','B01237',"to recover, to get strong","to get well, strong")),'source-verified mapping must be registered: B01237 / KRU03320');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU06547','G00654','dealer in leather bags','maker of and dealer in leather bags')),'known occupational false positives must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU10278','L00533','there is','there is (was) not')),'negative-particle distinctions must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03526','C00053','The Most High','high, exalted, elevated')),'divine titles must not be merged with ordinary adjectives');
@@ -1375,6 +1397,11 @@ assert(U.deferredSourceGlossPairs.has(decisionKey('KRU19048','U01132',"apartment
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU19048','U01132',"tent dwelling","dwelling, tent; apartment.")),'one-to-many or source-uncertain candidate must remain deferred: U01132 / KRU19048');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03320','B01237',"to hollow out, to perforate","to permeate, perforate")),'one-to-many or source-uncertain candidate must remain deferred: B01237 / KRU03320');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU07233','H01124','to be fine','to be smooth and fine')),'the potentially different smooth-edge sense must remain deferred');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03613','C00166',"to cut off, to level","to cut, cut off.")),'morphology/one-to-many candidate must remain deferred: C00166 / KRU03613');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03613','C00166',"to cut, to cut off","to cut off, level")),'morphology/one-to-many candidate must remain deferred: C00166 / KRU03613');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU18284','T00889',"to lead to pasture","to lead, pasture, feed")),'morphology/one-to-many candidate must remain deferred: T00889 / KRU18284');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU18292','T00889',"to lead to pasture","to lead, pasture, feed")),'morphology/one-to-many candidate must remain deferred: T00889 / KRU18292');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU15318','Q00616',"compounding ingredients","compounding, manufacturing; ingredients")),'morphology/one-to-many candidate must remain deferred: Q00616 / KRU15318');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU19012','U01042',"covering","sinking, covering up")),'reviewed ambiguous candidate must remain deferred: U01042 / KRU19012');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU01114','A01696',"to be burnt","to be consumed, burnt up, digested")),'reviewed candidate must remain deferred: A01696 / KRU01114');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06564','G00686',"to arm o. s.","to tie around, gird, arm; to harness, saddle")),'reviewed candidate must remain deferred: G00686 / KRU06564');
