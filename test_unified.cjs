@@ -132,7 +132,21 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,274,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,275,'every source-scoped alternative match must be loaded');
+
+const pourAndEmpty=U.merge([
+ {id:2101,entry:{h:'זָלַף',r:'KRU06469',source:'krupnik'},meanings:[{text:'to empty',label:'2'}]},
+ {id:2102,entry:{h:'זָלַף',r:'G00500'},meanings:[
+  {text:'to pour, empty over',label:'',section:'1)'},
+  {text:'to sprinkle',label:'',section:'—2)'}
+ ]}
+],'זָלַף');
+const emptyingGroup=pourAndEmpty.find(group=>group.sources.some(source=>source.entry.r==='KRU06469')&&group.sources.some(source=>source.entry.r==='G00500'));
+assert(emptyingGroup,'the shared Toh. X, 7 emptying sense should consolidate');
+assert.equal(emptyingGroup.sources.length,2,'both original emptying source records must remain available');
+const sprinkleGroup=pourAndEmpty.find(group=>group.text==='to sprinkle');
+assert(sprinkleGroup&&sprinkleGroup.sources.length===1,'the separate Jastrow sprinkling sense must remain independent');
+
 
 const likenessVariant=U.merge([
  {id:1100,entry:{h:'דִּכְוָת',r:'KRU05268',source:'krupnik'},meanings:[{text:'like, as',label:''}]},
