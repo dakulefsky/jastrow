@@ -350,7 +350,7 @@
         "meaning": "gullet"
       }
     ],
-    "note": "Added deterministic normalization for exact Hebrew alternative lists: punctuation and alternative order are normalized, while phrase word order is preserved. Regression tests verify that unreviewed synonyms remain separate. A source-reviewed non-synonym registry now excludes nineteen clear homonym, grammatical-form, and unrelated-meaning false positives from the Hebrew review queue; it does not change runtime consolidation. A second Hebrew review tranche adds fourteen more exact source-pair rejections for clearly unrelated homonyms and meanings; the registry is review-only and does not alter runtime lookup. The Hebrew review queue also records two ambiguous pairs for later source-sense review; they are excluded from the pending queue but not treated as synonyms or runtime merges.",
+    "note": "Added deterministic normalization for exact Hebrew alternative lists: punctuation and alternative order are normalized, while phrase word order is preserved. Regression tests verify that unreviewed synonyms remain separate. A source-reviewed non-synonym registry now excludes nineteen clear homonym, grammatical-form, and unrelated-meaning false positives from the Hebrew review queue; it does not change runtime consolidation. A second Hebrew review tranche adds fourteen more exact source-pair rejections for clearly unrelated homonyms and meanings; the registry is review-only and does not alter runtime lookup. The Hebrew review queue also records two ambiguous pairs for later source-sense review; they are excluded from the pending queue but not treated as synonyms or runtime merges. The KRU20037/KRU20038 ambiguity is no longer deferred: its exact second numbered sense 2) נכשל is now isolated and consolidated with the matching source gloss; only the KRU12499/KRU12500 motion pair remains deferred.",
     "reviewedSenseSegmentPairs": 2,
     "reviewedSenseSegmentPairDetails": [
       {
@@ -379,9 +379,9 @@
       "sourceRecords": 20177,
       "uniqueHeadwordForms": 20104,
       "repeatedHeadwordForms": 1726,
-      "candidates": 528,
+      "candidates": 529,
       "runtimeRuleHandledCandidates": 1,
-      "manualReviewCandidates": 527,
+      "manualReviewCandidates": 528,
       "evidenceCounts": {
         "exact-gloss": 1,
         "shared-content-terms": 0,
@@ -390,11 +390,11 @@
       },
       "rawCandidates": 567,
       "reviewedNonSynonymPairs": 36,
-      "deferredSynonymPairs": 2,
-      "latestGeneratedFromCommit": "pending-next-validation",
-      "note": "The Hebrew candidate inventory now excludes 36 reviewed non-synonyms, 2 deferred cases, and 2 reviewed partial-sense mappings; one exact-alternative candidate is handled by runtime, and 527 candidates remain for manual semantic review.",
+      "deferredSynonymPairs": 1,
+      "latestGeneratedFromCommit": "0bf7c0a",
+      "note": "Generated from 20,177 original Hebrew source records. Of 567 raw candidate pairs, 36 source-reviewed false positives and 1 ambiguous pair are excluded; two exact partial-sense cross-references are recorded, one candidate is handled by the guarded exact-alternative runtime rule, and 528 remain for manual semantic review.",
       "reviewedSenseSegmentPairs": 2,
-      "partialHebrewOverlap": 2
+      "partialHebrewOverlap": 1
     },
     "reviewedNonSynonymPairs": [
       {
@@ -806,20 +806,9 @@
           "התנופף ברוח"
         ],
         "reason": "Deferred: the source meanings 'to rise/swing oneself' and 'to wave in the wind' are related motions but not demonstrably equivalent; the cited passages differ."
-      },
-      {
-        "records": [
-          "KRU20037",
-          "KRU20038"
-        ],
-        "meanings": [
-          "הִתְקִיל נכשל",
-          "1) שקל"
-        ],
-        "reason": "Deferred: the candidate builder exposes only KRU20038's first Hebrew sense '1) שקל', while the full source text contains a later '2) נכשל' that may be relevant. The source has multiple numbered and derived forms; improve sense extraction before deciding."
       }
     ],
-    "deferredSynonymPairCount": 2
+    "deferredSynonymPairCount": 1
   },
   "secondReviewedTranche": {
     "attemptedRows": 46,
