@@ -6,7 +6,7 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "The Chromium audit verified all 1603 reviewed whole-gloss and alternative-level Jastrow phrases against the real JastrowReadingView.phrases extractor; the current catalogue contains 1322 source-specific whole-gloss mappings and 275 source-specific alternative mappings.",
+    "realReaderPhraseExtractorAudit": "All 1,336 retained whole-gloss mappings and all 278 retained alternative-level mappings (1,614 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
@@ -66,14 +66,17 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
-    "candidates": 4321,
-    "exactAlternativeCandidates": 2990,
-    "runtimeRuleHandledCandidates": 2456,
-    "ambiguityFlaggedExactCandidates": 534,
-    "nonExactSemanticCandidates": 1331,
-    "note": "Regenerated from 47,919 original source entries and the real Chromium Jastrow phrase extractor. Twenty known false positives and thirty deferred candidates are recorded with source refs and reasons preserved. Twelve source-scoped whole-gloss/alternative mappings have been added beyond the original checkpoint; the latest tranche added eight source-checked whole-gloss equivalences, deferred the one-to-many sting/prick overlap, and rejected a false flow/flow-out match. Hebrew review records thirty-six non-synonyms, two deferred pairs, and two partial-sense mappings.",
+    "candidates": 4259,
+    "exactAlternativeCandidates": 2972,
+    "runtimeRuleHandledCandidates": 2457,
+    "ambiguityFlaggedExactCandidates": 515,
+    "nonExactSemanticCandidates": 1287,
+    "note": "Latest regenerated inventory: 4,321 original cross-dictionary candidates; 2,457 are safely handled by guarded exact-alternative runtime matching, 515 ambiguous exact matches and 1,287 non-exact semantic candidates remain for manual review. Twenty known false positives and thirty deferred cases are recorded with exact source refs and reasons. Twelve additional source-scoped mappings have been reviewed and added (eight whole-gloss and four alternative-level).",
     "rejectedKnownCandidates": 20,
-    "deferredKnownCandidates": 30
+    "deferredKnownCandidates": 30,
+    "rawCandidates": 4321,
+    "jastrowHeadwordIndexAssociations": 43604,
+    "latestGeneratedFromCommit": "1b2e2d5d0dd490684b62bc41f0ecbeee168bb102"
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
