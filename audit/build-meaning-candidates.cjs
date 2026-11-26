@@ -160,7 +160,7 @@ if(active.key===passive.key&&active.voice===passive.voice)throw new Error('Activ
   if(!byForm.has(form))byForm.set(form,[]);
   byForm.get(form).push(entry);
  }
- const candidates=new Map(),matchedRecordPairs=new Set();
+ const candidates=new Map(),matchedRecordPairs=new Set(),rejectedCandidates=new Map(),deferredCandidates=new Map();
  for(const k of krupnik){
   const matches=new Map();
   for(const form of [k.h,...(k.alt||[])].map(S.normalize).filter(Boolean))for(const j of byForm.get(form)||[]){const forms=sharedForms(j,k);if(forms.length)matches.set(j.r,{entry:j,forms});}
@@ -187,6 +187,14 @@ if(active.key===passive.key&&active.voice===passive.voice)throw new Error('Activ
     const ids=[j.r,k.r].sort().join('|');
     const glosses=[clean(jp.text),clean(kg.text)].sort().join(' | ');
     if(U.reviewedSourceGlossPairs.has(ids+'::'+glosses)||U.reviewedGlossPairs.has(glosses))continue;
+    const decisionKey=ids+'::'+glosses;
+    const rejection=U.rejectedSourceGlossPairs?.get(decisionKey);
+    const deferral=U.deferredSourceGlossPairs?.get(decisionKey);
+    if(rejection||deferral){
+     const record={headword:j.h,jastrow:{ref:j.r,text:jp.text},krupnik:{ref:k.r,text:kg.text},reason:rejection||deferral};
+     (rejection?rejectedCandidates:deferredCandidates).set(decisionKey,record);
+     continue;
+    }
     if(U.synonymKey(jp.text)===U.synonymKey(kg.text)||U.sharesReviewedSynonym(jp.text,kg.text))continue;
     const alternativeMatches=partPairs.filter(match=>{
      const key=ids+'::'+[clean(match.jastrow),clean(match.krupnik)].sort().join(' | ');
@@ -236,7 +244,8 @@ if(active.key===passive.key&&active.voice===passive.voice)throw new Error('Activ
    limitations:'Lexical overlap is only a review hint. Shared terms can represent distinct senses; grammatical labels and source context require manual review.',
    ambiguityFlags:'Exact alternative matches are flagged when the same source pair and exact alternative recur across multiple source senses or explicit grammatical labels. These are not auto-approved.'
   },
-  totals:{sourceEntries:entries.length,jastrowEntries:jastrow.length,krupnikEntries:krupnik.length,jastrowEntriesWithReaderPhrases:[...phrasesByRef.values()].filter(x=>x.length).length,sharedHeadwordRecordPairs:matchedRecordPairs.size,jastrowHeadwordIndexAssociations:[...byForm.values()].reduce((n,a)=>n+a.length,0),candidates:list.length,exactAlternativeCandidates:list.filter(x=>(x.exactAlternativeMatches||[]).length).length,runtimeRuleHandledCandidates:list.filter(x=>x.reviewStatus==='handled-by-runtime-rule').length,ambiguityFlaggedExactCandidates:list.filter(x=>(x.exactAlternativeMatches||[]).length&&x.reviewFlags.length).length,nonExactSemanticCandidates:list.filter(x=>!(x.exactAlternativeMatches||[]).length).length},
+  totals:{sourceEntries:entries.length,jastrowEntries:jastrow.length,krupnikEntries:krupnik.length,jastrowEntriesWithReaderPhrases:[...phrasesByRef.values()].filter(x=>x.length).length,sharedHeadwordRecordPairs:matchedRecordPairs.size,jastrowHeadwordIndexAssociations:[...byForm.values()].reduce((n,a)=>n+a.length,0),candidates:list.length,exactAlternativeCandidates:list.filter(x=>(x.exactAlternativeMatches||[]).length).length,runtimeRuleHandledCandidates:list.filter(x=>x.reviewStatus==='handled-by-runtime-rule').length,ambiguityFlaggedExactCandidates:list.filter(x=>(x.exactAlternativeMatches||[]).length&&x.reviewFlags.length).length,nonExactSemanticCandidates:list.filter(x=>!(x.exactAlternativeMatches||[]).length).length,rejectedKnownCandidates:rejectedCandidates.size,deferredKnownCandidates:deferredCandidates.size},
+  decisions:{rejected:[...rejectedCandidates.values()],deferred:[...deferredCandidates.values()]},
   candidates:list
  };
  const output=path.join(__dirname,'meaning-consolidation-candidates.json');
