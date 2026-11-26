@@ -65,6 +65,7 @@
  // Source-reviewed false positives for the candidate queue. This registry never changes runtime meanings.
  const reviewedNonSynonymPairs=new Map([
 
+
   ["KRU02691","KRU02692","ירוש׳ שבי׳ פ״ו ל״ו ע״ג: ביריי רבתא.","שם אמורא","Different proper-name classes: the first record identifies a place, while the second explicitly identifies an Amora."],
   ["KRU18231","KRU18232","ריכך, עשה רך","כנ״ל. תרג׳ איוב כ״ג ט״ז (הרך לבי): רכך לבבי. אִתְרַכֵּךְ אתפ׳, נעשה רך","Different grammatical voice and meaning: 'to make soft' is causative/transitive; 'to become soft' is intransitive/reflexive."],
   ["KRU07060","KRU07061","שם עיר בארץ ישראל","שם אמורא","Different referents: Haifa is a town; the other record is a personal name of an Amora."],
@@ -97,7 +98,18 @@
   ["KRU02859","KRU02860","ציר הדלת","אלון","Door hinge versus oak tree; distinct meanings."],
   ["KRU02859","KRU02860","ציר הדלת","פרי האלון","Door hinge versus acorn; distinct meanings."],
   ["KRU02859","KRU02860","שן המפתח","אלון","Key-bit versus oak tree; distinct meanings."],
-  ["KRU02859","KRU02860","שן המפתח","פרי האלון","Key-bit versus acorn; distinct meanings."]
+  ["KRU02859","KRU02860","שן המפתח","פרי האלון","Key-bit versus acorn; distinct meanings."],
+  ["KRU02827","KRU02828","1) ילד בפעם הראשונה","בשל (הפרי)","Bearing for the first time versus fruit ripening/maturing; different senses."],
+  ["KRU02827","KRU02828","1) ילד בפעם הראשונה","ביכר","Bearing for the first time versus recognizing something as first-born; different grammatical senses."],
+  ["KRU02827","KRU02828","1) ילד בפעם הראשונה","כנ״ל. בכור׳ פ״ג מ״ב: המבכירות מניקות.","The first-time-bearing sense is not equivalent to the separate firstborn/citation sense in the Hifil entry."]
+ ].map(([a,b,x,y,reason])=>{
+  const ids=[a,b].sort().join('|'),glosses=[normalize(x),normalize(y)].sort().join(' | ');
+  return [ids+'::'+glosses,reason];
+ }));
+ // Ambiguous Hebrew pairs retained for later source-level review; no runtime merge is implied.
+ const deferredSynonymPairs=new Map([
+  ["KRU12499","KRU12500","התרומם","התנופף ברוח","Deferred: the source meanings 'to rise/swing oneself' and 'to wave in the wind' are related motions but not demonstrably equivalent; the cited passages differ."],
+  ["KRU20037","KRU20038","הִתְקִיל נכשל","1) שקל","Deferred: the candidate builder exposes only KRU20038's first Hebrew sense '1) שקל', while the full source text contains a later '2) נכשל' that may be relevant. The source has multiple numbered and derived forms; improve sense extraction before deciding."]
  ].map(([a,b,x,y,reason])=>{
   const ids=[a,b].sort().join('|'),glosses=[normalize(x),normalize(y)].sort().join(' | ');
   return [ids+'::'+glosses,reason];
@@ -182,5 +194,5 @@
   }
   return groups;
  }
- root.HebrewMeaningConsolidation={merge,normalize,labelKey,canonicalMeaningKey,splitAlternatives,reviewedSynonymPairs,reviewedNonSynonymPairs,reviewedSenseSegmentPairRefs,pairKey,equivalent};
+ root.HebrewMeaningConsolidation={merge,normalize,labelKey,canonicalMeaningKey,splitAlternatives,reviewedSynonymPairs,reviewedNonSynonymPairs,deferredSynonymPairs,reviewedSenseSegmentPairRefs,pairKey,equivalent};
 })(typeof window==='undefined'?globalThis:window);
