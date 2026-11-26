@@ -1858,6 +1858,19 @@
   ,["KRU15821","Q01497","to paint","to paint the face with rouge"]
   ,["KRU15821","Q01497","to curl","to make small curls pasted on the forehead"]
   ,["KRU09798","K01181","divorce","divorce by means of a deed"]
+  ,["KRU04680","C01432","woman engaged in the wine-press","woman engaged in the wine press, wine treader"]
+  ,["KRU13073","N01375","the status of the N’thinim (Josh. IX. 27)","the legal status of the Nathin; the class of N’thinim"]
+  ,["KRU05607","E00048","destruction","removal, destruction"]
+  ,["KRU08552","J00234","weight, heaviness","weight"]
+  ,["KRU08816","J00581","to be dear","to be dear, precious"]
+  ,["KRU08816","J00581","to be heavy","to be heavy"]
+  ,["KRU13241","O00258","to plaster with lime","to plaster, whitewash"]
+  ,["KRU13241","O00258","to paint the skin with a depilatory","to paint the skin with a depilatory"]
+  ,["KRU06499","G00560","voluptuous man","adulterer; voluptuous"]
+  ,["KRU06852","H00496","wrapper, envelope","wrapper of reed-matting"]
+  ,["KRU07458","H01522","adze, pick-axe","carpenter’s adze"]
+  ,["KRU07512","H01611","carob-tree and–pod","carob-pod; carob-tree"]
+  ,["KRU08782","J00533","wing of a building","extension, wing"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
