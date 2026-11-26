@@ -2142,7 +2142,8 @@ const makeStink=U.merge([
 ],'סָרַח');
 assert.equal(makeStink.length,3,'the Hifil make-stink sense should consolidate without absorbing the separate smell-badly senses');
 assert(makeStink.some(group=>group.sources.length===2&&group.text.includes('offensive')),'both Hifil make-stink definitions should consolidate');
-assert(makeStink.filter(group=>group.sources.length===1).length===2,'the separate intransitive/other Hifil meanings must remain distinct');
+assert(makeStink.filter(group=>group.sources.length===1).length===1,'the separate intransitive vapid/putrid meaning must remain distinct');
+assert(makeStink.some(group=>group.sources.length===1&&group.text.includes('vapid')),'the separate intransitive vapid/putrid sense must remain independent');
 
 const unnamedTannai=U.merge([
  {id:14047,entry:{h:'סְתִימְתָּאָה',r:'KRU14047',source:'krupnik'},meanings:[{text:'an unnamed Tannai'}]},
