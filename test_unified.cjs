@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1354,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1364,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -227,9 +227,52 @@ const wrestling=U.merge([
 ],'גָּשַׁשׁ');
 assert(wrestling.some(group=>group.sources.some(source=>source.entry.r==='KRU04675')&&group.sources.some(source=>source.entry.r==='C01425')),'the shared Genesis Rabbah wrestling sense should consolidate');
 
+const netMeaning=U.merge([
+ {id:2701,entry:{h:'כָּמַר',r:'KRU09533',source:'krupnik'},meanings:[
+  {text:'to store fruits in the ground',label:'1'},
+  {text:'to lay a net',label:'2'}
+ ]},
+ {id:2702,entry:{h:'כָּמַר',r:'K00817'},meanings:[
+  {text:'to lay a trap, net',label:'Hifil'},
+  {text:'to lay a trap',label:'Hifil'}
+ ]}
+],'כָּמַר');
+assert(netMeaning.some(group=>group.sources.some(source=>source.entry.r==='KRU09533')&&group.sources.some(source=>source.entry.r==='K00817')),'the shared Yevamot net-laying sense should consolidate');
+
+const plantShoot=U.merge([
+ {id:2711,entry:{h:'גִּיר III',r:'KRU04203',source:'krupnik'},meanings:[
+  {text:'projectile',label:'1'},
+  {text:'shoot (of a plant)',label:'2'}
+ ]},
+ {id:2712,entry:{h:'גִּיר III',r:'C00806'},meanings:[{text:'shoot',section:'—2)'}]}
+],'גִּיר III');
+assert(plantShoot.some(group=>group.sources.some(source=>source.entry.r==='KRU04203')&&group.sources.some(source=>source.entry.r==='C00806')),'the shared Shabbat 109b plant-shoot sense should consolidate');
+const projectile=plantShoot.find(group=>group.text==='projectile');
+assert(projectile&&projectile.sources.length===1,'KRU04203 sense 1 projectile must remain separate');
+
+const camelStuff=U.merge([
+ {id:2721,entry:{h:'דָּרַס',r:'KRU05539',source:'krupnik'},meanings:[
+  {text:'to stamp',label:'1'},
+  {text:'to press (the knife)',label:'2'},
+  {text:'to throttle',label:'3'},
+  {text:'to stuff',label:'4'}
+ ]},
+ {id:2722,entry:{h:'דָּרַס',r:'D01113'},meanings:[
+  {text:'to tread, stamp',section:'1)'},
+  {text:'to press',section:'—2)'},
+  {text:'to throttle',section:'—3)'},
+  {text:'to stuff food into the camel’s mouth',section:'—4)'}
+ ]}
+],'דָּרַס');
+for(const phrase of ['to tread, stamp','to press','to stuff food into the camel’s mouth']){
+ const group=camelStuff.find(item=>item.text===phrase);
+ assert(group&&group.sources.some(source=>source.entry.r==='KRU05539')&&group.sources.some(source=>source.entry.r==='D01113'),'the matching D01113/KRU05539 sense should consolidate: '+phrase);
+}
 
 
-assert.equal(U.reviewedSourceGlossPairs.size,1354,'all source-specific whole-gloss mappings must be loaded');
+
+
+assert.equal(U.reviewedSourceGlossPairs.size,1364,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -1260,6 +1303,16 @@ assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04215','C00824',"deduction
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04594','C01305',"grist-maker or dealer","grist-maker")),'source-verified mapping must be registered: C01305 / KRU04594');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04675','C01425',"to wrestle","to wrestle, fight")),'source-verified mapping must be registered: C01425 / KRU04675');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04973','D00390',"to tread","to tread upon, trample")),'source-verified mapping must be registered: D00390 / KRU04973');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03320','B01237',"to recover, to get strong","to become strong")),'source-verified mapping must be registered: B01237 / KRU03320');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03518','C00041',"rakings heap","rakings")),'source-verified mapping must be registered: C00041 / KRU03518');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04203','C00806',"shoot (of a plant)","shoot")),'source-verified mapping must be registered: C00806 / KRU04203');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04556','C01259',"wheel-works of a well","wheel-works")),'source-verified mapping must be registered: C01259 / KRU04556');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU18037','T00354',"soft date","soft, green date")),'source-verified mapping must be registered: T00354 / KRU18037');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09533','K00817',"to lay a net","to lay a trap, net")),'source-verified mapping must be registered: K00817 / KRU09533');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09533','K00817',"to lay a net","to lay a trap")),'source-verified mapping must be registered: K00817 / KRU09533');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU05539','D01113',"to stamp","to tread, stamp")),'source-verified mapping must be registered: D01113 / KRU05539');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU05539','D01113',"to press (the knife)","to press")),'source-verified mapping must be registered: D01113 / KRU05539');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU05539','D01113',"to stuff","to stuff food into the camel’s mouth")),'source-verified mapping must be registered: D01113 / KRU05539');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU06547','G00654','dealer in leather bags','maker of and dealer in leather bags')),'known occupational false positives must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU10278','L00533','there is','there is (was) not')),'negative-particle distinctions must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03526','C00053','The Most High','high, exalted, elevated')),'divine titles must not be merged with ordinary adjectives');
@@ -1283,6 +1336,11 @@ assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06494','G00538','at times'
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU14780','P01211',"to sting","to sting, prick")),'reviewed decision must remain deferred: P01211 / KRU14780');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU14780','P01211',"to prick, to taunt","to sting, prick")),'reviewed decision must remain deferred: P01211 / KRU14780');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03808','C00369','clapper of a bell','clapper')),'cross-reference-only clapper candidate must remain deferred');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06441','G00462',"claim","possession, taking possession, claim")),'one-to-many or source-uncertain candidate must remain deferred: G00462 / KRU06441');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06441','G00462',"taking possession","possession, taking possession, claim")),'one-to-many or source-uncertain candidate must remain deferred: G00462 / KRU06441');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU19048','U01132',"apartment","dwelling, tent; apartment.")),'one-to-many or source-uncertain candidate must remain deferred: U01132 / KRU19048');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU19048','U01132',"tent dwelling","dwelling, tent; apartment.")),'one-to-many or source-uncertain candidate must remain deferred: U01132 / KRU19048');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03320','B01237',"to hollow out, to perforate","to permeate, perforate")),'one-to-many or source-uncertain candidate must remain deferred: B01237 / KRU03320');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU19012','U01042',"covering","sinking, covering up")),'reviewed ambiguous candidate must remain deferred: U01042 / KRU19012');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU01114','A01696',"to be burnt","to be consumed, burnt up, digested")),'reviewed candidate must remain deferred: A01696 / KRU01114');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06564','G00686',"to arm o. s.","to tie around, gird, arm; to harness, saddle")),'reviewed candidate must remain deferred: G00686 / KRU06564');
