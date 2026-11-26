@@ -127,6 +127,20 @@ const loatheGroup=crossReferencedSenses.find(group=>group.items.some(item=>item.
 assert(loatheGroup&&ctx.HebrewMeaningConsolidation.normalize(loatheGroup.text).includes(ctx.HebrewMeaningConsolidation.normalize('קצה נפשו')),'the separate loathing sense must remain independent');
 assert(loatheGroup.items.some(item=>item.p.meaning.includes('2) קצה נפשו')),'the original complete source part must remain attached');
 assert(ctx.HebrewMeaningConsolidation.reviewedSenseSegmentPairRefs.has(['KRU17474','KRU17475'].sort().join('|')),'the partial mapping must be recorded for candidate discovery');
+
+const stumbleRecords=ctx.HEBREW_DICTIONARY.entries.filter(entry=>['KRU20037','KRU20038'].includes(entry.rid));
+assert.equal(stumbleRecords.length,2,'both source records for the numbered stumble sense must exist');
+const stumbleGroups=merge([{word:'תקל',records:stumbleRecords}],'תקל');
+const stumbleGroup=stumbleGroups.find(group=>group.items.some(item=>item.e.rid==='KRU20037')&&group.items.some(item=>item.e.rid==='KRU20038'));
+assert(stumbleGroup,'KRU20038 numbered sense 2 נכשל should consolidate with KRU20037');
+assert.equal(stumbleGroup.text,'הִתְקִיל נכשל','the partial Hebrew sense should display the attested shared gloss');
+assert(stumbleGroup.items.some(item=>item.e.rid==='KRU20038'&&String(item.p.text||'').includes('2) נכשל')),'the complete original numbered source text must remain attached');
+const weighGroup=stumbleGroups.find(group=>group.items.some(item=>item.e.rid==='KRU20038')&&!group.items.some(item=>item.e.rid==='KRU20037')&&ctx.HebrewMeaningConsolidation.normalize(group.text).includes(ctx.HebrewMeaningConsolidation.normalize('שקל')));
+assert(weighGroup,'KRU20038 sense 1 שקל must remain a separate result');
+assert.equal(weighGroup.items.length,1,'the unrelated weighing sense must not be absorbed into the stumble group');
+assert(ctx.HebrewMeaningConsolidation.reviewedSenseSegmentPairRefs.has(['KRU20037','KRU20038'].sort().join('|')),'the second-numbered-sense mapping must be recorded for candidate discovery');
+assert.equal(ctx.HebrewMeaningConsolidation.reviewedSenseSegmentPairRefs.size,2,'both exact partial-sense mappings must be registered');
+
 const crossReferenceWithoutTarget=merge([{word:'קנט',records:[crossReferencedSenseRecords.find(entry=>entry.rid==='KRU17475')]}],'קנט');
 assert(!crossReferenceWithoutTarget.some(group=>group.text==='הִקְנִיט הרגיז'),'the shorthand must not be expanded unless its exact referenced source record is present');
 const changedReferenceTarget=crossReferencedSenseRecords.map(entry=>entry.rid==='KRU17474'?{...entry,parts:entry.parts.map(part=>({...part,meaning:'different source wording'}))}:entry);
