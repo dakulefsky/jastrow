@@ -157,7 +157,7 @@ assert.equal(cutFruitGroup.sources.length,2,'the original fruit-cutting source r
 const stingJastrow=cutFruit.find(group=>group.sources.some(source=>source.entry.r==='P01211')&&!group.sources.some(source=>source.entry.r==='KRU14780'));
 assert(stingJastrow,'the ambiguous Jastrow sting/prick phrase must remain separate until its two KRU senses can be isolated');
 
-assert.equal(U.reviewedSourceGlossPairs.size,1330,'all source-specific whole-gloss mappings must be loaded');
+assert.equal(U.reviewedSourceGlossPairs.size,1336,'all source-specific whole-gloss mappings must be loaded');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04044','C00632',"earth embankment, steep banks","a steep")),'source-verified whole-gloss mapping must be registered: C00632 / KRU04044');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU14780','P01211',"to cut (fruits) by the stalks","to cut fruit by the stalks.")),'source-verified whole-gloss mapping must be registered: P01211 / KRU14780');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15901','Q01641',"resident of an open place","one residing in an open place")),'source-verified whole-gloss mapping must be registered: Q01641 / KRU15901');
