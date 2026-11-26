@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1336,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1348,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -157,7 +157,42 @@ assert.equal(cutFruitGroup.sources.length,2,'the original fruit-cutting source r
 const stingJastrow=cutFruit.find(group=>group.sources.some(source=>source.entry.r==='P01211')&&!group.sources.some(source=>source.entry.r==='KRU14780'));
 assert(stingJastrow,'the ambiguous Jastrow sting/prick phrase must remain separate until its two KRU senses can be isolated');
 
-assert.equal(U.reviewedSourceGlossPairs.size,1336,'all source-specific whole-gloss mappings must be loaded');
+const stoveStand=U.merge([
+ {id:2501,entry:{h:'טִיף II',r:'KRU07984',source:'krupnik'},meanings:[
+  {text:'a stand for a stove',label:'1'},
+  {text:'drop',label:'2'}
+ ]},
+ {id:2502,entry:{h:'טִיף II',r:'I00408'},meanings:[{text:'receptacle of overflow, a stand for a portable stove',label:'',section:''}]}
+],'טִיף II');
+assert(stoveStand.some(group=>group.sources.some(source=>source.entry.r==='KRU07984')&&group.sources.some(source=>source.entry.r==='I00408')),'the shared Tosefta Kelim stove-stand sense should consolidate');
+const dropSense=stoveStand.find(group=>group.text==='drop');
+assert(dropSense&&dropSense.sources.length===1,'KRU07984 sense 2 drop must remain separate');
+
+const tallPerson=U.merge([
+ {id:2511,entry:{h:'גָּבוֹהַּ',r:'KRU03526',source:'krupnik'},meanings:[
+  {text:'high, exalted',label:'1'},
+  {text:'The Most High',label:'2'},
+  {text:'an abnormally tall person',label:'3'}
+ ]},
+ {id:2512,entry:{h:'גָּבוֹהַּ',r:'C00053'},meanings:[{text:'an abnormally tall and slim person with shaking gait',label:'',section:'—2)'}]}
+],'גָּבוֹהַּ');
+assert(tallPerson.some(group=>group.sources.some(source=>source.entry.r==='KRU03526')&&group.sources.some(source=>source.entry.r==='C00053')),'the shared Bekhorot 45b tall-person sense should consolidate');
+const divineTitle=tallPerson.find(group=>group.text==='The Most High');
+assert(divineTitle&&divineTitle.sources.length===1,'the separate divine-title sense must not be absorbed into the tall-person mapping');
+
+const hairMeaning=U.merge([
+ {id:2521,entry:{h:'בִּינְתָא II',r:'KRU02652',source:'krupnik'},meanings:[
+  {text:'kernel',label:'1'},
+  {text:'hair',label:'2'}
+ ]},
+ {id:2522,entry:{h:'בִּינְתָא II',r:'B00656'},meanings:[{text:'thread, a single hair',label:'',section:'2)'}]}
+],'בִּינְתָא II');
+assert(hairMeaning.some(group=>group.sources.some(source=>source.entry.r==='KRU02652')&&group.sources.some(source=>source.entry.r==='B00656')),'the shared Berakhot 8a hair sense should consolidate');
+const kernelSense=hairMeaning.find(group=>group.text==='kernel');
+assert(kernelSense&&kernelSense.sources.length===1,'KRU02652 sense 1 kernel must remain separate');
+
+
+assert.equal(U.reviewedSourceGlossPairs.size,1348,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -1170,6 +1205,18 @@ assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU01212','A01838',"according
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU01341','A02041',"faith, trust","faith in Providence")),'source-verified whole-gloss mapping must be registered: A02041 / KRU01341');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU01578','A02408',"road, way","paved way, public road")),'source-verified whole-gloss mapping must be registered: A02408 / KRU01578');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03401','B01342',"cypress or pine-tree","cypress")),'source-verified whole-gloss mapping must be registered: B01342 / KRU03401');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU07984','I00408',"a stand for a stove","receptacle of overflow, a stand for a portable stove")),'source-verified mapping must be registered: I00408 / KRU07984');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU19457','U01938',"dry soil","hot and dry soil")),'source-verified mapping must be registered: U01938 / KRU19457');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03526','C00053',"an abnormally tall person","an abnormally tall and slim person with shaking gait")),'source-verified mapping must be registered: C00053 / KRU03526');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03298','B00711',"exact account","exact account of wine measures")),'source-verified mapping must be registered: B00711 / KRU03298');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03519','C00044',"small stubble used as fuel","rakings, small stubble, straw")),'source-verified mapping must be registered: C00044 / KRU03519');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU05768','E00343',"upturning, scratching (of chickens)","damage done by scratching chickens")),'source-verified mapping must be registered: E00343 / KRU05768');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU14213','P00224',"shrunk reed","shrunk")),'source-verified mapping must be registered: P00224 / KRU14213');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU01926','A02946',"a species of fish","fish")),'source-verified mapping must be registered: A02946 / KRU01926');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15991','Q01805',"carriers of the litter","carriers of the")),'source-verified mapping must be registered: Q01805 / KRU15991');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU01200','A01818',"linen sheet","wrapping cloth, sheet, bathing clothes")),'source-verified mapping must be registered: A01818 / KRU01200');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU02266','B00055',"image, shadow","reflected image")),'source-verified mapping must be registered: B00055 / KRU02266');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU02652','B00656',"hair","thread, a single hair")),'source-verified mapping must be registered: B00656 / KRU02652');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU06547','G00654','dealer in leather bags','maker of and dealer in leather bags')),'known occupational false positives must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU10278','L00533','there is','there is (was) not')),'negative-particle distinctions must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03526','C00053','The Most High','high, exalted, elevated')),'divine titles must not be merged with ordinary adjectives');
