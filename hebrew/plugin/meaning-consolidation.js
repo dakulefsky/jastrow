@@ -147,7 +147,10 @@
   ["KRU05714","KRU05715","עלה התמר","שם מקום","A palm leaf versus a place-name; distinct referents."],
   ["KRU05777","KRU05778","זה, זאת","איזה?","This/that (demonstrative) versus which? (interrogative); distinct grammatical meanings."],
   ["KRU05954","KRU05955","קבל הנאה ותועלת","פיעל, הֶהֱנָה הפ׳, גרם הנאה","To enjoy/benefit versus to cause another to benefit; different valency and voice."],
-  ["KRU06019","KRU06020","נציב","אצטדין למרוץ","A governor/official versus a race-course; unrelated meanings."]
+  ["KRU06019","KRU06020","נציב","אצטדין למרוץ","A governor/official versus a race-course; unrelated meanings."],
+  ["KRU14875","KRU14876","עשה ערימה, גדש","התחכם, עשה בערמה","Heap/pile up versus act cunningly; the shared consonantal form is homonymous."],
+  ["KRU14875","KRU14876","עשה ערימה, גדש","נעשה חכם","To heap up versus become prudent/wise; distinct senses and forms."],
+  ["KRU17544","KRU17546","נקפא ונקרש","עי׳ קִיפָה. ספרא שמיני פרק ג׳ פרשה ד׳: צירן ורוטבן ואת הקפה שלהן.","To coagulate/become thick versus the separate Kippa² food/liquid term; distinct homonymous senses."]
  ].map(([a,b,x,y,reason])=>{
   const ids=[a,b].sort().join('|'),glosses=[normalize(x),normalize(y)].sort().join(' | ');
   return [ids+'::'+glosses,reason];
@@ -160,7 +163,9 @@
   ["KRU03979","KRU03980","גזירה לגזירה.","ל״ג גזירה לגזירה לא גזרינן.","Deferred: one entry gives the legal term while the other gives an abbreviated Talmudic rule statement; their relationship is not a demonstrated synonym pair."],
   ["KRU12079","KRU12080","עי׳ מְרַע. תרג׳ דהי״ב י״ח ל״ג (החליתי): אתמרעית.","תרג׳ יב״ע בר׳ י״ח א׳: מרע מכיבא. ועי׳ שְׁכִיב מְרַע.","Deferred: the first is explicitly an Itpeel verbal form ('to become sick') and the second is a separately numbered sick/sickness sense; preserve the grammatical and homonym distinction."],
   ["KRU13129","KRU13134","עי׳ הִסְבִּיר פָּנִים. תרג׳ איכה ה׳ י״ב (פני זקנים לא נהדרו): אפי סביא לא סברו.","עי׳ סֵבֶר פָּנִים. ויק״ר פ״ה: סבר אפוי דר׳ יודן.","Deferred: related 'showing/receiving with a face' expressions, but the second entry is explicitly numbered as another homonym and the source references do not prove identical lexical senses."],
-  ["KRU19026","KRU19092","זיבת ליחה פס׳ ס״ח ע״א: מיחוי קרביו – שירקא דמעיא.","ליחה האדוקה במעיים פס׳ ס״ח ע״א: מיחוי קרביו - שירקא דמעיא.","Deferred: the second entry is explicitly numbered as a separate homonym; 'mucus discharge' and 'mucus adhering in the intestines' overlap contextually but have different semantic scope."]
+  ["KRU19026","KRU19092","זיבת ליחה פס׳ ס״ח ע״א: מיחוי קרביו – שירקא דמעיא.","ליחה האדוקה במעיים פס׳ ס״ח ע״א: מיחוי קרביו - שירקא דמעיא.","Deferred: the second entry is explicitly numbered as a separate homonym; 'mucus discharge' and 'mucus adhering in the intestines' overlap contextually but have different semantic scope."],
+  ["KRU06489","KRU06491","עי׳ זָמַם. תרג׳ יב״ע בר׳ י״ג ז׳: הוון זממין בעירהון; שם דב׳ כ״ה כ׳ (לא תחסום שור): לא תזממון פום תורא. אֵזֵּים אפ׳, עי׳ הֵזִים ( זָמַם ). ב״ק ע״ג: דאפכינהו ואזמינהו. אִתְּזַם, אִתְּזוֹם אתפ׳ עי׳ נִזְדַּמֵּם (זָמַּם). שם: אטבוחה דקא מיתזמי איתזום. אִתְזְמִים אתפ׳ נדהם תרג׳ יש׳ כ״ט ט׳ (השתעשעו): אתזמימו.","כנ״ל 2. תרג׳ יש׳ ל״ז כ״ט (ומתגי בשפתיך): וזמם בשפוותך; שבת קי״א ע״ב: קיטרא דזממא.","Deferred: KRU06491 is explicitly a separately numbered homonym and cross-refers to sense 2; KRU06489 contains several forms and meanings, so the shared headword alone cannot establish which sense is intended."],
+  ["KRU17544","KRU17546","עי׳ נִכְפָּה 1. (כפה) ירוש׳ נד׳ פ״ח מ׳ ע״ג: דרגש נזקפת ואינה ניקפת.","עי׳ קִיפָה. ספרא שמיני פרק ג׳ פרשה ד׳: צירן ורוטבן ואת הקפה שלהן.","Deferred: both entries are cross-references to different headwords/forms with no shared explicit gloss; the relation cannot be resolved safely from these source lines alone."]
 
 
  ].map(([a,b,x,y,reason])=>{
