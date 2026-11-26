@@ -350,7 +350,7 @@
         "meaning": "gullet"
       }
     ],
-    "note": "Added deterministic normalization for exact Hebrew alternative lists: punctuation and alternative order are normalized, while phrase word order is preserved. Regression tests verify that unreviewed synonyms remain separate. A source-reviewed non-synonym registry now excludes nineteen clear homonym, grammatical-form, and unrelated-meaning false positives from the Hebrew review queue; it does not change runtime consolidation.",
+    "note": "Added deterministic normalization for exact Hebrew alternative lists: punctuation and alternative order are normalized, while phrase word order is preserved. Regression tests verify that unreviewed synonyms remain separate. A source-reviewed non-synonym registry now excludes nineteen clear homonym, grammatical-form, and unrelated-meaning false positives from the Hebrew review queue; it does not change runtime consolidation. A second Hebrew review tranche adds fourteen more exact source-pair rejections for clearly unrelated homonyms and meanings; the registry is review-only and does not alter runtime lookup.",
     "reviewedSenseSegmentPairs": 1,
     "reviewedSenseSegmentPairDetails": [
       {
@@ -588,9 +588,163 @@
           "ציון לדרך וגבול"
         ],
         "reason": "Robe/garment versus landmark/boundary marker; distinct lexical meanings."
+      },
+      {
+        "records": [
+          "KRU01660",
+          "KRU01661"
+        ],
+        "meanings": [
+          "תורן",
+          "רפסודה, דוברה"
+        ],
+        "reason": "Mast-yard versus raft/float; distinct objects."
+      },
+      {
+        "records": [
+          "KRU01687",
+          "KRU01690"
+        ],
+        "meanings": [
+          "– אַף אֵלָהֵין ובפרט, ומה גם",
+          "שם מלאך"
+        ],
+        "reason": "Conjunctive/emphatic 'how much rather' versus the name of an angel; distinct senses."
+      },
+      {
+        "records": [
+          "KRU01755",
+          "KRU01756"
+        ],
+        "meanings": [
+          "הדום, שרפרף",
+          "מרדעת, אוכף"
+        ],
+        "reason": "Footstool versus saddle; distinct objects."
+      },
+      {
+        "records": [
+          "KRU01989",
+          "KRU01991"
+        ],
+        "meanings": [
+          "דרך",
+          "אור"
+        ],
+        "reason": "Way/path versus light; distinct meanings."
+      },
+      {
+        "records": [
+          "KRU01989",
+          "KRU01991"
+        ],
+        "meanings": [
+          "אורח",
+          "אור"
+        ],
+        "reason": "Guest versus light; distinct meanings."
+      },
+      {
+        "records": [
+          "KRU02026",
+          "KRU02027"
+        ],
+        "meanings": [
+          "נעשה ארוך",
+          "תקן, הכין"
+        ],
+        "reason": "To grow longer versus to prepare; distinct verbal meanings."
+      },
+      {
+        "records": [
+          "KRU02026",
+          "KRU02027"
+        ],
+        "meanings": [
+          "נעשה ארוך",
+          "נקה"
+        ],
+        "reason": "To grow longer versus to cleanse; distinct verbal meanings."
+      },
+      {
+        "records": [
+          "KRU02581",
+          "KRU02582"
+        ],
+        "meanings": [
+          "צנור",
+          "יחי!"
+        ],
+        "reason": "Duct/channel versus the exclamation 'long live!'; unrelated meanings."
+      },
+      {
+        "records": [
+          "KRU02788",
+          "KRU02789"
+        ],
+        "meanings": [
+          "אות שניה של אלף בית",
+          "בית"
+        ],
+        "reason": "The letter Bet versus a house/receptacle; distinct homonymous senses."
+      },
+      {
+        "records": [
+          "KRU02788",
+          "KRU02789"
+        ],
+        "meanings": [
+          "אות שניה של אלף בית",
+          "בת, מדת הלח"
+        ],
+        "reason": "The letter Bet versus a liquid measure; distinct homonymous senses."
+      },
+      {
+        "records": [
+          "KRU02859",
+          "KRU02860"
+        ],
+        "meanings": [
+          "ציר הדלת",
+          "אלון"
+        ],
+        "reason": "Door hinge versus oak tree; distinct meanings."
+      },
+      {
+        "records": [
+          "KRU02859",
+          "KRU02860"
+        ],
+        "meanings": [
+          "ציר הדלת",
+          "פרי האלון"
+        ],
+        "reason": "Door hinge versus acorn; distinct meanings."
+      },
+      {
+        "records": [
+          "KRU02859",
+          "KRU02860"
+        ],
+        "meanings": [
+          "שן המפתח",
+          "אלון"
+        ],
+        "reason": "Key-bit versus oak tree; distinct meanings."
+      },
+      {
+        "records": [
+          "KRU02859",
+          "KRU02860"
+        ],
+        "meanings": [
+          "שן המפתח",
+          "פרי האלון"
+        ],
+        "reason": "Key-bit versus acorn; distinct meanings."
       }
     ],
-    "reviewedNonSynonymPairCount": 19
+    "reviewedNonSynonymPairCount": 33
   },
   "secondReviewedTranche": {
     "attemptedRows": 46,
