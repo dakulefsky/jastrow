@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1394,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1405,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -390,6 +390,25 @@ const giveSuckGroup=wringAndSuck.find(group=>group.sources.some(source=>source.e
 const suckGroup=wringAndSuck.find(group=>group.sources.some(source=>source.entry.r==='KRU11886'&&source.meaning.text==='to suck'));
 assert(giveSuckGroup&&suckGroup&&giveSuckGroup!==suckGroup,'Pa. give-suck and simple suck must remain distinct');
 
+const clapping=U.merge([
+ {id:3401,entry:{h:'סִיפּוּק',r:'KRU13548',source:'krupnik'},meanings:[
+  {text:'clapping of the hands',label:'1'},
+  {text:'adequate power',label:'2'}
+ ]},
+ {id:3402,entry:{h:'סִיפּוּק',r:'O00788'},meanings:[
+  {text:'clapping',section:'1)'},
+  {text:'connection, affixed object, attachment',section:'—2)'}
+ ]}
+],'סִיפּוּק');
+assert(clapping.some(group=>group.sources.some(source=>source.entry.r==='KRU13548')&&group.sources.some(source=>source.entry.r==='O00788')),'the shared Yerushalmi Beitzah clapping sense should consolidate');
+const adequatePower=clapping.find(group=>group.text==='adequate power');
+assert(adequatePower&&adequatePower.sources.length===1,'the separate adequate-power sense must remain distinct');
+
+const bellClapper=U.merge([
+ {id:3411,entry:{h:'עִינְבּוֹל',r:'KRU14428',source:'krupnik'},meanings:[{text:'clapper'}]},
+ {id:3412,entry:{h:'עִינְבּוֹל',r:'P00605'},meanings:[{text:'clapper of a bell.'}]}
+],'עִינְבּוֹל');
+assert(bellClapper.some(group=>group.sources.some(source=>source.entry.r==='KRU14428')&&group.sources.some(source=>source.entry.r==='P00605')),'the shared Shabbat 58b bell-clapper sense should consolidate');
 
 
 
@@ -399,7 +418,9 @@ assert(giveSuckGroup&&suckGroup&&giveSuckGroup!==suckGroup,'Pa. give-suck and si
 
 
 
-assert.equal(U.reviewedSourceGlossPairs.size,1394,'all source-specific whole-gloss mappings must be loaded');
+
+
+assert.equal(U.reviewedSourceGlossPairs.size,1405,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -1470,6 +1491,17 @@ assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU11815','M02185',"cave","bu
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU11881','M02294',"mouthpiece","overlaid mouthpiece")),'source-verified mapping must be registered: M02294 / KRU11881');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU11886','M02309',"to wring out","to wring")),'source-verified mapping must be registered: M02309 / KRU11886');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU11964','M02459',"teacher","primary teacher")),'source-verified mapping must be registered: M02459 / KRU11964');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU12686','N00704',"libation","the act of libation")),'source-verified mapping must be registered: N00704 / KRU12686');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU12707','N00737',"the constellation of Orion","Orion")),'source-verified mapping must be registered: N00737 / KRU12707');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU12741','N00795',"marriage","taking in marriage")),'source-verified mapping must be registered: N00795 / KRU12741');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU12768','N00854',"wooden) lid","lid")),'source-verified mapping must be registered: N00854 / KRU12768');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU12837','N00969',"tank of the press","tank")),'source-verified mapping must be registered: N00969 / KRU12837');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU13548','O00788',"clapping of the hands","clapping")),'source-verified mapping must be registered: O00788 / KRU13548');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU14428','P00605',"clapper","clapper of a bell.")),'source-verified mapping must be registered: P00605 / KRU14428');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU14762','P01174',"tying the sacrifice","tying")),'source-verified mapping must be registered: P01174 / KRU14762');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15143','Q00341',"the festival of Purim","Purim")),'source-verified mapping must be registered: Q00341 / KRU15143');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15254','Q00520',"jar","wine jar")),'source-verified mapping must be registered: Q00520 / KRU15254');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15525','Q00979',"chest, box","money chest, jewelry box")),'source-verified mapping must be registered: Q00979 / KRU15525');
 assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU03954','C00536',"circumcision","circumcision")),'source-verified alternative mapping must be registered: C00536 / KRU03954');
 assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU03954','C00536',"feast of circumcision","feast of circumcision")),'source-verified alternative mapping must be registered: C00536 / KRU03954');
 assert(U.reviewedSourceAlternativePairs.has(decisionKey('KRU03954','C00536',"the circumcised membrum","the circumcised membrum")),'source-verified alternative mapping must be registered: C00536 / KRU03954');
@@ -1515,6 +1547,10 @@ assert(U.deferredSourceGlossPairs.has(decisionKey('KRU10170','L00372',"to whispe
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU11063','M00885',"to be forgiven, to be pardoned","to be cancelled; to be forgiven, pardoned")),'multi-sense or grammatical-direction candidate must remain deferred: M00885 / KRU11063');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU11063','M00885',"to be cancelled","to be cancelled; to be forgiven, pardoned")),'multi-sense or grammatical-direction candidate must remain deferred: M00885 / KRU11063');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU11886','M02309',"to suck","to give suck")),'multi-sense or grammatical-direction candidate must remain deferred: M02309 / KRU11886');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU12863','N01026',"to blow (fire)","to blow")),'stem or combined-sense candidate must remain deferred: N01026 / KRU12863');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU14001','O01596',"to smell badly, to be spoiled","to decay, be spoiled; to smell offensively")),'stem or combined-sense candidate must remain deferred: O01596 / KRU14001');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU14001','O01596',"to corrupt","to make offensive, unsavory; to corrupt")),'stem or combined-sense candidate must remain deferred: O01596 / KRU14001');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU14001','O01596',"to make unsavory","to make offensive, unsavory; to corrupt")),'stem or combined-sense candidate must remain deferred: O01596 / KRU14001');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03613','C00166',"to cut off, to level","to cut, cut off.")),'morphology/one-to-many candidate must remain deferred: C00166 / KRU03613');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03613','C00166',"to cut, to cut off","to cut off, level")),'morphology/one-to-many candidate must remain deferred: C00166 / KRU03613');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU18284','T00889',"to lead to pasture","to lead, pasture, feed")),'morphology/one-to-many candidate must remain deferred: T00889 / KRU18284');
