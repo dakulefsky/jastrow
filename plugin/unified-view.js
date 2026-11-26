@@ -2032,6 +2032,8 @@
   ["KRU14617","P00866","fecal mass","the fecal mass in the rectum"],
   // Match only the ceremony segment; the general severing gloss and Krupnik's timber sense remain separate.
   ["KRU17632","S01839","a ceremony of severing family connections with a man who married beneath his social rank","a ceremony attending the sale of an heirloom to an outsider"],
+  // The two sources cite the same Toh. X, 7 passage for emptying the pit; keep "to sprinkle" separate.
+  ["KRU06469","G00500","to empty","empty over"],
 
  ];
  const alternativePairsByRef=new Map();
