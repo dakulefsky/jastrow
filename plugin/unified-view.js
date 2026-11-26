@@ -1720,6 +1720,15 @@
   ["KRU03441","B01372","mortal man","mortal"],
   // Both sources describe shaping of writing and impress; Jastrow also preserves "poetry".
   ["KRU04329","C00954","shaping (of writing), impress","shaping"],
+,
+  ["KRU04044","C00632","earth embankment, steep banks","a steep"],
+  ["KRU14780","P01211","to cut (fruits) by the stalks","to cut fruit by the stalks."],
+  ["KRU15901","Q01641","resident of an open place","one residing in an open place"],
+  ["KRU02398","B00982","negligence","indifference, willful negligence"],
+  ["KRU01212","A01838","according to","according to the opinion, in the sense of"],
+  ["KRU01341","A02041","faith, trust","faith in Providence"],
+  ["KRU01578","A02408","road, way","paved way, public road"],
+  ["KRU03401","B01342","cypress or pine-tree","cypress"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
@@ -1747,14 +1756,14 @@
   ["KRU03682","C00244","to cut, esp: to harvest dates","to cut into","Rejected: Jastrow's Pi. sense is 'to cut into'; Krupnik's primary sense is the Qal 'to cut, especially to harvest dates'. The exact base-form 'to cut' match is already handled separately; this derived sense is not equivalent."],
   ["KRU03956","C00538","to cut, to shear","to cut into, interrupt","Rejected: Jastrow's Pa. gloss refers to interrupting a study (Lam. R. I, 3); Krupnik's gloss refers to cutting/shearing (e.g. myrtle). Shared 'cut' is not the same action."],
   ["KRU04094","C00577","cut, wound","what is to be cut","Rejected: Jastrow's numbered sense is the legal category 'what is to be cut' (foreskin); Krupnik's gloss is 'cut, wound'. These are different meanings and grammatical uses."],
-  ["KRU04044","C00632","earth embankment, steep banks","a steep",undefined],
-  ["KRU14780","P01211","to cut (fruits) by the stalks","to cut fruit by the stalks.",undefined],
-  ["KRU15901","Q01641","resident of an open place","one residing in an open place",undefined],
-  ["KRU02398","B00982","negligence","indifference, willful negligence",undefined],
-  ["KRU01212","A01838","according to","according to the opinion, in the sense of",undefined],
-  ["KRU01341","A02041","faith, trust","faith in Providence",undefined],
-  ["KRU01578","A02408","road, way","paved way, public road",undefined],
-  ["KRU03401","B01342","cypress or pine-tree","cypress",undefined],
+
+
+
+
+
+
+
+
   ["KRU04694","D00017","to flow out","to flow","Rejected: Krupnik explicitly separates 'to flow' (sense 1) from 'to flow out' (sense 2). Jastrow's phrase 'to flow' matches the first sense, not the more specific second sense."]
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const deferredSourceGlossPairs=new Map([
