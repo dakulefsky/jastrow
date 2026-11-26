@@ -316,7 +316,7 @@ const circumcisionSenses=U.merge([
   {text:'the circumcised membrum',label:'2'}
  ]},
  {id:3002,entry:{h:'גְּזוּרְתָּא',r:'C00536'},meanings:[
-  {text:'circumcision, feast of circumcision; the circumcised membrum',section:'1)'}
+  {text:'circumcision, feast of circumcision; the circumcised membrum',section:''}
  ]}
 ],'גְּזוּרְתָּא');
 const circumcisionSense1=circumcisionSenses.find(group=>group.sources.some(source=>source.entry.r==='KRU03954'&&source.meaning.text==='circumcision, feast of circumcision')&&group.sources.some(source=>source.entry.r==='C00536'));
