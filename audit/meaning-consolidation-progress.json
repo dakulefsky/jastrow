@@ -10,7 +10,7 @@
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1330,
+    "reviewedSourceGlossPairCount": 1336,
     "reviewedSourceAlternativePairCount": 278,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -6815,7 +6815,7 @@
       "The mappings do not merge other numbered senses in the same source entries.",
       "All original source wording and citations remain attached."
     ],
-    "currentTotal": 1330,
+    "currentTotal": 1336,
     "currentAlternativeTotal": 278
   },
   "fortyNinthReviewedTranche": {
@@ -6852,7 +6852,7 @@
     "safeguards": [
       "Do not merge one Jastrow phrase into both Krupnik senses until the source phrase can be split without collapsing their distinct meanings."
     ],
-    "currentTotal": 1330,
+    "currentTotal": 1336,
     "currentAlternativeTotal": 278
   },
   "fiftiethReviewedTranche": {
@@ -6878,7 +6878,7 @@
     "safeguards": [
       "The rejected key is limited to the exact second KRU sense; the separate first-sense exact match remains valid."
     ],
-    "currentTotal": 1330,
+    "currentTotal": 1336,
     "currentAlternativeTotal": 278
   }
 }
