@@ -1096,6 +1096,19 @@ assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU06547','G00654','dealer in
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU10278','L00533','there is','there is (was) not')),'negative-particle distinctions must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03526','C00053','The Most High','high, exalted, elevated')),'divine titles must not be merged with ordinary adjectives');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06494','G00538','at times','times')),'ambiguous time/times candidates must remain deferred');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU12466','N00341',"to put down","to rest, put down; to leave alone")),'reviewed ambiguous candidate must remain deferred: N00341 / KRU12466');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU12466','N00341',"to rest","to rest, put down; to leave alone")),'reviewed ambiguous candidate must remain deferred: N00341 / KRU12466');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU13990','O01573',"to smell badly","to evaporate, be decomposed; to decay; to smell badly")),'reviewed ambiguous candidate must remain deferred: O01573 / KRU13990');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU13990','O01573',"to smell badly","to become vapid, putrid; to smell badly")),'reviewed ambiguous candidate must remain deferred: O01573 / KRU13990');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU16803','S00315',"light matter), lenient practice","light matter.")),'reviewed ambiguous candidate must remain deferred: S00315 / KRU16803');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU16803','S00315',"light matter), lenient practice","lenient practice")),'reviewed ambiguous candidate must remain deferred: S00315 / KRU16803');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU01042','A01574',"pressure","squeezing, pressure")),'reviewed ambiguous candidate must remain deferred: A01574 / KRU01042');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU01043','A01574',"squeezing","squeezing, pressure")),'reviewed ambiguous candidate must remain deferred: A01574 / KRU01043');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU01145','A01737',"stranger","stranger, guest, lodger;")),'reviewed ambiguous candidate must remain deferred: A01737 / KRU01145');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU01145','A01737',"guest","stranger, guest, lodger;")),'reviewed ambiguous candidate must remain deferred: A01737 / KRU01145');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU01172','A01772',"rather, but","if not, except, but, only")),'reviewed ambiguous candidate must remain deferred: A01772 / KRU01172');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU01172','A01772',"rather, but","but")),'reviewed ambiguous candidate must remain deferred: A01772 / KRU01172');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU15729','Q01325',"to disqualify, to declare unfit, to reject","to disqualify, to be the cause of disqualification of; to declare unfit")),'reviewed ambiguous candidate must remain deferred: Q01325 / KRU15729');
 const makerAndDealerRemainDistinct=U.merge([
  {id:6547,entry:sourceByRef.get('KRU06547'),meanings:[{text:'dealer in leather bags',label:''}]},
  {id:6546,entry:sourceByRef.get('G00654'),meanings:[{text:'maker of and dealer in leather bags',label:''}]}
