@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1446,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1456,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -460,7 +460,7 @@ const bubblingForth=U.merge([
 assert.equal(bubblingForth.length,1,'the same bubble/burst-forth verbal sense should consolidate');
 assert.equal(bubblingForth[0].sources.length,2,'both sources citing the same verbal usage should remain available');
 
-assert.equal(U.reviewedSourceGlossPairs.size,1446,'all source-specific whole-gloss mappings must be loaded');
+assert.equal(U.reviewedSourceGlossPairs.size,1456,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -1465,6 +1465,16 @@ assert.equal(howConsolidation[0].text,'how?, in what manner?, in what respect?',
 
 const cleanDecision=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
 const decisionKey=(a,b,x,y)=>[a,b].sort().join('|')+'::'+[cleanDecision(x),cleanDecision(y)].sort().join(' | ');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU13534','O00760',"basket","basket made of twigs.")),'source-verified mapping should be registered for KRU13534/O00760');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU14185','P00174',"ramification","the full ramification of a tree")),'source-verified mapping should be registered for KRU14185/P00174');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU14197','P00191',"cavity dug around a tree","cavity")),'source-verified mapping should be registered for KRU14197/P00191');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU14770','P01185',"cutting","cutting fruit by the stalk")),'source-verified mapping should be registered for KRU14770/P01185');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU14857','P01358',"arrangement of the speech or of prayer","arrangement")),'source-verified mapping should be registered for KRU14857/P01358');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15093','Q00250',"seam","the seam between a garment and its border")),'source-verified mapping should be registered for KRU15093/Q00250');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15386','Q00743',"lump","lump of brittle stone")),'source-verified mapping should be registered for KRU15386/Q00743');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15821','Q01497',"to paint","to paint the face with rouge")),'source-verified mapping should be registered for KRU15821/Q01497');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15821','Q01497',"to curl","to make small curls pasted on the forehead")),'source-verified mapping should be registered for KRU15821/Q01497');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09798','K01181',"divorce","divorce by means of a deed")),'source-verified mapping should be registered for KRU09798/K01181');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU19564','V00058',"shawl fastened on the shoulder","cloaks or shawls fastened on the shoulder")),'source-verified mapping should be registered for KRU19564/V00058');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09110','K00226',"pitcher","wine pitcher, jug")),'source-verified mapping should be registered for KRU09110/K00226');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09554','K00842',"brazier","stand, a portable brazier")),'source-verified mapping should be registered for KRU09554/K00842');
@@ -1706,6 +1716,111 @@ const vineShoot=U.merge([
 assert.equal(vineShoot.length,2,'the single-shoot sense should consolidate without absorbing the separate undressed-vine sense');
 assert(vineShoot.some(group=>group.sources.length===2&&group.text.includes('shoot')),'both Ezekiel 17:6 shoot definitions should consolidate');
 assert(vineShoot.some(group=>group.sources.length===1&&group.text==='undressed vine'),'the separate undressed-vine sense must remain independent');
+
+
+const twigBasket=U.merge([
+ {id:13534,entry:{h:'סִיסָנָא',r:'KRU13534',source:'krupnik'},meanings:[
+  {text:'twig',label:'1'},
+  {text:'basket',label:'2'}
+ ]},
+ {id:760,entry:{h:'סִיסָנָא',r:'O00760'},meanings:[
+  {text:'thorn, twig',label:'1'},
+  {text:'basket made of twigs.',label:'—2)'}
+ ]}
+],'סִיסָנָא');
+assert.equal(twigBasket.length,2,'the basket sense should consolidate while preserving the separate twig sense');
+assert(twigBasket.some(group=>group.sources.length===2&&group.text.includes('basket')),'both Bava Metzia basket definitions should consolidate');
+assert(twigBasket.some(group=>group.sources.length===2&&group.text.includes('twig')),'both Gittin twig definitions should remain available');
+
+const ramification=U.merge([
+ {id:14185,entry:{h:'עוּבָּא',r:'KRU14185',source:'krupnik'},meanings:[{text:'ramification',label:'2'}]},
+ {id:174,entry:{h:'עוּבָּא',r:'P00174'},meanings:[{text:'the full ramification of a tree',label:'—2)'}]}
+],'עוּבָּא');
+assert.equal(ramification.length,1,'the Job 15:32 tree-ramification definitions should consolidate');
+assert.equal(ramification[0].sources.length,2,'both tree-ramification source records should remain available');
+
+const treeCavity=U.merge([
+ {id:14197,entry:{h:'עוּגָּא',r:'KRU14197',source:'krupnik'},meanings:[{text:'cavity dug around a tree'}]},
+ {id:191,entry:{h:'עוּגָּא',r:'P00191'},meanings:[
+  {text:'cake',label:'1'},
+  {text:'cavity',label:'—2)'}
+ ]}
+],'עוּגָּא');
+assert.equal(treeCavity.length,2,'the tree-cavity sense should consolidate without absorbing the separate cake sense');
+assert(treeCavity.some(group=>group.sources.length===2&&group.text.includes('cavity')),'both tree-cavity records should consolidate');
+assert(treeCavity.some(group=>group.sources.length===1&&group.text==='cake'),'the separate cake sense must remain independent');
+
+const fruitCutting=U.merge([
+ {id:14770,entry:{h:'עֲקִיצָה',r:'KRU14770',source:'krupnik'},meanings:[
+  {text:'sting',label:'1'},
+  {text:'cutting',label:'2'}
+ ]},
+ {id:1185,entry:{h:'עֲקִיצָה',r:'P01185'},meanings:[
+  {text:'sting',label:'1'},
+  {text:'cutting fruit by the stalk',label:'—2)'}
+ ]}
+],'עֲקִיצָה');
+assert.equal(fruitCutting.length,2,'the fruit-cutting sense should consolidate while sting remains separate');
+assert(fruitCutting.some(group=>group.sources.length===2&&group.text.includes('cutting')),'both Maaser Sheni fruit-cutting records should consolidate');
+assert(fruitCutting.some(group=>group.sources.length===2&&group.text==='sting'),'the separate sting sense should remain aligned independently');
+
+const prayerArrangement=U.merge([
+ {id:14857,entry:{h:'עֲרִיכוּת',r:'KRU14857',source:'krupnik'},meanings:[{text:'arrangement of the speech or of prayer'}]},
+ {id:1358,entry:{h:'עֲרִיכוּת',r:'P01358'},meanings:[{text:'arrangement'}]}
+],'עֲרִיכוּת');
+assert.equal(prayerArrangement.length,1,'the Genesis Rabbah prayer-arrangement definitions should consolidate');
+assert.equal(prayerArrangement[0].sources.length,2,'both Genesis Rabbah 49 source records should remain available');
+
+const garmentSeam=U.merge([
+ {id:15093,entry:{h:'פּוּמְבְּיָינֵי',r:'KRU15093',source:'krupnik'},meanings:[{text:'seam'}]},
+ {id:250,entry:{h:'פּוּמְבְּיָינֵי',r:'Q00250'},meanings:[{text:'the seam between a garment and its border'}]}
+],'פּוּמְבְּיָינֵי');
+assert.equal(garmentSeam.length,1,'the Kiddushin seam definitions should consolidate');
+assert.equal(garmentSeam[0].sources.length,2,'both Kiddushin 32a source records should remain available');
+
+const stoneLump=U.merge([
+ {id:15386,entry:{h:'פִּיסָא',r:'KRU15386',source:'krupnik'},meanings:[
+  {text:'lot',label:'1'},
+  {text:'lump',label:'2'},
+  {text:'bread',label:'3'}
+ ]},
+ {id:743,entry:{h:'פִּיסָא',r:'Q00743'},meanings:[
+  {text:'lump of brittle stone',label:'1'},
+  {text:'a separate cross-reference sense',label:'—2)'}
+ ]}
+],'פִּיסָא');
+assert.equal(stoneLump.length,3,'the stone-lump sense should consolidate without absorbing the lot or bread senses');
+assert(stoneLump.some(group=>group.sources.length===2&&group.text.includes('lump')),'both Sanhedrin 64a lump definitions should consolidate');
+assert(stoneLump.some(group=>group.sources.length===1&&group.text==='lot'),'the separate lot sense must remain independent');
+assert(stoneLump.some(group=>group.sources.length===1&&group.text==='bread'),'the separate bread sense must remain independent');
+
+const rougeAndCurls=U.merge([
+ {id:15821,entry:{h:'פָּקַס',r:'KRU15821',source:'krupnik'},meanings:[
+  {text:'open forcibly',label:'1'},
+  {text:'to paint',label:'2'},
+  {text:'to curl',label:'3'}
+ ]},
+ {id:1497,entry:{h:'פָּקַס',r:'Q01497'},meanings:[
+  {text:'to paint the face with rouge',label:'1'},
+  {text:'to make small curls pasted on the forehead',label:'—2)'}
+ ]}
+],'פָּקַס');
+assert.equal(rougeAndCurls.length,3,'the two Shabbat grooming senses should consolidate separately from opening forcibly');
+assert(rougeAndCurls.filter(group=>group.sources.length===2).length===2,'rouging and hair-curling should each consolidate as their own sense');
+assert(rougeAndCurls.some(group=>group.sources.length===1&&group.text==='open forcibly'),'the separate animal-mouth opening sense must remain independent');
+
+const divorceByDocument=U.merge([
+ {id:9798,entry:{h:'כְּרִיתָה',r:'KRU09798',source:'krupnik'},meanings:[
+  {text:'cutting',label:'1'},
+  {text:'divorce',label:'4'}
+ ]},
+ {id:1181,entry:{h:'כְּרִיתָה',r:'K01181'},meanings:[
+  {text:'cutting of genitals, mutilation',label:'1'},
+  {text:'divorce by means of a deed',label:'—2)'}
+ ]}
+],'כְּרִיתָה');
+assert(divorceByDocument.some(group=>group.sources.length===2&&group.text.includes('divorce')),'the Gittin 10b divorce sense should consolidate');
+assert(divorceByDocument.some(group=>group.sources.length===1&&group.text.includes('cutting of genitals')),'the separate mutilation sense must remain distinct');
 
 const stationGuards=U.merge([
  {id:5047,entry:{h:'דִּידְכֵי',r:'KRU05047',source:'krupnik'},meanings:[
