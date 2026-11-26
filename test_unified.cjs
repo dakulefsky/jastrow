@@ -438,7 +438,31 @@ assert(ravenCroak.some(group=>group.sources.some(source=>source.entry.r==='KRU16
 
 
 
-assert.equal(U.reviewedSourceGlossPairs.size,1414,'all source-specific whole-gloss mappings must be loaded');
+
+const roughStone=U.merge([
+ {id:3803,entry:{h:'גְּוִיל',r:'KRU03803',source:'krupnik'},meanings:[
+  {text:'rough untrimmed stone, cobble',label:'1'},
+  {text:'a roll of parchment, a certain kind of parchment',label:'2'}
+ ]},
+ {id:364,entry:{h:'גְּוִיל',r:'C00364'},meanings:[
+  {text:'a rolling stone, rough untrimmed stone, cobble',label:'1'},
+  {text:'a roll of parchment',label:'—2)'}
+ ]}
+],'גְּוִיל');
+assert.equal(roughStone.length,2,'the rough-stone sense should consolidate without absorbing the separate parchment sense');
+assert(roughStone.some(group=>group.sources.length===2&&group.text.includes('rough untrimmed stone')),'both Bava Batra stone definitions should consolidate');
+assert(roughStone.some(group=>group.text.includes('parchment')&&group.sources.length===2),'the separate parchment sense should remain independently available');
+
+const bubblingForth=U.merge([
+ {id:3169,entry:{h:'בִּצְבֵּץ',r:'KRU03169',source:'krupnik'},meanings:[{text:'to bubble forth, to burst forth'}]},
+ {id:1075,entry:{h:'בִּצְבֵּץ',r:'B01075'},meanings:[{text:'to break through, bubble forth, burst forth'}]}
+],'בִּצְבֵּץ');
+assert.equal(bubblingForth.length,1,'the same bubble/burst-forth verbal sense should consolidate');
+assert.equal(bubblingForth[0].sources.length,2,'both sources citing the same verbal usage should remain available');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03803','C00364','rough untrimmed stone, cobble','a rolling stone, rough untrimmed stone, cobble')),'source-verified mapping should be registered for the Bava Batra rough-stone sense');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03169','B01075','to bubble forth, to burst forth','to break through, bubble forth, burst forth')),'source-verified mapping should be registered for the bubble/burst-forth sense');
+
+assert.equal(U.reviewedSourceGlossPairs.size,1416,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
