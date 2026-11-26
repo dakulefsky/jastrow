@@ -76,7 +76,7 @@
     "deferredKnownCandidates": 30,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
-    "latestGeneratedFromCommit": "1b2e2d5d0dd490684b62bc41f0ecbeee168bb102"
+    "latestGeneratedFromCommit": "46a3a7de801959bde5394cfccd8b8e6c3fcf598f"
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -353,7 +353,7 @@
         "meaning": "gullet"
       }
     ],
-    "note": "Added deterministic normalization for exact Hebrew alternative lists: punctuation and alternative order are normalized, while phrase word order is preserved. Regression tests verify that unreviewed synonyms remain separate. A source-reviewed non-synonym registry now excludes nineteen clear homonym, grammatical-form, and unrelated-meaning false positives from the Hebrew review queue; it does not change runtime consolidation. A second Hebrew review tranche adds fourteen more exact source-pair rejections for clearly unrelated homonyms and meanings; the registry is review-only and does not alter runtime lookup. The Hebrew review queue also records two ambiguous pairs for later source-sense review; they are excluded from the pending queue but not treated as synonyms or runtime merges. The KRU20037/KRU20038 ambiguity is no longer deferred: its exact second numbered sense 2) נכשל is now isolated and consolidated with the matching source gloss; only the KRU12499/KRU12500 motion pair remains deferred.",
+    "note": "Hebrew consolidation uses the original Krupnik/Silbermann Hebrew source records only; it does not load Jastrow English source entries or generate Hebrew translations. Current reviewed work: 12 source-scoped synonym pairs, 2 exact partial-sense cross-references, 36 source-reviewed non-synonym candidates excluded from the review queue, and 1 ambiguous pair deferred. The KRU20037/KRU20038 mapping isolates the second numbered sense 2) נכשל from the original full Hebrew source text while keeping the first sense 1) שקל separate.",
     "reviewedSenseSegmentPairs": 2,
     "reviewedSenseSegmentPairDetails": [
       {
@@ -394,8 +394,8 @@
       "rawCandidates": 567,
       "reviewedNonSynonymPairs": 36,
       "deferredSynonymPairs": 1,
-      "latestGeneratedFromCommit": "0bf7c0a",
-      "note": "Generated from 20,177 original Hebrew source records. Of 567 raw candidate pairs, 36 source-reviewed false positives and 1 ambiguous pair are excluded; two exact partial-sense cross-references are recorded, one candidate is handled by the guarded exact-alternative runtime rule, and 528 remain for manual semantic review.",
+      "latestGeneratedFromCommit": "46a3a7de801959bde5394cfccd8b8e6c3fcf598f",
+      "note": "Latest generated inventory from 20,177 original Hebrew source records: 529 candidate rows, 36 source-reviewed non-synonyms excluded, 1 deferred pair, 1 guarded exact-alternative runtime match, and 528 candidates still requiring manual semantic review. Two reviewed partial-sense cross-references are tracked separately.",
       "reviewedSenseSegmentPairs": 2,
       "partialHebrewOverlap": 1
     },
