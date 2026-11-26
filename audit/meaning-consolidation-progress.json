@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1,364 retained whole-gloss mappings and all 278 retained alternative-level mappings (1,642 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1,373 retained whole-gloss mappings and all 278 retained alternative-level mappings (1,651 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1364,
+    "reviewedSourceGlossPairCount": 1373,
     "reviewedSourceAlternativePairCount": 278,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -66,17 +66,16 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
-    "candidates": 4225,
     "exactAlternativeCandidates": 2967,
     "runtimeRuleHandledCandidates": 2453,
     "ambiguityFlaggedExactCandidates": 514,
     "nonExactSemanticCandidates": 1258,
-    "note": "Latest generated inventory: 4,321 original cross-dictionary candidates; 2,453 are handled by guarded exact-alternative runtime matching, 514 ambiguous exact matches and 1,258 non-exact semantic candidates remain for manual review. Twenty false positives and thirty-six deferred cases are recorded with exact source refs and reasons. Thirty-six additional source-scoped whole-gloss mappings and four alternative-level mappings have been reviewed and added since the original branch baseline.",
+    "note": "Twenty-seven source-scoped whole-gloss mappings and four alternative-level mappings have been added beyond the original branch baseline. Thirty-seven uncertain candidates are deferred with source refs and reasons; known false positives remain separately recorded.",
     "rejectedKnownCandidates": 20,
-    "deferredKnownCandidates": 36,
+    "deferredKnownCandidates": 37,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
-    "latestGeneratedFromCommit": "24acc4bd094f4b23c835883afd3dd58643bbefc6"
+    "latestGeneratedFromCommit": "pending-next-validation"
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -6125,6 +6124,17 @@
           "to permeate, perforate"
         ],
         "reason": "Deferred: both glosses contain 'perforate', but the source examples differ substantially (Targ Job 26:13 versus Yalkut Shimoni Exodus 182). Verify whether these are the same action before merging."
+      },
+      {
+        "refs": [
+          "KRU07233",
+          "H01124"
+        ],
+        "glosses": [
+          "to be fine",
+          "to be smooth and fine"
+        ],
+        "reason": "Deferred: the Jastrow source describes cutting with a sharp, smooth edge, while Krupnik describes an edge being fine. The grammatical direction and semantic focus may differ; verify the exact source sense before merging."
       }
     ],
     "policy": "Rejected and deferred pairs are excluded from the pending discovery queue but remain recorded here with their source refs and rationale. Reconsider only with new source evidence."
@@ -7271,6 +7281,109 @@
       "Do not bridge multiple numbered meanings through one combined Jastrow phrase; do not merge based on a shared gloss token alone."
     ],
     "currentTotal": 1364,
+    "currentAlternativeTotal": 278
+  },
+  "fiftySeventhReviewedTranche": {
+    "attemptedCandidates": 9,
+    "addedUniqueSourceGlossPairs": 9,
+    "addedUniqueSourceAlternativePairs": 0,
+    "acceptedPairs": [
+      [
+        "KRU03800",
+        "C00362",
+        "creature",
+        "inner body, creature"
+      ],
+      [
+        "KRU06435",
+        "G00440",
+        "entitled",
+        "entitled to possession"
+      ],
+      [
+        "KRU02813",
+        "B00781",
+        "a species of pears",
+        "pears"
+      ],
+      [
+        "KRU03037",
+        "B01005",
+        "dealer in spices",
+        "dealer in"
+      ],
+      [
+        "KRU06628",
+        "H00082",
+        "a sort of cakes",
+        "cakes"
+      ],
+      [
+        "KRU06642",
+        "H00112",
+        "Parsee priest",
+        "Parsee"
+      ],
+      [
+        "KRU06720",
+        "H00248",
+        "cheese",
+        "soft cheese"
+      ],
+      [
+        "KRU06775",
+        "H00358",
+        "knife",
+        "slaughtering knife"
+      ],
+      [
+        "KRU07276",
+        "H01186",
+        "leavened (bread)",
+        "leavened"
+      ]
+    ],
+    "evidence": [
+      "C00362/KRU03800: both define the creature/inner-body sense and cite Yerushalmi Berakhot IV,8b; the membrum senses remain separate.",
+      "G00440/KRU06435: Jastrow's legal 'entitled to possession' sense matches Krupnik's numbered 'entitled' sense.",
+      "B00781/KRU02813: both identify the pear species and cite Yerushalmi Kilayim I,27a.",
+      "B01005/KRU03037: both identify a dealer in spices and cite Kiddushin 82b.",
+      "H00082/KRU06628: both identify the cakes offering and cite Yerushalmi Yoma I,38a.",
+      "H00112/KRU06642: both identify a Parsee/Parsee priest and share Gittin 16b context.",
+      "H00248/KRU06720: both identify cheese from goat milk and cite Yerushalmi Pesachim I,33c; the pressed-date mash remains separate.",
+      "H00358/KRU06775: both identify the slaughtering knife and cite Tosefta Kelim Bava Batra VII,3.",
+      "H01186/KRU07276: both define leavened bread and cite Targum Exodus 12:15."
+    ],
+    "safeguards": [
+      "Every mapping is scoped to exact source IDs and glosses; numbered senses not part of the reviewed equivalence remain separate."
+    ],
+    "currentTotal": 1373,
+    "currentAlternativeTotal": 278
+  },
+  "fiftyEighthReviewedTranche": {
+    "attemptedCandidates": 1,
+    "addedUniqueSourceGlossPairs": 0,
+    "deferredCandidates": 1,
+    "deferredPairs": [
+      {
+        "refs": [
+          "KRU07233",
+          "H01124"
+        ],
+        "glosses": [
+          "to be fine",
+          "to be smooth and fine"
+        ],
+        "reason": "Deferred: the Jastrow source describes cutting with a sharp, smooth edge, while Krupnik describes an edge being fine. The grammatical direction and semantic focus may differ; verify the exact source sense before merging."
+      }
+    ],
+    "evidence": [
+      "The smooth-edge wording in Jastrow H01124 may refer to the act of cutting with a smooth edge, while Krupnik KRU07233 describes the edge being fine; grammatical and semantic direction are not yet secure."
+    ],
+    "safeguards": [
+      "Do not merge related wording across different grammatical roles without source-level confirmation."
+    ],
+    "currentTotal": 1373,
     "currentAlternativeTotal": 278
   }
 }
