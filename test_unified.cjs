@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1429,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1437,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -460,7 +460,7 @@ const bubblingForth=U.merge([
 assert.equal(bubblingForth.length,1,'the same bubble/burst-forth verbal sense should consolidate');
 assert.equal(bubblingForth[0].sources.length,2,'both sources citing the same verbal usage should remain available');
 
-assert.equal(U.reviewedSourceGlossPairs.size,1429,'all source-specific whole-gloss mappings must be loaded');
+assert.equal(U.reviewedSourceGlossPairs.size,1437,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -1465,6 +1465,14 @@ assert.equal(howConsolidation[0].text,'how?, in what manner?, in what respect?',
 
 const cleanDecision=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
 const decisionKey=(a,b,x,y)=>[a,b].sort().join('|')+'::'+[cleanDecision(x),cleanDecision(y)].sort().join(' | ');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU16245','R00074',"tongs","a pair of tongs")),'source-verified mapping should be registered for KRU16245/R00074');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU18411','T01140',"chariot","chariot with horses")),'source-verified mapping should be registered for KRU18411/T01140');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU18746','U00553',"a sort of shoe","shoe")),'source-verified mapping should be registered for KRU18746/U00553');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU18760','U00571',"a cloak","a coarse cloak")),'source-verified mapping should be registered for KRU18760/U00571');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU18840','U00755',"rinsing with water","rinsing")),'source-verified mapping should be registered for KRU18840/U00755');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU19665','V00260',"a sort of pastry","pastry")),'source-verified mapping should be registered for KRU19665/V00260');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09644','K00981',"spoon","pan, spoon")),'source-verified mapping should be registered for KRU09644/K00981');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09775','K01137',"a species of locusts","locusts")),'source-verified mapping should be registered for KRU09775/K01137');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09772','K01132',"a species of bats","bats")),'source-verified mapping should be registered for KRU09772/K01132');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09776','K01139',"a species of locusts","locusts")),'source-verified mapping should be registered for KRU09776/K01139');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09842','K01255',"a species of locusts","locusts")),'source-verified mapping should be registered for KRU09842/K01255');
@@ -1574,6 +1582,67 @@ const pelusium=U.merge([
 assert.equal(pelusium.length,2,'Pelusium should consolidate without absorbing the separate linen sense');
 assert(pelusium.some(group=>group.sources.length===2&&group.text.includes('Pelusium')),'the Targum place-name sense should consolidate');
 assert(pelusium.some(group=>group.sources.length===1&&group.text==='Pelusian linen'),'the separate linen sense must remain independent');
+
+
+const tongs=U.merge([
+ {id:16245,entry:{h:'צְבָת',r:'KRU16245',source:'krupnik'},meanings:[{text:'tongs'}]},
+ {id:74,entry:{h:'צְבָת',r:'R00074'},meanings:[{text:'a pair of tongs'}]}
+],'צְבָת');
+assert.equal(tongs.length,1,'the Avot tongs definitions should consolidate');
+assert.equal(tongs[0].sources.length,2,'both Avot V:6 source records should remain available');
+
+const chariot=U.merge([
+ {id:18411,entry:{h:'רְתִכָּא',r:'KRU18411',source:'krupnik'},meanings:[{text:'chariot'}]},
+ {id:1140,entry:{h:'רְתִכָּא',r:'T01140'},meanings:[{text:'chariot with horses'}]}
+],'רְתִכָּא');
+assert.equal(chariot.length,1,'the Targum chariot definitions should consolidate');
+assert.equal(chariot[0].sources.length,2,'both Genesis 41:43 source records should remain available');
+
+const shoe=U.merge([
+ {id:18746,entry:{h:'שׁוּרְצִיפָא',r:'KRU18746',source:'krupnik'},meanings:[{text:'a sort of shoe'}]},
+ {id:553,entry:{h:'שׁוּרְצִיפָא',r:'U00553'},meanings:[{text:'shoe'}]}
+],'שׁוּרְצִיפָא');
+assert.equal(shoe.length,1,'the Yerushalmi shoe definitions should consolidate');
+assert.equal(shoe[0].sources.length,2,'both Yevamot XII:12 source records should remain available');
+
+const cloak=U.merge([
+ {id:18760,entry:{h:'שׁוֹשִׁיפָא',r:'KRU18760',source:'krupnik'},meanings:[{text:'a cloak'}]},
+ {id:571,entry:{h:'שׁוֹשִׁיפָא',r:'U00571'},meanings:[{text:'a coarse cloak'}]}
+],'שׁוֹשִׁיפָא');
+assert.equal(cloak.length,1,'the Targum cloak definitions should consolidate');
+assert.equal(cloak[0].sources.length,2,'both Isaiah 3:22 source records should remain available');
+
+const rinsing=U.merge([
+ {id:18840,entry:{h:'שְׁטִיפָה',r:'KRU18840',source:'krupnik'},meanings:[{text:'rinsing with water'}]},
+ {id:755,entry:{h:'שְׁטִיפָה',r:'U00755'},meanings:[{text:'rinsing'}]}
+],'שְׁטִיפָה');
+assert.equal(rinsing.length,1,'the cold-water rinsing definitions should consolidate');
+assert.equal(rinsing[0].sources.length,2,'both purification source records should remain available');
+
+const pastry=U.merge([
+ {id:19665,entry:{h:'תּוּפְנָה',r:'KRU19665',source:'krupnik'},meanings:[{text:'a sort of pastry'}]},
+ {id:260,entry:{h:'תּוּפְנָה',r:'V00260'},meanings:[{text:'pastry'}]}
+],'תּוּפְנָה');
+assert.equal(pastry.length,1,'the pastry definitions should consolidate');
+assert.equal(pastry[0].sources.length,2,'both pastry source records should remain available');
+
+const spoon=U.merge([
+ {id:9644,entry:{h:'כַּף',r:'KRU09644',source:'krupnik'},meanings:[{text:'spoon',label:'1'}]},
+ {id:981,entry:{h:'כַּף',r:'K00981'},meanings:[
+  {text:'pan, spoon',label:'—5)'},
+  {text:'top branch',label:'—4)'}
+ ]}
+],'כַּף');
+assert.equal(spoon.length,2,'the spoon sense should consolidate without absorbing the separate palm-branch sense');
+assert(spoon.some(group=>group.sources.length===2&&group.text.includes('spoon')),'both Kelim spoon definitions should consolidate');
+assert(spoon.some(group=>group.sources.length===1&&group.text==='top branch'),'the separate palm-branch sense must remain independent');
+
+const locustSpeciesD=U.merge([
+ {id:9775,entry:{h:'כְּרָזָא',r:'KRU09775',source:'krupnik'},meanings:[{text:'a species of locusts'}]},
+ {id:1137,entry:{h:'כְּרָזָא',r:'K01137'},meanings:[{text:'locusts'}]}
+],'כְּרָזָא');
+assert.equal(locustSpeciesD.length,1,'the Hullin 62b locust definitions should consolidate');
+assert.equal(locustSpeciesD[0].sources.length,2,'both Hullin 62b source records should remain available');
 
 const pepperGrain=U.merge([
  {id:15604,entry:{h:'פִּלְפָּל',r:'KRU15604',source:'krupnik'},meanings:[{text:'grain of pepper'}]},
