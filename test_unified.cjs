@@ -325,7 +325,7 @@ assert(circumcisionSense1&&circumcisionSense2&&circumcisionSense1!==circumcision
 
 const dressedSkin=U.merge([
  {id:3101,entry:{h:'אַשְׁפָּא',r:'KRU02166',source:'krupnik'},meanings:[{text:'skin'}]},
- {id:3102,entry:{h:'אַשְׁפָּא',r:'A03336'},meanings:[{text:'dressed skin'}]}
+ {id:3102,entry:{h:'*אַשְׁפָּא',r:'A03336'},meanings:[{text:'dressed skin'}]}
 ],'אַשְׁפָּא');
 assert(dressedSkin.some(group=>group.sources.some(source=>source.entry.r==='KRU02166')&&group.sources.some(source=>source.entry.r==='A03336')),'the shared hide-shavings source phrase should consolidate the dressed-skin sense');
 
