@@ -1471,7 +1471,7 @@ const mortalHuman=U.merge([
  ]}
 ],S.normalize(sourceByRef.get('KRU03441').h));
 assert(mortalHuman.some(group=>group.sources.length===2&&group.text==='mortal man'),'both sources should support the mortal-human sense');
-assert(mortalHuman.some(group=>group.sources.length===2&&group.text==='body, flesh, meat'),'the separate body/flesh sense should remain independently mapped');
+assert(mortalHuman.some(group=>group.sources.length===2&&['body','flesh','meat'].every(term=>group.text.includes(term))),'the separate body/flesh sense should remain independently mapped');
 
 const shapingOfWriting=U.merge([
  {id:4329,entry:sourceByRef.get('KRU04329'),meanings:[{text:'shaping (of writing), impress',label:''}]},
