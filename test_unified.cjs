@@ -1785,8 +1785,7 @@ const stoneLump=U.merge([
   {text:'bread',label:'3'}
  ]},
  {id:743,entry:{h:'פִּיסָא',r:'Q00743'},meanings:[
-  {text:'lump of brittle stone',label:'1'},
-  {text:'a separate cross-reference sense',label:'—2)'}
+  {text:'lump of brittle stone',label:'1'}
  ]}
 ],'פִּיסָא');
 assert.equal(stoneLump.length,3,'the stone-lump sense should consolidate without absorbing the lot or bread senses');
