@@ -1421,6 +1421,14 @@ assert.equal(fixedRentAndTenant.filter(group=>group.sources.length===2).length,2
 assert(fixedRentAndTenant.some(group=>group.text==='tenant on a fixed rent payable in kind'&&group.sources.length===2),'the tenant definition should consolidate independently');
 assert(fixedRentAndTenant.some(group=>group.text==='the fixed annual rent in kind'&&group.sources.length===2),'the annual-rent definition should consolidate independently');
 
+const spatialFarMeaning=U.merge([
+ {id:5585,entry:sourceByRef.get('KRU05585'),meanings:[{text:'farther off (of space)',label:''}]},
+ {id:16,entry:sourceByRef.get('E00016'),meanings:[{text:'farther off, far',label:''}]}
+],S.normalize(sourceByRef.get('KRU05585').h));
+assert.equal(spatialFarMeaning.length,1,'the shared spatial meaning of הלאה should consolidate');
+assert.equal(spatialFarMeaning[0].sources.length,2,'both sources citing Targum Jonathan Genesis 32:25 must remain available');
+assert.equal(spatialFarMeaning[0].text,'farther off, far (of space)','the spatial qualifier should be retained without duplicate wording');
+
 const selfConductMeaning=U.merge([
  {id:12418,entry:sourceByRef.get('KRU12418'),meanings:[{text:'to conduct o. s.',label:''}]},
  {id:250,entry:sourceByRef.get('N00250'),meanings:[{text:'to conduct one’s self',label:'Hithpa. מִתְנַהֵג'}]}
