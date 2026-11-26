@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1437,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1446,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -460,7 +460,7 @@ const bubblingForth=U.merge([
 assert.equal(bubblingForth.length,1,'the same bubble/burst-forth verbal sense should consolidate');
 assert.equal(bubblingForth[0].sources.length,2,'both sources citing the same verbal usage should remain available');
 
-assert.equal(U.reviewedSourceGlossPairs.size,1437,'all source-specific whole-gloss mappings must be loaded');
+assert.equal(U.reviewedSourceGlossPairs.size,1446,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -1465,6 +1465,15 @@ assert.equal(howConsolidation[0].text,'how?, in what manner?, in what respect?',
 
 const cleanDecision=value=>String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
 const decisionKey=(a,b,x,y)=>[a,b].sort().join('|')+'::'+[cleanDecision(x),cleanDecision(y)].sort().join(' | ');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU19564','V00058',"shawl fastened on the shoulder","cloaks or shawls fastened on the shoulder")),'source-verified mapping should be registered for KRU19564/V00058');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09110','K00226',"pitcher","wine pitcher, jug")),'source-verified mapping should be registered for KRU09110/K00226');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09554','K00842',"brazier","stand, a portable brazier")),'source-verified mapping should be registered for KRU09554/K00842');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU13751','O01132',"a jewel","red jewel, carnelian")),'source-verified mapping should be registered for KRU13751/O01132');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15513','Q00957',"a cloak","Brundisian cloak, travelling cloak")),'source-verified mapping should be registered for KRU15513/Q00957');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU16327','R00213',"dish","banqueting dish, plate.")),'source-verified mapping should be registered for KRU16327/R00213');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU16979','S00624',"hammer","mallet; smith’s hammer")),'source-verified mapping should be registered for KRU16979/S00624');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU18521','U00170',"shoot","isolated, single shoot.")),'source-verified mapping should be registered for KRU18521/U00170');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU05047','D00493',"guards","relays, guards at stations")),'source-verified mapping should be registered for KRU05047/D00493');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU16245','R00074',"tongs","a pair of tongs")),'source-verified mapping should be registered for KRU16245/R00074');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU18411','T01140',"chariot","chariot with horses")),'source-verified mapping should be registered for KRU18411/T01140');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU18746','U00553',"a sort of shoe","shoe")),'source-verified mapping should be registered for KRU18746/U00553');
@@ -1636,6 +1645,78 @@ const spoon=U.merge([
 assert.equal(spoon.length,2,'the spoon sense should consolidate without absorbing the separate palm-branch sense');
 assert(spoon.some(group=>group.sources.length===2&&group.text.includes('spoon')),'both Kelim spoon definitions should consolidate');
 assert(spoon.some(group=>group.sources.length===1&&group.text==='top branch'),'the separate palm-branch sense must remain independent');
+
+
+const shoulderWrap=U.merge([
+ {id:19564,entry:{h:'תבלטירים',r:'KRU19564',source:'krupnik'},meanings:[{text:'shawl fastened on the shoulder'}]},
+ {id:58,entry:{h:'תבלטירים',r:'V00058'},meanings:[{text:'cloaks or shawls fastened on the shoulder'}]}
+],'תבלטירים');
+assert.equal(shoulderWrap.length,1,'the Sifrei shoulder-wrap definitions should consolidate');
+assert.equal(shoulderWrap[0].sources.length,2,'both Sifrei Deuteronomy 234 source records should remain available');
+
+const winePitcher=U.merge([
+ {id:9110,entry:{h:'כּוּזָא',r:'KRU09110',source:'krupnik'},meanings:[{text:'pitcher'}]},
+ {id:226,entry:{h:'כּוּזָא',r:'K00226'},meanings:[{text:'wine pitcher, jug'}]}
+],'כּוּזָא');
+assert.equal(winePitcher.length,1,'the Shabbat wine-pitcher definitions should consolidate');
+assert.equal(winePitcher[0].sources.length,2,'both pitcher source records should remain available');
+
+const brazier=U.merge([
+ {id:9554,entry:{h:'כָּנוֹנָא',r:'KRU09554',source:'krupnik'},meanings:[{text:'brazier'}]},
+ {id:842,entry:{h:'כָּנוֹנָא',r:'K00842'},meanings:[{text:'stand, a portable brazier'}]}
+],'כָּנוֹנָא');
+assert.equal(brazier.length,1,'the Beitzah portable-brazier definitions should consolidate');
+assert.equal(brazier[0].sources.length,2,'both Beitzah 21b source records should remain available');
+
+const carnelian=U.merge([
+ {id:13751,entry:{h:'סָמְקָן',r:'KRU13751',source:'krupnik'},meanings:[{text:'a jewel'}]},
+ {id:1132,entry:{h:'סָמְקָן',r:'O01132'},meanings:[{text:'red jewel, carnelian'}]}
+],'סָמְקָן');
+assert.equal(carnelian.length,1,'the Targum carnelian definitions should consolidate');
+assert.equal(carnelian[0].sources.length,2,'both Exodus 28:17 source records should remain available');
+
+const travellingCloak=U.merge([
+ {id:15513,entry:{h:'פַּלְדֵּיס',r:'KRU15513',source:'krupnik'},meanings:[{text:'a cloak'}]},
+ {id:957,entry:{h:'פַּלְדֵּיס',r:'Q00957'},meanings:[{text:'Brundisian cloak, travelling cloak'}]}
+],'פַּלְדֵּיס');
+assert.equal(travellingCloak.length,1,'the Tosefta travelling-cloak definitions should consolidate');
+assert.equal(travellingCloak[0].sources.length,2,'both Megillah IV:30 source records should remain available');
+
+const banquetDish=U.merge([
+ {id:16327,entry:{h:'צוּעָה',r:'KRU16327',source:'krupnik'},meanings:[{text:'dish'}]},
+ {id:213,entry:{h:'צוּעָה',r:'R00213'},meanings:[{text:'banqueting dish, plate.'}]}
+],'צוּעָה');
+assert.equal(banquetDish.length,1,'the Yerushalmi banqueting-dish definitions should consolidate');
+assert.equal(banquetDish[0].sources.length,2,'both Ketubot X:33d source records should remain available');
+
+const smithHammer=U.merge([
+ {id:16979,entry:{h:'קוּרְנָס',r:'KRU16979',source:'krupnik'},meanings:[{text:'hammer'}]},
+ {id:624,entry:{h:'קוּרְנָס',r:'S00624'},meanings:[{text:'mallet; smith’s hammer'}]}
+],'קוּרְנָס');
+assert.equal(smithHammer.length,1,'the Sabbath mallet/hammer definitions should consolidate');
+assert.equal(smithHammer[0].sources.length,2,'both Sabbath hammer source records should remain available');
+
+const vineShoot=U.merge([
+ {id:18521,entry:{h:'שִׁבְקָא',r:'KRU18521',source:'krupnik'},meanings:[{text:'shoot'}]},
+ {id:170,entry:{h:'שִׁבְקָא',r:'U00170'},meanings:[
+  {text:'undressed vine',label:'1'},
+  {text:'isolated, single shoot.',label:'—2)'}
+ ]}
+],'שִׁבְקָא');
+assert.equal(vineShoot.length,2,'the single-shoot sense should consolidate without absorbing the separate undressed-vine sense');
+assert(vineShoot.some(group=>group.sources.length===2&&group.text.includes('shoot')),'both Ezekiel 17:6 shoot definitions should consolidate');
+assert(vineShoot.some(group=>group.sources.length===1&&group.text==='undressed vine'),'the separate undressed-vine sense must remain independent');
+
+const stationGuards=U.merge([
+ {id:5047,entry:{h:'דִּידְכֵי',r:'KRU05047',source:'krupnik'},meanings:[
+  {text:'guards',label:'1'},
+  {text:'messengers',label:'2'}
+ ]},
+ {id:493,entry:{h:'דִּידְכֵי',r:'D00493'},meanings:[{text:'relays, guards at stations'}]}
+],'דִּידְכֵי');
+assert.equal(stationGuards.length,2,'the station-guard sense should consolidate without absorbing the separate messenger sense');
+assert(stationGuards.some(group=>group.sources.length===2&&group.text.includes('guards')),'both Yoma station-guard definitions should consolidate');
+assert(stationGuards.some(group=>group.sources.length===1&&group.text==='messengers'),'the separate messenger sense must remain independent');
 
 const locustSpeciesD=U.merge([
  {id:9775,entry:{h:'כְּרָזָא',r:'KRU09775',source:'krupnik'},meanings:[{text:'a species of locusts'}]},
