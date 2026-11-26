@@ -235,6 +235,13 @@ assertRejectedPair("KRU05777","KRU05778","זה, זאת","איזה?");
 assertRejectedPair("KRU05954","KRU05955","קבל הנאה ותועלת","פיעל, הֶהֱנָה הפ׳, גרם הנאה");
 assertRejectedPair("KRU06019","KRU06020","נציב","אצטדין למרוץ");
 assert.equal(ctx.HebrewMeaningConsolidation.reviewedNonSynonymPairs.size,81,'all source-reviewed Hebrew non-synonym decisions must be registered');
+assertDeferredPair("KRU03032","KRU03041","י׳, כנ״ל. כלי׳ פב״ד מ״ו: שלש בססיות הן; במ״ר י׳: יש להם קופליות מלמעלן ובסיסיות מלמטן.","עי׳ בְּסִיסִית. כלי׳ פכ״ד מ״ו: שלש בססיות הן.");
+assertDeferredPair("KRU03136","KRU03138","בערב שבת.","ב״ה בערב שבת בין השמשות.");
+assertDeferredPair("KRU03979","KRU03980","גזירה לגזירה.","ל״ג גזירה לגזירה לא גזרינן.");
+assertDeferredPair("KRU12079","KRU12080","עי׳ מְרַע. תרג׳ דהי״ב י״ח ל״ג (החליתי): אתמרעית.","תרג׳ יב״ע בר׳ י״ח א׳: מרע מכיבא. ועי׳ שְׁכִיב מְרַע.");
+assertDeferredPair("KRU13129","KRU13134","עי׳ הִסְבִּיר פָּנִים. תרג׳ איכה ה׳ י״ב (פני זקנים לא נהדרו): אפי סביא לא סברו.","עי׳ סֵבֶר פָּנִים. ויק״ר פ״ה: סבר אפוי דר׳ יודן.");
+assertDeferredPair("KRU19026","KRU19092","זיבת ליחה פס׳ ס״ח ע״א: מיחוי קרביו – שירקא דמעיא.","ליחה האדוקה במעיים פס׳ ס״ח ע״א: מיחוי קרביו - שירקא דמעיא.");
+assert.equal(ctx.HebrewMeaningConsolidation.deferredSynonymPairs.size,7,'all ambiguous Hebrew source pairs must remain explicitly deferred');
 assertDeferredPair('KRU12499','KRU12500',"התרומם","התנופף ברוח");
 
 console.log('PASS: shared Hebrew meaning consolidation preserves exact source wording, labels, source records, and phrase boundaries.');
