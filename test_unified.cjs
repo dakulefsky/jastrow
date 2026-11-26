@@ -1421,6 +1421,14 @@ assert.equal(fixedRentAndTenant.filter(group=>group.sources.length===2).length,2
 assert(fixedRentAndTenant.some(group=>group.text==='tenant on a fixed rent payable in kind'&&group.sources.length===2),'the tenant definition should consolidate independently');
 assert(fixedRentAndTenant.some(group=>group.text==='the fixed annual rent in kind'&&group.sources.length===2),'the annual-rent definition should consolidate independently');
 
+const selfConductMeaning=U.merge([
+ {id:12418,entry:sourceByRef.get('KRU12418'),meanings:[{text:'to conduct o. s.',label:''}]},
+ {id:250,entry:sourceByRef.get('N00250'),meanings:[{text:'to conduct one’s self',label:'Hithpa. מִתְנַהֵג'}]}
+],S.normalize(sourceByRef.get('KRU12418').h));
+assert.equal(selfConductMeaning.length,1,'the two source definitions of the Hithpael self-conduct sense should consolidate');
+assert.equal(selfConductMeaning[0].sources.length,2,'both Sifré Deut. 323 source entries should remain available');
+assert.equal(selfConductMeaning[0].text,'to conduct oneself','the abbreviated Krupnik wording should display once in a clear normalized form');
+
 const forkfulMeasure=U.merge([
  {id:16546,entry:sourceByRef.get('KRU16546'),meanings:[{text:'a piece as large as can be taken up with a fork',label:''}]},
  {id:617,entry:sourceByRef.get('R00617'),meanings:[{text:'a piece as large as can be taken up with a hook',label:''}]}
