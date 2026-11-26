@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1,373 retained whole-gloss mappings and all 278 retained alternative-level mappings (1,651 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1,376 retained whole-gloss mappings and all 278 retained alternative-level mappings (1,654 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1373,
+    "reviewedSourceGlossPairCount": 1376,
     "reviewedSourceAlternativePairCount": 278,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -70,9 +70,9 @@
     "runtimeRuleHandledCandidates": 2453,
     "ambiguityFlaggedExactCandidates": 514,
     "nonExactSemanticCandidates": 1258,
-    "note": "Twenty-seven source-scoped whole-gloss mappings and four alternative-level mappings have been added beyond the original branch baseline. Thirty-seven uncertain candidates are deferred with source refs and reasons; known false positives remain separately recorded.",
+    "note": "Forty-eight source-scoped whole-gloss mappings and four alternative-level mappings have been added beyond the original branch baseline. Forty-two uncertain candidates are deferred with exact source refs and reasons; known false positives remain separately recorded.",
     "rejectedKnownCandidates": 20,
-    "deferredKnownCandidates": 37,
+    "deferredKnownCandidates": 42,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
     "latestGeneratedFromCommit": "pending-next-validation"
@@ -6135,6 +6135,61 @@
           "to be smooth and fine"
         ],
         "reason": "Deferred: the Jastrow source describes cutting with a sharp, smooth edge, while Krupnik describes an edge being fine. The grammatical direction and semantic focus may differ; verify the exact source sense before merging."
+      },
+      {
+        "refs": [
+          "KRU03613",
+          "C00166"
+        ],
+        "glosses": [
+          "to cut off, to level",
+          "to cut, cut off."
+        ],
+        "reason": "Deferred: the Jastrow and Krupnik candidates refer to different verbal stems/senses (simple cutting versus intensive/leveling). Shared cut/cut-off vocabulary is insufficient to merge them."
+      },
+      {
+        "refs": [
+          "KRU03613",
+          "C00166"
+        ],
+        "glosses": [
+          "to cut, to cut off",
+          "to cut off, level"
+        ],
+        "reason": "Deferred: this candidate reverses the stem/sense pairing in the same entry; keep the two numbered verbal senses separate until source morphology is reconciled."
+      },
+      {
+        "refs": [
+          "KRU18284",
+          "T00889"
+        ],
+        "glosses": [
+          "to lead to pasture",
+          "to lead, pasture, feed"
+        ],
+        "reason": "Deferred: Jastrow's combined Peal gloss is being compared with Krupnik's Hifil sense; source morphology and two KRU records need to be reconciled before merging."
+      },
+      {
+        "refs": [
+          "KRU18292",
+          "T00889"
+        ],
+        "glosses": [
+          "to lead to pasture",
+          "to lead, pasture, feed"
+        ],
+        "reason": "Deferred: same combined Jastrow gloss is associated with a second KRU record; do not map one Jastrow phrase to multiple KRU records without confirming the form and sense."
+      },
+      {
+        "refs": [
+          "KRU15318",
+          "Q00616"
+        ],
+        "glosses": [
+          "compounding ingredients",
+          "compounding, manufacturing; ingredients"
+        ],
+        "reason": "Deferred: Jastrow's gloss combines the activity of compounding with the ingredients themselves; verify which sub-sense the Krupnik phrase denotes before merging."
       }
     ],
     "policy": "Rejected and deferred pairs are excluded from the pending discovery queue but remain recorded here with their source refs and rationale. Reconsider only with new source evidence."
@@ -7384,6 +7439,111 @@
       "Do not merge related wording across different grammatical roles without source-level confirmation."
     ],
     "currentTotal": 1373,
+    "currentAlternativeTotal": 278
+  },
+  "fiftyNinthReviewedTranche": {
+    "attemptedCandidates": 3,
+    "addedUniqueSourceGlossPairs": 3,
+    "acceptedPairs": [
+      [
+        "KRU03500",
+        "C00016",
+        "to grow",
+        "to grow high"
+      ],
+      [
+        "KRU03500",
+        "C00016",
+        "to be elated, to be exalted",
+        "to be exalted; to be proud"
+      ],
+      [
+        "KRU03320",
+        "B01237",
+        "to recover, to get strong",
+        "to get well, strong"
+      ]
+    ],
+    "evidence": [
+      "C00016/KRU03500: the two numbered senses align with the same Targum Job 8:11 (grow high) and Targum Exodus 15:1 (be exalted/proud) passages.",
+      "B01237/KRU03320: the intransitive health/recovery glosses align; the distinct hollow-out/perforate meaning remains deferred."
+    ],
+    "safeguards": [
+      "Each numbered sense is mapped separately; no cross-sense merging."
+    ],
+    "currentTotal": 1376,
+    "currentAlternativeTotal": 278
+  },
+  "sixtiethReviewedTranche": {
+    "attemptedCandidates": 5,
+    "addedUniqueSourceGlossPairs": 0,
+    "deferredCandidates": 5,
+    "deferredPairs": [
+      {
+        "refs": [
+          "KRU03613",
+          "C00166"
+        ],
+        "glosses": [
+          "to cut off, to level",
+          "to cut, cut off."
+        ],
+        "reason": "Deferred: the Jastrow and Krupnik candidates refer to different verbal stems/senses (simple cutting versus intensive/leveling). Shared cut/cut-off vocabulary is insufficient to merge them."
+      },
+      {
+        "refs": [
+          "KRU03613",
+          "C00166"
+        ],
+        "glosses": [
+          "to cut, to cut off",
+          "to cut off, level"
+        ],
+        "reason": "Deferred: this candidate reverses the stem/sense pairing in the same entry; keep the two numbered verbal senses separate until source morphology is reconciled."
+      },
+      {
+        "refs": [
+          "KRU18284",
+          "T00889"
+        ],
+        "glosses": [
+          "to lead to pasture",
+          "to lead, pasture, feed"
+        ],
+        "reason": "Deferred: Jastrow's combined Peal gloss is being compared with Krupnik's Hifil sense; source morphology and two KRU records need to be reconciled before merging."
+      },
+      {
+        "refs": [
+          "KRU18292",
+          "T00889"
+        ],
+        "glosses": [
+          "to lead to pasture",
+          "to lead, pasture, feed"
+        ],
+        "reason": "Deferred: same combined Jastrow gloss is associated with a second KRU record; do not map one Jastrow phrase to multiple KRU records without confirming the form and sense."
+      },
+      {
+        "refs": [
+          "KRU15318",
+          "Q00616"
+        ],
+        "glosses": [
+          "compounding ingredients",
+          "compounding, manufacturing; ingredients"
+        ],
+        "reason": "Deferred: Jastrow's gloss combines the activity of compounding with the ingredients themselves; verify which sub-sense the Krupnik phrase denotes before merging."
+      }
+    ],
+    "evidence": [
+      "C00166/KRU03613: the candidate pairs cross simple and intensive/leveling verbal stems; keep separate pending morphological review.",
+      "T00889/KRU18284 and KRU18292: the Jastrow phrase spans multiple forms and two KRU records; defer both.",
+      "Q00616/KRU15318: the Jastrow gloss combines preparation and ingredients, while the KRU gloss may denote a narrower sense."
+    ],
+    "safeguards": [
+      "Preserve verbal stems, valency, and numbered sense boundaries; do not force a one-to-many mapping."
+    ],
+    "currentTotal": 1376,
     "currentAlternativeTotal": 278
   }
 }
