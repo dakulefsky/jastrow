@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1,405 retained whole-gloss mappings and all 281 retained alternative-level mappings (1,686 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1,414 retained whole-gloss mappings and all 281 retained alternative-level mappings (1,695 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1405,
+    "reviewedSourceGlossPairCount": 1414,
     "reviewedSourceAlternativePairCount": 281,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -70,9 +70,9 @@
     "runtimeRuleHandledCandidates": 2445,
     "ambiguityFlaggedExactCandidates": 514,
     "nonExactSemanticCandidates": 1218,
-    "note": "Seventy-seven source-scoped whole-gloss mappings and seven alternative-level mappings have been added beyond the original branch baseline. Fifty-six uncertain candidates remain deferred with exact source refs and reasons; known false positives remain separately recorded.",
+    "note": "Eighty-six source-scoped whole-gloss mappings and seven alternative-level mappings have been added beyond the original branch baseline. Fifty-seven uncertain candidates remain deferred with exact source refs and reasons; known false positives remain separately recorded.",
     "rejectedKnownCandidates": 20,
-    "deferredKnownCandidates": 56,
+    "deferredKnownCandidates": 57,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
     "latestGeneratedFromCommit": "pending-next-validation",
@@ -6381,6 +6381,17 @@
           "to make offensive, unsavory; to corrupt"
         ],
         "reason": "Deferred: same one-to-many ambiguity between the combined Jastrow gloss and separate Krupnik senses."
+      },
+      {
+        "refs": [
+          "KRU17477",
+          "S01557"
+        ],
+        "glosses": [
+          "court",
+          "large court"
+        ],
+        "reason": "Deferred: Jastrow's 'large court' is explained as centenaria/large weights or a large court in different contexts, while Krupnik's entry is a courtyard. The source examples and semantic focus do not establish equivalence."
       }
     ],
     "policy": "Rejected and deferred pairs are excluded from the pending discovery queue but remain recorded here with their source refs and rationale. Reconsider only with new source evidence."
@@ -8274,6 +8285,108 @@
       "Preserve verbal stems and distinct numbered meanings; do not map combined glosses to one of multiple KRU senses."
     ],
     "currentTotal": 1405,
+    "currentAlternativeTotal": 281
+  },
+  "seventyFirstReviewedTranche": {
+    "attemptedCandidates": 9,
+    "addedUniqueSourceGlossPairs": 9,
+    "acceptedPairs": [
+      [
+        "KRU16416",
+        "R00391",
+        "bundle",
+        "tight bundle"
+      ],
+      [
+        "KRU16742",
+        "S00205",
+        "bluntness",
+        "bluntness of teeth"
+      ],
+      [
+        "KRU16888",
+        "S00457",
+        "cup",
+        "a rough-edged cup."
+      ],
+      [
+        "KRU16913",
+        "S00506",
+        "handle",
+        "the handle of a hoe"
+      ],
+      [
+        "KRU16985",
+        "S00631",
+        "a kind of cups",
+        "cups"
+      ],
+      [
+        "KRU16991",
+        "S00645",
+        "croaking (raven)",
+        "croaking"
+      ],
+      [
+        "KRU17095",
+        "S00855",
+        "cluster of dates",
+        "cluster"
+      ],
+      [
+        "KRU17103",
+        "S00870",
+        "bowing",
+        "bowing to the ground"
+      ],
+      [
+        "KRU17187",
+        "S01017",
+        "song",
+        "rhythmic song."
+      ]
+    ],
+    "evidence": [
+      "R00391/KRU16416: tight bundle/bundle in Yerushalmi Maaserot I,49a.",
+      "S00205/KRU16742: bluntness of teeth/bluntness in Yalkut Lamentations 996.",
+      "S00457/KRU16888: rough-edged cup/cup in Kelim IV,3.",
+      "S00506/KRU16913: handle of a hoe/handle in Shabbat 102b.",
+      "S00631/KRU16985: cups/a kind of cups in Kelim IV,3.",
+      "S00645/KRU16991: croaking/croaking of raven in Bava Batra 23a.",
+      "S00855/KRU17095: cluster/cluster of dates in Shabbat 156b; coil remains separate.",
+      "S00870/KRU17103: bowing to the ground/bowing in Megillah 22b.",
+      "S01017/KRU17187: rhythmic song/song in Targum Genesis 4:22."
+    ],
+    "safeguards": [
+      "Numbered sub-senses are kept separate; source phrases and citations remain attached to the original records."
+    ],
+    "currentTotal": 1414,
+    "currentAlternativeTotal": 281
+  },
+  "seventySecondReviewedTranche": {
+    "attemptedCandidates": 1,
+    "addedUniqueSourceGlossPairs": 0,
+    "deferredCandidates": 1,
+    "deferredPairs": [
+      {
+        "refs": [
+          "KRU17477",
+          "S01557"
+        ],
+        "glosses": [
+          "court",
+          "large court"
+        ],
+        "reason": "Deferred: Jastrow's 'large court' is explained as centenaria/large weights or a large court in different contexts, while Krupnik's entry is a courtyard. The source examples and semantic focus do not establish equivalence."
+      }
+    ],
+    "evidence": [
+      "S01557/KRU17477 uses different referents and contexts: Jastrow's centenaria/large court versus Krupnik's courtyard."
+    ],
+    "safeguards": [
+      "Do not merge homonymous or contextually distinct meanings based on the shared word 'court'."
+    ],
+    "currentTotal": 1414,
     "currentAlternativeTotal": 281
   }
 }
