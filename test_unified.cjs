@@ -1778,6 +1778,7 @@ const garmentSeam=U.merge([
 assert.equal(garmentSeam.length,1,'the Kiddushin seam definitions should consolidate');
 assert.equal(garmentSeam[0].sources.length,2,'both Kiddushin 32a source records should remain available');
 
+assert(U.reviewedSourceGlossPairs.has('KRU15386|Q00743::lump | lump of brittle stone'),'the stone-lump mapping key must be present');
 const stoneLump=U.merge([
  {id:15386,entry:{h:'פִּיסָא',r:'KRU15386',source:'krupnik'},meanings:[
   {text:'lot',label:'1'},
@@ -1788,6 +1789,7 @@ const stoneLump=U.merge([
   {text:'lump of brittle stone',label:'1'}
  ]}
 ],'פִּיסָא');
+console.log('STONE DEBUG',stoneLump.map(group=>({text:group.text,form:group.form,refs:group.sources.map(source=>source.entry.r)})));
 assert.equal(stoneLump.length,3,'the stone-lump sense should consolidate without absorbing the lot or bread senses');
 assert(stoneLump.some(group=>group.sources.length===2&&group.text.includes('lump')),'both Sanhedrin 64a lump definitions should consolidate');
 assert(stoneLump.some(group=>group.sources.length===1&&group.text==='lot'),'the separate lot sense must remain independent');
