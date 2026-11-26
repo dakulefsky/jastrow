@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1,336 retained whole-gloss mappings and all 278 retained alternative-level mappings (1,614 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1,348 retained whole-gloss mappings and all 278 retained alternative-level mappings (1,626 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1336,
+    "reviewedSourceGlossPairCount": 1348,
     "reviewedSourceAlternativePairCount": 278,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -66,17 +66,17 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
-    "candidates": 4259,
+    "candidates": 4247,
     "exactAlternativeCandidates": 2972,
     "runtimeRuleHandledCandidates": 2457,
     "ambiguityFlaggedExactCandidates": 515,
-    "nonExactSemanticCandidates": 1287,
-    "note": "Latest regenerated inventory: 4,321 original cross-dictionary candidates; 2,457 are safely handled by guarded exact-alternative runtime matching, 515 ambiguous exact matches and 1,287 non-exact semantic candidates remain for manual review. Twenty known false positives and thirty deferred cases are recorded with exact source refs and reasons. Twelve additional source-scoped mappings have been reviewed and added (eight whole-gloss and four alternative-level).",
+    "nonExactSemanticCandidates": 1275,
+    "note": "Latest inventory: 4,321 original candidates; 2,457 guarded exact-alternative runtime matches, 515 ambiguous exact matches and 1,275 non-exact semantic candidates remain for review. Twenty false positives and thirty deferred cases are source-recorded. Twenty additional whole-gloss mappings and four alternative-level mappings have been reviewed and added since the original branch baseline.",
     "rejectedKnownCandidates": 20,
     "deferredKnownCandidates": 30,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
-    "latestGeneratedFromCommit": "46a3a7de801959bde5394cfccd8b8e6c3fcf598f"
+    "latestGeneratedFromCommit": "pending-next-validation"
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -6871,6 +6871,106 @@
       "The rejected key is limited to the exact second KRU sense; the separate first-sense exact match remains valid."
     ],
     "currentTotal": 1336,
+    "currentAlternativeTotal": 278
+  },
+  "fiftyFirstReviewedTranche": {
+    "attemptedCandidates": 12,
+    "addedUniqueSourceGlossPairs": 12,
+    "addedUniqueSourceAlternativePairs": 0,
+    "acceptedPairs": [
+      [
+        "KRU07984",
+        "I00408",
+        "a stand for a stove",
+        "receptacle of overflow, a stand for a portable stove"
+      ],
+      [
+        "KRU19457",
+        "U01938",
+        "dry soil",
+        "hot and dry soil"
+      ],
+      [
+        "KRU03526",
+        "C00053",
+        "an abnormally tall person",
+        "an abnormally tall and slim person with shaking gait"
+      ],
+      [
+        "KRU03298",
+        "B00711",
+        "exact account",
+        "exact account of wine measures"
+      ],
+      [
+        "KRU03519",
+        "C00044",
+        "small stubble used as fuel",
+        "rakings, small stubble, straw"
+      ],
+      [
+        "KRU05768",
+        "E00343",
+        "upturning, scratching (of chickens)",
+        "damage done by scratching chickens"
+      ],
+      [
+        "KRU14213",
+        "P00224",
+        "shrunk reed",
+        "shrunk"
+      ],
+      [
+        "KRU01926",
+        "A02946",
+        "a species of fish",
+        "fish"
+      ],
+      [
+        "KRU15991",
+        "Q01805",
+        "carriers of the litter",
+        "carriers of the"
+      ],
+      [
+        "KRU01200",
+        "A01818",
+        "linen sheet",
+        "wrapping cloth, sheet, bathing clothes"
+      ],
+      [
+        "KRU02266",
+        "B00055",
+        "image, shadow",
+        "reflected image"
+      ],
+      [
+        "KRU02652",
+        "B00656",
+        "hair",
+        "thread, a single hair"
+      ]
+    ],
+    "evidence": [
+      "I00408/KRU07984: both define the stand for a portable stove and cite Tosefta Kelim Bava Kamma V,4.",
+      "U01938/KRU19457: both define hot/dry soil and cite Targum Isaiah 35:7.",
+      "C00053/KRU03526: both define an abnormally tall person and cite Bekhorot 45b; the divine-title senses remain explicitly separate.",
+      "B00711/KRU03298: both define the exact account of wine measures and cite Beitzah III,8.",
+      "C00044/KRU03519: both define small stubble/rakings used as fuel and share the Parah IV,3 source example.",
+      "E00343/KRU05768: both define damage from chickens scratching/upturning and cite Bava Kamma 18b.",
+      "P00224/KRU14213: both define the shrunk reed and cite Eruvin 34b.",
+      "A02946/KRU01926: both identify the fish sense and cite Avodah Zarah 40a; the separate decoy-bird sense remains separate.",
+      "Q01805/KRU15991: both define carriers of the bridal litter and cite Bava Metzia VI,1 (75b).",
+      "A01818/KRU01200: both define a linen sheet/wrapping cloth and cite Shabbat 147b.",
+      "B00055/KRU02266: both define a reflected image/shadow and cite Nedarim 9b.",
+      "B00656/KRU02652: both define a single hair and cite Berakhot 8a; the separate kernel sense remains separate."
+    ],
+    "safeguards": [
+      "Each mapping is source-scoped to the exact Jastrow reader phrase and exact Krupnik meaning.",
+      "Distinct numbered senses in the same entries remain separate, including the stove drop, divine title, kernel, and decoy-bird meanings.",
+      "Original source wording and citations remain attached."
+    ],
+    "currentTotal": 1348,
     "currentAlternativeTotal": 278
   }
 }
