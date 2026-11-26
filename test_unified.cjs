@@ -1140,6 +1140,9 @@ const decisionKey=(a,b,x,y)=>[a,b].sort().join('|')+'::'+[cleanDecision(x),clean
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU06547','G00654','dealer in leather bags','maker of and dealer in leather bags')),'known occupational false positives must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU10278','L00533','there is','there is (was) not')),'negative-particle distinctions must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03526','C00053','The Most High','high, exalted, elevated')),'divine titles must not be merged with ordinary adjectives');
+assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03682','C00244',"to cut, esp: to harvest dates","to cut into")),'reviewed false positive must remain rejected: C00244 / KRU03682');
+assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03956','C00538',"to cut, to shear","to cut into, interrupt")),'reviewed false positive must remain rejected: C00538 / KRU03956');
+assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU04094','C00577',"cut, wound","what is to be cut")),'reviewed false positive must remain rejected: C00577 / KRU04094');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU12418','N00250',"to conduct o. s.","to lead, conduct")),'reviewed candidate must remain rejected: N00250 / KRU12418');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU15603','Q01116',"to roll onself","to roll in, cover with")),'reviewed candidate must remain rejected: Q01116 / KRU15603');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU18682','U00438',"in the name of","name")),'reviewed candidate must remain rejected: U00438 / KRU18682');
@@ -1153,6 +1156,7 @@ assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU18302','T00918',"to be bro
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU20168','V01113',"from below","below")),'reviewed false positive must remain rejected: V01113 / KRU20168');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU16710','S00123',"holiness","his holiness")),'reviewed false positive must remain rejected: S00123 / KRU16710');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06494','G00538','at times','times')),'ambiguous time/times candidates must remain deferred');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU19012','U01042',"covering","sinking, covering up")),'reviewed ambiguous candidate must remain deferred: U01042 / KRU19012');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU01114','A01696',"to be burnt","to be consumed, burnt up, digested")),'reviewed candidate must remain deferred: A01696 / KRU01114');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06564','G00686',"to arm o. s.","to tie around, gird, arm; to harness, saddle")),'reviewed candidate must remain deferred: G00686 / KRU06564');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU09659','K01007',"to bend","to bend over, invert, turn upside down")),'reviewed candidate must remain deferred: K01007 / KRU09659');
