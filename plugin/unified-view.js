@@ -1848,6 +1848,16 @@
   ,["KRU16979","S00624","hammer","mallet; smith’s hammer"]
   ,["KRU18521","U00170","shoot","isolated, single shoot."]
   ,["KRU05047","D00493","guards","relays, guards at stations"]
+  ,["KRU13534","O00760","basket","basket made of twigs."]
+  ,["KRU14185","P00174","ramification","the full ramification of a tree"]
+  ,["KRU14197","P00191","cavity dug around a tree","cavity"]
+  ,["KRU14770","P01185","cutting","cutting fruit by the stalk"]
+  ,["KRU14857","P01358","arrangement of the speech or of prayer","arrangement"]
+  ,["KRU15093","Q00250","seam","the seam between a garment and its border"]
+  ,["KRU15386","Q00743","lump","lump of brittle stone"]
+  ,["KRU15821","Q01497","to paint","to paint the face with rouge"]
+  ,["KRU15821","Q01497","to curl","to make small curls pasted on the forehead"]
+  ,["KRU09798","K01181","divorce","divorce by means of a deed"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
