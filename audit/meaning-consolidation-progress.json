@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1,354 retained whole-gloss mappings and all 278 retained alternative-level mappings (1,632 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1,364 retained whole-gloss mappings and all 278 retained alternative-level mappings (1,642 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1354,
+    "reviewedSourceGlossPairCount": 1364,
     "reviewedSourceAlternativePairCount": 278,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -66,14 +66,14 @@
     "krupnikEntries": 15407,
     "jastrowEntriesWithReaderPhrases": 19341,
     "sharedHeadwordRecordPairs": 16731,
-    "candidates": 4240,
+    "candidates": 4225,
     "exactAlternativeCandidates": 2972,
     "runtimeRuleHandledCandidates": 2457,
     "ambiguityFlaggedExactCandidates": 515,
-    "nonExactSemanticCandidates": 1268,
-    "note": "Latest inventory: 4,321 original candidates; 2,457 guarded exact-alternative runtime matches, 515 ambiguous exact matches and 1,268 non-exact semantic candidates remain for review. Twenty false positives and thirty-one deferred cases are source-recorded. Twenty-six source-scoped whole-gloss mappings and four alternative-level mappings have been reviewed and added since the original branch baseline.",
+    "nonExactSemanticCandidates": 1253,
+    "note": "Latest inventory: 4,321 original candidates; 2,457 guarded exact-alternative runtime matches, 515 ambiguous exact matches and 1,253 non-exact semantic candidates remain for review. Twenty false positives and thirty-six deferred cases are source-recorded. Thirty-six source-scoped whole-gloss mappings and four alternative-level mappings have been reviewed and added since the original branch baseline.",
     "rejectedKnownCandidates": 20,
-    "deferredKnownCandidates": 31,
+    "deferredKnownCandidates": 36,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
     "latestGeneratedFromCommit": "pending-next-validation"
@@ -6070,6 +6070,61 @@
           "clapper"
         ],
         "reason": "Deferred: Jastrow's entry is only a cross-reference to גִּיל I and has no independent citation in this record. It likely names the same object, but confirm the referenced Jastrow entry before consolidating."
+      },
+      {
+        "refs": [
+          "KRU06441",
+          "G00462"
+        ],
+        "glosses": [
+          "claim",
+          "possession, taking possession, claim"
+        ],
+        "reason": "Deferred: Jastrow's single gloss combines possession, taking possession, and claim, while Krupnik splits claim into a separate numbered sense. The exact Jastrow phrase cannot safely be assigned to this KRU sense alone."
+      },
+      {
+        "refs": [
+          "KRU06441",
+          "G00462"
+        ],
+        "glosses": [
+          "taking possession",
+          "possession, taking possession, claim"
+        ],
+        "reason": "Deferred: same one-to-many issue; Krupnik separates claim and taking possession, while Jastrow combines both in one gloss."
+      },
+      {
+        "refs": [
+          "KRU19048",
+          "U01132"
+        ],
+        "glosses": [
+          "apartment",
+          "dwelling, tent; apartment."
+        ],
+        "reason": "Deferred: Jastrow's phrase combines tent dwelling and apartment, while Krupnik separates them into numbered senses. Do not map the combined Jastrow phrase to one KRU sense."
+      },
+      {
+        "refs": [
+          "KRU19048",
+          "U01132"
+        ],
+        "glosses": [
+          "tent dwelling",
+          "dwelling, tent; apartment."
+        ],
+        "reason": "Deferred: same one-to-many ambiguity between the combined Jastrow phrase and Krupnik's distinct tent-dwelling/apartment senses."
+      },
+      {
+        "refs": [
+          "KRU03320",
+          "B01237"
+        ],
+        "glosses": [
+          "to hollow out, to perforate",
+          "to permeate, perforate"
+        ],
+        "reason": "Deferred: both glosses contain 'perforate', but the source examples differ substantially (Targ Job 26:13 versus Yalkut Shimoni Exodus 182). Verify whether these are the same action before merging."
       }
     ],
     "policy": "Rejected and deferred pairs are excluded from the pending discovery queue but remain recorded here with their source refs and rationale. Reconsider only with new source evidence."
@@ -7064,6 +7119,158 @@
       "Keep the candidate deferred until the referenced Jastrow entry גִּיל I is checked against the original context."
     ],
     "currentTotal": 1354,
+    "currentAlternativeTotal": 278
+  },
+  "fiftyFourthReviewedTranche": {
+    "attemptedCandidates": 10,
+    "addedUniqueSourceGlossPairs": 10,
+    "addedUniqueSourceAlternativePairs": 0,
+    "acceptedPairs": [
+      [
+        "KRU03320",
+        "B01237",
+        "to recover, to get strong",
+        "to become strong"
+      ],
+      [
+        "KRU03518",
+        "C00041",
+        "rakings heap",
+        "rakings"
+      ],
+      [
+        "KRU04203",
+        "C00806",
+        "shoot (of a plant)",
+        "shoot"
+      ],
+      [
+        "KRU04556",
+        "C01259",
+        "wheel-works of a well",
+        "wheel-works"
+      ],
+      [
+        "KRU18037",
+        "T00354",
+        "soft date",
+        "soft, green date"
+      ],
+      [
+        "KRU09533",
+        "K00817",
+        "to lay a net",
+        "to lay a trap, net"
+      ],
+      [
+        "KRU09533",
+        "K00817",
+        "to lay a net",
+        "to lay a trap"
+      ],
+      [
+        "KRU05539",
+        "D01113",
+        "to stamp",
+        "to tread, stamp"
+      ],
+      [
+        "KRU05539",
+        "D01113",
+        "to press (the knife)",
+        "to press"
+      ],
+      [
+        "KRU05539",
+        "D01113",
+        "to stuff",
+        "to stuff food into the camel’s mouth"
+      ]
+    ],
+    "evidence": [
+      "B01237/KRU03320: the intransitive 'become strong/recover' sense is aligned while the separate hollow-out/perforate sense remains deferred.",
+      "C00041/KRU03518: both define rakings/clippings; the shared Berakhot 9b wool-clippings example supports the equivalence.",
+      "C00806/KRU04203: both define a plant shoot and cite Shabbat 109b; the projectile sense remains separate.",
+      "C01259/KRU04556: both define the wheel-works of a well and cite Targum II Esther 1:2.",
+      "T00354/KRU18037: both define a soft date and cite Uktzin II,2; juice-of-meat senses remain separate.",
+      "K00817/KRU09533: both define laying a net and share Tosefta Yevamot XIV,6 / Yevamot 121a examples.",
+      "D01113/KRU05539: the stamp, knife-press, and camel-stuffing senses each match their corresponding numbered Krupnik senses."
+    ],
+    "safeguards": [
+      "Mappings are exact-source and exact-gloss scoped; distinct numbered senses are preserved."
+    ],
+    "currentTotal": 1364,
+    "currentAlternativeTotal": 278
+  },
+  "fiftyFifthReviewedTranche": {
+    "attemptedCandidates": 5,
+    "addedUniqueSourceGlossPairs": 0,
+    "deferredCandidates": 5,
+    "deferredPairs": [
+      {
+        "refs": [
+          "KRU06441",
+          "G00462"
+        ],
+        "glosses": [
+          "claim",
+          "possession, taking possession, claim"
+        ],
+        "reason": "Deferred: Jastrow's single gloss combines possession, taking possession, and claim, while Krupnik splits claim into a separate numbered sense. The exact Jastrow phrase cannot safely be assigned to this KRU sense alone."
+      },
+      {
+        "refs": [
+          "KRU06441",
+          "G00462"
+        ],
+        "glosses": [
+          "taking possession",
+          "possession, taking possession, claim"
+        ],
+        "reason": "Deferred: same one-to-many issue; Krupnik separates claim and taking possession, while Jastrow combines both in one gloss."
+      },
+      {
+        "refs": [
+          "KRU19048",
+          "U01132"
+        ],
+        "glosses": [
+          "apartment",
+          "dwelling, tent; apartment."
+        ],
+        "reason": "Deferred: Jastrow's phrase combines tent dwelling and apartment, while Krupnik separates them into numbered senses. Do not map the combined Jastrow phrase to one KRU sense."
+      },
+      {
+        "refs": [
+          "KRU19048",
+          "U01132"
+        ],
+        "glosses": [
+          "tent dwelling",
+          "dwelling, tent; apartment."
+        ],
+        "reason": "Deferred: same one-to-many ambiguity between the combined Jastrow phrase and Krupnik's distinct tent-dwelling/apartment senses."
+      },
+      {
+        "refs": [
+          "KRU03320",
+          "B01237"
+        ],
+        "glosses": [
+          "to hollow out, to perforate",
+          "to permeate, perforate"
+        ],
+        "reason": "Deferred: both glosses contain 'perforate', but the source examples differ substantially (Targ Job 26:13 versus Yalkut Shimoni Exodus 182). Verify whether these are the same action before merging."
+      }
+    ],
+    "evidence": [
+      "G00462/KRU06441 and U01132/KRU19048 each have one combined Jastrow phrase corresponding to two distinct numbered Krupnik senses; no safe one-to-one mapping is available.",
+      "B01237/KRU03320 shares the word 'perforate' but has different source examples and possibly different actions; retain for further review."
+    ],
+    "safeguards": [
+      "Do not bridge multiple numbered meanings through one combined Jastrow phrase; do not merge based on a shared gloss token alone."
+    ],
+    "currentTotal": 1364,
     "currentAlternativeTotal": 278
   }
 }
