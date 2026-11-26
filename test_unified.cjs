@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1348,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1354,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -191,8 +191,45 @@ assert(hairMeaning.some(group=>group.sources.some(source=>source.entry.r==='KRU0
 const kernelSense=hairMeaning.find(group=>group.text==='kernel');
 assert(kernelSense&&kernelSense.sources.length===1,'KRU02652 sense 1 kernel must remain separate');
 
+const mixture=U.merge([
+ {id:2601,entry:{h:'בִּילָה',r:'KRU02633',source:'krupnik'},meanings:[{text:'mixture',label:''}]},
+ {id:2602,entry:{h:'בִּילָה',r:'B00615'},meanings:[{text:'thorough mixture, even distribution of mixed objects'}]}
+],'בִּילָה');
+assert(mixture.some(group=>group.sources.some(source=>source.entry.r==='KRU02633')&&group.sources.some(source=>source.entry.r==='B00615')),'the shared Rosh Hashanah 13b mixture sense should consolidate');
 
-assert.equal(U.reviewedSourceGlossPairs.size,1348,'all source-specific whole-gloss mappings must be loaded');
+const romanShoes=U.merge([
+ {id:2611,entry:{h:'גולגוקין',r:'KRU03814',source:'krupnik'},meanings:[{text:'Roman) shoes, which leave the toes uncovered'}]},
+ {id:2612,entry:{h:'גולגוקין',r:'C00377'},meanings:[{text:'shoes'}]}
+],'גולגוקין');
+assert(romanShoes.some(group=>group.sources.some(source=>source.entry.r==='KRU03814')&&group.sources.some(source=>source.entry.r==='C00377')),'the shared Yerushalmi Beitzah Roman-shoes sense should consolidate');
+
+const treading=U.merge([
+ {id:2621,entry:{h:'דּוּשׁ ²',r:'KRU04973',source:'krupnik'},meanings:[
+  {text:'to tread',label:'1'},
+  {text:'to thresh',label:'2'}
+ ]},
+ {id:2622,entry:{h:'דּוּשׁ ²',r:'D00390'},meanings:[
+  {text:'to thresh',section:'1)'},
+  {text:'to tread upon, trample',section:'—2)'}
+ ]}
+],'דּוּשׁ ²');
+assert(treading.some(group=>group.sources.some(source=>source.entry.r==='KRU04973')&&group.sources.some(source=>source.entry.r==='D00390')),'the shared Bava Kamma 9a treading sense should consolidate');
+
+const wrestling=U.merge([
+ {id:2631,entry:{h:'גָּשַׁשׁ',r:'KRU04675',source:'krupnik'},meanings:[
+  {text:'to touch',label:'1'},
+  {text:'to wrestle',label:'Hithpael'}
+ ]},
+ {id:2632,entry:{h:'גָּשַׁשׁ',r:'C01425'},meanings:[
+  {text:'to touch a substance, to strike against',section:'1)'},
+  {text:'to wrestle, fight',label:'Hithpael'}
+ ]}
+],'גָּשַׁשׁ');
+assert(wrestling.some(group=>group.sources.some(source=>source.entry.r==='KRU04675')&&group.sources.some(source=>source.entry.r==='C01425')),'the shared Genesis Rabbah wrestling sense should consolidate');
+
+
+
+assert.equal(U.reviewedSourceGlossPairs.size,1354,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -1217,6 +1254,12 @@ assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15991','Q01805',"carriers 
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU01200','A01818',"linen sheet","wrapping cloth, sheet, bathing clothes")),'source-verified mapping must be registered: A01818 / KRU01200');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU02266','B00055',"image, shadow","reflected image")),'source-verified mapping must be registered: B00055 / KRU02266');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU02652','B00656',"hair","thread, a single hair")),'source-verified mapping must be registered: B00656 / KRU02652');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU02633','B00615',"mixture","thorough mixture, even distribution of mixed objects")),'source-verified mapping must be registered: B00615 / KRU02633');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03814','C00377',"Roman) shoes, which leave the toes uncovered","shoes")),'source-verified mapping must be registered: C00377 / KRU03814');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04215','C00824',"deduction from the price","deduction")),'source-verified mapping must be registered: C00824 / KRU04215');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04594','C01305',"grist-maker or dealer","grist-maker")),'source-verified mapping must be registered: C01305 / KRU04594');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04675','C01425',"to wrestle","to wrestle, fight")),'source-verified mapping must be registered: C01425 / KRU04675');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04973','D00390',"to tread","to tread upon, trample")),'source-verified mapping must be registered: D00390 / KRU04973');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU06547','G00654','dealer in leather bags','maker of and dealer in leather bags')),'known occupational false positives must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU10278','L00533','there is','there is (was) not')),'negative-particle distinctions must be recorded as rejected');
 assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU03526','C00053','The Most High','high, exalted, elevated')),'divine titles must not be merged with ordinary adjectives');
@@ -1239,6 +1282,7 @@ assert(U.rejectedSourceGlossPairs.has(decisionKey('KRU16710','S00123',"holiness"
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06494','G00538','at times','times')),'ambiguous time/times candidates must remain deferred');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU14780','P01211',"to sting","to sting, prick")),'reviewed decision must remain deferred: P01211 / KRU14780');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU14780','P01211',"to prick, to taunt","to sting, prick")),'reviewed decision must remain deferred: P01211 / KRU14780');
+assert(U.deferredSourceGlossPairs.has(decisionKey('KRU03808','C00369','clapper of a bell','clapper')),'cross-reference-only clapper candidate must remain deferred');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU19012','U01042',"covering","sinking, covering up")),'reviewed ambiguous candidate must remain deferred: U01042 / KRU19012');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU01114','A01696',"to be burnt","to be consumed, burnt up, digested")),'reviewed candidate must remain deferred: A01696 / KRU01114');
 assert(U.deferredSourceGlossPairs.has(decisionKey('KRU06564','G00686',"to arm o. s.","to tie around, gird, arm; to harness, saddle")),'reviewed candidate must remain deferred: G00686 / KRU06564');
