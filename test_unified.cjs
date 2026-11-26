@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1416,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1419,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -460,7 +460,7 @@ const bubblingForth=U.merge([
 assert.equal(bubblingForth.length,1,'the same bubble/burst-forth verbal sense should consolidate');
 assert.equal(bubblingForth[0].sources.length,2,'both sources citing the same verbal usage should remain available');
 
-assert.equal(U.reviewedSourceGlossPairs.size,1416,'all source-specific whole-gloss mappings must be loaded');
+assert.equal(U.reviewedSourceGlossPairs.size,1419,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -1467,6 +1467,43 @@ const cleanDecision=value=>String(value).normalize('NFKC').toLowerCase().replace
 const decisionKey=(a,b,x,y)=>[a,b].sort().join('|')+'::'+[cleanDecision(x),cleanDecision(y)].sort().join(' | ');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03803','C00364','rough untrimmed stone, cobble','a rolling stone, rough untrimmed stone, cobble')),'source-verified mapping should be registered for the Bava Batra rough-stone sense');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03169','B01075','to bubble forth, to burst forth','to break through, bubble forth, burst forth')),'source-verified mapping should be registered for the bubble/burst-forth sense');
+
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU17489','S01587','symbolical form of making an agreement binding','affirmation, making sure; symbolical form of making an agreement binding')),'source-verified mapping should be registered for the legal kinyan sense');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU11696','M01949','to make poor','to make poor, make contemptible')),'source-verified mapping should be registered for the active make-poor sense');
+assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU09446','K00711','a species of figs','figs')),'source-verified mapping should be registered for the specific fig variety');
+
+const kinyan=U.merge([
+ {id:17489,entry:{h:'קִנְיָן',r:'KRU17489',source:'krupnik'},meanings:[{text:'symbolical form of making an agreement binding',label:''}]},
+ {id:1587,entry:{h:'קִנְיָן',r:'S01587'},meanings:[{text:'affirmation, making sure; symbolical form of making an agreement binding',label:'—3)'}]}
+],'קִנְיָן');
+assert.equal(kinyan.length,1,'the Bava Batra agreement-acquisition sense should consolidate');
+assert.equal(kinyan[0].sources.length,2,'both legal-source records should remain available');
+
+const makePoor=U.merge([
+ {id:11696,entry:{h:'מִסְכֵּן',r:'KRU11696',source:'krupnik'},meanings:[
+  {text:'to make poor',label:''},
+  {text:'to become poor',label:'Nithpa.'}
+ ]},
+ {id:1949,entry:{h:'מִסְכֵּן',r:'M01949'},meanings:[
+  {text:'to make poor, make contemptible',label:''},
+  {text:'to become poor',label:'Nithpa.'}
+ ]}
+],'מִסְכֵּן');
+assert.equal(makePoor.length,2,'the active and intransitive poor-making senses must remain separate');
+assert(makePoor.some(group=>group.sources.length===2&&group.text.includes('to make poor')),'the active transitive sense should consolidate');
+assert(makePoor.some(group=>group.sources.length===2&&group.text==='to become poor'),'the separate intransitive sense should also remain independently aligned');
+
+const figVariety=U.merge([
+ {id:9446,entry:{h:'כְּלוּפְסִין',r:'KRU09446',source:'krupnik'},meanings:[{text:'a species of figs',label:''}]},
+ {id:711,entry:{h:'כְּלוּפְסִין',r:'K00711'},meanings:[
+  {text:'figs',label:'1'},
+  {text:'a species of table-olives',label:'2'}
+ ]}
+],'כְּלוּפְסִין');
+assert.equal(figVariety.length,2,'the fig variety should consolidate without absorbing the separate table-olive sense');
+assert(figVariety.some(group=>group.sources.length===2&&group.text.includes('figs')),'both Nedarim fig-variety records should consolidate');
+assert(figVariety.some(group=>group.sources.length===1&&group.text.includes('olives')),'the separate table-olive sense must remain distinct');
+
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU04044','C00632',"earth embankment, steep banks","a steep")),'source-verified whole-gloss mapping must be registered: C00632 / KRU04044');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU14780','P01211',"to cut (fruits) by the stalks","to cut fruit by the stalks.")),'source-verified whole-gloss mapping must be registered: P01211 / KRU14780');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15901','Q01641',"resident of an open place","one residing in an open place")),'source-verified whole-gloss mapping must be registered: Q01641 / KRU15901');
