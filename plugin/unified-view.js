@@ -1794,6 +1794,18 @@
   ["KRU11881","M02294","mouthpiece","overlaid mouthpiece"],
   ["KRU11886","M02309","to wring out","to wring"],
   ["KRU11964","M02459","teacher","primary teacher"]
+,
+  ["KRU12686","N00704","libation","the act of libation"],
+  ["KRU12707","N00737","the constellation of Orion","Orion"],
+  ["KRU12741","N00795","marriage","taking in marriage"],
+  ["KRU12768","N00854","wooden) lid","lid"],
+  ["KRU12837","N00969","tank of the press","tank"],
+  ["KRU13548","O00788","clapping of the hands","clapping"],
+  ["KRU14428","P00605","clapper","clapper of a bell."],
+  ["KRU14762","P01174","tying the sacrifice","tying"],
+  ["KRU15143","Q00341","the festival of Purim","Purim"],
+  ["KRU15254","Q00520","jar","wine jar"],
+  ["KRU15525","Q00979","chest, box","money chest, jewelry box"]
  ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
  // Alternative-level matches are narrower than whole-gloss matches:
  // one shared sense can consolidate without absorbing neighboring meanings.
@@ -1891,6 +1903,11 @@
   ["KRU11063","M00885","to be forgiven, to be pardoned","to be cancelled; to be forgiven, pardoned","Deferred: the Jastrow Nifal gloss combines forgiveness and cancellation, while Krupnik splits these into distinct numbered meanings."],
   ["KRU11063","M00885","to be cancelled","to be cancelled; to be forgiven, pardoned","Deferred: same combined-Jastrow/numbered-Krupnik ambiguity; preserve both separate Nifal senses."],
   ["KRU11886","M02309","to suck","to give suck","Deferred: Krupnik's 'to suck' and Jastrow's Pa. 'to give suck' differ in grammatical direction/valency; do not merge without stronger source evidence."]
+,
+  ["KRU12863","N01026","to blow (fire)","to blow","Deferred: the Krupnik gloss is Afal 'to blow fire', while the Jastrow phrase is the simple 'to blow'; preserve the distinct verbal stem and sense."],
+  ["KRU14001","O01596","to smell badly, to be spoiled","to decay, be spoiled; to smell offensively","Deferred: the Jastrow gloss combines decay/spoilage and offensive smell; Krupnik splits the meanings and uses distinct source examples."],
+  ["KRU14001","O01596","to corrupt","to make offensive, unsavory; to corrupt","Deferred: the combined Jastrow gloss spans corruption and making unsavory; do not assign it to one KRU sense alone."],
+  ["KRU14001","O01596","to make unsavory","to make offensive, unsavory; to corrupt","Deferred: same one-to-many ambiguity between the combined Jastrow gloss and separate Krupnik senses."]
 
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const reviewedSourceAlternativePairRecords=[
