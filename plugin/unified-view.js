@@ -246,7 +246,7 @@
   ['of many colors','of many colours']
  ].map(pair=>pair.map(clean).sort().join(' | ')));
  const reviewedGlossEquivalent=(a,b)=>{
-  if(S.normalize(a.spelling)!==S.normalize(b.spelling))return false;
+  if(!compatibleEntries(a.entry,b.entry))return false;
   return reviewedGlossPairs.has([clean(a.meaning.text),clean((b.sourceMeaning||b.meaning).text)].sort().join(' | '));
  };
  const homonymNumber=value=>{
@@ -273,6 +273,16 @@
   if(!S.hasVowels(word))return true;
   const aa=S.markedLetters(a),bb=S.markedLetters(b);
   return aa.every((x,i)=>!x.marks.length||!bb[i].marks.length||x.marks.join('')===bb[i].marks.join(''));
+ }
+ // A dictionary record can use a different primary headword while listing the
+ // other dictionary's spelling as an attested alternate form. Compare all
+ // source-attested forms, but retain explicit primary-homonym safeguards.
+ function compatibleEntries(a,b,word){
+  if(!a||!b)return false;
+  const an=homonymNumber(a.h),bn=homonymNumber(b.h);
+  if(an!==null&&bn!==null&&an!==bn)return false;
+  const left=[a.h,...(a.alt||[])].filter(Boolean),right=[b.h,...(b.alt||[])].filter(Boolean);
+  return left.some(x=>right.some(y=>compatible(x,y,word)));
  }
  const reviewedSourceGlossPairs=new Set([
   ['KRU08370','J00009','desparing of recovering a lost object','despairing of recovering a lost object, resignation'],
@@ -2045,7 +2055,7 @@
   return buckets;
  }
  function reviewedEquivalent(source,item){
-  if(!compatible(source.spelling,item.spelling))return false;
+  if(!compatibleEntries(source.entry,item.entry))return false;
   const otherMeaning=item.sourceMeaning||item.meaning;
   const ids=[source.entry.r,item.entry.r].sort().join('|');
   const glosses=[clean(source.meaning.text),clean(otherMeaning.text)].sort().join(' | ');
@@ -2058,7 +2068,7 @@
  }
  function sameMeaning(group,item,word){
   const itemForm=stem(item.meaning.label);
-  if(!compatibleForm(group.form,itemForm)||!group.sources.every(s=>compatible(s.spelling,item.spelling,word)))return false;
+  if(!compatibleForm(group.form,itemForm)||!group.sources.every(s=>compatibleEntries(s.entry,item.entry,word)))return false;
   if(group.bucketKeys?.some(key=>item.bucketKeys?.includes(key)))return true;
   return canonicalGlossKey(group.text)===canonicalGlossKey(item.meaning.text)||
    synonymKey(group.text)===synonymKey(item.meaning.text)||
@@ -2076,7 +2086,7 @@
    const firstIsK=first.entry.source==='krupnik',secondIsK=second.entry.source==='krupnik';
    if(firstIsK===secondIsK)continue;
    const k=firstIsK?first:second,jastrow=firstIsK?second:first;
-   if(!compatible(k.spelling,jastrow.spelling,word))continue;
+   if(!compatibleEntries(k.entry,jastrow.entry,word))continue;
    for(const jm of jastrow.meanings)for(const km of k.meanings){
     if(!compatibleForm(stem(jm.label),stem(km.label)))continue;
     const jSegments=senseSegments(jm.text),kSegments=senseSegments(km.text);
@@ -2138,7 +2148,7 @@
      const keyCounts=new Map();for(const key of matchingKeys)keyCounts.set(key,(keyCounts.get(key)||0)+1);
      const labels=new Set(bridged.map(g=>g.form).filter(Boolean));
      const sourceFormsCompatible=bridged.every((g,i)=>bridged.slice(0,i).every(other=>
-      other.sources.every(a=>g.sources.every(b=>compatible(a.spelling,b.spelling,S.hasVowels(a.spelling)?a.spelling:(S.hasVowels(b.spelling)?b.spelling:word))))));
+      other.sources.every(a=>g.sources.every(b=>compatibleEntries(a.entry,b.entry,S.hasVowels(a.spelling)?a.spelling:(S.hasVowels(b.spelling)?b.spelling:word))))));
      if(bridged.length>1&&new Set(matchingKeys).size===bridged.length&&[...keyCounts.values()].every(count=>count===1)&&labels.size<=1&&sourceFormsCompatible){
       for(const extra of bridged.slice(1)){
        for(const source of extra.sources)if(!group.sources.some(s=>s.id===source.id&&s.meaning.text===source.meaning.text&&stem(s.meaning.label)===stem(source.meaning.label)))group.sources.push(source);
