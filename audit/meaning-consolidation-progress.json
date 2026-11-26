@@ -60,7 +60,7 @@
     "published": false
   },
   "candidateInventory": {
-    "generatedFromCommit": "5c3dfd2a140d9b24d1b45d178bca51fa8b711fd1",
+    "generatedFromCommit": "9f0ecc46b835f92696e62834c4cfe57b78f72b88",
     "sourceEntries": 47919,
     "jastrowEntries": 32508,
     "krupnikEntries": 15407,
@@ -71,7 +71,7 @@
     "runtimeRuleHandledCandidates": 2456,
     "ambiguityFlaggedExactCandidates": 534,
     "nonExactSemanticCandidates": 1413,
-    "note": "Regenerated after the question-gloss pair KRU09370/K00616 was deferred. The inventory keeps 534 ambiguous exact matches and 1,413 non-exact semantic candidates in human review; only one-to-one guarded matches are runtime-handled."
+    "note": "Inventory regenerated from all 47,919 original source entries and the real Chromium phrase extractor. The candidate generator now records and excludes known rejected/deferred pairs from pending review while preserving their rationales in the report."
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -4967,7 +4967,7 @@
         "tenant"
       ],
       [
-        "KRU07103",
+        "KRU07111",
         "H00931",
         "rent",
         "the fixed annual rent in kind"
@@ -4984,25 +4984,112 @@
         "KRU17632",
         "S01839",
         "a ceremony of severing family connections with a man who married beneath his social rank",
-        "ḳ’tsatsah, a ceremony attending the sale of an heirloom to an outsider, and the marriage of a man beneath his social rank"
+        "a ceremony attending the sale of an heirloom to an outsider"
       ]
     ],
     "evidence": [
       "KRU14773 and Jastrow P01192 both define the woven bale used in olive pressing. The Jastrow source adds the loose texture and olive-pulp detail; its separate iron-ballast sense remains independent.",
       "KRU12105 and Jastrow M02773 both define the Hithpael myrrh-handling sense as becoming bitter; Jastrow adds the sticky effect. The active 'to make bitter' sense remains independent.",
-      "KRU07111/H00931 match the tenant sense; KRU07103/H00931 match the annual-rent sense. The two senses are explicitly mapped to separate Krupnik records.",
+      "KRU07111 and Jastrow H00931 both contain separate tenant and annual-rent senses under the same headword. Both Krupnik glosses are from KRU07111; KRU07103 is a different headword and is not part of this mapping.",
       "KRU16546 and Jastrow R00617 both define a piece as large as can be taken up with a fork; Jastrow itself notes 'fork' as the alternative to 'hook'.",
       "KRU17632 and Jastrow S01839 both define the specific ketsatsah family-severing ceremony. The mapping is alternative-level because Jastrow's broader 'cutting off' gloss and Krupnik's separate timber sense must remain independent."
     ],
     "safeguards": [
       "the olive-press mapping does not absorb the iron-ballast sense",
       "the active 'to make bitter' sense does not merge with the intransitive myrrh sense",
-      "tenant and annual rent are mapped to separate Krupnik records",
+      "tenant and annual rent are separate numbered senses within KRU07111 and map one-to-one to the corresponding Jastrow senses",
       "the ceremony mapping matches only the specific semicolon-delimited ceremony segment",
       "the general severing gloss and timber sense remain independent",
-      "original source records and citations remain available in More detail"
+      "original source records and citations remain available in More detail",
+      "the ceremony mapping targets only the reader-visible comma alternative 'a ceremony attending the sale of an heirloom to an outsider'; the broader general-severing segment remains independent"
     ],
     "currentTotal": 1320,
     "currentAlternativeTotal": 274
+  },
+  "decisionRegistry": {
+    "status": "active",
+    "purpose": "Prevent already-reviewed false positives and unresolved cases from cycling through the candidate queue. These decisions are review metadata only and never cause runtime merging.",
+    "rejectedSourceGlossPairs": [
+      {
+        "refs": [
+          "KRU06547",
+          "G00654"
+        ],
+        "glosses": [
+          "dealer in leather bags",
+          "maker of and dealer in leather bags"
+        ],
+        "reason": "Different occupational scope: Jastrow includes making as well as dealing; Krupnik only says dealer."
+      },
+      {
+        "refs": [
+          "KRU10278",
+          "L00533"
+        ],
+        "glosses": [
+          "there is",
+          "there is (was) not"
+        ],
+        "reason": "The negative particle changes the meaning."
+      },
+      {
+        "refs": [
+          "KRU03526",
+          "C00053"
+        ],
+        "glosses": [
+          "The Most High",
+          "high, exalted, elevated"
+        ],
+        "reason": "Divine title versus ordinary adjective."
+      },
+      {
+        "refs": [
+          "KRU02827",
+          "B00794"
+        ],
+        "glosses": [
+          "to bear first fruits",
+          "to bear for the first time"
+        ],
+        "reason": "First-fruits production versus first birth; the separate first-ripening match is retained."
+      }
+    ],
+    "deferredSourceGlossPairs": [
+      {
+        "refs": [
+          "KRU06494",
+          "G00538"
+        ],
+        "glosses": [
+          "at times",
+          "times"
+        ],
+        "reason": "The Krupnik entry explicitly distinguishes 'time' from 'times'; no one-to-one mapping established."
+      },
+      {
+        "refs": [
+          "KRU06494",
+          "G00538"
+        ],
+        "glosses": [
+          "at other times",
+          "times"
+        ],
+        "reason": "The Krupnik entry explicitly distinguishes 'time' from 'times'; no one-to-one mapping established."
+      },
+      {
+        "refs": [
+          "KRU19531",
+          "U02126"
+        ],
+        "glosses": [
+          "skilled in boring",
+          "one known to be skilled in boring"
+        ],
+        "reason": "Source-citation verification was not completed."
+      }
+    ],
+    "policy": "Rejected and deferred pairs are excluded from the pending discovery queue but remain recorded here with their source refs and rationale. Reconsider only with new source evidence."
   }
 }
