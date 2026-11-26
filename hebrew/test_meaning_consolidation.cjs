@@ -152,4 +152,18 @@ assertRejectedPair('KRU00985','KRU00986',"אגודה, חבילה","שר של מ�
 assertRejectedPair('KRU01073','KRU01074',"נשואין","חפרפרת");
 assertRejectedPair('KRU01341','KRU01342',"– אמונה","הר בצפונה של א״י");
 assertRejectedPair('KRU01562','KRU01563',"בגד","ציון לדרך וגבול");
+assertRejectedPair('KRU01660','KRU01661',"תורן","רפסודה, דוברה");
+assertRejectedPair('KRU01687','KRU01690',"– אַף אֵלָהֵין ובפרט, ומה גם","שם מלאך");
+assertRejectedPair('KRU01755','KRU01756',"הדום, שרפרף","מרדעת, אוכף");
+assertRejectedPair('KRU01989','KRU01991',"דרך","אור");
+assertRejectedPair('KRU01989','KRU01991',"אורח","אור");
+assertRejectedPair('KRU02026','KRU02027',"נעשה ארוך","תקן, הכין");
+assertRejectedPair('KRU02026','KRU02027',"נעשה ארוך","נקה");
+assertRejectedPair('KRU02581','KRU02582',"צנור","יחי!");
+assertRejectedPair('KRU02788','KRU02789',"אות שניה של אלף בית","בית");
+assertRejectedPair('KRU02788','KRU02789',"אות שניה של אלף בית","בת, מדת הלח");
+assertRejectedPair('KRU02859','KRU02860',"ציר הדלת","אלון");
+assertRejectedPair('KRU02859','KRU02860',"ציר הדלת","פרי האלון");
+assertRejectedPair('KRU02859','KRU02860',"שן המפתח","אלון");
+assertRejectedPair('KRU02859','KRU02860',"שן המפתח","פרי האלון");
 console.log('PASS: shared Hebrew meaning consolidation preserves exact source wording, labels, source records, and phrase boundaries.');
