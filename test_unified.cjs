@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1492,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1491,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -132,7 +132,7 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,290,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,291,'every source-scoped alternative match must be loaded');
 
 const steepMeaning=U.merge([
  {id:2401,entry:{h:'גִּידּוּד',r:'KRU04044',source:'krupnik'},meanings:[{text:'earth embankment, steep banks',label:'1'}]},
