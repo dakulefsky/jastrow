@@ -167,6 +167,22 @@ assert(!signLetterCrossReference.some(group=>group.sources.some(source=>source.e
 assert.equal(signLetterCrossReference.filter(group=>group.sources.some(source=>source.entry.r==='KRU02199')).length,2,'the two Krupnik numbered senses must remain separately visible');
 assert(signLetterCrossReference.some(group=>group.sources.length===1&&group.sources[0].entry.r==='A03396'),'the differently pointed cross-reference should remain independently accessible');
 
+// On the shared alternate form אָתָא, both Jastrow records are eligible.
+// The same Krupnik numbered senses then point to multiple Jastrow source
+// segments, so the runtime must leave the mapping unresolved rather than
+// joining the two numbered senses through an ambiguous cross-reference.
+const ambiguousAtaForm=U.merge([
+ {id:4221,entry:{h:'אָת',alt:['אָתָא'],r:'A03394'},meanings:[{text:'sign, type; letter',label:'',section:''}]},
+ {id:4222,entry:{h:'אָתָא I',r:'A03396'},meanings:[{text:'letter, sign',label:'',section:''}]},
+ {id:4223,entry:{h:'אָת',alt:['אָתָא'],r:'KRU02199',source:'krupnik'},meanings:[
+  {text:'sign',label:'1'},
+  {text:'letter',label:'2'}
+ ]}
+],'אָתָא');
+assert(!ambiguousAtaForm.some(group=>group.sources.some(source=>source.entry.r==='KRU02199')&&group.sources.some(source=>['A03394','A03396'].includes(source.entry.r))),'the shared alternate form must not force an ambiguous cross-dictionary merge');
+assert.equal(ambiguousAtaForm.filter(group=>group.sources.some(source=>source.entry.r==='KRU02199')).length,2,'ambiguous alternate-form matching must keep Krupnik sign and letter senses separate');
+
+
 
 
 const steepMeaning=U.merge([
