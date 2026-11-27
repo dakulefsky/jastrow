@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),S=require('./plugin/search.js'),U=require('./plugin/unified-view.js'),fs=require('node:fs'),vm=require('node:vm');
 const c={window:{}};vm.createContext(c);for(const n of ['index','attested-forms','ranking','krupnik-index','phrases'])vm.runInContext(fs.readFileSync(__dirname+'/plugin/data/'+n+'.js','utf8'),c);
 const index=c.window.JASTROW_INDEX;
-assert.equal(U.reviewedSourceGlossPairCount,1491,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
+assert.equal(U.reviewedSourceGlossPairCount,1489,'every reviewed source gloss pair must be loaded; malformed adjacent array entries must not be silently dropped');
 
 const dataDir=__dirname+'/plugin/data';
 c.window.JASTROW_CHUNKS={};
@@ -139,6 +139,19 @@ const steepMeaning=U.merge([
  {id:2402,entry:{h:'גִּידּוּד',r:'C00632'},meanings:[{text:'a steep',label:'',section:''}]}
 ],'גִּידּוּד');
 assert(steepMeaning.some(group=>group.sources.some(source=>source.entry.r==='KRU04044')&&group.sources.some(source=>source.entry.r==='C00632')),'the shared Eruvin 93b embankment sense should consolidate');
+
+const truncatedLitter=U.merge([
+ {id:3073,entry:{h:'*פִּרְיָיפְרִין',r:'Q01805'},meanings:[{text:'carriers of the',label:''}]},
+ {id:3074,entry:{h:'פִּרְיָיפְרִין',r:'KRU15991',source:'krupnik'},meanings:[{text:'carriers of the litter',label:''}]}
+],'פִּרְיָיפְרִין');
+assert.equal(truncatedLitter.length,2,'the incomplete Jastrow litter fragment must not merge with the complete Krupnik gloss');
+const truncatedDealer=U.merge([
+ {id:3075,entry:{h:'בַּסָּם',r:'B01005'},meanings:[{text:'dealer in',label:''}]},
+ {id:3076,entry:{h:'בַּסָּם',r:'KRU03037',source:'krupnik'},meanings:[{text:'dealer in spices',label:''}]}
+],'בַּסָּם');
+assert.equal(truncatedDealer.length,2,'the incomplete Jastrow dealer-in fragment must not merge with the complete Krupnik gloss');
+assert([...U.deferredSourceGlossPairs.values()].some(reason=>reason.includes('carriers of the (bridal) litter')),'the incomplete litter phrase must remain explicitly deferred');
+assert([...U.deferredSourceGlossPairs.values()].some(reason=>reason.includes('dealer in spices')),'the incomplete dealer phrase must remain explicitly deferred');
 
 const truncatedStJohnsBread=U.merge([
  {id:3071,entry:{h:'גֵּרָה I',r:'C01287'},meanings:[{text:'the seed of St.',label:'',section:'—2)'}]},
@@ -527,7 +540,7 @@ const bubblingForth=U.merge([
 assert.equal(bubblingForth.length,1,'the same bubble/burst-forth verbal sense should consolidate');
 assert.equal(bubblingForth[0].sources.length,2,'both sources citing the same verbal usage should remain available');
 
-assert.equal(U.reviewedSourceGlossPairs.size,1491,'all source-specific whole-gloss mappings must be loaded');
+assert.equal(U.reviewedSourceGlossPairs.size,1489,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
@@ -2291,7 +2304,6 @@ assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03519','C00044',"small stu
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU05768','E00343',"upturning, scratching (of chickens)","damage done by scratching chickens")),'source-verified mapping must be registered: E00343 / KRU05768');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU14213','P00224',"shrunk reed","shrunk")),'source-verified mapping must be registered: P00224 / KRU14213');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU01926','A02946',"a species of fish","fish")),'source-verified mapping must be registered: A02946 / KRU01926');
-assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU15991','Q01805',"carriers of the litter","carriers of the")),'source-verified mapping must be registered: Q01805 / KRU15991');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU01200','A01818',"linen sheet","wrapping cloth, sheet, bathing clothes")),'source-verified mapping must be registered: A01818 / KRU01200');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU02266','B00055',"image, shadow","reflected image")),'source-verified mapping must be registered: B00055 / KRU02266');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU02652','B00656',"hair","thread, a single hair")),'source-verified mapping must be registered: B00656 / KRU02652');
@@ -2314,7 +2326,6 @@ assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU05539','D01113',"to stuff"
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03800','C00362',"creature","inner body, creature")),'source-verified mapping must be registered: C00362 / KRU03800');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU06435','G00440',"entitled","entitled to possession")),'source-verified mapping must be registered: G00440 / KRU06435');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU02813','B00781',"a species of pears","pears")),'source-verified mapping must be registered: B00781 / KRU02813');
-assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU03037','B01005',"dealer in spices","dealer in")),'source-verified mapping must be registered: B01005 / KRU03037');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU06628','H00082',"a sort of cakes","cakes")),'source-verified mapping must be registered: H00082 / KRU06628');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU06642','H00112',"Parsee priest","Parsee")),'source-verified mapping must be registered: H00112 / KRU06642');
 assert(U.reviewedSourceGlossPairs.has(decisionKey('KRU06720','H00248',"cheese","soft cheese")),'source-verified mapping must be registered: H00248 / KRU06720');
