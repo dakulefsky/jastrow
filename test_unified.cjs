@@ -132,13 +132,19 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,281,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,282,'every source-scoped alternative match must be loaded');
 
 const steepMeaning=U.merge([
  {id:2401,entry:{h:'גִּידּוּד',r:'KRU04044',source:'krupnik'},meanings:[{text:'earth embankment, steep banks',label:'1'}]},
  {id:2402,entry:{h:'גִּידּוּד',r:'C00632'},meanings:[{text:'a steep',label:'',section:''}]}
 ],'גִּידּוּד');
 assert(steepMeaning.some(group=>group.sources.some(source=>source.entry.r==='KRU04044')&&group.sources.some(source=>source.entry.r==='C00632')),'the shared Eruvin 93b embankment sense should consolidate');
+
+const flowingWater=U.merge([
+ {id:3051,entry:{h:'זָחַל',r:'G00246'},meanings:[{text:'to let collected water run into a channel.',label:'Hif. הִזְחִיל'}]},
+ {id:3052,entry:{h:'זָחַל',r:'KRU06334',source:'krupnik'},meanings:[{text:'to let run',label:''}]}
+],'זָחַל');
+assert(flowingWater.some(group=>group.sources.some(source=>source.entry.r==='G00246')&&group.sources.some(source=>source.entry.r==='KRU06334')),'the shared Mikvaot V:5 Hifil water-flowing sense should consolidate');
 
 const cutFruit=U.merge([
  {id:2411,entry:{h:'עָקַץ',r:'KRU14780',source:'krupnik'},meanings:[
