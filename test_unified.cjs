@@ -132,13 +132,19 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,282,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,283,'every source-scoped alternative match must be loaded');
 
 const steepMeaning=U.merge([
  {id:2401,entry:{h:'גִּידּוּד',r:'KRU04044',source:'krupnik'},meanings:[{text:'earth embankment, steep banks',label:'1'}]},
  {id:2402,entry:{h:'גִּידּוּד',r:'C00632'},meanings:[{text:'a steep',label:'',section:''}]}
 ],'גִּידּוּד');
 assert(steepMeaning.some(group=>group.sources.some(source=>source.entry.r==='KRU04044')&&group.sources.some(source=>source.entry.r==='C00632')),'the shared Eruvin 93b embankment sense should consolidate');
+
+const troopDetachment=U.merge([
+ {id:3053,entry:{h:'נִימוֹרֶת',r:'N00685'},meanings:[{text:'a detachment of troops sent to take hostages',label:''}]},
+ {id:3054,entry:{h:'נִימוֹרֶת',r:'KRU12677',source:'krupnik'},meanings:[{text:'detachment of troops',label:''}]}
+],'נִימוֹרֶת');
+assert(troopDetachment.some(group=>group.sources.some(source=>source.entry.r==='N00685')&&group.sources.some(source=>source.entry.r==='KRU12677')),'the shared Yerushalmi Pesachim IV:31b troop-detachment sense should consolidate');
 
 const flowingWater=U.merge([
  {id:3051,entry:{h:'זָחַל',r:'G00246'},meanings:[{text:'to let collected water run into a channel.',label:'Hif. הִזְחִיל'}]},
