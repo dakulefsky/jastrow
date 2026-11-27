@@ -2290,7 +2290,8 @@
   ["KRU04385","C01038","to be bestowed","to be bestowed"],
   ["KRU04979","D00406","to be suspended","to be pushed aside"],
   ["KRU04979","D00406","to be suspended","suspended"],
-  ["KRU06334","G00246","to let run","to let collected water run into a channel."]
+  ["KRU06334","G00246","to let run","to let collected water run into a channel."],
+  ["KRU12677","N00685","detachment of troops","a detachment of troops sent to take hostages"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
