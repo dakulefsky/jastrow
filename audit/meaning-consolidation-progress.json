@@ -69,14 +69,14 @@
     "exactAlternativeCandidates": 2953,
     "runtimeRuleHandledCandidates": 2441,
     "ambiguityFlaggedExactCandidates": 512,
-    "nonExactSemanticCandidates": 1147,
-    "note": "One hundred and forty source-scoped whole-gloss mappings and seven alternative-level mappings have been added beyond the original branch baseline. The latest regenerated inventory contains 4,100 candidate rows: 2,441 exact-alternative runtime matches, 512 ambiguity-flagged exact candidates, and 1,147 non-exact semantic candidates. Twenty known false positives are rejected and 58 uncertain or extractor-limited cases remain deferred.",
+    "nonExactSemanticCandidates": 1119,
+    "note": "Latest regenerated inventory from the original 47,919 source entries and the actual Jastrow reader phrase extractor: 4,072 candidate rows remain after decisions. Of these, 2,441 exact-alternative matches are handled by guarded runtime rules, 512 exact matches remain flagged for ambiguity review, and 1,119 non-exact semantic candidates remain for manual review. Twenty known false positives are rejected and 57 uncertain or extractor-limited cases remain deferred. The four newest source-scoped alternative mappings are included in this inventory.",
     "rejectedKnownCandidates": 20,
-    "deferredKnownCandidates": 58,
+    "deferredKnownCandidates": 57,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
-    "latestGeneratedFromCommit": "199bdd5c0062a502d3080e66b531ba47af4fe260",
-    "candidates": 4100
+    "latestGeneratedFromCommit": "bb3307c1b30ee1559216b78119fba73acd18bf72",
+    "candidates": 4072
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -394,7 +394,7 @@
       "rawCandidates": 567,
       "reviewedNonSynonymPairs": 84,
       "deferredSynonymPairs": 9,
-      "latestGeneratedFromCommit": "199bdd5c0062a502d3080e66b531ba47af4fe260",
+      "latestGeneratedFromCommit": "bb3307c1b30ee1559216b78119fba73acd18bf72",
       "note": "Latest generated inventory from 20,177 original Hebrew source records: 475 candidate rows, 84 source-reviewed non-synonyms excluded, 9 deferred pairs, 1 guarded exact-alternative runtime match, and 474 candidates still requiring manual semantic review.",
       "reviewedSenseSegmentPairs": 2,
       "partialHebrewOverlap": 1
