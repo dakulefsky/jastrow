@@ -6,12 +6,12 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1,492 retained whole-gloss mappings and all 288 retained alternative-level mappings (1,780 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1,492 retained whole-gloss mappings and all 291 retained alternative-level mappings (1,783 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
     "reviewedSourceGlossPairCount": 1492,
-    "reviewedSourceAlternativePairCount": 288,
+    "reviewedSourceAlternativePairCount": 291,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
     "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions.",
@@ -9581,6 +9581,40 @@
     "safeguards": [
       "Only the branch-sinew segment is linked to Krupnik sense 2; the grape-vine branch segment remains an independent Jastrow result.",
       "The mapping preserves the exact source phrase and both citations."
+    ]
+  },
+  "eightyThirdReviewedTranche": {
+    "attemptedCandidates": 3,
+    "addedUniqueSourceGlossPairs": 0,
+    "addedSourceAlternativePairs": 3,
+    "acceptedAlternativePairs": [
+      [
+        "KRU03583",
+        "C00124",
+        "calyx or capsule of plants",
+        "calyx"
+      ],
+      [
+        "KRU17047",
+        "A02909",
+        "Ctesiphon on the bank of Tigris",
+        "Ctesiphon"
+      ],
+      [
+        "KRU08091",
+        "I00550",
+        "a place for keeping dishes warm",
+        "a place for chafing dishes"
+      ]
+    ],
+    "evidence": [
+      "C00124/KRU03583: both define the plant calyx/capsule; the source records share Yoma 75a and the Mishnah Parah discussion.",
+      "A02909/KRU17047: both identify Ctesiphon; Jastrow and Krupnik both cite Targum Jonathan Genesis 10:10.",
+      "I00550/KRU08091: both define the place for keeping hot food warm; both cite the Yerushalmi Shabbat passage on טמינה."
+    ],
+    "safeguards": [
+      "Each phrase mapping is limited to its exact source records; no other headword senses are affected.",
+      "The source examples and citations remain available in More detail."
     ]
   }
 }
