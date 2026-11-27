@@ -1,50 +1,2461 @@
 (function(root){
  'use strict';
  const S=root.JastrowSearch||(typeof require==='function'?require('./search.js'):null);
- const clean=text=>String(text).normalize('NFKC').toLowerCase().replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
- const stem=label=>/^[—\s]*\d+[).]?\s*$/.test(label||'')?'':clean(label||'');
- const parts=text=>String(text).split(/[,;]/).map(clean).filter(Boolean);
- // Exact, reviewed English gloss equivalents only. Avoid fuzzy token overlap:
- // shared words alone are not enough to collapse distinct dictionary senses.
+ const clean=text=>String(text).normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-').replace(/[.\s]+$/,'').trim().replace(/\s+/g,' ');
+ const displayCorrections=new Map([
+  ['C00635::rearing','rearing (of children)'],
+  ['C00799::peat','turf or peat'],
+  ['C00469::to gnaw','to gnaw (of mice)'],
+  ['C00690::to low','to low (of oxen)'],
+  ['B01372::mortal','mortal man'],
+  ['C00954::shaping','shaping (of writing), impress, poetry'],
+  ['KRU04329::shaping (of writing), impress','shaping (of writing), impress, poetry'],
+  ['KRU05585::farther off (of space)','farther off, far (of space)'],
+  ['E00016::farther off, far','farther off, far (of space)'],
+  ['KRU12418::to conduct o. s','to conduct oneself'],
+  ["N00250::to conduct one's self","to conduct oneself"],
+  ['KRU08370::desparing of recovering a lost object','despairing of recovering a lost object'],
+  ['KRU15837::to declare ownerless','declare a property ownerless'],
+  ["P00680::'erub, a symbolical act by which the legal fiction of community",'a symbolical act by which the legal fiction of community or continuity is established'],
+  ["KRU09880::to work with zeal",'to adapt one’s self, to work with zeal and conscientiousness'],
+  ['R00053::to raise one or more fingers','to raise the fingers as a signal'],
+  ['KRU14845::trough for kneading etc','trough, tub, kneading trough'],
+  ['E00517::marking out the road','marking out the road to the city of refuge'],
+  ['D00689::pricking pain','pricking pain in the eye'],
+  ['D00765::an elevated spot','an elevated spot on the hearth'],
+  ['KRU01971::long bedside','long board, longside of bedstead, bedside'],
+  ['KRU01236::diagonal','diagonal line, diameter'],
+  ['KRU02095::in accident','accident, occurrence'],
+  ['KRU07529::to squeeze','to squeeze into'],
+  ['KRU09370::in what manner? how?','how?, in what manner?, in what respect?'],
+  ['KRU06183::relinquishment, addition to exact measure','the retailer’s customary addition to exact measure'],
+  ['KRU04289::a superior sort of olives','a superior sort of olives already pressed when appearing in the market'],
+  ['U00198::to appoint a sabbath camp','to appoint a Sabbath camp as the center for Sabbath movement'],
+  ['KRU09504::like','like that which'],
+  ['B01081::engines of siege','engines of siege or defence'],
+  ['KRU09073::of priestly descent','one proving priestly descent, belonging to the priestly caste'],
+  ['S00787::to cover with ashes','to cover embers with ashes'],
+  ['I00688::additional, second layer','additional, second layer of a clay dam'],
+  ['KRU08204::second layer of a clay dam','additional, second layer of a clay dam'],
+  ['KRU15393::setting a price','setting a price on fruits before they are harvested'],
+  ['KRU15393::spreading, straddling','spreading the feet'],
+  ['L00537::juice of a plant','juice of a plant used for dyeing'],
+  ['D00175::a species of figs or sycamore','a species of sycamore'],
+  ['KRU11938::an upper garment','the upper garment with the girdle, walking cloak'],
+  ['KRU04375::a branch used for caprification','branches used for caprification'],
+  ['KRU04462::removal of sacred object','removal of sacred objects'],
+  ['D01107::a marmelade of quinces and roses','a marmalade of quinces and roses'],
+  ['E00033::superintendence, watching owner-less objects','superintendence, watching ownerless objects'],
+  ['KRU05597::watching ownerless objects','superintendence, watching ownerless objects'],
+  ['H00665::that which is sqeezed in to fill a gap, repair, insertion','stopper, insertion (to fill a gap)'],
+  ['KRU04552::to let the olives shrivel','to let the olive shrivel'],
+  ['KRU16989::stomach of birds','the thick muscular stomach of birds, craw'],
+  ['T00015::appearance in the temple, pilgrimage','appearance in the Temple (on the three festivals)'],
+  ['B00794::to be early, produce first fruits','to be first in ripening'],
+  ['I00811::an animal afflicted with a','an animal afflicted with an organic disease'],
+  ['KRU14617::fecal mass','the fecal mass in the rectum'],
+  ['KRU14617::stalk','the central stalk of onions'],
+  ['S00873::of the new moon, seasons','proclamation of the New Moon or the New Year'],
+  ['KRU14773::a bale containing the olives to be pressed','a bale of loose texture containing the olive pulp to be pressed'],
+  ['KRU12105::to become bitter','to become sticky and bitter'],
+  ['H00931::tenant','tenant on a fixed rent payable in kind'],
+  ['KRU07111::rent','the fixed annual rent in kind'],
+  ['R00617::a piece as large as can be taken up with a hook','a piece as large as can be taken up with a fork'],
+  ["KRU17632::a ceremony of severing family connections with a man who married beneath his social rank","ḳ’tsatsah, a ceremony attending the sale of an heirloom to an outsider, and the marriage of a man beneath his social rank"],
+  ["E00092::cutting the animal's throat in a slanting direction","cutting the animal’s throat in a slanting direction (letting the knife slide beyond the space ritually designated for cutting)"],
+  ['H00556::claim based on undisturbed possession','claim based on undisturbed possession during a legally fixed period'],
+  ['KRU16649::artificial foot','a piece of wood hollowed out for the stump of a leg, a sort of artificial foot'],
+  ['S02038::covered with a crust','covered with a crust of sediments'],
+  ['KRU17738::formation of a crust','formation of a light crust'],
+  ['KRU01645::van-guard','forerunner, the commander’s van-guard'],
+  ['A02164::antiochian, native of antiochia, resident of a','of Antiochia'],
+  ['KRU16409::with lang dependent ears','a goat with long hair lumps and long, dependent ears'],
+  ["Q02074::the plain heir's right, single share","single share of the heir, opp. to the double share of the first-born son"],
+  ['KRU07518::a pap made of fruits and spices with wine (used as sauce on the passover-night)','a pap made of fruits and spices with wine or vinegar'],
+  ['KRU09233::a dish consisting of sour milk, bread and salt','a preserve consisting of sour milk, bread-crusts and salt'],
+ ]);
+ const displayGloss=(ref,value)=>displayCorrections.get(ref+'::'+clean(value))||value;
+ const stem=label=>{
+  let value=String(label||'').trim();
+  // Krupnik often prefixes/suffixes grammatical labels with sense numbers;
+  // Jastrow generally records the grammatical label without that numbering.
+  value=value.replace(/^[—\s]*\d+[).]?\s*/,'').replace(/\s+\d+[).]?\s*$/,'');
+  return clean(value);
+ };
+ const glossAlternatives=text=>{
+  const out=[];let current='',depth=0;
+  for(const ch of String(text||'')){
+   if(ch==='(')depth++;
+   else if(ch===')')depth=Math.max(0,depth-1);
+   if((ch===','||ch===';')&&depth===0){if(clean(current))out.push(current.trim());current='';}
+   else current+=ch;
+  }
+  if(clean(current))out.push(current.trim());
+  return out;
+ };
+ const parts=text=>glossAlternatives(text).map(clean).filter(Boolean);
+ const alternativeKey=text=>clean(text).replace(/[()[\]{}]/g,' ').replace(/\s+/g,' ').trim().replace(/[.,;:!?]+\s*$/,'').trim().replace(/\bone's self\b/g,'oneself').replace(/^(?:a|an|the)\s+/,'').replace(/^to\s+/,''); 
+ // Restore an infinitive marker omitted from later comma-separated alternatives,
+ // while keeping active, passive, and unmarked readings distinct.
+ const contextualAlternative=(value,segment)=>{
+  const first=clean(glossAlternatives(segment)[0]||'');
+  const marker=/^to\s+be\s+/.test(first)?'to be ':/^to\s+/.test(first)?'to ':'';
+  const item=clean(value);
+  return marker&&!/^to\s+/.test(item)?(marker==='to be '&&/^be\s+/.test(item)?'to '+item:marker+item):item;
+ };
+ const alternativeVoice=value=>/^to\s+be\s+/.test(clean(value))?'passive':/^to\s+/.test(clean(value))?'active':'unmarked';
+ const alternativeMatchKey=(value,segment)=>{
+  const contextual=contextualAlternative(value,segment);
+  return {key:alternativeKey(contextual),voice:alternativeVoice(contextual)};
+ };
+ // Canonicalize formatting variants of a complete gloss list. Alternatives
+ // may be reordered; word order within each alternative remains significant.
+ // Parenthetical explanations stay attached to their phrase. The first "to"
+ // marks a verb list; later coordinated items may repeat or omit that marker.
+ const canonicalGlossKey=text=>{
+  const value=String(text||'').normalize('NFKC').toLowerCase().replace(/[’‘]/g,"'").replace(/[‐‑–—]/g,'-');
+  const alternatives=[];let current='',depth=0;
+  for(const ch of value){
+   if(ch==='(')depth++;
+   else if(ch===')')depth=Math.max(0,depth-1);
+   if((ch===','||ch===';')&&depth===0){alternatives.push(current);current='';}
+   else current+=ch;
+  }
+  alternatives.push(current);
+  const first=clean(alternatives[0]||'');
+  const voice=/^to\s+be\s+/.test(first)?'passive':/^to\s+/.test(first)?'active':'nonverb';
+  const normalized=alternatives.map(part=>{
+   let item=clean(part).replace(/\bto\s+to\b/g,'to').replace(/^(?:a|an|the)\s+/,'');
+   if(voice==='passive')item=item.replace(/^to\s+be\s+/,'');
+   else if(voice==='active')item=item.replace(/^to\s+/,'');
+   return item.replace(/[.,;:!?(){}]+/g,' ').replace(/\s+/g,' ').trim();
+  }).filter(Boolean);
+  return voice+':'+[...new Set(normalized)].sort().join(' | ');
+ };
+ // Small exact synonym groups; no token-overlap or stemming heuristics.
+ // Curated from explicit synonym lists in the original Jastrow/Krupnik
+ // records. These groups are applied only within the same headword and only
+ // when every alternative on both sides belongs to one group.
  const synonymGroups=[
   ['sometimes','at times','from time to time','occasionally'],
-  ['happen','to happen','occur','to occur','take place']
+  ['happen','to happen','occur','to occur','take place','to take place'],
+  // KRU03599 / C00144; KRU04953 / D00363
+  ['heap','pile','mound'],
+  ['present','gift'],
+  // KRU04950 / D00357; KRU04994 / D00411
+  ['sediment','lees','dregs'],
+  ['to frighten','to scare'],
+  // KRU04941 / D00341; KRU09989 / L00061
+  ['to dwell','to reside'],
+  ['edge','rim'],
+  // KRU11169 / M01058; KRU01598 / A02444
+  ['capital','metropolis'],
+  ['gathering','assembly'],
+  // KRU01183 / A01787; KRU01222 / A01866
+  ['deity','divinity'],
+  ['strength','force'],
+  // KRU04747 / D00073; KRU09881 / K01325
+  ['to glue','to paste'],
+  ['glue','paste'],
+  ['to grow better','to improve'],
+  // KRU08802 / J00557
+  ['to set on fire','to burn'],
+  // KRU18419 / T01148: "to tremble, shake"
+  ['to tremble','to shake'],
+  // KRU18409 / T01130: "indulgence, clemency"
+  ['indulgence','clemency'],
+  // KRU15738 / Q01337: "caterer, purveyor"
+  ['caterer','purveyor'],
+  // KRU15729 / Q01325: "to be disqualified, made unfit, declared unfit"
+  ['to be disqualified','to be made unfit','to be declared unfit'],
+  // KRU15744 / Q01350: "to apportion, assign"
+  ['to apportion','to assign'],
+  // KRU15744 / Q01350: "to recite a verse"
+  ['to recite a Bible verse','to recite a verse'],
+  // KRU18405 / T01122: "to bubble, boil"
+  ['to bubble','to boil']
  ];
  const synonymKey=text=>{
   const value=clean(text);
-  return synonymGroups.find(group=>group.includes(value))?.[0]||value;
+  const group=synonymGroups.find(group=>group.some(item=>clean(item)===value));
+  return group?clean(group[0]):value;
  };
- // These are reviewed source-gloss pairs, not a general rule that one
- // dictionary gloss may be swallowed merely because its words occur in another.
+ // Match curated synonyms at the individual-gloss level as well as when the
+ // whole gloss is a synonym. This lets "to happen" match the "occur" item in
+ // "to occur, to take place" without treating arbitrary shared words as equal.
+ const synonymGroupKey=text=>{
+  const value=clean(text);
+  const group=synonymGroups.find(group=>group.some(item=>clean(item)===value));
+  return group?clean(group[0]):null;
+ };
+ // A whole gloss may merge through a curated synonym group only when every
+ // alternative on both sides belongs to that same group. One shared synonym
+ // must not drag an unrelated extra sense into the consolidated result.
+ const synonymParts=text=>{
+  const values=parts(text),first=values[0]||'';
+  const coordinatedPrefix=/^to\s+be\s+/.test(first)?'to be ':/^to\s+/.test(first)?'to ':'';
+  // Coordinated lists may omit a repeated active "to" or passive "to be".
+  // Restore only the marker established by the first alternative.
+  return values.map(value=>coordinatedPrefix&&!/^to\s+/.test(value)?coordinatedPrefix+value:value);
+ };
+ const sharesReviewedSynonym=(a,b)=>{
+  const left=synonymParts(a).map(synonymGroupKey),right=synonymParts(b).map(synonymGroupKey);
+  return left.length>0&&right.length>0&&left.every(Boolean)&&right.every(Boolean)&&
+   new Set([...left,...right]).size===1;
+ };
+ // Manually reviewed cross-dictionary gloss equivalents. Each pair is scoped
+ // to the same Hebrew headword, so an English phrase cannot merge unrelated
+ // entries elsewhere in the dictionary. Keep this list conservative.
  const reviewedGlossPairs=new Set([
   ['land, ground','land, earth, ground, field'],
-  ['outlet','outlet, opening']
+  ['outlet','outlet, opening'],
+  ['father, my father','my father'],
+  ['of noble descent','noble descent'],
+  ['to commit suicide','to commit suicide wilfully'],
+  ['city-gate-guards','city-gate-guards, police'],
+  ['to be attached','to be attached to, cling to'],
+  ['to harden','to strengthen, harden'],
+  ['half-done (meat)','half-done meat'],
+  ['thorn-bush','thorn, thorn-bush'],
+  ['staying under the same roof','staying under the same roof with an unclean object'],
+  ['a species of dates','a species of late and inferior dates'],
+  ['of aaronic (priestly) parentage','of priestly parentage, aaronide'],
+  ['pure gold','pure gold, unalloyed'],
+  ['the same','this, the same'],
+  ['there is','there is, there are'],
+  ['but for','unless, but for'],
+  ['human being','human being, person'],
+  ['to be consumed','to be eaten, consumed'],
+  ['to protect','to protect, surround'],
+  ['huge, bulky, large','bulky, huge, large'],
+  ['to glut','to swallow large quantities at a time, to glut'],
+  ['military camp','military camp, fort'],
+  ['rebellious conduct','sulky, rebellious conduct, howling'],
+  ["to roll one's self","to roll one's self, wallow"],
+  ['to low, to roar','to burst forth, to roar, low'],
+  ['to remove impurity of vessels by means of hot water','to remove impurity by means of hot water, to cleanse'],
+  ['to rebuke','to shout, to rebuke'],
+  ['arm, shoulder','arms, shoulders'],
+  ['to make airtight, to paste with gypsum','to make air-tight, to paste with gypsum, clay'],
+  ['to be darkened through the process of sulphuring','to be darkened through sulphur fumes'],
+  ['peat','a pressed hard mass, peat, turf'],
+  ['convert to judaism','a proselyte, convert to judaism'],
+  ['well for irrigating fields','wheel-work, well for irrigating fields'],
+  ['garden-rocket (eruca)','garden-rocket, eruca'],
+  ['to ripen into full berries','to grow berries, to ripen into full berries'],
+  ['of many colors','of many colours']
  ].map(pair=>pair.map(clean).sort().join(' | ')));
- const reviewedGlossEquivalent=(a,b)=>reviewedGlossPairs.has([clean(a),clean(b)].sort().join(' | '));
- function compatible(a,b){
-  const aa=S.markedLetters(a),bb=S.markedLetters(b);
+ const reviewedGlossEquivalent=(a,b)=>{
+  if(!compatibleEntries(a.entry,b.entry))return false;
+  return reviewedGlossPairs.has([clean(a.meaning.text),clean((b.sourceMeaning||b.meaning).text)].sort().join(' | '));
+ };
+ const homonymNumber=value=>{
+  const text=String(value||'').trim();
+  const superscript=text.match(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+$/);
+  if(superscript)return Number([...superscript[0]].map(ch=>'⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(ch)).join(''));
+  const roman=text.match(/(?:^|\s)(I{1,3}|IV|V|VI|VII|VIII|IX|X)$/i);
+  if(roman){
+   const values={I:1,II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8,IX:9,X:10};
+   return values[roman[1].toUpperCase()]||null;
+  }
+  const arabic=text.match(/(?:^|\s)(\d+)$/);
+  return arabic?Number(arabic[1]):null;
+ };
+ function compatible(a,b,word){
+  // Explicit homonym numbering is lexical evidence, not decoration. If both
+  // sources distinguish different numbered homonyms, never merge them.
+  const leftNumber=homonymNumber(a),rightNumber=homonymNumber(b);
+  if(leftNumber!==null&&rightNumber!==null&&leftNumber!==rightNumber)return false;
+  // Consonantal identity is required for every lookup. Only enforce vowel
+  // agreement when the user's query supplied vowels; unpointed lookup should
+  // still combine the same consonantal headword across source vocalizations.
   if(S.normalize(a)!==S.normalize(b))return false;
+  if(!S.hasVowels(word))return true;
+  const aa=S.markedLetters(a),bb=S.markedLetters(b);
   return aa.every((x,i)=>!x.marks.length||!bb[i].marks.length||x.marks.join('')===bb[i].marks.join(''));
  }
+ // A dictionary record can use a different primary headword while listing the
+ // other dictionary's spelling as an attested alternate form. Compare all
+ // source-attested forms, but retain explicit primary-homonym safeguards.
+ function compatibleEntries(a,b,word){
+  if(!a||!b)return false;
+  const an=homonymNumber(a.h),bn=homonymNumber(b.h);
+  if(an!==null&&bn!==null&&an!==bn)return false;
+  const left=[a.h,...(a.alt||[])].filter(Boolean),right=[b.h,...(b.alt||[])].filter(Boolean);
+  return left.some(x=>right.some(y=>compatible(x,y,word)));
+ }
+ const reviewedSourceGlossPairs=new Set([
+  ['KRU08370','J00009','desparing of recovering a lost object','despairing of recovering a lost object, resignation'],
+  ['KRU15837','Q01517','to declare ownerless','to declare free, to renounce ownership, declare a property ownerless'],
+  ['KRU14478','P00680','a symbolical act by which the legal fiction of community or continuity is established','‘Erub, a symbolical act by which the legal fiction of community'],
+  ['KRU09880','K01324','to work with zeal','to adapt one’s self, to work with zeal and conscientiousness'],
+  ['KRU16236','R00053','to raise the fingers as a signal','to raise one or more fingers'],
+  ['KRU14845','P01349','trough for kneading etc.','trough, tub, kneading trough'],
+  ['KRU05871','E00517','marking out the road to the city of refuge','marking out the road'],
+  ['KRU05204','D00689','pricking pain in the eye','pricking pain'],
+  ['KRU05265','D00765','an elevated spot on the hearth','an elevated spot'],
+  ['KRU01971','A03028','long bedside','long board, longside of bedstead, bedside'],
+  ['KRU01236','A01891','diagonal','diagonal line, diameter'],
+  ['KRU02095','A03220','in accident','accident, occurrence'],
+  ['KRU07529','H01646','to squeeze','to squeeze into'],
+  ['KRU09370','K00616','in what manner? how?','how?, in what manner?, in what respect?'],
+  ['KRU16649','S00025','artificial foot','a piece of wood hollowed out for the stump of a leg, a sort of artificial foot'],
+  ['KRU17729','S02038','covered with a crust of sediments','covered with a crust'],
+  ['KRU17738','S02061','formation of a crust','formation of a light crust'],
+  ['KRU01645','A02519','van-guard','forerunner, the commander’s van-guard'],
+  ['KRU01430','A02164','of Antiochia','Antiochian, native of Antiochia, resident of A'],
+  ['KRU16409','R00377','with lang dependent ears','a goat with long hair lumps and long, dependent ears'],
+  ['KRU16142','Q02074','single share of the heir, opp. to the double share of the first-born son','the plain heir’s right, single share'],
+  ['KRU07518','H01630','a pap made of fruits and spices with wine (used as sauce on the Passover-night)','a pap made of fruits and spices with wine or vinegar'],
+  ['KRU09233','K00422','a dish consisting of sour milk, bread and salt','a preserve consisting of sour milk, bread-crusts and salt'],
+  ['KRU18341','T00991','to bore through','to bore'],
+  ['KRU18343','T00995','to press, to crush','to press, crush'],
+  ['KRU18343','T00995','to be squeezed','to be squeezed, crushed'],
+  ['KRU18344','T00995','to join','to join closely, to place in rows; to pave with blocks'],
+  ['KRU18356','T01039','to shape','to form the limbs of an embryo, shape'],
+  ['KRU18361','T01057','bank','alluvial ground, bank'],
+  ['KRU18367','T01065','having power, entitled to','having power, empowered, entitled to, permitted'],
+  ['KRU18387','T01083','to have power','to have power, be permitted, dare'],
+  ['KRU18387','T01083','to lend; to claim a debt','to claim power over, to claim a debt; to lend'],
+  ['KRU18388','T01084','creditor','money-lender, pressing creditor'],
+  ['KRU18392','T01089','to weaken','to weaken, break the force of'],
+  ['KRU18392','T01089','to be weakened','to be relaxed, weakened'],
+  ['KRU18392','T01090','to weaken','to loosen, weaken'],
+  ['KRU18392','T01090','to be weakened','to be lax, weakened'],
+  ['KRU18393','T01091','to be marked, to be engraven','to be marked, engraven'],
+  ['KRU18394','T01091','to mark, to draw','to mark, draw'],
+  ['KRU18396','T01102','wickedness','wickedness, guilt'],
+  ['KRU18399','T01111','to be crushed','to be stamped upon, be crushed'],
+  ['KRU18405','T01122','to bubble, to boil','to bubble, boil, be hot'],
+  ['KRU18406','T01125','anger','heat; anger, excitement'],
+  ['KRU18407','T01126','irascible','hot-tempered, irascible'],
+  ['KRU18409','T01130','clemency','indulgence, clemency'],
+  ['KRU18410','T01132','effervescence','effervescence, scum, foam'],
+  ['KRU18413','T01138','to weld','to join, weld, rivet'],
+  ['KRU18416','T01144','to tremble','to tremble, be startled'],
+  ['KRU18417','T01145','to store, to cellar','to store'],
+  ['KRU18418','T01146','to strike, to knock (at the door)','to knock'],
+  ['KRU18419','T01148','to tremble','to tremble, shake'],
+  ['KRU18420','T01149','to be frightened','to shake, be frightened, afraid'],
+  ['KRU18424','U00003','to absorb, to imbibe','to draw water; to attract, absorb, imbibe'],
+  ['KRU18424','U00003','to draw','to draw water; to attract, absorb, imbibe'],
+  ['KRU18428','U00008','teak-tree','teak'],
+  ['KRU15729','Q01325','to be sculptured','to be hewn, sculptured'],
+  ['KRU15729','Q01325','to be made unfit','to be disqualified, made unfit, declared unfit'],
+  ['KRU15730','Q01325','to chip, to trim','to cut, chip, hew, trim'],
+  ['KRU15730','Q01325','to cut off dry twigs','to cut off dry twigs, to trim.'],
+  ['KRU15733','Q01328','lath','chip, lath'],
+  ['KRU15734','Q01330','disqualification','condition of unfitness, disqualification'],
+  ['KRU15738','Q01337','caterer','caterer, purveyor'],
+  ['KRU15744','Q01350','to divide','to divide, split, interrupt'],
+  ['KRU15744','Q01350','to recite a Bible verse','to recite a verse'],
+  ['KRU15744','Q01350','to assign','to apportion, assign; to provide; to promise, agree'],
+  ['KRU15744','Q01350','to cease','to be cut off; to cease, be stopped'],
+  ['KRU15744','Q01350','to interrupt','to interrupt; to cause to cease; to leave off; to pause'],
+  ['KRU15746','Q01350','to cut to pieces','to cut down, ruin; to cut to pieces'],
+  ['KRU15746','Q01350','to form a partition','to separate, sever connection; to form a partition'],
+  ['KRU15746','Q01350','to pause','to interrupt; to cause to cease; to leave off; to pause'],
+  ['KRU15747','Q01351','to decide','to decide, adjudge'],
+  ['KRU15748','Q01352','piece, remainder','detached piece, remainder.'],
+  ['KRU15750','Q01353','part','detached part.—Pl.'],
+  ['KRU15750','Q01353','decision','decision, decree'],
+  ['KRU15753','Q01360','parties','divisions, parties'],
+  ['KRU15758','Q01379','to cry','to cry, bleat, low'],
+  ['KRU15759','Q01380','cry','cry, exclamation, proclamation'],
+  ['KRU15761','Q01382','noisy woman','noisy, quarrelsome woman'],
+  ['KRU15768','Q01393','to crumble','to crush, crumble'],
+  ['KRU15768','Q01393','to pierce, to penetrate','to spread; to pierce, penetrate'],
+  ['KRU15778','Q01412','papyrus','papyrus, linen made of papyrus'],
+  ['KRU15785','Q01424','unwalled place','open, unwalled place.'],
+  ['KRU15786','Q01425','joy','breaking forth, joy'],
+  ['KRU15788','Q01426','to save','to rescue, save'],
+  ['KRU15791','Q01430','bright','bright, sparkling'],
+  ['KRU15793','Q01432','lath, board','board'],
+  ['KRU15795','Q01435','splitting','splitting, cracking'],
+  ['KRU15796','Q01436','to split, to divide','to split, divide'],
+  ['KRU15796','Q01436','to branch off','to split, divide, branch off; to peel, lay bare'],
+  ['KRU15797','Q01436','to divide','to split, divide, branch off; to peel, lay bare'],
+  ['KRU15798','Q01439','to split, to crack','to split, crack'],
+  ['KRU15798','Q01439','to be crushed','to be split, squeezed open, crushed; to be wounded'],
+  ['KRU15800','Q01444','burst fruits','burst fruits, fruits that fell off in an unripe state and were placed in the sun to ripen'],
+  ['KRU15801','Q01449','to give in charge, to deposit','to give in charge, entrust, deposit'],
+  ['KRU15801','Q01449','to be remembered','to be visited, remembered, decreed upon'],
+  ['KRU15801','Q01449','to be commanded','to be commanded, commissioned'],
+  ['KRU15802','Q01449','to command','to command, order'],
+  ['KRU15804','Q01453','last will','order, last will'],
+  ['KRU15810','Q01474','to open','to break through, open'],
+  ['KRU15810','Q01474','to watch, to care','to guard, watch, care'],
+  ['KRU15818','Q01493','to peel','to split, peel'],
+  ['KRU15825','Q01502','to burst','to split; to burst; to break forth, escape'],
+  ['KRU15826','Q01502','to split','to split, break open'],
+  ['KRU15826','Q01502','to ravel out, to strip','to strip, pluck, ravel out'],
+  ['KRU15826','Q01502','to raise the market-prices arbitrarily','to break up, unsettle the market, to raise prices arbitrarily, create a panic'],
+  ['KRU15827','Q01502','to burst','to split; to burst; to break forth, escape'],
+  ['KRU15828','Q01503','to make known','to let go forth, issue, make known'],
+  ['KRU15830','Q01507','coil, clue of thread','coil, clue of thread, of rope'],
+  ['KRU15831','Q01508','idleness','hindrance, enforced idleness'],
+  ['KRU15832','Q01511','to loosen','to drive a wedge in; to loosen, shake'],
+  ['KRU13037','N01308','the office of the Nasi','the office of the Nasi, the house of the Nasi'],
+  ['KRU13041','N01312','biting','biting, bite'],
+  ['KRU13043','N01313','falling off','falling off, chopping off; dropping'],
+  ['KRU13053','N01328','to fall off','to slip off, fall off'],
+  ['KRU13053','N01328','to let fall, to drop','to let fall, drop'],
+  ['KRU13054','N01331','to rest','to take breath, to rest'],
+  ['KRU13054','N01331','to recover','to recover, get well'],
+  ['KRU13056','N01333','respiration','breath, respiration'],
+  ['KRU13057','N01336','to blow','to blow, breathe'],
+  ['KRU13058','N01341','to touch closely','to touch closely; to kiss'],
+  ['KRU13058','N01342','to seal, to close','close'],
+  ['KRU13060','N01345','to drop, to fall off','to drop, fall off.'],
+  ['KRU13061','N01345','to let fall','to let fall, drop'],
+  ['KRU13070','N01364','to distrain','to distrain, take by force'],
+  ['KRU13074','N01377','breaking up','cutting out, breaking up'],
+  ['KRU13080','N01387','to secrete','to cause oozing, to secrete'],
+  ['KRU13081','N01387','to protest','to remonstrate, protest'],
+  ['KRU13084','N01394','to fall off, to drop','to fall off, drop; to fall apart, decay; to become wearied, faint'],
+  ['KRU13087','O00003','to become (filthy), unfit','to become filthy, repulsive, unfit for sacrifice.'],
+  ['KRU13091','O00009','uncleanness','unclean object; uncleanness'],
+  ['KRU13095','O00026','old','grey, old; elder; ancestor; scholar'],
+  ['KRU13113','O00063','to be entangled','to be caught, entangled'],
+  ['KRU13117','O00071','to carry, to endure','to carry'],
+  ['KRU13120','O00077','cloth','a cloth'],
+  ['KRU13122','O00079','Sebaste (Samaria) in Palestine','Sebaste'],
+  ['KRU13123','O00080','princes','members of the imperial family, princes'],
+  ['KRU13127','O00084','to think','to look for, be hopeful; to think, imagine. Part. pass'],
+  ['KRU13127','O00084','to make clear','to brighten, illustrate, make clear'],
+  ['KRU13128','O00085','to understand','to conclude, argue, understand; to have an idea'],
+  ['KRU13128','O00085','to hope','to look for, hope; to plan, intend'],
+  ['KRU13130','O00085','to trust','to look for, hope, trust'],
+  ['KRU13130','O00085','to explain','to illustrate, explain'],
+  ['KRU13130','O00085','to be understood, to be intelligible','to be understood, be intelligible, evident'],
+  ['KRU13131','O00089','sense','understanding, plain sense'],
+  ['KRU13141','O00102','idol','idol-worship;'],
+  ['KRU13144','O00110','cluster of grapes','cluster'],
+  ['KRU13145','O00111','property','acquisition, property'],
+  ['KRU13149','O00120','to increase','to swell, rise, grow, spread, increase, thrive'],
+  ['KRU13149','O00120','to enlarge','to enlarge, increase, make great; to have much, do much'],
+  ['KRU13149','O00120','to be multiplied','to be multiplied; to increase'],
+  ['KRU13151','O00123','great, numerous','numerous, large, great'],
+  ['KRU13161','O00140','multitude','greatness, multitude'],
+  ['KRU13165','O00147','to save, to treasure','to lay by, save; to treasure'],
+  ['KRU13173','O00163','to plague, to afflict','to plague, afflict'],
+  ['KRU13173','O00163','to suffer','to feel privation; to suffer'],
+  ['KRU13174','O00166','to be locked up','to be locked up, closed'],
+  ['KRU13185','O00182','head-side','the head-board of a couch, head-side'],
+  ['KRU13190','O00193','to be split','to be split, cut into'],
+  ['KRU11534','M01655','pestilence','pestilence, death'],
+  ['KRU11535','M01656','twisted yarn','twisted yarn, cord'],
+  ['KRU11576','M01727','usage','conduct, manner, usage'],
+  ['KRU11579','M01730','leader','leader, director'],
+  ['KRU11584','M01735','manager of the house','manager of the house, executor'],
+  ['KRU11590','M01747','food','the ordinary daily food'],
+  ['KRU11593','M01758','rest','rest, relief'],
+  ['KRU11596','M01764','meal offering','offering; meal offering'],
+  ['KRU11599','M01772','to be appointed','to be appointed, designated as deputy, to be ordained'],
+  ['KRU11599','M01773','to appoint, to ordain','to appoint, ordain'],
+  ['KRU11599','M01773','to designate for a share','to register, enter, designate for a share'],
+  ['KRU11599','M01773','to be counted','to be numbered, counted; to vote'],
+  ['KRU11617','M01800','to withhold','to withhold, refuse, refrain'],
+  ['KRU11617','M01800','to shrink from','to restrain one’s self; to shrink.'],
+  ['KRU11617','M01801','to withhold','to diminish; to withhold'],
+  ['KRU11617','M01801','to cease, to omit','to be diminished; to cease, omit'],
+  ['KRU11617','M01801','to shrink from','to restrain one’s self; to refuse, shrink'],
+  ['KRU11626','M01817','candlestick, lamp','lamp'],
+  ['KRU11631','M01828','unclean','repulsive; unclean'],
+  ['KRU11646','M01862','marks','low border-marks'],
+  ['KRU11661','M01876','space between two columns','intercolumniation, space between two columns'],
+  ['KRU11673','M01894','balance','balance, pair of scales'],
+  ['KRU11685','M01917','losing courage','melting, losing courage'],
+  ['KRU11693','M01934','delivery, handing','handing, delivery'],
+  ['KRU11696','M01951','to make poor','to make poor, reduce'],
+  ['KRU11697','M01955','Talmudic treatise','construction, Talmudic treatise'],
+  ['KRU11704','M01969','nail, pin','a pointed object, nail, pin'],
+  ['KRU11710','M01977','basket','sieve, basket'],
+  ['KRU11716','M01991','dilemma','strait, dilemma; difficulty'],
+  ['KRU11721','M02003','height','ascent, height, steps'],
+  ['KRU11721','M02003','final result','final result, upshot'],
+  ['KRU11722','M02005','going up','going up, procession'],
+  ['KRU11723','M02006','to hand over','to hand over; to deliver, transmit.'],
+  ['KRU11725','M02007','to be surrendered','to be surrendered, transmitted; to surrender one’s self'],
+  ['KRU11732','M02021','melissa','Melissophyllon, melissa'],
+  ['KRU07868','I00257','milt','spleen, milt'],
+  ['KRU07876','I00268','grist','grist, meal'],
+  ['KRU07887','I00282','to molest','to molest, provoke'],
+  ['KRU07888','I00283','four-cornered','four-cornered, in a quadrangle, in a square'],
+  ['KRU07901','I00303','navel','navel, umbilicus'],
+  ['KRU07920','I00321','walking','walking, going errands'],
+  ['KRU07926','I00330','Titus, the Roman emperor','Titus'],
+  ['KRU07932','I00337','buildings with four gates','buildings with four gates, prominent mansions'],
+  ['KRU07934','I00338','improvement','improvement, industrious tilling'],
+  ['KRU07938','I00346','bird of prey','a bird swooping for prey, bird of prey'],
+  ['KRU07948','I00359','fastening','fastening with rings'],
+  ['KRU07954','I00365','rag','patch, rag;'],
+  ['KRU07976','I00394','filth','filth, impurity, defilement'],
+  ['KRU07977','I00396','refuse','worthless admixture in grain, refuse'],
+  ['KRU07979','I00399','rock','rock, flint'],
+  ['KRU07982','I00404','pearl-barley','barley-groats, pearl-barley.'],
+  ['KRU07987','I00413','clapping of hands','clapping'],
+  ['KRU07997','I00423','arrangement','arrangement, measurement, proportions'],
+  ['KRU08007','I00438','usurpation','sovereignty, absolute rule, usurpation'],
+  ['KRU08008','I00439','confusion','confusion, distraction; trouble'],
+  ['KRU08008','I00439','banishment','ejection, banishment'],
+  ['KRU08010','I00442','the shaking movement (of the mill)','the shaking movement'],
+  ['KRU08021','I00462','to press','to press, squeeze, fit on'],
+  ['KRU08023','I00462','to harness','to fasten, to harness and load'],
+  ['KRU08043','I00486','moving','moving, handling'],
+  ['KRU08043','I00486','migration','migration, exile'],
+  ['KRU08044','I00488','homeless','an exile, homeless man'],
+  ['KRU08045','I00490','to carry','to move, carry, handle'],
+  ['KRU08045','I00490','to be handled','to be moved, handled; to be made restless'],
+  ['KRU08046','I00491','to move','to move, shake'],
+  ['KRU08046','I00491','to be exiled','to be exiled, to wander'],
+  ['KRU08046','I00491','to be unsteady','to be unsteady, to be moved, to be movable'],
+  ['KRU08049','I00495','young','tender, young; young man, servant'],
+  ['KRU08052','I00499','pleasure','pleasure, enjoyment'],
+  ['KRU08056','I00504','cloak, sheet','cover, sheet, cloak'],
+  ['KRU08057','I00506','girl','young; girl'],
+  ['KRU08058','I00508','to roof, to cover','to cover'],
+  ['KRU08075','I00525','to be thrown','to be thrown, to be cast away'],
+  ['KRU08083','I00537','sun-set','sinking, sun-set'],
+  ['KRU08084','I00538','hiding place','hiding place, refuge'],
+  ['KRU08095','I00554','to fill up','to fill up, stop'],
+  ['KRU08098','I00559','to be mixed up','to be hidden, sunk, to be mixed up beyond recognition'],
+  ['KRU08099','I00559','to be sunk','to be hidden, sunk, to be mixed up beyond recognition'],
+  ['KRU08099','I00560','to sink','to sink, be covered up'],
+  ['KRU08100','I00560','to bury','to cover up, bury'],
+  ['KRU08102','I00561','to hide','to hide, preserve, guard'],
+  ['KRU08103','I00562','to immerse','to dip, immerse'],
+  ['KRU08103','I00562','to be dipped','to be dipped, to sink'],
+  ['KRU08115','I00577','to be moistened','to be moistened and softened'],
+  ['KRU08118','I00578','to be jealous','to be jealous, zealous, agitated'],
+  ['KRU08121','I00581','to be soiled','to be soiled, defiled'],
+  ['KRU08123','I00585','plate','foil, plate'],
+  ['KRU05674','E00231','to oppose, to argue','dwell upon, to discuss, argue, oppose'],
+  ['KRU05681','E00192','anchor','anchor, ballast'],
+  ['KRU05687','E00203','admission','confession, admission'],
+  ['KRU05697','E00232','existence','existence, status, condition, stability'],
+  ['KRU05699','E00234','evidence','evidence, precedent, rule'],
+  ['KRU05702','E00240','union','concord, union'],
+  ['KRU05712','E00258','appearance','the appearance'],
+  ['KRU05716','E00266','sprouting','bringing forth, sprouting'],
+  ['KRU05716','E00266','expenditure, outlay','expenditure, outlay, cost; marketing'],
+  ['KRU05720','E00269','hanging','making an abomination, exposure; hanging'],
+  ['KRU05723','E00273','letting down','leading down, letting down; descent'],
+  ['KRU05724','E00274','Herod, the king','Herod'],
+  ['KRU05730','E00285','reaching over','reaching over, handing over'],
+  ['KRU05738','E00298','notice','giving a debtor notice'],
+  ['KRU05741','E00302','designation, preparation','preparation, designation'],
+  ['KRU05747','E00310','preparing','preparing, trimming'],
+  ['KRU05753','E00317','being inclined, i.e. giving a verdict according to the majority','being inclined'],
+  ['KRU05757','E00322','prophetic speech','flow of words, prophetic speech'],
+  ['KRU05770','E00345','paying respect','paying respect; honoring, adorning'],
+  ['KRU05770','E00345','adorning','paying respect; honoring, adorning'],
+  ['KRU05775','E00354','damage','injury, damage, loss; danger'],
+  ['KRU05776','E00358','reeds','calamus, reeds'],
+  ['KRU05779','E00362','quickly','quickly, rapidly'],
+  ['KRU05809','E00410','pile','stack of grain, pile of fruits in the field'],
+  ['KRU05820','E00432','trust, confidence','trust, confidence, faith'],
+  ['KRU05825','E00446','half-baked','quick-baked, half-baked'],
+  ['KRU05831','E00458','setting down','setting down, temporary deposit'],
+  ['KRU05833','E00460','those','those, exactly those'],
+  ['KRU05847','E00484','circumference','circumference, surface'],
+  ['KRU05855','E00499','here','here, hither; in this case, now'],
+  ['KRU05860','E00504','contradiction, incongruity of details of legal evidence','contradiction, incongruity in details of legal evidence'],
+  ['KRU05862','E00506','so, thus','so, in this manner, thus'],
+  ['KRU05871','E00516','preparing, designation','preparing, designation for use on the Sabbath or Holy Day'],
+  ['KRU05872','E00518','putting in','carrying in, putting in'],
+  ['KRU05872','E00518','coming home','entering, coming home'],
+  ['KRU05883','E00536','that one there','that one there, this one;'],
+  ['KRU05896','E00565','hither','hither, thither'],
+  ['KRU05905','E00575','to fit','to be attached, fit closely'],
+  ['KRU05908','E00580','murmuring','murmuring, rebellion'],
+  ['KRU05926','E00622','to sweep','to stir up, sweep'],
+  ['KRU05941','E00645','conducting (water)','conducting water through a channel'],
+  ['KRU05957','E00670','driving an animal','driving'],
+  ['KRU05985','E00712','divine anger','hiding of face, divine anger, refusal to answer prayer'],
+  ['KRU05988','E00715','surplus','surplus; addition, increase'],
+  ['KRU05996','E00723','going home','going home in the evening from labor'],
+  ['KRU05999','E00726','legal evasion','trickery, legal evasion, improper means to avoid a religious duty'],
+  ['KRU06002','E00730','farewell-address','farewell-address, toast on parting'],
+  ['KRU06009','E00748','distinction','distinction, peculiarity, use of the word'],
+  ['KRU06010','E00749','interval','separation, interruption, interval'],
+  ['KRU06016','E00758','cancellation','cancellation, release from debt.'],
+  ['KRU06018','E00762','invalidation','invalidation, declaring void;'],
+  ['KRU06021','E00765','province','lieutenancy, provincial government, province'],
+  ['KRU06026','E00772','warming','making tepid, warming'],
+  ['KRU06040','E00790','letting blood','letting blood, opening a vein'],
+  ['KRU06052','E00807','clapping','clapping, knocking together'],
+  ['KRU06054','E00813','murderer','murderer, highway-man'],
+  ['KRU06065','E00840','to meditate','to conceive in mind, to think, meditate, plan'],
+  ['KRU06067','E00844','comfort','plenty, liberal provision; comfort'],
+  ['KRU06071','E00854','distance, precautionary measure','distance'],
+  ['KRU06078','E00865','shouting for joy','shouting'],
+  ['KRU06099','E00905','authorization','authorization, authority, power of attorney'],
+  ['KRU06113','E00924','Divine punishment','stretching forth of hand, Divine punishment'],
+  ['KRU06116','E00928','extermination','extermination, use of the verb'],
+  ['KRU06117','E00929','kind attention','putting an eye upon, paying kind attention to'],
+  ['KRU06119','E00932','rubbing','smoothing, rubbing, finishing by rubbing'],
+  ['KRU06125','E00938','looking','the looking down, the use of the verb'],
+  ['KRU06128','E00941','prostration for prayer','prostration'],
+  ['KRU02828','B00795','to produce, to mature','to produce, mature'],
+  ['KRU02828','B00795','to be dedicated as first-born','to be dedicated as the first-born'],
+  ['KRU02842','B00810','rags, fragments','fragments, rags'],
+  ['KRU02846','B00814','to disarrange, to mix up','to mix up; to disarrange, upset, disturb'],
+  ['KRU02846','B00815','to be disturbed','to be disturbed, mixed up'],
+  ['KRU02870','B00843','curl, plait of hair','plait'],
+  ['KRU02872','B00845','search','search, examination'],
+  ['KRU02881','B00854','to be worn out, to perish','to be crumbled; to be worn out, to fail, decay, perish'],
+  ['KRU02883','B00859','an amulet','phylactery, amulet'],
+  ['KRU02896','B00879','rag','rag, shred'],
+  ['KRU02900','B00885','bathing master','bathing master, bathing attendant'],
+  ['KRU02906','B00892','to mix with all sorts of things','to mix with all sorts of things, to mix indiscriminately.'],
+  ['KRU02908','B00894','balsam','balsam, aromatic gum'],
+  ['KRU02912','B00900','absorption, leakage','absorption, natural loss, leakage'],
+  ['KRU02914','B00901','glutton','swallower, glutton'],
+  ['KRU02922','B00917','to search, to examine','to search, examine'],
+  ['KRU02924','B00919','investigator','detective, investigator, searching tax-commissioner, constable'],
+  ['KRU02925','B00921','reconnoitring troop','reconnoitring troop, quartermaster’s division, marauders'],
+  ['KRU02979','B00946','mitigating circumstances','favorable side, mitigating circumstances'],
+  ['KRU02984','B00953','building, erection','building, structure; erection'],
+  ['KRU02984','B00953','skeleton','human frame, skeleton.'],
+  ['KRU02986','B00955','sour, angry','sour; angry, sad.'],
+  ['KRU02989','B00958','the commander’s attendants','the commander’s attendants, orderlies'],
+  ['KRU02994','B00963','anger','anger, ill-humor'],
+  ['KRU03017','B00976','delicacy','sweet-meat, delicacy.'],
+  ['KRU03025','B00990','sour, fermenting','fermenting, sour'],
+  ['KRU03026','B00991','wine turned into vinegar','fermenting wine, wine turned into vinegar'],
+  ['KRU03031','B00997','base, footstool, stand','anything to tread upon; footstool, stand, base'],
+  ['KRU03033','B01000','contemptible','contemned, contemptible'],
+  ['KRU03049','B01018','jug, pitcher','jug, pitcher;'],
+  ['KRU03057','B01022','casting bubbles','casting bubbles, bulging, bulge.'],
+  ['KRU03058','B01023','to cast bubbles','to cast bubbles, to form protuberances, to bulge'],
+  ['KRU03058','B01023','to swim','to struggle in the water, swim'],
+  ['KRU03059','B01024','to knock at the door','to ask entrance, knock at the door'],
+  ['KRU00026','A00023','displeasure','offence, displeasure'],
+  ['KRU00027','A00027','of noble descent','noble descent'],
+  ['KRU00051','A00071','city-gate-guards','city-gate-guards, police'],
+  ['KRU00115','A00180','understanding','understanding, speculation'],
+  ['KRU00120','A00190','to twist','to entangle, twist, twine'],
+  ['KRU00120','A00190','to be attached','to be attached to, cling to'],
+  ['KRU00125','A00200','to harden','to strengthen, harden'],
+  ['KRU00138','A00226','half-done (meat)','half-done meat'],
+  ['KRU00149','A00244','tie','tie, knot'],
+  ['KRU00149','A00244','bundle, bunch','bunch'],
+  ['KRU00155','A00254','thorn-bush','thorn, thorn-bush'],
+  ['KRU00156','A00255','inside','inside, amid'],
+  ['KRU00163','A00262','nut tree','nut-tree'],
+  ['KRU00186','A00301','gate','outside-door, city-gate'],
+  ['KRU00189','A00305','engraving','engraving, setting'],
+  ['KRU00197','A00324','protection','protection, guard'],
+  ['KRU00199','A00325','pear','pear, pear-tree'],
+  ['KRU00201','A00332','wing','wing, pinion.'],
+  ['KRU00211','A00344','of superior quality','fit for storage, of superior quality'],
+  ['KRU00242','A00393','to throw','to swing, throw, pitch'],
+  ['KRU00249','A00400','red','red, full of sap, fresh'],
+  ['KRU00283','A00456','glory','glory, distinction'],
+  ['KRU00317','A00493','staying under the same roof with an unclean object','staying under the same roof'],
+  ['KRU00319','A00498','a species of dates','a species of late and inferior dates'],
+  ['KRU00349','A00533','pure gold','pure gold, unalloyed'],
+  ['KRU00357','A00544','rim','border of a vessel, rim'],
+  ['KRU00360','A00548','heap','heap of stones, stone-hill'],
+  ['KRU00376','A00572','pestle','a crushing tool, pestle, pounding club'],
+  ['KRU00402','A00604','fringes','knots, fringes'],
+  ['KRU00411','A00617','the last','last, outmost'],
+  ['KRU00420','A00637','knapsack, portmanteau','knapsack'],
+  ['KRU00448','A00685','substance','substance, bulk,'],
+  ['KRU00449','A00686','leaven','the leaven, flour used for leaven'],
+  ['KRU00454','A00693','receipt','receipt, discharge'],
+  ['KRU00457','A00701','artisan','skilled, artist, artisan, professional cook, architect'],
+  ['KRU00462','A00708','handicraft','skill, handicraft, trade.'],
+  ['KRU00515','A00801','opium','poppy-juice, opium'],
+  ['KRU00541','A00849','nettle','brier, nettle'],
+  ['KRU00549','A00858','a disease of the tongue','a disease of the tongue, rana'],
+  ['KRU00551','A00866','rose-wine','vin-aux-roses, rose-wine'],
+  ['KRU00584','A00913','evening','evening, night'],
+  ['KRU00590','A00924','shoemaker','worker in leather, saddler, shoemaker'],
+  ['KRU00594','A00931','inn','night’s lodging, inn.'],
+  ['KRU00599','A00942','sitting','sitting down, sitting'],
+  ['KRU00602','A00944','owl','night-bird, owl'],
+  ['KRU11703','E00635','softening','melting, softening'],
+  ['KRU03578','C00617','hump, height','hump'],
+  ['KRU03629','C00640','blasphemy','blasphemy, reviling'],
+  ['KRU03783','C00540','cut wool','wool-shearing'],
+  ['KRU03931','C00509','wheat flour of the second course','wheat flour of the second course, dark flour'],
+  ['KRU03950','C00532','circumciser','circumciser, surgeon.'],
+  ['KRU03955','C00537','to be cut, to be shorn, to be trimmed','to be cut, trimmed, shorn.'],
+  ['KRU03956','C00537','to cut, to shear','to cut, shear'],
+  ['KRU03956','C00538','to cross, to pass','to cross, pass'],
+  ['KRU03958','C00541','to go out of one’s way','to pass, go out of one’s way'],
+  ['KRU03985','C00568','to cut branches off, to tap','to cut branches off'],
+  ['KRU03989','C00573','to be decreed','to be decreed, ordained'],
+  ['KRU03990','C00574','to cut, to split','to cut, split'],
+  ['KRU03994','C00578','sheep in folds, flock','sheep in folds, fold, flock'],
+  ['KRU04003','C00590','to laugh, to jest','to laugh, jest'],
+  ['KRU04022','C00610','top, back','back, top'],
+  ['KRU04040','C00629','a bitter herb, worm-wood','worm-wood, bitter herb'],
+  ['KRU04043','C00631','full of incisions','full of incisions, wrinkled'],
+  ['KRU04048','C00638','ravines','valleys, ravines'],
+  ['KRU04055','C00645','one whose hand or fingers are cut off or stumped','one whose hand or fingers are cut off'],
+  ['KRU04058','C00648','flame','flame, light'],
+  ['KRU04059','C00649','pond','cavity, pond'],
+  ['KRU04061','C00652','flame-red','flame-colored'],
+  ['KRU04067','C00659','inhabitants of Coptos (Upper Egypt)','inhabitants of Coptos'],
+  ['KRU04080','C00673','haughty, proud','haughty, proud man'],
+  ['KRU04082','C00675','pride','pride, haughtiness'],
+  ['KRU04088','C00682','tapping','cutting, tapping'],
+  ['KRU04099','C00690','to attack, to fight','to attack, fight'],
+  ['KRU04108','C00700','to manifest power, to treat with vigor','to manifest power, treat with rigor'],
+  ['KRU04117','C00714','adultery','adultery, whoredom'],
+  ['KRU04119','C00717','clapper of a bell','ball, clapper of a bell'],
+  ['KRU04132','C00726','the glowing horizon','flashes, the glowing horizon'],
+  ['KRU04145','C00741','the use of letters for their numerical value (in homiletic interpretation)','the use of letters for their numerical value; homiletic interpretation based on the numerical value of letters'],
+  ['KRU04150','C00746','to cover, to protect','to cover, surround with; to protect'],
+  ['KRU04173','C00777','side, neighbourhood','neighborhood, side'],
+  ['KRU04174','C00778','agony of death','agony of death, dying stage'],
+  ['KRU04175','C00779','a large vessel which turned out defective','a large vessel which turned out defective or unwieldy'],
+  ['KRU04185','C00791','embracing','embracing, hugging'],
+  ['KRU04186','C00792','rim, railing','railing, rim'],
+  ['KRU04199','C00803','for, as a consequence','as a consequence, for'],
+  ['KRU04200','C00805','lime','lime, plaster.'],
+  ['KRU04201','C00806','arrow','projectile, arrow'],
+  ['KRU04203','C00806','projectile','projectile, arrow'],
+  ['KRU04212','C00820','provocation, stirring up','instigation, provocation, stirring up'],
+  ['KRU05829','E00659','calculation of proportions','mark; calculation of proportions'],
+  ['KRU05838','E00695','banqueting (around the table)','placing the divans around the table;'],
+  ['KRU05894','E00559','these, those','these, those, these things'],
+  ['KRU05911','E00586','doing late','doing late, procrastination'],
+  ['KRU05919','E00607','belt, girdle','belt'],
+  ['KRU05921','E00611','melancholic, confused in mind','confused in mind, delirious'],
+  ['KRU05927','E00625','sweepings','sweepings, refuse'],
+  ['KRU05944','E00653','objection','intervention, objection'],
+  ['KRU05944','E00678','pleasure, benefit','enjoyment, pleasure, benefit'],
+  ['KRU05954','E00675','to enjoy, to profit','to be pleased, to enjoy, to profit'],
+  ['KRU05955','E00675','to benefit, to cause to share','to benefit, to entertain, to cause to share'],
+  ['KRU05959','E00673','putting down','putting down, depositing, laying down'],
+  ['KRU05984','E00711','enticement','seduction, enticement'],
+  ['KRU05987','E00714','testimony','testimony, deposition'],
+  ['KRU05991','E00716','wrapping, throwing over one’s shoulders','throwing over one’s shoulders, wrapping'],
+  ['KRU05993','E00719','placing, appearance','placing, being placed, appearance'],
+  ['KRU05994','E00724','first stage of sexual connection','sexual contact, the first stage of sexual connection'],
+  ['KRU06004','E00736','displacing','upturning, displacing'],
+  ['KRU06007','E00741','to turn','to turn, change'],
+  ['KRU06014','E00755','interruption, ceasing','ceasing, interruption, interval'],
+  ['KRU06019','E00763','governor','governor, lieutenant'],
+  ['KRU06024','E00769','flaying','stripping, flaying'],
+  ['KRU06033','E00786','laying out of mattresses, carpets','making a couch, laying out of mattresses, carpets'],
+  ['KRU06041','E00791','burning on the altar','letting rise in smoke, burning on the altar'],
+  ['KRU06049','E00800','going round','surrounding, going round'],
+  ['KRU06055','E00814','execution by decapitation','execution by decapitation with a sword'],
+  ['KRU06056','E00817','habit, fluency','habit;'],
+  ['KRU06056','E00817','leading to','leading to, occasion for'],
+  ['KRU06070','E00853','washing','washing, bathing'],
+  ['KRU06074','E00858','here is, behold','behold, here is'],
+  ['KRU06080','E00867','grits','grits, polenta'],
+  ['KRU06085','E00876','removal','lifting, removal'],
+  ['KRU06097','E00899','lecture, discourse','discourse'],
+  ['KRU06101','E00909','giving back','restoring, giving back'],
+  ['KRU06107','E00916','getting up early','getting up early; early work, study'],
+  ['KRU06112','E00923','early rising','early rising, early morning hour'],
+  ['KRU06121','E00934','plenty','plenty, liberality'],
+  ['KRU06130','E00946','cutting off','knocking off, cutting off'],
+  ['KRU06138','E00957','untying','untying, loosening'],
+  ['KRU06178','F00041','curtain','door-curtain, curtain'],
+  ['KRU06185','F00055','debility','senility, debility'],
+  ['KRU06186','F00056','remnant','rest, remnant'],
+  ['KRU06190','F00071','meeting','meeting, appointment'],
+  ['KRU06206','F00109','a certain pastry','certain pastry, tart'],
+  ['KRU06207','F00115','to forgive','to be indulgent, forgive'],
+  ['KRU06769','H00348','something sweet','something sweet, sweetness'],
+  ['KRU06797','H00397','one of the five books of Moses','Ḥomesh, one of the five books of Moses'],
+  ['KRU06813','H00418','to cleanse, to rub','to rub, cleanse'],
+  ['KRU06827','H00443','to make clear, to make evident','to make clear, evident'],
+  ['KRU06847','H00487','to be affected','to feel pain, be affected'],
+  ['KRU06867','H00525','to see','to discern, see'],
+  ['KRU06883','H00550','to nip off','to cut off, nip off'],
+  ['KRU06886','H00553','to be presumed, to be known for','to be presumed, be held for, be known for'],
+  ['KRU06886','H00554','to take possession','to take possession, to claim possession'],
+  ['KRU06890','H00561','to go around','to surround, go around'],
+  ['KRU06918','H00608','to dig, to hollow out','to dig, hollow out'],
+  ['KRU06930','H00631','sin, misconduct','sin, misconduct, failing'],
+  ['KRU06936','H00639','to be snatched','to be snatched, hurried'],
+  ['KRU06939','H00644','to strike','to whip, strike'],
+  ['KRU06945','H00653','loved object','love; loved object'],
+  ['KRU06962','H00673','lying-in-woman','lying-in woman, woman in confinement.'],
+  ['KRU07008','H00765','redemption of sacred objects','redemption of sacred objects, secularization'],
+  ['KRU07009','H00766','outsider, stranger, non-priest','outsider, stranger, non-priest, non-Israelite'],
+  ['KRU07034','H00803','fermentation, becoming sour','becoming sour, fermentation, leavening'],
+  ['KRU07097','H00902','concluding formula of a benediction in the prayer','the formula with which a prayer closes, concluding benediction'],
+  ['KRU07101','H00915','to fish with the angle','to insert a hook, to fish with the angle, to fasten'],
+  ['KRU07578','H01733','potter’s clay','potter’s clay, clay-ground.'],
+  ['KRU07583','H01740','to revile','to blaspheme, revile'],
+  ['KRU07583','H01740','to be quick','to be quick, be early'],
+  ['KRU07586','H01749','to cut a trench','to dig a cavity, to cut a trench'],
+  ['KRU07589','H01758','kernel, stone of a fruit','stones of a fruit'],
+  ['KRU07591','H01760','to gnash the teeth','to gnash, grind the teeth'],
+  ['KRU07593','H01767','to set free','to be set free'],
+  ['KRU07596','H01778','to make deaf','to deafen, make deaf'],
+  ['KRU07597','H01779','to be entangled','to be entangled, confounded'],
+  ['KRU07607','H01804','stillness, secret','whispering, stillness, secret'],
+  ['KRU07621','H01826','to be silent','be silent, quiet'],
+  ['KRU07621','H01827','to feel','to feel, suffer'],
+  ['KRU07631','H01847','to be dark','to become dark'],
+  ['KRU07632','H01847','to darken','to darken, obscure'],
+  ['KRU07633','H01846','to spare, withold','to spare, withhold'],
+  ['KRU07645','H01865','to bandage, to saddle','to bandage, saddle, harness'],
+  ['KRU07649','H01868','to take into consideration','to apprehend, take into consideration'],
+  ['KRU07649','H01868','to feel pain','to feel heavy, feel pain'],
+  ['KRU07660','H01881','to put down','to put down, rest'],
+  ['KRU01321','A02010','because of','on account of, for the sake of'],
+  ['KRU01323','A02014','balance','balances, scales'],
+  ['KRU04930','D00329','conclusion','evidence by conclusion, exact meaning'],
+  ['KRU04949','D00356','suite','a suite of graded officers'],
+  ['KRU06145','F00013','certainty','certainties'],
+  ['KRU06236','G00051','the place in the field where manure is piled up','the place in the field where foliage is piled up'],
+  ['KRU07873','I00263','to squeeze','to squeeze into, fasten to'],
+  ['KRU07988','I00414','care-taking','nursing, attendance, care'],
+  // First conservative tranche from the same-headword candidate review.
+  ["KRU00026","A00023","displeasure","offence, displeasure"],
+  ["KRU00086","A00133","mourning","mourning time, mourning ceremonies"],
+  ["KRU00115","A00180","understanding","understanding, speculation"],
+  ["KRU00120","A00190","to twist","to entangle, twist, twine"],
+  ["KRU00156","A00255","inside","inside, amid"],
+  ["KRU00178","A00288","cataract, waterfall","cataract, cascade"],
+  ["KRU00189","A00305","engraving","engraving, setting"],
+  ["KRU00197","A00324","protection","protection, guard"],
+  ["KRU00201","A00332","wing","wing, pinion"],
+  ["KRU00242","A00393","to throw","to swing, throw, pitch"],
+  ["KRU00319","A00498","a species of dates","a species of late and inferior dates"],
+  ["KRU00333","A00513","of aaronic (priestly) parentage","of priestly parentage, aaronide"],
+  ["KRU00357","A00544","rim","border of a vessel, rim"],
+  ["KRU00358","A00545","basin","something rounded basin, disk"],
+  ["KRU00360","A00548","heap","heap of stones, stone-hill"],
+  ["KRU00363","A00552","a notchy knife","a knife having notches"],
+  ["KRU00393","A00914","to make noise","to blow vehemently, make noise, shout"],
+  ["KRU00407","A00610","wasps","a species of bees, wasps"],
+  ["KRU00411","A00617","the last","last, outmost"],
+  ["KRU00448","A00685","substance","substance, bulk,"],
+  ["KRU00462","A00708","handicraft","skill, handicraft, trade."],
+  ["KRU00463","A00712","a piece of raw meat","a thick piece of meat, a piece which can be eaten raw after pressing"],
+  ["KRU00470","A00721","lobe","lobe of the lungs"],
+  ["KRU00471","A00722","overreaching","imposition, overreaching, fraudulent representation"],
+  ["KRU00472","A00725","oppression","oppression, tyranny"],
+  ["KRU00478","A00733","really","really! verily!"],
+  ["KRU00481","A00738","of the town Oni","of Oni"],
+  ["KRU00484","A00746","oppression","oppression, wrong"],
+  ["KRU00489","A00753","compulsion","compulsion, force; unavoidable interference, accident"],
+  ["KRU00541","A00849","nettle","brier, nettle"],
+  ["KRU00549","A00858","a disease of the tongue","a disease of the tongue, rana"],
+  ["KRU00550","A00904","time-piece","horologe, time-piece"],
+  ["KRU00584","A00913","evening","evening, night"],
+  ["KRU00590","A00924","shoemaker","worker in leather, saddler, shoemaker"],
+  ["KRU00599","A00942","sitting","sitting down, sitting"],
+  ["KRU00606","A00962","prohibition, warning","forewarning, prohibition"],
+  ["KRU00610","A00972","God’s name","the Divine Name, Tetragrammaton"],
+  ["KRU00629","A00993","uncle","father’s brother, uncle"],
+  ["KRU00636","A01023","to join","to join; to sew together"],
+  ["KRU00638","A01001","possession","possession, property"],
+  ["KRU00651","A01030","resurrection","reanimation, resurrection"],
+  ["KRU00668","A01055","the other","another, the other, later, last"],
+  ["KRU00670","A01059","another","another, something besides"],
+  ["KRU00675","A01068","clasp","ring, hook, clasp"],
+  ["KRU00711","A01134","indeed","indeed, to be sure"],
+  ["KRU00761","A01204","seam","the act of stitching together seam"],
+  ["KRU00762","A01205","delay","delay, detention"],
+  ["KRU00774","A01221","dam","obstruction, dam"],
+  ["KRU00783","A01232","through","by the way of, through"],
+  ["KRU00796","A01248","where?","where now?"],
+  ["KRU00797","A01249","there is","there is, there are"],
+  ["KRU00802","A01253","combustion","consumption, combustion"],
+  ["KRU00818","A01277","verdict","record, bill of indictment, sentence stating the crime, verdict"],
+  // Additional high-confidence full-corpus candidates reviewed against exact source senses.
+  ["KRU04251","C00864","an oath by implication (the rule permitting the court to insert in an oath an affirmation to which the person concerned could not have been compelled directly)","the rule permitting the court to insert in an oath an affirmation to which the person concerned could not have been compelled directly; an oath by implication"],
+  ["KRU04661","C01413","sounder, one carrying the sounding pole in advance of the ship","one carrying the sounding pole in advance of the ship, sounder."],
+  ["KRU03651","C00210","rope, chain, fringe, plat of hair","rope, chain, plat of hair, fringe"],
+  ["KRU03758","C00313","heap, the difference between stricken and heaped measure","the heap, the difference between stricken and heaped measure"],
+  ["KRU04613","C01346","pulling, dragging (moving an object without lifting)","dragging, pulling, moving an object without lifting"],
+  ["KRU05869","E00514","hiding (the appointment of witnesses to lie in wait)","hiding, the appointment of witnesses to lie in wait"],
+  ["KRU02864","B00834","poles for carrying burdens to market","poles for carrying burdens to market;"],
+  ["KRU03297","B01207","clear, bright, certain, firm,","clear, bright; certain, firm"],
+  ["KRU03690","C00252","to heap, to put up stacks of grain","to heap up, to put up stacks of grain"],
+  ["KRU04611","C01340","scraping, removal of coal and ashes","removal of coal and ashes, scraping"],
+  ["KRU05213","D00700","shoe made of twisted reeds","a shoe made of twisted reeds"],
+  ["KRU11047","M00858","to wipe off, to blot out","to wipe off, blot out"],
+  ["KRU12275","M03066","cast metal, molten image","cast metal; molten image"],
+  ["KRU13221","O00234","calf (the fleshy part of the leg)","the fleshy part of the leg, calf."],
+  ["KRU16527","R00585","to observe closely, to define exactly","to observe closely; to define exactly"],
+  ["KRU17416","S01426","to make thin, to weaken, to plane","to plane, make thin, weaken"],
+  ["KRU17612","S01806","to be set aside, to be made unavailable","to be set aside, be made unavailable"],
+  ["KRU18656","U00372","to cause to swim, to teach swimming","to cause to swim, teach swimming"],
+  ["KRU03260","B01160","foreign, external, not belonging to","external, foreign, not belonging to"],
+  ["KRU03320","B01236","to hollow out, to perforate","to hollow out, perforate"],
+  ["KRU03441","B01372","flesh, meat, body","body, flesh, meat"],
+  ["KRU03524","C00050","to be high, to grow proud","to be high; to grow proud"],
+  ["KRU03607","C00156","luck, genius, godhead","luck; genius, godhead"],
+  ["KRU03613","C00166","to cut off, to level","to cut off, level"],
+  ["KRU03661","C00225","to plait, to dress the hair","to plait, dress the hair."],
+  ["KRU03670","C00231","to lop off, to stump","to lop off, stump"],
+  ["KRU03777","C00335","surface, color, resemblance","surface, color; resemblance"],
+  ["KRU03886","C00457","person, body, self","body, person, self"],
+  ["KRU03932","C00510","a Goth, servant, body-guard","a Goth; servant, body-guard."],
+  ["KRU04029","C00619","strong, hero, giant","strong; hero; giant"],
+  ["KRU04049","C00639","that which grows out of a stump","that which grows out of a stump;"],
+  ["KRU04085","C00679","shearing, wool cut or to be cut","shearing; wool cut"],
+  ["KRU04138","C00730","bright polished surface","bright, polished surface"],
+  ["KRU04255","C00869","to bring about, to cause","to bring about, cause"],
+  ["KRU04366","C01002","to contract, to shrink, to be tight","to contract, shrink, be tight"],
+  ["KRU04505","C01196","the long portion of the) wing","the long portion of the wing"],
+  ["KRU04564","C01268","to scrape, to scratch, to comb","to scratch, scrape, comb"],
+  ["KRU04602","C01321","to incite, to let loose","to incite, let loose"],
+  ["KRU04625","C01359","arm, elbow. cubit","arm, elbow, cubit"],
+  ["KRU04638","C01380","to shave, to cut the hair","to shave, cut the hair"],
+  ["KRU04644","C01392","to drag, to move without lifting","to drag, to move without lifting;"],
+  ["KRU04644","C01392","to cause, to affect, to carry with it","to carry with it, to cause; to affect"],
+  ["KRU04816","D00233","to groan, to feel pain","to feel pain, groan"],
+  ["KRU06051","E00804","drawing nigh (for attack)","drawing nigh for attack"],
+  ["KRU06085","E00876","separating (the priest’s gift)","separating the priest’s gift"],
+  ["KRU06293","G00161","to shrink, to appear small","to shrink; to appear small"],
+  ["KRU07322","H01264","supplied with an application of Henna","supplied with an application of Henna;"],
+  ["KRU09532","K00816","worthy, able, adequate","adequate, able, worthy"],
+  ["KRU10153","L00343","a stake fastened in the ground","leḥi, a stake fastened in the ground"],
+  ["KRU10162","L00358","moisture, juice, vitality","moisture, juice; vitality"],
+  // Third reviewed tranche: high-confidence source gloss pairs from the corpus queue.
+  ["KRU04644","C01392","to saw, to split","to saw, split"],
+  ["KRU04750","D00076","to lead, to drive","to lead, drive"],
+  ["KRU04820","D00170","to flow, to drip","to flow, drip"],
+  ["KRU04858","D00222","menstruating woman","a menstruating woman"],
+  ["KRU04948","D00355","haughty leader","a haughty leader"],
+  ["KRU05002","D00431","pressure, squeezing","squeezing, pressure"],
+  ["KRU05194","D00676","double price","a double price"],
+  ["KRU05287","D00828","to draw, to raise","to draw, raise"],
+  ["KRU05527","D01098","threshing time","threshing, threshing time"],
+  ["KRU05596","E00029","to singe, to parch","to singe, parch"],
+  ["KRU05753","E00317","perversion (of justice)","perversion of justice"],
+  ["KRU05807","E00406","brine (for pickling)","brine for pickling"],
+  ["KRU06451","G00477","to drip, to flow","to drip, flow"],
+  ["KRU06496","G00544","song, music","music, song"],
+  ["KRU06691","H00202","eleven, the eleventh","eleven, eleventh"],
+  ["KRU07200","H01075","to wash, to rinse","to wash, rinse"],
+  ["KRU07216","H01098","to change, to exchange","to change, exchange"],
+  ["KRU07216","H01098","to be exchanged, to be mixed up","to be exchanged, mixed up"],
+  ["KRU07229","H01116","field, lot","lot, field"],
+  ["KRU08184","I00660","to paste, to line","to paste, line."],
+  ["KRU08586","J00278","young shoot","a young shoot"],
+  ["KRU08997","K00082","to withhold, to detain","to withhold, detain"],
+  ["KRU08993","K00081","to press, to squeeze","to press, squeeze."],
+  ["KRU09099","K00206","window, aperture","aperture, window"],
+  // Additional individually checked gloss pairs from the same headword review queue.
+  ["KRU04384","C01035","entire destruction","entire destruction, extermination"],
+  ["KRU04405","C01063","to decide, to determine","to conclude, determine, decide."],
+  ["KRU04644","C01392","to scratch, to scrape","to scratch, scrape, shave"],
+  ["KRU03779","C00339","to carry across, to bring on","to carry across"],
+  ["KRU03779","C00339","to cross","to cross, pass"],
+  ["KRU03512","C00074","to be fined","to be taxed, fined"],
+  ["KRU04407","C01064","to finish","to finish; to consume"],
+  ["KRU04542","C01242","to be excited","to be excited, impatient"],
+  ["KRU07216","H01098","to reverse","to change; to reverse"],
+  ["KRU04644","C01392","to drag, to move without lifting","to drag"],
+  ["KRU08993","K00081","to pave","to pave, grade a road"],
+  ["KRU04405","C01063","to finish, to complete","to complete, end"],
+  ["KRU04308","C00927","to go into exile, to diasppear","to go into exile, go away, disappear"],
+  ["KRU07216","H01098","to change, to exchange","to exchange, barter"],
+  ["KRU04644","C01392","to be dragged, to be pulled","to be dragged, pulled"],
+  // Fourth review tranche: 51 exact/near-exact gloss alignments from the real-reader inventory.
+  ["KRU12464","N00336","to twist, to twine, to weave","to twist, twine; to weave"],
+  ["KRU15801","Q01449","to give in charge, to deposit","to give in charge, deposit"],
+  ["KRU16736","S00192","to prepare the the water of lustration","to prepare the water of lustration"],
+  ["KRU16785","S00277","lord of the world (cosmocrator)","lord of the world, cosmocrator"],
+  ["KRU17536","S01690","to exterminate, to stamp out","to stamp out, exterminate"],
+  ["KRU18025","T00329","room, open space","open space, room"],
+  ["KRU18252","T00809","to object, to show an incongruity,","to show an incongruity; to object."],
+  ["KRU19643","V00212","subspecies, secondary act","secondary act, subspecies"],
+  ["KRU03437","B01367","to search, to discover","to search, discover"],
+  ["KRU04944","D00344","a stuffed bag","stuffed bag"],
+  ["KRU12546","N00473","relief, rest","rest, relief"],
+  ["KRU01540","A02343","remedy, cure","cure, remedy"],
+  ["KRU06023","A02838","crossing the Ocean","crossing the Ocean;"],
+  ["KRU02897","B00881","to restrain, to muzzle","to muzzle, restrain"],
+  ["KRU02923","B00918","searcher, constable","searcher; constable"],
+  ["KRU03179","B01088","diminished small, less","diminished, small;"],
+  ["KRU03229","B01146","thoughtlessness, levity","levity, thoughtlessness"],
+  ["KRU03269","B01170","inhabitant of Barbaria","an inhabitant of Barbaria"],
+  ["KRU03304","B01215","outside, rejected","outside, rejected;"],
+  ["KRU03306","B01217","bung, bung-hole","bung-hole, bung"],
+  ["KRU03333","B01254","stream, channel","channel, stream"],
+  ["KRU02440","B01289","knee-shaped pole","a knee-shaped pole"],
+  ["KRU03481","B01393","the last, the latest","the last, latest"],
+  ["KRU03502","C00020","loftiness, excellence","loftiness, excellence;"],
+  ["KRU03512","C00074","to collect, to tax","to collect, tax"],
+  ["KRU03513","C00081","office of collectorship","collectorship, office of"],
+  ["KRU03566","C00103","to knead, to stamp","to to knead, stamp"],
+  ["KRU03613","C00166","to cut, to cut off","to cut, cut off."],
+  ["KRU03624","C00180","great, distinguished","great, distinguished;"],
+  ["KRU03646","C00204","twist table-cloth","twist, table-cloth"],
+  ["KRU03658","C00219","pile, mound","pile; mound"],
+  ["KRU03673","C00236","to be cut, to be mutilated","to be cut, mutilated"],
+  ["KRU03674","C00237","to cut, to scrape","to cut, scrape"],
+  ["KRU03705","C00263","belly, innermost","belly; innermost"],
+  ["KRU03772","C00328","stem, trunk","trunk, stem"],
+  ["KRU03779","C00339","to cut, to cut off","to cut, cut off"],
+  ["KRU03993","C00577","piece, club","piece; club"],
+  ["KRU04056","C00646","trunk, twig","trunk; twig."],
+  ["KRU04308","C00927","to reveal, to uncover","to reveal, uncover"],
+  ["KRU04334","C00960","to roll, to unfold","to roll, unfold"],
+  ["KRU04333","C00959","to be rolled up, to be folded","to be rolled, folded"],
+  ["KRU04384","C01035","concluded decision","concluded, decision"],
+  ["KRU04407","C01064","to consume, to destroy","to consume, destroy"],
+  ["KRU04407","C01064","to conclude, to derive","to conclude, derive"],
+  ["KRU04405","C01063","to be finished, to be completed","to be finished, completed"],
+  ["KRU04445","C01118","disgrace, blame","blame, disgrace"],
+  ["KRU04538","C01238","to knead, to roll","to knead, roll"],
+  ["KRU04542","C01242","to incite, to stir up","to incite, stir up"],
+  ["KRU04613","C01346","involving, carrying with","carrying with, involving"],
+  ["KRU04676","C01426","to touch, to feel","to feel, touch"],
+  ["KRU04677","C01427","touch, feeling","feeling, touch"],
+  ["KRU13714","O01078","to make blind","to blind, make blind"],
+  ["KRU13938","O01471","execution by stoning","stoning, execution by stoning"],
+  ["KRU16734","S00188","cedar wood","of cedar, cedar wood"],
+  ["KRU00510","A00796","too","too, also"],
+  ["KRU00821","A01281","but for","were it not, but for"],
+  ["KRU01252","A01910","wherefore","why?, wherefore?"],
+  ["KRU06172","F00031","woe, oh!","woe;"],
+  ["KRU11752","M02059","the hollow rim of the capsule of the T’fillin through which the thong is slipped","the hollow rim of the capsule of the T’fillin of the arm through which the thong is slipped"],
+  ["KRU17105","S00873","washing hands and feet prior to a priestly function in the Temple","washing hands and feet prior to a priestly function"],
+  ["KRU04364","C00998","to stammer, to hesitate (to speak with an expression of uncertainty or of scruple)","to hesitate, stammer, to speak with an expression of uncertainty"],
+  ["KRU03201","B01112","to search, to investigate, to find out","to search, investigate, examine, find out"],
+  ["KRU05603","E00046","payment for a thing included in the bargain (and not mentioned)","payment for a thing included in the bargain"],
+  ["KRU12171","M02870","the Messiah, the future redeemer of Israel","the Messiah, the future redeemer of Israel from captivity"],
+  ["KRU14469","P00666","essence, main object, chief","essence, reality, main object, chief"],
+  ["KRU17681","S01948","the skin-like, scaly envelope of reed","the skin-like, scaly envelope of reed, haulm"],
+  ["KRU03599","C00144","heap, pile, mound","heap of stones, pile, mound"],
+  ["KRU04328","C00953","stillness of wind and wave","calm, stillness of wind and wave"],
+  ["KRU04621","C01352","indirect production of an effect","cause, indirect production of an effect"],
+  ["KRU07667","H01893","opening made by digging","breach, opening made by digging"],
+  ["KRU08296","I00812","Tripolitans, residents of Tripolis in Phenicia","Tripolitans, residents of Tripolis"],
+  ["KRU11056","M00873","divided off space","divided off space, compartment"],
+  ["KRU11447","M01511","place for drawing water","place for drawing water, well"],
+  ["KRU12549","N00480","the smooth side of skin","the polished, smooth side of skin"],
+  ["KRU12958","N01179","people gathered from different places","gathered from different places"],
+  ["KRU13313","O00393","metal spike of the spear","metal spike at the butt-end of the spear"],
+  ["KRU15157","Q00363","large baking oven","a stationary, large baking oven"],
+  ["KRU15686","Q01241","unfit, defective, disqualified","defective, blemished, unfit, disqualified"],
+  ["KRU19917","V00683","pillars of the framework of a lantern","the pillars supporting the framework of a lantern"],
+  ["KRU08159","I00630","knocker, one who by rapping at the wall discovers the hidden treasure","knocker, one who by rapping at the wall discovers hidden treasures"],
+  ["KRU19309","U01649","the seven letters which require crownlets in the Pentateuch scrolls","the seven letters which require crownlets"],
+  ["KRU03864","C00435","spiral form, writing in spiral form","spiral form"],
+  ["KRU09831","K01231","a row of vines","a row of vines in a vineyard"],
+  ["KRU00419","A00635","air, space","empty space, air"],
+  ["KRU01195","A01811","born in month of Elul","born in Elul."],
+  ["KRU01468","A02237","of cast metal","made of cast metal"],
+  ["KRU01580","A02415","military commander","military commander, general"],
+  ["KRU01594","A02437","uncoined metal","uncoined metal, bulion"],
+  ["KRU02386","B00269","ravenous hunger","ravenous hunger, bulimy"],
+  ["KRU02510","B00579","useless talk","vain, useless talk"],
+  ["KRU03035","B01003","to be sweet, pleasant","to be sweet, pleasant, pleasing"],
+  ["KRU05269","D00770","levitical cleanness","purity, levitical cleanness"],
+  ["KRU05472","D01078","to winnow, to scatter","to scatter, strew; to winnow"],
+  ["KRU06437","G00452","privilege, benefit","advantage, privilege, benefit"],
+  ["KRU06543","G00649","to be accounted, to be converted into a loan","to be converted into a loan"],
+  ["KRU06557","G00671","coat of mail","coat of mail, armour"],
+  ["KRU06650","H00125","to be the cause of prohibition","to be the cause of prohibition as Kilayim"],
+  ["KRU06756","H00319","to come in turn","to come in turn, to occur"],
+  ["KRU06828","H00444","to make evident","to make evident, to prove"],
+  ["KRU07210","H01091","yolk of an egg","yolk, yellow of an egg"],
+  ["KRU07397","H01406","fragment of a vessel","fragment of a vessel, potsherd"],
+  ["KRU07455","H01516","to pick the teeth","to pick one’s teeth"],
+  ["KRU07517","H01625","charred meat","burned, charred meat"],
+  ["KRU07731","I00078","to mention explicitly","to specify, mention explicitly"],
+  ["KRU07751","I00103","real surface","the pure, real surface"],
+  ["KRU07798","I00156","roasted meat","roast, roasted meat."],
+  ["KRU07816","I00183","secret place","secret, hiding place"],
+  ["KRU08187","I00662","of secondary import","attachment, of secondary import"],
+  ["KRU08257","I00759","a head cover","t’ratin, a head cover."],
+  ["KRU08366","J00013","nice, right","fitting, right, nice"],
+  ["KRU10459","L00715","moistening the grain before grinding","moistening the grain"],
+  ["KRU10811","M00483","to make a hem","to make an edge, to hem"],
+  ["KRU10826","M00517","mime, actor","mimic actor, mime"],
+  ["KRU10883","M00594","a sort of state garments","state garments"],
+  ["KRU11082","M00929","to blot out","to rub out, blot out"],
+  ["KRU11135","M01002","place of banishment","exile, place of banishment"],
+  ["KRU11137","M01006","movable goods","movable goods, chattel"],
+  ["KRU11151","M01026","hidden place","hiding place, hidden place"],
+  ["KRU11420","M01459","easily crushed","brittle, easily crushed"],
+  ["KRU11808","M02168","Palestine (in the west of Babylonia)","the West, Palestine"],
+  ["KRU11834","M02200","throwing seed","dropping, throwing seed"],
+  ["KRU11959","M02452","Biblical verse","Biblical verse, text"],
+  ["KRU11990","M02522","pearl; jewel","gem, jewel, pearl"],
+  ["KRU11996","M02540","baker’s shovel","baker’s shovel, peel"],
+  ["KRU12059","M02677","a tool for crushing bones","a tool for crushing"],
+  ["KRU14281","P00361","fine rain","fine rain, drizzle"],
+  ["KRU14434","P00611","chorus of lamentation","chorus of lamentation, dirge"],
+  ["KRU14464","P00660","tearing loose","uprooting, tearing loose"],
+  ["KRU14480","P00683","pouring from vessel to vessel","pouring from vessel to vessel, emptying"],
+  ["KRU14728","P01119","an earthen vessel","a common earthen vessel"],
+  ["KRU14811","P01287","mixed multitude","mixed multitude, rabble"],
+  ["KRU14874","P01388","the condition of one not circumcised","uncircumcision, the condition of one not circumcised"],
+  ["KRU14915","P01456","protest, claim","protest, objection, claim"],
+  ["KRU15098","Q00258","money-bag, belt","money-bag, hollow belt."],
+  ["KRU15198","Q00426","rash, overhasty","rash, overhasty, impetuous"],
+  ["KRU15353","Q00676","public show","display, public show"],
+  ["KRU15393","Q00751","separation, interruption","separation, interruption, pause"],
+  ["KRU15468","Q00879","stretching forth","spreading, stretching forth"],
+  ["KRU15536","Q00997","to tear off","to tear off, detach"],
+  ["KRU15559","Q01045","sheet, blanket","sheet, blanket; mantle"],
+  ["KRU04627","C01364","German, white man","German, one of the Caucasian race, white man"],
+  ["KRU07008","H00765","the loss of priestly status","the loss of priestly status, becoming a ḥalal"],
+  ["KRU08240","I00733","one deciding on defects of animals for ritual purposes","those deciding on defects of animals"],
+  ["KRU10359","L00599","speaking a foreign tongue, esp. Greek","speaking a foreign tongue"],
+  ["KRU12375","N00166","addressing, drawing near","drawing near, addressing, use of the root"],
+  ["KRU12636","N00616","playing on a musical instrument","playing on a musical instrument; use of the root"],
+  ["KRU13013","N01284","to give away in marriage","to give away in marriage; to cause to marry"],
+  ["KRU13255","O00286","a woman suspected of faithlessness","faithless wife, a woman suspected of faithlessness"],
+  ["KRU16320","R00203","a person with shapeless auricles","a person whose auricles are a shapeless mass"],
+  ["KRU20109","V01011","to separate the priestly gift","to separate the priestly gift, to make T’rumah"],
+  ["KRU10369","L00611","putting food into an animals mouth","putting food into an animal’s mouth"],
+  ["KRU11655","M01872","a shoe conisting of a mere sole","a shoe consisting of a mere sole"],
+  ["KRU06650","H00125","to plant one species too near another species","to narrow in, to plant one species too near another species, to produce Kilayim"],
+  ["KRU03829","C00396","the stone placed on the top of a burial place","the stone placed on top of a burial cave, top-stone"],
+  ["KRU10789","M00457","the flat end of the stylus, used for erasing","the flat end of the writing instrument, used for erasing"],
+  ["KRU07071","H00860","strange act","a strange act, unnatural deed"],
+  ["KRU07179","H01041","final decision","the priest’s final decision on leprosy"],
+  ["KRU07415","H01446","a small bag","a small leather bag, valise"],
+  ["KRU07440","H01492","pitcher, jug","stone pitcher, earthen jug."],
+  ["KRU07533","H01654","burnt crust","burnt part of a loaf, burnt crust"],
+  ["KRU07820","I00189","to cause to fly","to cause to fly, to bring on by flight"],
+  ["KRU08563","J00249","former condition","former condition, original usage"],
+  ["KRU08746","J00482","to take counsel","to take counsel, to deliberate, plan."],
+  ["KRU08837","J00603","low, common","low, common, of little value"],
+  ["KRU08892","J00683","leaving unused","allowing to dry up, leaving unused"],
+  ["KRU09229","K00418","the pointed end of the writing instrument","the pointed end"],
+  ["KRU09441","K00704","that is to say, this means","as though one said, that is to say, this means"],
+  ["KRU10243","L00489","staying over night","night-rest, staying over night, lodging"],
+  ["KRU10267","L00517","scoffing habits","scoffing habits, sneering, irony"],
+  ["KRU10458","L00714","fate, luck","that which clings to a person, fate, luck"],
+  ["KRU16295","R00161","to hunt, to catch","to lie in wait, hunt, catch"],
+  ["KRU16680","S00078","unconditional surety","assumption of an obligation, unconditional surety"],
+  ["KRU16721","S00148","neck, back","hindpart of the head with neck, neck, back"],
+  ["KRU16783","S00272","pieces, clods","cut pieces, clods of earth"],
+  ["KRU17288","S01206","the sound of clapping","clapping, the sound ḳish-ḳish"],
+  ["KRU17342","S01291","thin skin","peel, husk; thin skin"],
+  ["KRU17431","S01463","fold, wrinkle","fold, crease, wrinkle, crumple"],
+  ["KRU17650","S01877","a Biblical scholar","a Biblical scholar, Bible teacher"],
+  ["KRU17709","S01996","to cut into pieces","to break, cut into small pieces"],
+  ["KRU17802","S02199","to become solid","to become solid, congeal, contract"],
+  ["KRU17898","T00078","something remarkable","a great thing, something remarkable"],
+  ["KRU18252","T00809","to tear away","to tear away, remove with force"],
+  ["KRU18508","U00138","observing the Sabbath","observing the Sabbath, abstention from labor"],
+  ["KRU18765","U00581","south wind","shutha, a severe south wind;"],
+  ["KRU12507","N00402","pinion","feathers, pinion"],
+  ["KRU13821","O01274","a species of cedar","cedar"],
+  ["KRU14383","P00545","fringe","tassel, fringe"],
+  ["KRU15523","Q00976","down-pillow","down, down-pillow"],
+  ["KRU16209","Q02215","to seduce","to persuade, seduce"],
+  ["KRU16624","R00806","loop","knot, loop"],
+  ["KRU00290","A00466","of the town Adria","Adria"],
+  ["KRU00425","A00644","an eye-disease","an eye-disease, itching"],
+  ["KRU00425","A00645","a dry measure","measure"],
+  ["KRU00580","A00911","hornet","wasp, hornet"],
+  ["KRU00692","A01103","Tripolis in Syria","Tripolis"],
+  ["KRU00736","A01172","chamber","an enclosure, chamber"],
+  ["KRU00783","A01232","because","because, since as"],
+  ["KRU00829","A01293","but for","unless, but for;"],
+  ["KRU01289","A01320","mother, mamma","mother"],
+  ["KRU01920","A02936","curling","curling the hair"],
+  ["KRU01968","A03016","web","web, matting"],
+  ["KRU01989","A03063","guest","traveler, guest"],
+  ["KRU02011","A03101","long","long, prolonged"],
+  ["KRU02012","A03102","length","prolongation, length;"],
+  ["KRU02021","A03117","meal","morning meal"],
+  ["KRU02063","A03173","rising","raising, rising"],
+  ["KRU02121","A03253","chariot","chariot, vehicle"],
+  ["KRU02171","A03345","sale","transaction, sale"],
+  ["KRU02190","A03382","to be known","to be recognized, known"],
+  ["KRU02191","A03384","preferment","partiality, preferment"],
+  ["KRU02207","A03408","stove","fire-place, stove"],
+  ["KRU02213","A03418","casting","smelting, casting"],
+  ["KRU02220","A03426","lowliness","humiliation, lowliness"],
+  ["KRU02226","A03437","forgetfulness","oblivion, forgetfulness"],
+  ["KRU02796","B00777","to weep, to lament","to lament"],
+  ["KRU02820","B00789","first-ripening","early, first-ripening"],
+  ["KRU02867","B00837","vortex","vortex, gulf"],
+  ["KRU03075","B01030","torch","torch, fire"],
+  ["KRU03078","B01032","to bulge","to swell, bulge."],
+  ["KRU03083","B01037","to be searched for","to be searched for, to be wanted"],
+  ["KRU03083","B01037","to be hurried","to be urged, hurried"],
+  ["KRU03133","B01063","to dispose of","to remove; to dispose of"],
+  ["KRU03167","B01072","to search","to search, ransack"],
+  ["KRU02663","B01073","swamp","swamp, pond"],
+  ["KRU03195","B01107","to diminish","to diminish, lessen"],
+  ["KRU03211","B01123","crossing","crossing, passing over"],
+  ["KRU03216","B01128","to break through","to break through the ground"],
+  ["KRU03223","B01137","to examine","to search, examine"],
+  ["KRU03223","B01137","to glean","to clear, glean"],
+  ["KRU04232","C00846","flock","herd, flock"],
+  ["KRU04238","C00849","excrements","excrements, ordure"],
+  ["KRU04243","C00855","to shave","to scrape, shave"],
+  ["KRU04274","C00889","litter","litter, sedan-chair"],
+  ["KRU04270","C00926","to be revealed","to be revealed; to be exposed"],
+  ["KRU04326","C00951","cloak","wrapper, cloak"],
+  ["KRU04349","C00979","engraving","engraving, setting"],
+  ["KRU04368","C01007","reduced","contracted, reduced"],
+  ["KRU04373","C01014","Gimzo, in Judea","Gimzo"],
+  ["KRU04376","C01021","reed-grass","bulrushes, reed-grass"],
+  ["KRU04383","C01035","perfect","finished, perfect"],
+  ["KRU04390","C01043","Gamala in Galilee","Gamala"],
+  ["KRU04391","C01047","large-sized (bean)","large-sized"],
+  ["KRU04415","C01071","to bend","to contract, bend"],
+  ["KRU04452","C01129","to rumble","to groan, rumble"],
+  ["KRU05170","D00636","quarrel","contest, quarrel"],
+  ["KRU05174","D00646","power","power, ability"],
+  ["KRU05213","D00701","kettle","seething kettle"],
+  ["KRU05234","D00725","crown","crown, rim"],
+  ["KRU05119","D00737","threshing","treading, threshing"],
+  ["KRU05283","D00793","male","male, man"],
+  ["KRU05290","D00807","to weaken","to reduce, weaken"],
+  ["KRU05308","D00828","to raise","to draw, raise"],
+  ["KRU05317","D00836","fire","fire, conflagration"],
+  ["KRU05298","D00843","defect","diminution, defect"],
+  ["KRU05388","D00926","to shine","to shine, be bright"],
+  ["KRU05393","D00933","to sigh","to sigh, sob"],
+  ["KRU05412","D00946","to quench","to extinguish, quench"],
+  ["KRU05417","D00952","plank","board, plank;"],
+  ["KRU05469","D01026","generation","period, generation"],
+  ["KRU06435","G00441","righteous","righteous, innocent"],
+  ["KRU06435","G00440","not guilty","acquitted, not guilty"],
+  ["KRU06436","G00455","to be acquitted","to be acquitted, be right"],
+  ["KRU06473","G00507","muzzle","muzzle, bit"],
+  ["KRU06485","G00523","pruning","pruning the vine"],
+  ["KRU06497","G00549","music","song, music"],
+  ["KRU06511","G00588","shock","shock, fright"],
+  ["KRU06518","G00597","to reduce","to reduce, do little"],
+  ["KRU06533","G00636","putting up","putting up, erection"],
+  ["KRU06545","G00651","raising","raising, lifting up"],
+  ["KRU06576","G00711","sowing","sowing, seed"],
+  ["KRU06579","G00718","shower","shower, storm"],
+  ["KRU06584","G00729","descendants","descendants, family"],
+  ["KRU06601","H00030","company","company, party"],
+  ["KRU06610","H00047","to hide","to cover, hide."],
+  ["KRU07010","H00770","reverse","opposite, reverse"],
+  ["KRU07010","H00770","substitute","exchange, substitute"],
+  ["KRU07031","H00799","lust","desire, lust"],
+  ["KRU07033","H00801","oppression","violence, oppression"],
+  ["KRU07035","H00804","blush, shame","shame"],
+  ["KRU07040","H00811","anger","anger, passion"],
+  ["KRU07051","H00827","mercy","protection, mercy"],
+  ["KRU07063","H00849","scabs","scabs, scurf"],
+  ["KRU07070","H00859","partition","partition, screen"],
+  ["KRU07081","H00879","contest","heated contest"],
+  ["KRU07086","H00887","freedom","freedom, emancipation"],
+  ["KRU07129","H00968","to milk","to milk; to yield milk"],
+  ["KRU07159","H01009","division","division, partition"],
+  ["KRU07182","H01047","rounded","rounded, going all around"],
+  ["KRU07188","H01057","substitution","replacement, substitution"],
+  ["KRU07668","H01896","to decide","to decide, sentence"],
+  ["KRU07673","H01900","to sign","to seal, sign"],
+  ["KRU07673","H01900","to be sealed","to be sealed, stamped"],
+  ["KRU07671","H01899","to close, to end","to close"],
+  ["KRU07686","I00013","Tanis in Egypt","Tanis"],
+  ["KRU07690","I00018","to be good","to be good, well"],
+  ["KRU07691","I00019","worth","worth, valued"],
+  ["KRU07709","I00050","gazelle","deer, gazelle"],
+  ["KRU07731","I00076","to drown","to sink, drown"],
+  ["KRU07757","I00108","to do good","to do good, to favor"],
+  ["KRU07788","I00141","to plaster","to plaster, smear"],
+  ["KRU07788","I00142","to squeeze","to press, squeeze"],
+  ["KRU07801","I00164","shade","shade, shadow"],
+  ["KRU07810","I00177","record","document, record"],
+  ["KRU07820","I00189","to fly","to fly swiftly"],
+  ["KRU08589","J00284","single","only, single, individual"],
+  ["KRU08593","J00288","single, lonely","lonely; only one"],
+  ["KRU08695","J00416","day-light","day-time, day-light"],
+  ["KRU08712","J00442","twig","branch, twig"],
+  ["KRU08536","J00447","suckling","suckling, child"],
+  ["KRU08718","J00449","youth","childhood, youth"],
+  ["KRU08752","J00500","worth","worth, valued"],
+  ["KRU08756","J00505","beauty","beauty, excellence"],
+  ["KRU08762","J00511","to lift up","to lift up, raise"],
+  ["KRU08783","J00536","casting (metal)","casting"],
+  ["KRU08785","J00538","creation","formation, creation"],
+  ["KRU08791","J00546","trouble","care, trouble"],
+  ["KRU08801","J00556","to burn","to burn; to be on fire"],
+  ["KRU08807","J00567","fire, burning","burning"],
+  ["KRU08809","J00575","honored","honored, worthy"],
+  ["KRU09484","K00758","to include","to include, imply."],
+  ["KRU09527","K00808","to hide","to hide, cover"],
+  ["KRU09539","K00822","to wither","to wrinkle, wither"],
+  ["KRU09336","K00845","assembly","crowd, assembly"],
+  ["KRU09561","K00854","assembly","gathering, assembly"],
+  ["KRU09565","K00857","gathering; assembly","gathering"],
+  ["KRU09585","K00881","to gather in","to gather, collect; to gather in"],
+  ["KRU09587","K00882","people","gathering, people"],
+  ["KRU09615","K00936","to chew","to chew, gnaw"],
+  ["KRU09618","K00946","to chastise","to rebuke, chastise"],
+  ["KRU09349","K00947","mud","mud, mire"],
+  ["KRU09635","K00964","ugliness","ugliness, repulsiveness"],
+  ["KRU09646","K00981","bundle","bundle, sheaf"],
+  ["KRU09668","K01024","binding","binding, collar-band"],
+  ["KRU09671","K01027","to be folded up","to be folded up, doubled"],
+  ["KRU10324","L00569","naught","naught, vanity"],
+  ["KRU10376","L00623","to chew","to chew, masticate"],
+  ["KRU10421","L00685","acquisition","purchase, acquisition"],
+  ["KRU10430","L00691","bottle","bottle, flask"],
+  ["KRU10138","L00692","flask","a little flask"],
+  ["KRU10426","L00694","late","slow, late"],
+  ["KRU10513","M00048","garment","garment, dress"],
+  ["KRU10514","M00051","rejection","rejection, contempt"],
+  ["KRU10520","M00060","lord, master","lord"],
+  ["KRU10588","M00156","pass","ford, pass"],
+  ["KRU10602","M00175","kitchen","cook-shop, kitchen"],
+  ["KRU10618","M00202","shouting","threatening, shouting"],
+  ["KRU10659","M00266","seat","a mortar-shaped seat"],
+  ["KRU10682","M00300","cleansing","cleansing, house-cleaning"],
+  ["KRU10684","M00303","property","belonging, property"],
+  ["KRU11386","M01376","cushion","bolster, cushion"],
+  ["KRU11387","M01377","lowliness","lowliness, humility"],
+  ["KRU11388","M01379","measure","measure of capacity"],
+  ["KRU11392","M01386","to bend","to bend, lower"],
+  ["KRU11395","M01390","adulteration","fraud, adulteration"],
+  ["KRU11411","M01430","chastisement","chastisement, rebuke"],
+  ["KRU11474","M01568","rampart","mound, rampart"],
+  ["KRU11481","M01580","rulership","kingdom, rulership"],
+  ["KRU11486","M01590","to hem","to hem, edge"],
+  ["KRU11486","M01591","to crush","to crush, squeeze"],
+  ["KRU11489","M01596","word","word, speech"],
+  ["KRU11683","M01840","staircase","winding staircase."],
+  ["KRU11701","M01962","to dissolve","to melt, dissolve"],
+  ["KRU11737","M02028","comb","comb, strigil."],
+  ["KRU11745","M02045","belly","belly, womb"],
+  ["KRU12317","N00040","twig","shoot, twig"],
+  ["KRU12351","N00118","to lash","to lash, punish"],
+  ["KRU12383","N00185","to be prolonged","to be prolonged, continue"],
+  ["KRU12405","N00224","to throw","to throw, pitch"],
+  ["KRU12414","N00237","to spread (of odours)","to spread"],
+  ["KRU12418","N00250","to lead","to lead, conduct"],
+  ["KRU12449","N00308","to shake (the head)","to shake"],
+  ["KRU12454","N00315","handsome","becoming, handsome"],
+  ["KRU12490","N00366","to sleep, to slumber","to slumber"],
+  ["KRU12500","N00387","to wave","to swing, wave"],
+  ["KRU12523","N00427","to chide","to chide, rebuke"],
+  ["KRU12526","N00436","chiding","chiding, railing"],
+  ["KRU12535","N00452","nazariteship, abstinence","abstinence"],
+  ["KRU18204","T00698","formation of an embryo in an egg","formation of an embryo"],
+  ["KRU18250","T00803","hint, intimation","gesture, hint, intimation."],
+  ["KRU18267","T00839","in the evening; last night","last night"],
+  ["KRU18317","T00952","to be trodden upon","to be trodden, stamped upon"],
+  ["KRU18322","T00959","lattice work","loose lattice work"],
+  ["KRU18328","T00973","to lie in wait","to lie in wait, watch"],
+  ["KRU18487","U00096","to grow in value","to improve, grow in value"],
+  ["KRU18716","U00498","cap of the hip-bone","protuberance, cap of the hip-bone"],
+  ["KRU18768","U00593","to wash, to rinse","to cleanse, wash, rinse"],
+  ["KRU18770","U00600","thread, cord","twisted thread, cord"],
+  ["KRU18779","U00617","with a dislocated hip","an animal with a dislocated hip"],
+  ["KRU18780","U00618","metal shavings","metal shavings, filings"],
+  ["KRU18804","U00677","to light a fire","to heat, light a fire"],
+  ["KRU18826","U00720","to set free","to set free, emancipate"],
+  ["KRU18839","U00749","spread, mat","spread, rug, mat"],
+  ["KRU08934", "J00748", "a person having an additional limb", "additional, a person having an additional limb"],
+  ["KRU09509", "K00789", "how! how many! how much!", "how much?, how many?"],
+  ["KRU09509", "K00789", "how! how many! how much!", "how!, how many!, how much!"],
+  ["KRU14410", "P00548", "the letter Ayin", "the letter ʿAyin"],
+  ["KRU09193", "K00352", "of Cyprus", "Cyprus"],
+  ["KRU11185", "M01077", "a woman’s protest against a marriage contracted during her minority", "a woman’s protest against a marriage contracted during her minority, annulment of marriage"],
+  ["KRU04347", "C00977", "to dig out, to engrave, to shape", "to dig out, engrave; to shape, form"],
+  ["KRU09167", "K00309", "the lower part of the winnowing shovel", "receiver, the lower part of the winnowing shovel"],
+  ["KRU03211", "B01123", "cleaving, cleft, log", "cleaving, cleft; that which is cloven, a log."],
+  ["KRU03320", "B01236", "to recover, to get strong", "to get well, recover; to be strong"],
+  ["KRU03732", "C00283", "border of the field, ridge", "border of the field, balk, ridge."],
+  ["KRU13305", "O00377", "a garment made of goat-skin", "a garment made of goat-skin with the hair on"],
+  ["KRU15271", "Q00547", "to give leave, to let go", "to dismiss, give leave, let go"],
+  ["KRU15536", "Q00997", "to vomit, to give out", "to discharge, vomit, give out"],
+  ["KRU19376", "U01786", "to discharge, to pour out", "to pour out, run, discharge"],
+  ["KRU03647", "C00205", "heaped (measure)", "liberal, heaped measure"],
+  ["KRU16876", "S00439", "powdered lime", "powdered lime, plaster"],
+  ["KRU01348", "A02054", "Roman Emperor", "commander, Roman Emperor"],
+  ["KRU02106", "A03232", "A perforated vessel, clepsydra", "a perforated vessel"],
+  ["KRU03082", "B01035", "habitual kicker", "habitual kicker, butting"],
+  ["KRU03083", "B01037", "to pray, to ask for mercy", "to ask, pray"],
+  ["KRU03641", "C00198", "incision in the flesh", "incision in the flesh, wounding"],
+  ["KRU03852", "C00423", "glowing coal", "burning, glowing coal"],
+  ["KRU03882", "C00455", "to bung, to cork", "to squeeze, cork, bung"],
+  ["KRU04381", "C01022", "full draught", "quaffing, full draught"],
+  ["KRU09492", "K00771", "fine cloaks for women", "fine cloaks"],
+  ["KRU12540", "N00459", "to damage, to injure", "to hurt, injure, damage"],
+  ["KRU12623", "N00596", "illicit intercourse", "lewdness, illicit intercourse"],
+  ["KRU12780", "N00871", "loss of courage", "melting, loss of courage"],
+  ["KRU12821", "N00934", "test, temptation", "trial, test; temptation"],
+  ["KRU12884", "N01064", "to squirt into the mouth", "to blow, squirt into the mouth"],
+  ["KRU12915", "N01105", "uninterrupted flow of a liquid", "uninterrupted flow"],
+  ["KRU13057", "N01338", "to move, to slip", "to slip, glide, move"],
+  ["KRU13299", "O00364", "evil habit, practice", "evil habit"],
+  ["KRU13379", "O00502", "to strike, to slap", "to strike sideways, slap"],
+  ["KRU13445", "O00604", "signet ring", "seal, signet ring"],
+  ["KRU13467", "O00642", "hope, prospect", "what is looked for, prospect, hope"],
+  ["KRU13573", "O00831", "drawing lines", "drawing lines, ruling"],
+  ["KRU13868", "O01349", "to scrape together", "to scrape together, collect"],
+  ["KRU13969", "O01531", "to draw lines", "to rule, draw lines"],
+  ["KRU14026", "O01659", "Seraphim, angels", "Seraphim, ministering angels"],
+  ["KRU14046", "O01698", "closure, cover", "closing, closure, cover"],
+  ["KRU14204", "P00204", "greater importance", "greater importance, gravity"],
+  ["KRU14478", "P00680", "mixture, conjunction", "interweaving, mixture, conjunction"],
+  ["KRU14726", "P01114", "to be hard, sapless", "to be hard, dry; sapless"],
+  ["KRU15229", "Q00486", "to hollow out", "to hollow out, dig"],
+  ["KRU15253", "Q00517", "stout, fattened", "fat, fattened, stout"],
+  ["KRU15821", "Q01496", "to open forcibly", "to tear open, open forcibly"],
+  ["KRU15988", "Q01801", "flying off", "flight, flying off"],
+  ["KRU15994", "Q01810", "rending of garments", "tearing, rending of garments"],
+  ["KRU16113", "Q02021", "to be kept away", "to be separated, kept away"],
+  ["KRU16117", "Q02033", "branching off", "separation, branching off"],
+  ["KRU16426", "R00403", "flake of wool", "flake of wool, hatchelled wool"],
+  ["KRU16621", "R00800", "refining pot", "refining pot, crucible"],
+  ["KRU16084", "Q01976", "face, visage", "face, visage, front"],
+  ["KRU20038", "V00892", "to remove obstacles", "to remove obstacles, clear"],
+  ["KRU20048", "V00912", "joists, ceiling", "roofing, ceiling, joists"],
+  ["KRU20107", "V01008", "fall, ruin", "sinking, fall, ruin"],
+  ["KRU03924", "C00503", "lump, clod, ball", "something substantial, lump, clod, ball"],
+  ["KRU04563", "C01266", "a certain reddish clay (also used as medicine)", "a certain reddish clay"],
+  ["KRU08853", "J00633", "going down, fall", "going down, fall, decline, degradation."],
+  ["KRU13401", "O00535", "common meal, picnic", "sending provisions for a common meal, picnic"],
+  ["KRU16140", "Q02072", "plain, a matter of course", "plain, self-evident truth; is it not a matter of course?"],
+  ["KRU17675", "S01941", "persons called up to read from the Torah", "persons called up to read from the Scriptures"],
+  ["KRU10850", "M00548", "Musaf, additional offering and prayer on Sabbath and festive days", "Musaf, additional offering, additional prayer"],
+  ["KRU15903", "Q01646", "a declaration that the law of limitation by the entrance of the Sabbatical year shall not apply to the loans to be transacted", "prosbul, a declaration made in court, before the execution of a loan, to the effect that the law of limitation by the entrance of the Sabbatical year shall not apply to the loan to be transacted"],
+  ["KRU03757", "C00312", "thumb, great toe Daumen, grosse Zehe", "thumb, great toe"],
+  ["KRU03767", "C00322", "a subterranean thunder, earthquake", "an abrupt sound, a subterranean thunder, earthquake, rumbling"],
+  ["KRU11781", "M02117", "a paste made of flour", "a paste made of flour on which boiling water is poured"],
+  ["KRU14332", "P00470", "to put on an upper garment", "to wrap one’s self up, to put on an upper garment"],
+  ["KRU02353", "B00211", "mat", "a mat of reeds"],
+  ["KRU02511", "B00495", "receptacles", "column-like receptacles"],
+  ["KRU03264", "B01166", "intimate", "intimate, familiar"],
+  ["KRU03295", "B01205", "cover", "wrapper, cover"],
+  ["KRU03562", "C00096", "the camel's hump", "hump."],
+  ["KRU03915", "C00491", "a trap or cage", "a trap"],
+  ["KRU04005", "C00594", "imper. burn them", "burn them"],
+  ["KRU04624", "C01357", "document", "bond, document"],
+  ["KRU04631", "C01369", "gramma, scrupulum", "gramma"],
+  ["KRU04905", "D00293", "measure", "keg, measure"],
+  ["KRU06732", "H00275", "a species of thistles", "thistles"],
+  ["KRU07817", "I00186", "shade", "shade, shadow"],
+  ["KRU08197", "I00678", "a heated tile", "tile;"],
+  ["KRU08270", "I00772", "inflammation", "an eruption, inflammation"],
+  ["KRU08896", "J00690", "ballast-stones", "anchor, ballast-stones"],
+  ["KRU09221", "K00405", "embroidery", "embroidery, design"],
+  ["KRU09873", "K01304", "to prosper", "to do well, prosper"],
+  ["KRU10755", "M00400", "pivot", "pivot, hinge"],
+  ["KRU11876", "M02288", "wrangler", "wrangler, hair-plucker"],
+  ["KRU15129", "Q00313", "quarry", "stone-breaking, quarry"],
+  ["KRU16363", "R00276", "thirsty", "parched, thirsty."],
+  ["KRU19559", "V00045", "Thebaic", "Thebaic cubit"],
+  ["KRU00082", "A00120", "want", "want, distress"],
+  ["KRU00538", "A00842", "evening", "twilight, evening"],
+  ["KRU00835", "A01302", "the land Elam", "Elam"],
+  ["KRU00787", "A01316", "hind", "hind, roe"],
+  ["KRU00863", "A01342", "day", "day time"],
+  ["KRU00875", "A01364", "yes", "yes, indeed"],
+  ["KRU00900", "A01406", "prohibition", "prohibition, interdict;"],
+  ["KRU01183", "A01787", "deity", "Deity, divinity"],
+  ["KRU01222", "A01866", "strength", "strength, force"],
+  ["KRU01201", "A01923", "in Greek", "Hellenic, in Greek"],
+  ["KRU01286", "A01961", "womb", "womb, mouth of the womb"],
+  ["KRU01352", "A02058", "middle", "central, middle"],
+  ["KRU01408", "A02139", "lighting", "lighting, illumination"],
+  ["KRU01527", "A02316", "wife", "woman, wife"],
+  ["KRU01542", "A02346", "station", "resting station"],
+  ["KRU01551", "A02376", "garment", "robe, garment"],
+  ["KRU01588", "A02428", "physician", "physician, surgeon;"],
+  ["KRU01590", "A02432", "recovery", "cure, recovery"],
+  ["KRU01598", "A02444", "gathering", "gathering, assembly"],
+  ["KRU01607", "A02457", "consent", "consent, agreement"],
+  ["KRU01608", "A02458", "croup", "choking, croup"],
+  ["KRU01614", "A02466", "support", "support, reliance"],
+  ["KRU01617", "A02468", "granary", "store-house, granary."],
+  ["KRU01618", "A02469", "thorn-bush", "thorn-bush, bramble"],
+  ["KRU01664", "A02555", "officer", "Roman officer"],
+  ["KRU01666", "A02558", "road, way", "road"],
+  ["KRU01702", "A02620", "Apulia in Italy", "Apulia"],
+  ["KRU01748", "A02687", "even, even if", "even if, although, even"],
+  ["KRU01780", "A02728", "to turn, reverse", "to turn"],
+  ["KRU01889", "A02883", "prosperity", "success, prosperity"],
+  ["KRU00554", "A03057", "hammock", "cradle, hammock"],
+  ["KRU02160", "A03321", "setting", "fitting, setting"],
+  ["KRU04566", "C01270", "fringe", "that which is combed, fringe"],
+  ["KRU04578", "C01320", "to incite, to stir up", "to incite"],
+  ["KRU04694", "D00017", "to flow", "to flow"],
+  ["KRU04712", "D00027", "a species of doves", "doves"],
+  ["KRU04721", "D00037", "to overflow", "to drip, overflow"],
+  ["KRU04733", "D00052", "bee-hive", "bee-swarm, bee-hive"],
+  ["KRU04747", "D00073", "to glue", "to paste, glue"],
+  ["KRU04747", "D00073", "to be attached to", "to be attached, join"],
+  ["KRU04748", "D00074", "glue", "glue, paste"],
+  ["KRU04755", "D00082", "field", "pasture, field"],
+  ["KRU04815", "D00164", "two", "two, double"],
+  ["KRU04818", "D00168", "mail-carrier", "mail-carrier, despatch-bearer"],
+  ["KRU05023", "D00170", "to flow", "to flow, drip"],
+  ["KRU04830", "D00184", "to be troubled", "to be anxious, troubled"],
+  ["KRU04835", "D00190", "simile", "simile, illustration"],
+  ["KRU05061", "D00236", "grief", "grief, affliction"],
+  ["KRU04867", "D00235", "sad", "sad, depressed"],
+  ["KRU04927", "D00326", "exactness", "exactness, minuteness"],
+  ["KRU04941", "D00341", "to dwell", "to reside, dwell"],
+  ["KRU04945", "D00350", "load", "burden, load"],
+  ["KRU04987", "D00408", "suspension", "postponement, suspension"],
+  ["KRU04994", "D00411", "to frighten", "to frighten, scare"],
+  ["KRU04999", "D00426", "God-fearing", "God-fearing, conscientious"],
+  ["KRU05016", "D00450", "edict", "edict, ordinance"],
+  ["KRU05024", "D00462", "gonorrhoea", "flux, gonorrhoea"],
+  ["KRU16068", "Q01943", "to collect payment", "to collect payment from"],
+  ["KRU17577", "S01744", "mimic intimation", "mimic intimation of"],
+  ["KRU07227", "H01112", "to be divided", "to be divided up"],
+  ["KRU09272", "K00475", "as, like", "like"],
+  ["KRU09272", "K00475", "so, thus", "thus"],
+  ["KRU12833", "N00958", "to be offered", "to be offered up"],
+  ["KRU14105", "P00071", "In Hebrew", "Hebrew"],
+  ["KRU14624", "P00882", "standing", "standing, standing up"],
+  ["KRU18252", "T00809", "to lift", "to lift up"],
+  ["KRU19228", "U01473", "one eighth", "eighth; one eighth"],
+  ["KRU04364", "C00998", "to stammer, to hesitate (to speak with an expression of uncertainty or of scruple)", "to hesitate, stammer, to speak with an expression of uncertainty"],
+  ["KRU16736", "S00192", "to wash hands and feet to a sacred act", "to wash hands and feet prior to a sacred act"],
+  ["KRU03201", "B01112", "to search, to investigate, to find out", "to search, investigate, examine, find out"],
+  ["KRU08263", "I00762", "to cut out edges", "to cut out edges, to pink."],
+  ["KRU03599", "C00144", "heap, pile, mound", "heap of stones, pile, mound"],
+  ["KRU03657", "C00220", "leader of a blind man", "staff, leader of a blind man"],
+  ["KRU03920", "C00498", "circle, meeting court", "circle, meeting, court-room, court"],
+  ["KRU04328", "C00953", "stillness of wind and wave", "calm, stillness of wind and wave"],
+  ["KRU05603", "E00046", "payment for a thing included in the bargain (and not mentioned)", "payment for a thing included in the bargain"],
+  ["KRU11056", "M00873", "divided off space", "divided off space, compartment"],
+  ["KRU11447", "M01511", "place for drawing water", "place for drawing water, well"],
+  ["KRU13313", "O00393", "metal spike of the spear", "metal spike at the butt-end of the spear"],
+  ["KRU15157", "Q00363", "large baking oven", "a stationary, large baking oven"],
+  ["KRU19917", "V00683", "pillars of the framework of a lantern", "the pillars supporting the framework of a lantern"],
+  ["KRU08356", "I00909", "a sale on time at a price higher than the seller would take if he sold for cash", "deaf or silent usury, tarsha, a sale on time at a price higher than the seller would take if he sold for cash"],
+  ["KRU19309", "U01649", "the seven letters which require crownlets in the Pentateuch scrolls", "the seven letters which require crownlets"],
+  ["KRU03864", "C00435", "spiral form, writing in spiral form", "spiral form"],
+  ["KRU09831", "K01231", "a row of vines", "a row of vines in a vineyard"],
+  ["KRU17752", "S02086", "a covered vehicle", "a covered arched vehicle"],
+  ["KRU00419", "A00635", "air, space", "empty space, air"],
+  ["KRU01195", "A01811", "born in month of Elul", "born in Elul."],
+  ["KRU01468", "A02237", "of cast metal", "made of cast metal"],
+  ["KRU01580", "A02415", "military commander", "military commander, general"],
+  ["KRU01594", "A02437", "uncoined metal", "uncoined metal, bulion"],
+  ["KRU02386", "B00269", "ravenous hunger", "ravenous hunger, bulimy"],
+  ["KRU03035", "B01003", "to be sweet, pleasant", "to be sweet, pleasant, pleasing"],
+  ["KRU03035", "B01003", "to grow better", "to grow better, improve"],
+  ["KRU03331", "B01252", "rebellion, defiance", "rebellion, defiance of the law"],
+  ["KRU03376", "B01317", "euph: white cataract", "white cataract"],
+  ["KRU03416", "B01349", "delicate food", "delicate food, dainty."],
+  ["KRU03526", "C00053", "high, exalted", "high, exalted, elevated"],
+  ["KRU03656", "C00217", "heaped (measure)", "heaped, liberal measure"],
+  ["KRU03670", "C00231", "to be cut off", "to be cut off, lopped"],
+  ["KRU03830", "C00398", "a shapeless mass", "a rolled up, shapeless mass"],
+  ["KRU04203", "C00807", "direct consequence of an act", "direct consequence"],
+  ["KRU04312", "C00931", "country of the Gauls", "Gaul, country of the Gauls"],
+  ["KRU04336", "C00962", "untrimmed stone", "untrimmed stone, cobble"],
+  ["KRU04342", "C00970", "euphem. a menstruous woman", "a menstruous woman"],
+  ["KRU04377", "C01022", "full draught", "quaffing, full draught"],
+  ["KRU04875", "D00246", "dux, chief, commander", "dux, commander"],
+  ["KRU04874", "D00250", "teacher’s platform", "teacher’s platform, pulpit"],
+  ["KRU04950", "D00357", "sediment, lees", "sediment, lees, dregs"],
+  ["KRU05181", "D00656", "letter, document", "official document, letter"],
+  ["KRU05472", "D01078", "to winnow, to scatter", "to scatter, strew; to winnow"],
+  ["KRU06437", "G00452", "privilege, benefit", "advantage, privilege, benefit"],
+  ["KRU06543", "G00649", "to be accounted, to be converted into a loan", "to be converted into a loan"],
+  ["KRU06557", "G00671", "coat of mail", "coat of mail, armour"],
+  ["KRU06828", "H00444", "to make evident, to prove", "to make evident"],
+  ["KRU07362", "H01336", "to be put to shame", "to be reviled, put to shame"],
+  ["KRU07455", "H01516", "to pick one’s teeth", "to pick the teeth"],
+  ["KRU07731", "I00078", "to mention explicitly", "to specify, mention explicitly"],
+  ["KRU07798", "I00156", "roasted meat", "roast, roasted meat."],
+  ["KRU07816", "I00183", "secret place", "secret, hiding place"],
+  ["KRU08187", "I00662", "of secondary import", "attachment, of secondary import"],
+  ["KRU08257", "I00759", "a head cover", "t’ratin, a head cover."],
+  ["KRU08366", "J00013", "nice, right", "fitting, right, nice"],
+  ["KRU08802", "J00557", "to set on fire", "to set on fire, burn"],
+  ["KRU09184", "K00337", "a small stove", "a small stove, brazier"],
+  ["KRU09242", "K00438", "a vessel for pressing of olives", "a vessel for olives"],
+  ["KRU09347", "K00583", "shame, putting to shame", "putting to shame; disgrace, shame"],
+  ["KRU09488", "K00760", "rule, principle", "general rule, principle"],
+  ["KRU04498", "C01187", "roaring, crying", "roaring, crying in agony"],
+  ["KRU04774", "D00108", "to put up a flag", "to put up a flag, to signalize"],
+  ["KRU04953", "D00363", "present, gift", "present, honorary gift"],
+  ["KRU05244", "D00741", "removal of ashes", "removal of ashes, cleaning"],
+  ["KRU05314", "D00833", "sparsely planted", "thin, sparsely planted"],
+  ["KRU05517", "D01078", "to scatter, to winnow", "to scatter, strew; to winnow"],
+  ["KRU06195", "F00083", "rose-colored wool", "rose-colored, red wool"],
+  ["KRU06284", "G00145", "to remove, to shake", "to move, shake; to remove."],
+  ["KRU08318", "I00849", "worker in copper", "worker in copper, bronze"],
+  ["KRU08375", "J00013", "right, nice", "fitting, right, nice"],
+  ["KRU08593", "J00287", "single, lonely", "singular, single, lonely"],
+  ["KRU08889", "J00681", "inhabited land", "settlement, inhabited land"],
+  ["KRU09098", "K00243", "to scald, to cauterize", "to sear, cauterize; to scald"],
+  ["KRU09573", "K00860", "to grow smaller", "to grow smaller, to contract"],
+  ["KRU09573", "K00860", "to form a recess in a wall", "to form a recess"],
+  ["KRU09602", "K00906", "with a deformed hip", "an animal with a deformed hip"],
+  ["KRU09762", "K01117", "priestly division", "band, priestly division"],
+  ["KRU09827", "K01227", "a fenced in plantation", "a plantation fenced in from all sides"],
+  ["KRU09881", "K01325", "to grow better", "to grow better, improve"],
+  ["KRU09896", "K01347", "Biblical verse", "Biblical verse, passage"],
+  ["KRU09989", "L00061", "edge, rim", "vertical rim, edge"],
+  ["KRU09985", "L00411", "fanning a flame", "blowing, fanning a flame"],
+  ["KRU10294", "L00548", "to mix, to beat", "to mix thoroughly, to beat"],
+  ["KRU10423", "L00690", "harvesting, picking", "picking, collecting, harvesting."],
+  ["KRU10429", "L00696", "a small coin", "a very small copper coin"],
+  ["KRU10473", "M00015", "opening, window", "light-hole, opening, window."],
+  ["KRU10565", "M00113", "to dissolve, to steep", "to soften, dissolve, steep"],
+  ["KRU10781", "M00442", "leaves of onions", "leaves of onions, leek"],
+  ["KRU10791", "M00461", "the right conduct", "the better, the right conduct"],
+  ["KRU10822", "M00505", "stuffed meat", "stuffing, stuffed meat"],
+  ["KRU10875", "M00582", "hot spring", "the hot spring of Tiberias"],
+  ["KRU11058", "M00877", "blotting out", "rubbing, blotting out"],
+  ["KRU11169", "M01058", "capital, metropolis", "metropolis, capital; city"],
+  ["KRU11240", "M01149", "reduction to poverty", "decline, reduction to poverty"],
+  ["KRU11800", "M02148", "handle of the plough", "handle of the plough; coulter"],
+  ["KRU12296", "M03105", "firm solution", "a firm, decided solution"],
+  ["KRU12324", "N00056", "mean person", "mean person, scamp."],
+  ["KRU12403", "N00219", "dowry, a bride’s outfit", "a bride’s outfit"],
+  ["KRU12425", "N00261", "granted, admitted", "let it be, granted, admitted"],
+  ["KRU12466", "N00341", "to be laid down", "to be laid down, placed"],
+  // T00094 / KRU17905: both source entries describe the same flour-and-oil preparation;
+  // their shared Menachot 89a citation supports the source-specific match.
+  ["KRU17905", "T00094", "pulp of flour mixed with hot oil", "a pulp of flour mixed with hot water and oil"],
+  // V00886 / KRU20035: this maps only the Musaf prayer sense (Krupnik sense 2);
+  // the separate "New Year's day" sense remains independent.
+  ["KRU20035", "V00886", "a section of the Musaf of the New Year’s Day", "the prayers on the New Year interspersed with blowing the Shofar, the Musaf of the New Year’s Day"],
+  // B00536 sense 3 and KRU02534 sense 1 share the same "son of" reading and cited passage.
+  ["KRU02534", "B00536", "son", "son of;"],
+  // Same definitions and source passages, with one dictionary giving a fuller gloss.
+  ["KRU04223", "C01376", "acquired learning, tradition, study by heart", "acquired learning, study of tradition"],
+  ["KRU04725", "D00045", "dripping grapes", "lumps of dripping grapes"],
+  ["KRU04974", "D00392", "fat, fat ground", "fat pasture ground"],
+  ["KRU05975", "E00697", "the transfer of property", "the transfer of landed property from one tribe to another"],
+  ["KRU06140", "E00959", "sounding the alarm", "sounding the alarm on public fast-days"],
+  ["KRU06285", "G00147", "a silver coin (one fourth of a Shekel)", "a silver coin"],
+  ["KRU17350", "S01302", "to rise in a column (fire)", "to rise in a column"],
+  ["KRU19505", "U02081", "one that is silent when reproached with spurious decent", "silenced, one that is silent when reproached with spurious descent"],
+  ["KRU19720", "V00350", "a shoot for inoculation", "a shoot used for inoculation."],
+  // Both sources cite the same Tosefta Avodah Zarah passage about opening wine barrels.
+  ["KRU19531", "U02126", "skilled in boring", "one known to be skilled in boring"],
+  // Both sources cite Pesikta Rabbati s. 43, end, for making her rebellious.
+  ["KRU20125", "V01040", "to make rebellious", "to make discontented, rebellious"],
+  // Both entries cite the same Mekhilta B'shallach passage describing the hard sea floor.
+  ["KRU14926", "P01470", "hard ground", "hard and level ground"],
+  // Both entries cite Bava Kamma 2b for the legal category of animal lying down.
+  ["KRU17914", "T00110", "lying down of animals", "lying down"],
+  // Both entries cite Targum Yonatan Exodus 24:10 for the same Ithpael form.
+  ["KRU02531", "B00534", "to be stamped", "to be stamped in, mixed up"],
+  // Both sources cite Hullin 9a for the same slanting slaughter cut.
+  ["KRU05633","E00092","cutting the animal’s throat in a slanting direction (letting the knife slide beyond the space ritually designated for cutting)","cutting the animal’s throat in a slanting direction"],
+  // Both sources cite Nedarim 32b for the retailer's customary extra measure.
+  ["KRU06183","F00050","relinquishment, addition to exact measure","the retailer’s customary addition to exact measure"],
+  // Both sources cite Avodah Zarah 39b for this olive preparation.
+  ["KRU04289","C00907","a superior sort of olives","a superior sort of olives already pressed when appearing in the market"],
+  // Both sources cite Pesachim III:7 for appointing a Sabbath camp.
+  ["KRU18541","U00198","to appoint a Sabbath camp as the center for Sabbath movement","to appoint a Sabbath camp"],
+  // The first prepositional sense is "like that which"; the interrogative sense stays separate.
+  ["KRU09504","K00786","like","like that which"],
+  // Both entries cite Pesikta HaChodesh p. 47a for siege engines.
+  ["KRU03174","B01081","engines of siege or defence","engines of siege"],
+  // Both entries cite Kiddushin IV:1 for priestly descent.
+  ["KRU09073","K00168","of priestly descent","one proving priestly descent, belonging to the priestly caste"],
+  // The fuller definition identifies the covered embers; Jastrow cites Shabbat 37a as well.
+  ["KRU17059","S00787","to cover embers with ashes","to cover with ashes"],
+  // Both entries cite Bava Metzia 103b for the second clay layer.
+  ["KRU08204","I00688","second layer of a clay dam","additional, second layer"],
+  // Both entries cite Yerushalmi Bava Metzia V:10c for fixing the price before harvest.
+  ["KRU15393","Q00751","setting a price","setting a price on fruits before they are harvested"],
+  // Both entries define the act of spreading the feet, with the same Ketubot 39b citation.
+  ["KRU15393","Q00751","spreading, straddling","spreading the feet"],
+  // Both entries cite Hullin 28a for the dye-producing plant juice.
+  ["KRU10283","L00537","juice of a plant used for dyeing","juice of a plant"],
+  // Both entries cite Berakhot 40b for the same sycamore species; the unripe-fig sense stays separate.
+  ["KRU04824","D00175","a species of sycamore","a species of figs or sycamore"],
+  // Both entries cite Yerushalmi Bava Metzia II:8b for the same upper garment.
+  ["KRU11938","M02411","an upper garment","the upper garment with the girdle, walking cloak"],
+  // Both sources cite Pesachim IV:8 for the branch used in caprification.
+  ["KRU04375","C01017","a branch used for caprification","branches used for caprification"],
+  // Both sources cite Shabbat XVI:1 for the removal of sacred objects.
+  ["KRU04462","C01140","removal of sacred object","removal of sacred objects"],
+  // Both sources cite Yerushalmi Sheviit II:37b for the quince-and-rose marmalade.
+  ["KRU05533","D01107","a marmalade of quinces and roses","a marmelade of quinces and roses"],
+  // Both sources cite Bava Metzia 118a for watching ownerless property.
+  ["KRU05597","E00033","watching ownerless objects","superintendence, watching owner-less objects"],
+  // Both sources cite Hullin 57b for the stopper inserted to repair a gap.
+  ["KRU06956","H00665","stopper, insertion (to fill a gap)","that which is sqeezed in to fill a gap, repair, insertion"],
+  // Both sources cite Menachot VIII:4 for letting olives shrivel.
+  ["KRU04552","C01255","to let the olives shrivel","to let the olive shrivel"],
+  // Match the bird-craw sense only; the human-stomach sense remains separate.
+  ["KRU16989","S00640","stomach of birds","the thick muscular stomach of birds, craw"],
+  // Both entries define the Temple-appearance obligation on the festivals.
+  ["KRU17864","T00015","appearance in the Temple (on the three festivals)","appearance in the Temple, pilgrimage"],
+  // This maps only the first-ripening sense; the animal-birth and first-fruits senses stay distinct.
+  ["KRU02827","B00794","to be first in ripening","to be early, produce first fruits"],
+  // The Jastrow reader phrase is abbreviated; the original entry supplies "organic disease".
+  ["KRU08294","I00811","an animal afflicted with an organic disease","an animal afflicted with a"],
+  // The stalk is a separate sense of עַמּוּד, distinct from its scroll-handle and bodily meanings.
+  ["KRU14617","P00866","stalk","the central stalk of onions"],
+  // Both sources cite Tosefta Sanhedrin II:1 for New-Moon proclamation.
+  ["KRU17105","S00873","proclamation of the New Moon or the New Year","of the New Moon, seasons"],
+  // The two sources describe the same woven olive-press bale.
+  ["KRU14773","P01192","a bale containing the olives to be pressed","a bale of loose texture containing the olive pulp to be pressed"],
+  // The Hithpael myrrh-handling sense is the same; the active "to make bitter" sense stays separate.
+  ["KRU12105","M02773","to become bitter","to become sticky and bitter"],
+  // The tenant and rent are separate senses and map to separate Krupnik records.
+  ["KRU07111","H00931","tenant on a fixed rent payable in kind","tenant"],
+  ["KRU07111","H00931","rent","the fixed annual rent in kind"],
+  // Jastrow itself notes "fork" as the alternative to "hook".
+  ["KRU16546","R00617","a piece as large as can be taken up with a fork","a piece as large as can be taken up with a hook"],
+  // Both entries cite Sifré Deut. 323 for the Hithpael sense of conducting oneself.
+  ["KRU12418","N00250","to conduct o. s.","to conduct one’s self"],
+  // Both entries cite Targum Jonathan Genesis 32:25 for the spatial sense.
+  // The following additions are likewise source-checked and limited to one sense each.
+  ["KRU05585","E00016","farther off (of space)","farther off, far"],
+  // Both entries cite Sanhedrin 19b for the rearing of children.
+  // Keep the same entries' growth and elevation senses separate.
+  ["KRU04045","C00635","rearing (of children)","rearing"],
+  // Both entries cite Jerusalem Shabbat IV:6d for the same peat/turf material.
+  ["KRU04194","C00799","turf or peat","peat"],
+  // Both entries cite Horayot 13a for gnawing by mice.
+  ["KRU03897","C00469","to gnaw (of mice)","to gnaw"],
+  // Both entries cite Targum Job 6:5 for the lowing of oxen.
+  ["KRU04099","C00690","to low (of oxen)","to low"],
+  // Both entries cite Targum Jeremiah 17:5 for a mortal human being.
+  ["KRU03441","B01372","mortal man","mortal"],
+  // Both sources describe shaping of writing and impress; Jastrow also preserves "poetry".
+  ["KRU04329","C00954","shaping (of writing), impress","shaping"],
+  ["KRU04044","C00632","earth embankment, steep banks","a steep"],
+  ["KRU14780","P01211","to cut (fruits) by the stalks","to cut fruit by the stalks."],
+  ["KRU15901","Q01641","resident of an open place","one residing in an open place"],
+  ["KRU02398","B00982","negligence","indifference, willful negligence"],
+  ["KRU01212","A01838","according to","according to the opinion, in the sense of"],
+  ["KRU01341","A02041","faith, trust","faith in Providence"],
+  ["KRU01578","A02408","road, way","paved way, public road"],
+  ["KRU03401","B01342","cypress or pine-tree","cypress"]
+,
+  ["KRU07984","I00408","a stand for a stove","receptacle of overflow, a stand for a portable stove"],
+  ["KRU19457","U01938","dry soil","hot and dry soil"],
+  ["KRU03526","C00053","an abnormally tall person","an abnormally tall and slim person with shaking gait"],
+  ["KRU03298","B00711","exact account","exact account of wine measures"],
+  ["KRU03519","C00044","small stubble used as fuel","rakings, small stubble, straw"],
+  ["KRU05768","E00343","upturning, scratching (of chickens)","damage done by scratching chickens"],
+  ["KRU14213","P00224","shrunk reed","shrunk"],
+  ["KRU01926","A02946","a species of fish","fish"],
+  ["KRU01200","A01818","linen sheet","wrapping cloth, sheet, bathing clothes"],
+  ["KRU02266","B00055","image, shadow","reflected image"],
+  ["KRU02652","B00656","hair","thread, a single hair"]
+,
+  ["KRU02633","B00615","mixture","thorough mixture, even distribution of mixed objects"],
+  ["KRU03814","C00377","Roman) shoes, which leave the toes uncovered","shoes"],
+  ["KRU04215","C00824","deduction from the price","deduction"],
+  ["KRU04594","C01305","grist-maker or dealer","grist-maker"],
+  ["KRU04675","C01425","to wrestle","to wrestle, fight"],
+  ["KRU04973","D00390","to tread","to tread upon, trample"]
+,
+  ["KRU03320","B01237","to recover, to get strong","to become strong"],
+  ["KRU03518","C00041","rakings heap","rakings"],
+  ["KRU04203","C00806","shoot (of a plant)","shoot"],
+  ["KRU04556","C01259","wheel-works of a well","wheel-works"],
+  ["KRU18037","T00354","soft date","soft, green date"],
+  ["KRU09533","K00817","to lay a net","to lay a trap, net"],
+  ["KRU09533","K00817","to lay a net","to lay a trap"],
+  ["KRU05539","D01113","to stamp","to tread, stamp"],
+  ["KRU05539","D01113","to press (the knife)","to press"],
+  ["KRU05539","D01113","to stuff","to stuff food into the camel’s mouth"]
+,
+  ["KRU03800","C00362","creature","inner body, creature"],
+  ["KRU06435","G00440","entitled","entitled to possession"],
+  ["KRU02813","B00781","a species of pears","pears"],
+  ["KRU06628","H00082","a sort of cakes","cakes"],
+  ["KRU06642","H00112","Parsee priest","Parsee"],
+  ["KRU06720","H00248","cheese","soft cheese"],
+  ["KRU06775","H00358","knife","slaughtering knife"],
+  ["KRU07276","H01186","leavened (bread)","leavened"]
+,
+  ["KRU03500","C00016","to grow","to grow high"],
+  ["KRU03500","C00016","to be elated, to be exalted","to be exalted; to be proud"],
+  ["KRU03320","B01237","to recover, to get strong","to get well, strong"]
+,
+  ["KRU02166","A03336","skin","dressed skin"]
+,
+  ["KRU04385","C01038","to do one good or evil","to do one good"],
+  ["KRU04979","D00406","to remove","to remove hurriedly"]
+,
+  ["KRU09387","K00643","beating (of flax)","beating"],
+  ["KRU09415","K00673","guard-house","guard-house at the gate"],
+  ["KRU09459","K00723","calyx of flowers","calyx"],
+  ["KRU09473","K00741","a mantle","a fine mantle"],
+  ["KRU17797","K01225","bell","the shepherd’s bell"],
+  ["KRU10160","L00353","hissing (of the serpent)","hissing"],
+  ["KRU10695","M00327","whip","chastising whip"],
+  ["KRU10985","M00759","channel","irrigating channel"],
+  ["KRU11012","M00857","to protest","to protest against"],
+  ["KRU11063","M00885","to remit (a debt)","to remit"],
+  ["KRU11381","M01370","a kind of boat","boat"],
+  ["KRU11815","M02185","cave","burial cave"],
+  ["KRU11881","M02294","mouthpiece","overlaid mouthpiece"],
+  ["KRU11886","M02309","to wring out","to wring"],
+  ["KRU11964","M02459","teacher","primary teacher"]
+,
+  ["KRU12686","N00704","libation","the act of libation"],
+  ["KRU12707","N00737","the constellation of Orion","Orion"],
+  ["KRU12741","N00795","marriage","taking in marriage"],
+  ["KRU12768","N00854","wooden) lid","lid"],
+  ["KRU12837","N00969","tank of the press","tank"],
+  ["KRU13548","O00788","clapping of the hands","clapping"],
+  ["KRU14428","P00605","clapper","clapper of a bell."],
+  ["KRU14762","P01174","tying the sacrifice","tying"],
+  ["KRU15143","Q00341","the festival of Purim","Purim"],
+  ["KRU15254","Q00520","jar","wine jar"],
+  ["KRU15525","Q00979","chest, box","money chest, jewelry box"]
+,
+  ["KRU16416","R00391","bundle","tight bundle"],
+  ["KRU16742","S00205","bluntness","bluntness of teeth"],
+  ["KRU16888","S00457","cup","a rough-edged cup."],
+  ["KRU16913","S00506","handle","the handle of a hoe"],
+  ["KRU16985","S00631","a kind of cups","cups"],
+  ["KRU16991","S00645","croaking (raven)","croaking"],
+  ["KRU17095","S00855","cluster of dates","cluster"],
+  ["KRU17103","S00870","bowing","bowing to the ground"],
+  ["KRU17187","S01017","song","rhythmic song."]
+  ,["KRU03803","C00364","rough untrimmed stone, cobble","a rolling stone, rough untrimmed stone, cobble"]
+  ,["KRU03169","B01075","to bubble forth, to burst forth","to break through, bubble forth, burst forth"]
+  ,["KRU17489","S01587","symbolical form of making an agreement binding","affirmation, making sure; symbolical form of making an agreement binding"]
+  ,["KRU11696","M01949","to make poor","to make poor, make contemptible"]
+  ,["KRU09446","K00711","a species of figs","figs"]
+  ,["KRU09772","K01132","a species of bats","bats"]
+  ,["KRU09776","K01139","a species of locusts","locusts"]
+  ,["KRU09842","K01255","a species of locusts","locusts"]
+  ,["KRU10810","M00481","a species of figs","figs"]
+  ,["KRU10897","M00621","a species of locusts","locusts"]
+  ,["KRU13428","O00579","ration","the daily ration"]
+  ,["KRU13489","O00677","chip","kindling chip"]
+  ,["KRU15100","Q00260","a coin (Dupondium)","Dupondium"]
+  ,["KRU15358","Q00688","Pelusium in Egypt","Pelusium"]
+  ,["KRU15604","Q01117","grain of pepper","pepper"]
+  ,["KRU16245","R00074","tongs","a pair of tongs"]
+  ,["KRU18411","T01140","chariot","chariot with horses"]
+  ,["KRU18746","U00553","a sort of shoe","shoe"]
+  ,["KRU18760","U00571","a cloak","a coarse cloak"]
+  ,["KRU18840","U00755","rinsing with water","rinsing"]
+  ,["KRU19665","V00260","a sort of pastry","pastry"]
+  ,["KRU09644","K00981","spoon","pan, spoon"]
+  ,["KRU09775","K01137","a species of locusts","locusts"]
+  ,["KRU19564","V00058","shawl fastened on the shoulder","cloaks or shawls fastened on the shoulder"]
+  ,["KRU09110","K00226","pitcher","wine pitcher, jug"]
+  ,["KRU09554","K00842","brazier","stand, a portable brazier"]
+  ,["KRU13751","O01132","a jewel","red jewel, carnelian"]
+  ,["KRU15513","Q00957","a cloak","Brundisian cloak, travelling cloak"]
+  ,["KRU16327","R00213","dish","banqueting dish, plate."]
+  ,["KRU16979","S00624","hammer","mallet; smith’s hammer"]
+  ,["KRU18521","U00170","shoot","isolated, single shoot."]
+  ,["KRU05047","D00493","guards","relays, guards at stations"]
+  ,["KRU13534","O00760","basket","basket made of twigs."]
+  ,["KRU14185","P00174","ramification","the full ramification of a tree"]
+  ,["KRU14197","P00191","cavity dug around a tree","cavity"]
+  ,["KRU14770","P01185","cutting","cutting fruit by the stalk"]
+  ,["KRU14857","P01358","arrangement of the speech or of prayer","arrangement"]
+  ,["KRU15093","Q00250","seam","the seam between a garment and its border"]
+  ,["KRU15386","Q00743","lump","lump of brittle stone"]
+  ,["KRU15821","Q01497","to paint","to paint the face with rouge"]
+  ,["KRU15821","Q01497","to curl","to make small curls pasted on the forehead"]
+  ,["KRU09798","K01181","divorce","divorce by means of a deed"]
+  ,["KRU04680","C01432","woman engaged in the wine-press","woman engaged in the wine press, wine treader"]
+  ,["KRU13073","N01375","the status of the N’thinim (Josh. IX. 27)","the legal status of the Nathin; the class of N’thinim"]
+  ,["KRU05607","E00048","destruction","removal, destruction"]
+  ,["KRU08552","J00234","weight, heaviness","weight"]
+  ,["KRU08816","J00581","to be dear","to be dear, precious"]
+  ,["KRU08816","J00581","to be heavy","to be heavy"]
+  ,["KRU13241","O00258","to plaster with lime","to plaster, whitewash"]
+  ,["KRU06499","G00560","voluptuous man","adulterer; voluptuous"]
+  ,["KRU06852","H00496","wrapper, envelope","wrapper of reed-matting"]
+  ,["KRU07458","H01522","adze, pick-axe","carpenter’s adze"]
+  ,["KRU07512","H01611","carob-tree and–pod","carob-pod; carob-tree"]
+  ,["KRU08782","J00533","wing of a building","extension, wing"]
+  ,["KRU02911","B00899","to recieve blows","to receive blows"]
+  ,["KRU18262","T00833","to set (jewels)","to set, enchase"]
+  ,["KRU18742","U00547","permitted (thing)","permission; it is permitted"]
+  ,["KRU07872","I00261","sufferer from hemorrhoids","sufferer from piles"]
+  ,["KRU11045","M00855","embroidered cover","embroidered horse-covers"]
+  ,["KRU03356","B01289","a kneeshaped pole","a knee-shaped pole"]
+  ,["KRU03574","C00109","a roll of dough","a lump of dough"]
+  ,["KRU04825","D00176","one afflicted with gonorrhoea","one afflicted with gonorrhœa"]
+  ,["KRU05535","D01109","Damascene plum","Damascene plums"]
+  ,["KRU05707","E00251","inhabitant of Hagra","inhabitants of Hagra"]
+  ,["KRU06049","E00800","debt for merchandise","debts for merchandise"]
+  ,["KRU07416","H01448","cleaning the head","cleansing the head"]
+  ,["KRU09259","K00463","to paint the eye-lids","to paint the eyelids"]
+  ,["KRU09616","K00934","leather thong","leather thongs"]
+  ,["KRU09849","K01262","a kind of beans","white beans"]
+  ,["KRU10895","M00614","watering time","watering times"]
+  ,["KRU10895","M00614","layer of stones","layers, piles of hewn stones"]
+  ,["KRU10907","M00641","threshing sledge","threshing ledge"]
+  ,["KRU11008","M00804","woman in childbed","travailing woman"]
+  ,["KRU12738","N00791","a Neronian coin","aNeronian coin"]
+  ,["KRU12869","N01035","dealer in naphta","dealer in naphtha"]
+  ,["KRU13480","O00666","silk-weavers trade","silk-weaver’s trade"]
+  ,["KRU13990","O01573","to make stink","to make offensive"]
+  ,["KRU14047","O01700","an unnamed Tannai","an unnamed authority"]
+ ].filter(pair=>Array.isArray(pair)&&pair.length===4).map(pair=>{const [a,b,x,y]=pair;return [a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');}));
+ // Alternative-level matches are narrower than whole-gloss matches:
+ // one shared sense can consolidate without absorbing neighboring meanings.
+ // Explicitly reviewed non-equivalences and deferred decisions. These never
+ // affect runtime merging; they keep the discovery queue from repeatedly
+ // proposing known false positives or unresolved cases.
+ const sourceGlossDecisionKey=(a,b,x,y)=>[a,b].sort().join('|')+'::'+[clean(x),clean(y)].sort().join(' | ');
+ const rejectedSourceGlossPairs=new Map([
+  ["KRU06547","G00654","dealer in leather bags","maker of and dealer in leather bags","Different occupational scope: Jastrow includes making as well as dealing; Krupnik only says dealer."],
+  ["KRU10278","L00533","there is","there is (was) not","The negative particle changes the meaning."],
+  ["KRU03526","C00053","The Most High","high, exalted, elevated","Divine title versus ordinary adjective; shared 'high' is not semantic equivalence."],
+  ["KRU02827","B00794","to bear first fruits","to bear for the first time","Different senses: first-fruits production versus first birth; retain the separate first-ripening match."],
+  ["KRU03023","B00986","royal seat, palace","of the palace","Rejected: Jastrow's phrase is the genitive 'of the palace' (or 'of the royal affairs'), while Krupnik's numbered sense is the palace itself, 'royal seat, palace'. Shared wording does not make these equivalent."],
+  ["KRU03220","B01135","valley","Valley of","Rejected: Jastrow's reader phrase 'Valley of' is a construct/proper-name expression requiring a complement; Krupnik's 'valley' is the standalone noun. The grammatical relation is different."],
+  ["KRU05415","D00950","with the knowledge of, with the consent of","knowledge, mind; temperament, physical disposition, constitution","Rejected: Jastrow defines the noun 'knowledge/mind' and temperament, while Krupnik's phrase is the idiom 'with the knowledge/consent of'. The shared token is not the same sense."],
+  ["KRU17926","T00128","to lie","to lie with, copulate with, cover","Rejected: Jastrow's phrase explicitly means sexual intercourse ('to lie with'); Krupnik's candidate phrase 'to lie' is the separate generic sense of lying/being placed. The related sexual sense in the Krupnik entry is separately numbered."],
+  ["KRU18302","T00918","to be broken in","to be broken","Rejected: the reader-extracted Jastrow phrase is only 'to be broken'; Krupnik's gloss adds the distinct intransitive/figurative sense 'to be broken in'. The longer source note is not a separately extracted reader phrase and cannot justify widening the match."],
+  ["KRU20168","V01113","from below","below","Rejected: 'from below' specifies a source/direction of movement; Jastrow's 'below' is a location. The added preposition changes the meaning."],
+  ["KRU16710","S00123","holiness","his holiness","Rejected: Jastrow's numbered sense is the honorific title 'his holiness' for a person; Krupnik's numbered sense is the abstract noun 'holiness/sanctity'. The title and abstract concept must remain distinct."],
+  ["KRU12418","N00250","to conduct o. s.","to lead, conduct","Rejected: Jastrow's Hif. sense is active 'to lead, conduct'; Krupnik's candidate is reflexive 'to conduct oneself'. The entry's separate Hithpael sense is the relevant reflexive form and must not be collapsed into the Hif."],
+  ["KRU15603","Q01116","to roll onself","to roll in, cover with","Rejected: Jastrow's base-form phrase 'to roll in, cover with' and Krupnik's reflexive 'to roll oneself' are different constructions. The separate Jastrow/Krupnik reflexive phrase is handled independently."],
+  ["KRU18682","U00438","in the name of","name","Rejected: Jastrow's 'name' is a noun; Krupnik's phrase 'in the name of' is a prepositional idiom. Shared headword letters do not make the glosses equivalent."],
+  ["KRU18682","U00437","in the name of","name, title;","Rejected: Jastrow's 'name, title' is a noun sense; Krupnik's 'in the name of' is a prepositional idiom. The distinct syntactic function must remain separate."],
+  ["KRU20035","V00886","the New Year’s day","the prayers on the New Year interspersed with blowing the Shofar, the Musaf of the New Year’s Day","Rejected: Jastrow defines the New Year prayer service (Musaf), whereas Krupnik sense 1 defines the calendar day itself. Krupnik's separate sense 2 is the prayer-service meaning."],
+  ["KRU03682","C00244","to cut, esp: to harvest dates","to cut into","Rejected: Jastrow's Pi. sense is 'to cut into'; Krupnik's primary sense is the Qal 'to cut, especially to harvest dates'. The exact base-form 'to cut' match is already handled separately; this derived sense is not equivalent."],
+  ["KRU03956","C00538","to cut, to shear","to cut into, interrupt","Rejected: Jastrow's Pa. gloss refers to interrupting a study (Lam. R. I, 3); Krupnik's gloss refers to cutting/shearing (e.g. myrtle). Shared 'cut' is not the same action."],
+  ["KRU04094","C00577","cut, wound","what is to be cut","Rejected: Jastrow's numbered sense is the legal category 'what is to be cut' (foreskin); Krupnik's gloss is 'cut, wound'. These are different meanings and grammatical uses."],
+
+
+
+
+
+
+
+
+  ["KRU04694","D00017","to flow out","to flow","Rejected: Krupnik explicitly separates 'to flow' (sense 1) from 'to flow out' (sense 2). Jastrow's phrase 'to flow' matches the first sense, not the more specific second sense."]
+ ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
+ const deferredSourceGlossPairs=new Map([
+  ["KRU06494","G00538","at times","times","Deferred: the Krupnik entry explicitly distinguishes 'time' from 'times'; this phrase pair is not one-to-one."],
+  ["KRU06494","G00538","at other times","times","Deferred: the Krupnik entry explicitly distinguishes 'time' from 'times'; this phrase pair is not one-to-one."],
+  ["KRU19531","U02126","skilled in boring","one known to be skilled in boring","Deferred: source-citation verification was not completed."],
+  ["KRU12466","N00341","to put down","to rest, put down; to leave alone","Deferred: the Jastrow Af. gloss spans multiple meanings, while Krupnik separates the matching wording across distinct forms/sense segments. A record-level alternative mapping cannot safely isolate the active 'put down' sense from the other 'rest' sense."],
+  ["KRU12466","N00341","to rest","to rest, put down; to leave alone","Deferred: the Jastrow Af. gloss spans multiple meanings, while Krupnik separates the matching wording across distinct forms/sense segments. A record-level alternative mapping cannot safely isolate the active 'rest' sense from the other 'put down' sense."],
+  ["KRU13990","O01573","to smell badly","to evaporate, be decomposed; to decay; to smell badly","Deferred: the exact phrase 'to smell badly' occurs in Jastrow's base-form entry and again in its separately labeled Hif. sense. The same Krupnik gloss cannot be attached to both without collapsing distinct grammatical forms."],
+  ["KRU13990","O01573","to smell badly","to become vapid, putrid; to smell badly","Deferred: the exact phrase 'to smell badly' occurs in Jastrow's base-form entry and again in its separately labeled Hif. sense. The same Krupnik gloss cannot be attached to both without collapsing distinct grammatical forms."],
+  ["KRU16803","S00315","light matter), lenient practice","light matter.","Deferred: Jastrow explicitly separates 'light matter' and 'lenient practice' into numbered senses, while Krupnik combines both in one gloss. Mapping the shared record-level phrase would bridge two distinct senses."],
+  ["KRU16803","S00315","light matter), lenient practice","lenient practice","Deferred: Jastrow explicitly separates 'light matter' and 'lenient practice' into numbered senses, while Krupnik combines both in one gloss. Mapping the shared record-level phrase would bridge two distinct senses."],
+  ["KRU01042","A01574","pressure","squeezing, pressure","Deferred: Jastrow groups 'squeezing, pressure' in one gloss, but this Krupnik candidate uses the attested alternate איצצא; the companion 'squeezing' candidate uses איצצתא. Do not merge the two Krupnik records through the Jastrow entry unless their own primary/alternate forms are mutually compatible."],
+  ["KRU01043","A01574","squeezing","squeezing, pressure","Deferred: Jastrow groups 'squeezing, pressure' in one gloss, but this Krupnik candidate uses the attested alternate איצצתא; the companion 'pressure' candidate uses איצצא. Do not merge the two Krupnik records through the Jastrow entry unless their own primary/alternate forms are mutually compatible."],
+  ["KRU01145","A01737","stranger","stranger, guest, lodger;","Deferred: Jastrow bundles 'stranger, guest, lodger' in one phrase, while Krupnik divides 'stranger' and 'guest' into separate numbered senses. The current mapping granularity cannot preserve that one-to-many distinction safely."],
+  ["KRU01145","A01737","guest","stranger, guest, lodger;","Deferred: Jastrow bundles 'stranger, guest, lodger' in one phrase, while Krupnik divides 'stranger' and 'guest' into separate numbered senses. The current mapping granularity cannot preserve that one-to-many distinction safely."],
+  ["KRU01172","A01772","rather, but","if not, except, but, only","Deferred: Jastrow uses the exact alternative 'but' in its first numbered sense and again in a separate logical-inference sense; Krupnik's 'rather, but' is one numbered sense. A record-level mapping would merge both Jastrow senses."],
+  ["KRU01172","A01772","rather, but","but","Deferred: Jastrow uses the exact alternative 'but' in its first numbered sense and again in a separate logical-inference sense; Krupnik's 'rather, but' is one numbered sense. A record-level mapping would merge both Jastrow senses."],
+  ["KRU15729","Q01325","to disqualify, to declare unfit, to reject","to disqualify, to be the cause of disqualification of; to declare unfit","Deferred: the candidate is flagged as one Krupnik sense matching multiple Jastrow senses in an entry that also distinguishes active disqualification from passive being made unfit. The exact phrase-level overlap needs a finer sense boundary before it can be approved."],
+  ["KRU01114","A01696","to be burnt","to be consumed, burnt up, digested","Deferred: Jastrow's one Hithpael/Nithpael gloss combines consumption, burning, and digestion, while Krupnik separates 'to be burnt' from 'to be consumed' (money spent). A record-level mapping could bridge distinct numbered Krupnik senses."],
+  ["KRU06564","G00686","to arm o. s.","to tie around, gird, arm; to harness, saddle","Deferred: Jastrow's reader phrase is a transitive/general gloss, while Krupnik's phrase is explicitly reflexive ('to arm oneself'). The forms and semantic scope need a more precise sub-sense boundary."],
+  ["KRU09659","K01007","to bend","to bend over, invert, turn upside down","Deferred: Jastrow specifies inversion/turning upside down, while Krupnik gives the broader 'to bend'. The source examples do not yet establish a one-to-one equivalence."],
+  ["KRU11079","M00922","half to half; at an equal distance from each","division, half.","Deferred: Jastrow's noun gloss ('division, half') and Krupnik's relational/adverbial gloss ('half to half; at an equal distance from each') are related but not demonstrably the same sense."],
+  ["KRU12418","N00250","to apply, to be wont to","to lead, conduct; to demean one’s self; to be guided by, be wont to; to apply, be practiced","Deferred: one Krupnik gloss matches two separate semicolon-delimited Jastrow senses ('be wont to' and 'apply'). The current mapping granularity cannot isolate which Jastrow sense Krupnik intends without bridging them."],
+  ["KRU12418","N00250","to conduct o. s.","to lead, conduct; to demean one’s self; to be guided by, be wont to; to apply, be practiced","Deferred: the Jastrow record contains several senses and forms, including a separate Hithpael 'to conduct oneself'; this broad root gloss cannot safely be mapped to Krupnik's reflexive form at record level."],
+  ["KRU15633","Q01188","to turn","to turn around, go away","Deferred: the Jastrow gloss is a specific motion ('turn around, go away'), while Krupnik's extracted gloss is broader ('to turn') and the source examples differ. Do not infer equivalence from the shared verb alone."],
+  ["KRU15633","Q01188","to turn","to turn aside, go out","Deferred: Jastrow's 'turn aside, go out' is one numbered sense, while Krupnik's 'to turn' is another extracted sense. The source entry contains several numbered forms and meanings; this needs sense-scoped review."],
+  ["KRU15633","Q01188","to ease nature","to ease one’s self","Deferred: the KRU source record contains both a base-form phrase and a separate Nif. sense with this wording; Jastrow likewise distinguishes base and Nif. forms. The current KRU extraction does not expose the exact sub-sense boundary needed for a safe mapping."],
+  ["KRU15633","Q01188","to be removed","to be removed, to die","Deferred: Krupnik's single extracted phrase overlaps Jastrow's separately numbered Nif. sense; the same KRU gloss also overlaps another Jastrow derived form. Preserve the grammatical distinction until it can be isolated."],
+  ["KRU15633","Q01188","to be removed","to be vacated, cleared, removed","Deferred: the same Krupnik 'to be removed' gloss overlaps Jastrow's distinct Hithpael sense as well as its Nif. sense. A record-level mapping would bridge different grammatical forms."],
+  ["KRU17819","S02236","to be hard","to be hard on, press heavily","Deferred: Jastrow explicitly labels an Af. form and adds 'on/press heavily'; Krupnik's extracted gloss is the broader 'to be hard'. The source records do not establish the same specific sense."],
+  ["KRU19012","U01042","covering","sinking, covering up","Deferred: Jastrow combines 'sinking' and 'covering up' in one reader phrase, while Krupnik separates 'submergence' and 'covering' into numbered senses. A source-scoped mapping could bridge two distinct KRU senses without a finer Jastrow boundary."],
+  ["KRU14780","P01211","to sting","to sting, prick","Deferred: Jastrow's single reader-visible sense 'to sting, prick' matches both Krupnik sense 2 'to sting' and sense 3 'to prick, to taunt'. The current source phrase boundary cannot safely choose one without merging distinct Krupnik senses."],
+  ["KRU14780","P01211","to prick, to taunt","to sting, prick","Deferred: same one-to-many ambiguity; do not map the Jastrow combined phrase to Krupnik's separate figurative 'to prick, to taunt' sense."],
+  ["KRU03808","C00369","clapper of a bell","clapper","Deferred: Jastrow's entry is only a cross-reference to גִּיל I and has no independent citation in this record. It likely names the same object, but confirm the referenced Jastrow entry before consolidating."]
+,
+  ["KRU06441","G00462","claim","possession, taking possession, claim","Deferred: Jastrow's single gloss combines possession, taking possession, and claim, while Krupnik splits claim into a separate numbered sense. The exact Jastrow phrase cannot safely be assigned to this KRU sense alone."],
+  ["KRU06441","G00462","taking possession","possession, taking possession, claim","Deferred: same one-to-many issue; Krupnik separates claim and taking possession, while Jastrow combines both in one gloss."],
+  ["KRU19048","U01132","apartment","dwelling, tent; apartment.","Deferred: Jastrow's phrase combines tent dwelling and apartment, while Krupnik separates them into numbered senses. Do not map the combined Jastrow phrase to one KRU sense."],
+  ["KRU19048","U01132","tent dwelling","dwelling, tent; apartment.","Deferred: same one-to-many ambiguity between the combined Jastrow phrase and Krupnik's distinct tent-dwelling/apartment senses."],
+  ["KRU03320","B01237","to hollow out, to perforate","to permeate, perforate","Deferred: both glosses contain 'perforate', but the source examples differ substantially (Targ Job 26:13 versus Yalkut Shimoni Exodus 182). Verify whether these are the same action before merging."]
+,
+  ["KRU07233","H01124","to be fine","to be smooth and fine","Deferred: the Jastrow source describes cutting with a sharp, smooth edge, while Krupnik describes an edge being fine. The grammatical direction and semantic focus may differ; verify the exact source sense before merging."]
+,
+  ["KRU03613","C00166","to cut off, to level","to cut, cut off.","Deferred: the Jastrow and Krupnik candidates refer to different verbal stems/senses (simple cutting versus intensive/leveling). Shared cut/cut-off vocabulary is insufficient to merge them."],
+  ["KRU03613","C00166","to cut, to cut off","to cut off, level","Deferred: this candidate reverses the stem/sense pairing in the same entry; keep the two numbered verbal senses separate until source morphology is reconciled."],
+  ["KRU18284","T00889","to lead to pasture","to lead, pasture, feed","Deferred: Jastrow's combined Peal gloss is being compared with Krupnik's Hifil sense; source morphology and two KRU records need to be reconciled before merging."],
+  ["KRU18292","T00889","to lead to pasture","to lead, pasture, feed","Deferred: same combined Jastrow gloss is associated with a second KRU record; do not map one Jastrow phrase to multiple KRU records without confirming the form and sense."],
+  ["KRU15318","Q00616","compounding ingredients","compounding, manufacturing; ingredients","Deferred: Jastrow's gloss combines the activity of compounding with the ingredients themselves; verify which sub-sense the Krupnik phrase denotes before merging."]
+,
+  ["KRU06406","G00388","trembling","trembling commotion","Deferred: Jastrow's phrase describes a trembling commotion in Targum Isaiah/Psalms, while Krupnik's example is fear and trembling in Genesis. The lexical overlap is plausible but the source contexts differ; keep separate pending confirmation."]
+,
+  ["KRU09361","K00605","extremely tall","an extremely tall and unshapely person","Deferred: Krupnik gives an adjective ('extremely tall'), while Jastrow describes a person ('an extremely tall and unshapely person'); the examples differ and the grammatical focus is not yet secure."],
+  ["KRU04979","D00406","to push, to hurry","to push away, thrust","Deferred: the two sources use different contextual senses (pushing/hurrying versus thrusting away); do not merge on the shared root alone."]
+,
+  ["KRU10160","L00353","whisper","whisper; spell, charm","Deferred: Jastrow's combined gloss covers whispering and spell/charm, while Krupnik separates ordinary whispering from charm-whispering. One Jastrow phrase cannot safely be assigned to the ordinary-whisper sense alone."],
+  ["KRU10170","L00372","to whisper","to whisper, hiss","Deferred: Jastrow's Pi. gloss combines whispering and hissing; Krupnik separates ordinary whispering, charm-whispering, and other senses."],
+  ["KRU10170","L00372","to whisper a charm","to whisper","Deferred: the KRU gloss is a specific charm-whispering sense, while the Jastrow phrase is a broader verb gloss; preserve until the original form/context is reconciled."],
+  ["KRU10170","L00372","to whisper a charm","to whisper, hiss","Deferred: the Jastrow gloss spans more than one action; do not merge the combined phrase with the specific KRU charm sense."],
+  ["KRU11063","M00885","to be forgiven, to be pardoned","to be cancelled; to be forgiven, pardoned","Deferred: the Jastrow Nifal gloss combines forgiveness and cancellation, while Krupnik splits these into distinct numbered meanings."],
+  ["KRU11063","M00885","to be cancelled","to be cancelled; to be forgiven, pardoned","Deferred: same combined-Jastrow/numbered-Krupnik ambiguity; preserve both separate Nifal senses."],
+  ["KRU11886","M02309","to suck","to give suck","Deferred: Krupnik's 'to suck' and Jastrow's Pa. 'to give suck' differ in grammatical direction/valency; do not merge without stronger source evidence."]
+,
+  ["KRU12863","N01026","to blow (fire)","to blow","Deferred: the Krupnik gloss is Afal 'to blow fire', while the Jastrow phrase is the simple 'to blow'; preserve the distinct verbal stem and sense."],
+  ["KRU14001","O01596","to smell badly, to be spoiled","to decay, be spoiled; to smell offensively","Deferred: the Jastrow gloss combines decay/spoilage and offensive smell; Krupnik splits the meanings and uses distinct source examples."],
+  ["KRU14001","O01596","to corrupt","to make offensive, unsavory; to corrupt","Deferred: the combined Jastrow gloss spans corruption and making unsavory; do not assign it to one KRU sense alone."],
+  ["KRU14001","O01596","to make unsavory","to make offensive, unsavory; to corrupt","Deferred: same one-to-many ambiguity between the combined Jastrow gloss and separate Krupnik senses."]
+,
+  ["KRU17477","S01557","court","large court","Deferred: Jastrow's 'large court' is explained as centenaria/large weights or a large court in different contexts, while Krupnik's entry is a courtyard. The source examples and semantic focus do not establish equivalence."],
+  ["KRU04579","C01287","seed of St. John’s bread","the seed of St.","Deferred: the Jastrow source markup splits “the seed of St. John’s bread” across adjacent italic spans. The actual reader extractor emits the incomplete fragment “the seed of St.” rather than the complete phrase, so it must not be matched to Krupnik’s full definition. Defer until the reader can surface the complete source phrase."],
+  ["KRU15991","Q01805","carriers of the litter","carriers of the","Deferred: Jastrow's source markup splits “carriers of the (bridal) litter” across separate italic spans. The reader extractor emits the incomplete fragment “carriers of the” rather than the complete phrase, so it must not be matched to Krupnik's full definition."],
+  ["KRU03037","B01005","dealer in spices","dealer in","Deferred: Jastrow's source markup gives “dealer in” and “manufacturer of, spices, perfumes” as separate italic fragments. The complete phrase “dealer in spices” is not emitted by the reader extractor, so the incomplete fragment must not be matched to Krupnik's complete definition."],
+ ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
+ const reviewedSourceAlternativePairRecords=[
+  ["KRU04451","C01128","to sigh heavily under an attack of angina pectoris","to sigh heavily under an attack of angina pectoris"],
+  ["KRU17170","S00988","cloth made of Cilician goat’s hair","cloth made of Cilician goat’s hair"],
+  ["KRU17489","S01587","symbolical form of making an agreement binding","symbolical form of making an agreement binding"],
+  ["KRU03653","C00213","precaution against trespassing the law","precaution against trespassing the law"],
+  ["KRU03653","C00213","fence","fence"],
+  ["KRU08407","J00050","to cut off dry twigs","to cut off dry twigs"],
+  ["KRU15958","Q01754","to place beyond due limits","to place beyond due limits"],
+  ["KRU17193","S01027","warning given to the suspected wife","warning given to the suspected wife"],
+  ["KRU03135","B01064","to open the mouth wide","to open the mouth wide"],
+  ["KRU08235","I00727","looking out for business","looking out for business"],
+  ["KRU03803","C00364","rough untrimmed stone","rough untrimmed stone"],
+  ["KRU03803","C00364","cobble","cobble"],
+  ["KRU03873","C00445","to embolden one's heart","to embolden one’s heart"],
+  ["KRU04589","C01299","broken pieces of iron","broken pieces of iron"],
+  ["KRU04589","C01299","trumpery","trumpery"],
+  ["KRU04738","D00059","cake of pressed figs","cake of pressed figs"],
+  ["KRU05183","D00659","bag with two pouches","bag with two pouches"],
+  ["KRU05908","E00579","undue delay over night","undue delay over night"],
+  ["KRU06426","G00421","cutting shoots off","cutting shoots off"],
+  ["KRU06426","G00421","trimming","trimming"],
+  ["KRU06562","G00684","the legal status of the non-priest","the legal status of the non-priest"],
+  ["KRU06756","H00319","to rest upon one as a duty","to rest upon one as a duty"],
+  ["KRU07294","H01218","to pass a restrictive law","to pass a restrictive law"],
+  ["KRU07811","I00178","one whose sex is unknown","one whose sex is unknown"],
+  ["KRU08096","I00556","to hide one’s self","to hide one’s self"],
+  ["KRU08360","I00915","to hide one’s self","to hide one’s self"],
+  ["KRU08363","I00915","to hide one’s self","to hide one’s self"],
+  ["KRU09482","K00755","to raise a crown of hair","to raise a crown of hair"],
+  ["KRU10756","M00401","spices put on coals","spices put on coals"],
+  ["KRU11222","M01119","vessel for heating water","vessel for heating water"],
+  ["KRU11930","M02399","a tool for whetting millstones","a tool for whetting millstones."],
+  ["KRU12574","N00534","to let come down","to let come down"],
+  ["KRU12884","N01064","to blow air into the lungs","to blow air into the lungs"],
+  ["KRU14617","P00866","cylinder around which a scroll is rolled","cylinder around which a scroll is rolled"],
+  ["KRU14779","P01209","to seek occasion against","to seek occasion against"],
+  ["KRU03379","B01319","a kind of piazza","a kind of piazza"],
+  ["KRU03747","C00301","leather bag","leather bag"],
+  ["KRU04370","C01010","coupling song","coupling song"],
+  ["KRU04859","D00221","medicine for the appetite","medicine for the appetite"],
+  ["KRU02133","A01619","exact time","exact time"],
+  ["KRU01308","A01993","servitude of a maid","servitude of a maid"],
+  ["KRU01571","A02373","virgin oil","virgin oil"],
+  ["KRU02420","B00332","uncultured person","an uncultured person"],
+  ["KRU02905","B00891","bathing utensils","bathing utensils"],
+  ["KRU02911","B00898","to make absorb","to make absorb"],
+  ["KRU02392","B00921","reconnoitring troop","reconnoitring troop"],
+  ["KRU03008","B00981","to trample upon","to trample upon"],
+  ["KRU03035","B01003","to feel the wine","to feel the wine"],
+  ["KRU03219","B01133","piece of wood","piece of wood"],
+  ["KRU03219","B01133","chip","chip"],
+  ["KRU03228","B01144","stock of cattle","stock of cattle"],
+  ["KRU03228","B01144","cattle-yard","cattle-yard"],
+  ["KRU03233","B01150","short cut","short cut"],
+  ["KRU03233","B01150","valley","valley"],
+  ["KRU03319","B01237","to get well","to get well"],
+  ["KRU03339","B01267","young shoot","young shoot."],
+  ["KRU03360","B01294","the brick-layer’s cushion","the brick-layer’s cushion"],
+  ["KRU03390","B01335","to make clear","to make clear"],
+  ["KRU03397","B01339","young tree","young tree"],
+  ["KRU03397","B01339","daughter","daughter"],
+  ["KRU03540","C00067","tall and slim","tall and slim"],
+  ["KRU03576","C00113","District of Gablan","District of Gablan"],
+  ["KRU03613","C00166","to cut off","to cut off"],
+  ["KRU03667","C00228","elevation to dignity","elevation to dignity"],
+  ["KRU03803","C00364","a roll of parchment","a roll of parchment"],
+  ["KRU03824","C00391","common soldier","common soldier"],
+  ["KRU03853","C00424","a local skin-disease","a local skin-disease"],
+  ["KRU03873","C00446","to become bold","to become bold"],
+  ["KRU03884","C00456","to commit adultery with","to commit adultery with"],
+  ["KRU03920","C00498","threshing floor","threshing floor"],
+  ["KRU03920","C00498","harvesting season","harvesting season"],
+  ["KRU03954","C00536","feast of circumcision","feast of circumcision"],
+  ["KRU03954","C00536","circumcision","circumcision"],
+  ["KRU03954","C00536","the circumcised membrum","the circumcised membrum"],
+  ["KRU04009","C00598","a legal document","a legal document"],
+  ["KRU04060","C00651","calendering clothes","calendering clothes"],
+  ["KRU04099","C00690","to break forth","to break forth"],
+  ["KRU04121","C00719","something rounded","something rounded"],
+  ["KRU04220","C00830","descendant of proselytes","descendant of proselytes"],
+  ["KRU04257","C00871","celestial sphere","celestial sphere"],
+  ["KRU04320","C00941","margin of scrolls","margin of scrolls."],
+  ["KRU04382","C01033","nuptial feast","nuptial feast"],
+  ["KRU04389","C01042","teaming arrangement","teaming arrangement"],
+  ["KRU04389","C01042","a small bridge","a small bridge"],
+  ["KRU04410","C01065","last touch","last touch"],
+  ["KRU04410","C01065","finishing","finishing"],
+  ["KRU04586","C01296","broken ware","broken ware."],
+  ["KRU04586","C01296","frippery","frippery"],
+  ["KRU04602","C01321","to let off","to let off"],
+  ["KRU04604","C01325","arid land","arid land"],
+  ["KRU04223","C01376","acquired learning","acquired learning"],
+  ["KRU04637","C01381","to form globules","to form globules"],
+  ["KRU04646","C01393","to whet the appetite","to whet the appetite"],
+  ["KRU04756","D00080","way of moving","way of moving"],
+  ["KRU04800","D00144","price in gold","price in gold"],
+  ["KRU05063","D00509","succession in government","succession in government"],
+  ["KRU05288","D00803","drawer of water","drawer of water"],
+  ["KRU05331","D00857","to kindle a light","to kindle a light"],
+  ["KRU05332","D00858","burning material","burning material"],
+  ["KRU05455","D01006","act of digging","act of digging"],
+  ["KRU05539","D01113","to be trodden down","to be trodden down"],
+  ["KRU05579","E00009","close attention","close attention"],
+  ["KRU05614","E00057","setting bounds","setting bounds"],
+  ["KRU05634","E00093","drawing near","drawing near"],
+  ["KRU05877","E00525","verdict by a majority of one","verdict by a majority of one"],
+  ["KRU05981","E00709","funeral address","funeral address"],
+  ["KRU06071","E00854","precautionary measure","a precautionary measure"],
+  ["KRU02786","B00752","to pass the night","pass the night."],
+  ["KRU03169","B01075","to bubble forth","bubble forth"],
+  ["KRU03169","B01075","to burst forth","burst forth"],
+  ["KRU03223","B01137","to leave unclaimed","leave unclaimed"],
+  ["KRU04602","C01321","to thrust","thrust"],
+  ["KRU05484","D01043","to remove ashes","remove ashes"],
+  ["KRU06073","E00857","characteristic points","characteristic points"],
+  ["KRU06093","E00892","sounding the trumpet","sounding the trumpet"],
+  ["KRU06097","E00899","gracious reception","gracious reception"],
+  ["KRU06173","F00034","confession of sin","confession of sin"],
+  ["KRU06198","F00093","jugular vein","jugular vein"],
+  ["KRU06364","G00311","putting on armour","putting on armour"],
+  ["KRU06441","G00462","taking possession","taking possession"],
+  ["KRU06447","G00471","male genitals","male genitals"],
+  ["KRU06447","G00471","male sex","male sex"],
+  ["KRU06539","G00643","to make old","to make old"],
+  ["KRU06581","G00720","leather bag","leather bag"],
+  ["KRU06622","H00074","a dish of flour","a dish of flour"],
+  ["KRU06819","H00429","to form a partition","to form a partition"],
+  ["KRU07168","H01021","to put in vinegar","put in vinegar"],
+  ["KRU07191","H01060","putting off","putting off"],
+  ["KRU07191","H01060","taking out","taking out"],
+  ["KRU07202","H01078","empty space","empty space"],
+  ["KRU07285","H01208","a violent man","violent man"],
+  ["KRU07374","H01360","shady place","shady place"],
+  ["KRU07464","H01534","to cut off","to cut off"],
+  ["KRU07464","H01534","to divide","divide"],
+  ["KRU07485","H01563","to hollow out","to hollow out"],
+  ["KRU07522","H01635","dazzling the eye","dazzling the eye"],
+  ["KRU07554","H01688","early manhood","early manhood"],
+  ["KRU07776","I00130","shooting distance","shooting distance"],
+  ["KRU07825","I00195","to come to the surface","to come to the surface"],
+  ["KRU08066","I00516","night demons","night demons"],
+  ["KRU08176","I00648","muddy soil","muddy soil"],
+  ["KRU08246","I00743","to take pains","to take pains"],
+  ["KRU08295","I00810","being cast ashore","being cast ashore"],
+  ["KRU08324","I00859","to strike against","strike against"],
+  ["KRU08324","I00859","to knock","knock"],
+  ["KRU08324","I00859","to become t’refah","to become t’refah"],
+  ["KRU08415","J00058","husband’s brother","husband’s brother"],
+  ["KRU08428","J00074","dry fruits","dry fruits"],
+  ["KRU08546","J00225","loving to go out","loving to go out"],
+  ["KRU08776","J00527","going out","going out"],
+  ["KRU08997","K00082","to make a path","make a path"],
+  ["KRU08999","K00084","landing bridge","landing bridge."],
+  ["KRU09132","K00252","the planet Venus","the planet Venus"],
+  ["KRU09317","K00532","curtained bed","curtained bed"],
+  ["KRU09534","K00818","to keep warm","keep warm"],
+  ["KRU09606","K00913","to cut down","to cut down"],
+  ["KRU09624","K00952","to feel ashamed","to feel ashamed"],
+  ["KRU09809","K01191","to round off","to round off"],
+  ["KRU09812","K01198","troop of siege","troop of siege"],
+  ["KRU07721","I00064","to make obligatory the setting aside of tithes","to make obligatory the setting aside of tithes&c"],
+  ["KRU03613","C00166","to cut off","cut off."],
+  ["KRU10059","L00182","white matter","white matter"],
+  ["KRU10087","L00229","to talk about","to talk about"],
+  ["KRU10087","L00229","to talk disrespectfully","talk disrespectfully"],
+  ["KRU10173","L00376","to loll the tongue","to loll the tongue"],
+  ["KRU10213","L00438","evil talk","evil talk"],
+  ["KRU10334","L00577","to talk against","to talk against"],
+  ["KRU10334","L00577","to murmur","murmur"],
+  ["KRU10364","L00604","foreign tongue","foreign tongue"],
+  ["KRU10364","L00604","evil talk","evil talk"],
+  ["KRU10363","L00603","to talk against","to talk against"],
+  ["KRU10924","M00669","coarse bran","coarse bran"],
+  ["KRU10955","M00716","mixed wine","mixed wine"],
+  ["KRU10977","M00750","offering drink","offering drink"],
+  ["KRU11255","M01174","drawing water","drawing water."],
+  ["KRU11414","M01442","preparatory means","preparatory means"],
+  ["KRU11442","M01501","funeral escort","funeral escort"],
+  ["KRU11696","M01949","to make poor","to make poor"],
+  ["KRU11865","M02272","untanned hide","untanned hide."],
+  ["KRU11968","M02465","real estate","real estate"],
+  ["KRU11983","M02508","resting place","resting place"],
+  ["KRU12131","M02811","a faulty version","a faulty version"],
+  ["KRU12160","M02847","to be rubbed with oil","to be rubbed with oil"],
+  ["KRU12188","M02905","to take a pledge","to take a pledge"],
+  ["KRU12273","M03063","sweet taste","sweet taste"],
+  ["KRU12300","M03112","sustained version","sustained version"],
+  ["KRU12316","N00039","to come to the surface","come to the surface"],
+  ["KRU12358","N00127","to get dark","to get dark"],
+  ["KRU12377","N00174","to bite off","to bite off."],
+  ["KRU12413","N00235","moving about","moving about"],
+  ["KRU12501","N00390","boughs of a tree","boughs of a tree"],
+  ["KRU12839","N00979","wearing shoes","wearing shoes."],
+  ["KRU12449","N00308","to shake (the head)","to shake the head"],
+  ["KRU12852","N01011","camel’s cry","camel’s cry"],
+  ["KRU12984","N01216","underground passage","underground passage"],
+  ["KRU13000","N01251","to strike against","to strike against"],
+  ["KRU13204","O00208","systematic scholar","systematic scholar"],
+  ["KRU13347","O00452","to press out","to press out"],
+  ["KRU13347","O00452","to wring","wring"],
+  ["KRU13399","O00530","old age","old age"],
+  ["KRU13404","O00530","gray head","gray head"],
+  ["KRU13453","O00619","lime-burner","lime-burner"],
+  ["KRU13453","O00619","worker in lime","worker in lime"],
+  ["KRU13548","O00789","adequate power","adequate power"],
+  ["KRU13620","O00906","ceiling (of twigs)","ceiling of twigs"],
+  ["KRU13692","O01042","to cut chips","to cut chips"],
+  ["KRU13714","O01078","to make blind","to make blind"],
+  ["KRU13841","O01294","to be inflicted upon","to be inflicted upon"],
+  ["KRU13853","O01319","speaker at funerals","speaker at funerals"],
+  ["KRU13868","O01349","to give to eat","give to eat"],
+  ["KRU13949","O01497","to paint red","to paint red"],
+  ["KRU14015","O01635","to hold fast","hold fast"],
+  ["KRU14052","O01713","to tear down","tear down"],
+  ["KRU14077","P00029","thick with leaves","thick with leaves"],
+  ["KRU14321","P00450","upper garment","upper garment"],
+  ["KRU14344","P00490","dressing hides","dressing hides"],
+  ["KRU14354","P00500","disability to remarry","disability to remarry"],
+  ["KRU14375","P00532","covering (the head)","covering the head"],
+  ["KRU14403","P00582","upper chamber","upper chamber"],
+  ["KRU14408","P00592","using as a slave","using as a slave"],
+  ["KRU14485","P00687","exciting to lamentation","exciting to lamentation"],
+  ["KRU14534","P00749","to make turbid","make turbid"],
+  ["KRU14686","P01052","to do one thing while intending to do another thing","to do one thing while intending to do another thing"],
+  ["KRU14772","P01188","removal from place","removal from place"],
+  ["KRU14890","P01417","to excite to lamentation","excite to lamentation"],
+  ["KRU14890","P01418","to lay bare","to lay bare"],
+  ["KRU14959","P01545","to be worn out","worn out"],
+  ["KRU14959","P01545","to remain long","to remain long"],
+  ["KRU15181","Q00398","to grow larger","grow larger"],
+  ["KRU15276","Q00555","a puny lamb","a puny lamb"],
+  ["KRU15457","Q00860","spasmodic movement","spasmodic movement"],
+  ["KRU15590","Q01099","to pick to pieces","pick to pieces"],
+  ["KRU15630","Q01158","the shepherd’s pipe","the shepherd’s pipe"],
+  ["KRU15689","Q01247","worthless matter","worthless matter"],
+  ["KRU15875","Q01593","a chest in the wall","a chest in the wall"],
+  ["KRU15912","Q01665","flying hair","flying hair"],
+  ["KRU15920","Q01677","odd sum","odd sum"],
+  ["KRU15920","Q01677","detail number","detail number"],
+  ["KRU15965","Q01763","to change money","to change money"],
+  ["KRU15983","Q01791","single pigeon","single pigeon"],
+  ["KRU15983","Q01791","a single berry","a single berry"],
+  // Reviewed from the regenerated semantic queue: fuller wording and its concise counterpart describe the same sense.
+  ["KRU13933","O01464","leather apron","also leather apron."],
+  ["KRU19454","U01930","easily enticed","one easily enticed"],
+  ["KRU19540","U02141","to lay the foundation","to lay the foundation of"],
+  ["KRU19659","V00245","one who writes plene","who writes plene"],
+  ["KRU01153","A01744","in the lump","in a lump"],
+  ["KRU04213","C00821","customary addition to weight or measure","customary addition to weight"],
+  ["KRU04374","C01015","a fig ripened through caprification","a fig or carob ripened through caprification"],
+  ["KRU05017","D00453","cut glass vessels","cut or engraved glass vessels"],
+  ["KRU10126","L00307","one having thick eye-brows","one having thick and connected eye-brows"],
+  ["KRU14250","P00294","a period of twelve hours","a period of twelve astronomical hours"],
+  ["KRU12583","N00545","an animal in whose body an organ is found to be absent or destroyed","the case of an animal in whose body an organ is found to be absent"],
+  ["KRU19830","V00526","the body of an animal stuffed with its loose pieces and roasted","the body of an animal stuffed with its loose pieces"],
+  ["KRU18096","T00517","to have pity","pity"],
+  ["KRU10885","M00596","an animal set aside for a sacrifice","an animal set aside"],
+  ["KRU10422","L00689","bass-relief","in bass-relief"],
+  ["KRU08326","I00860","to knock","to knock at"],
+  ["KRU08390","J00028","it corresponds to","corresponds to"],
+  ["KRU12467","N00343","good","it is good"],
+  ["KRU04637","C01379","to deduct from","deduct"],
+  ["KRU07673","H01900","to close","to close up"],
+  ["KRU05163","D00634","to have a law-suit","have a law-suit with"],
+  ["KRU11129","M00995","to arrive","to arrive at"],
+  ["KRU07227","H01112","to differ with","to differ."],
+  ["KRU19569","V00067","to ask for","to ask"],
+  ["KRU12418","N00250","to conduct o. s.","to demean one’s self"],
+  ["KRU11796","M02143","in the presence of","presence"],
+  ["KRU06638","H00104","to embrace one another","to embrace"],
+  ["KRU05268","D00769","like","the like of"],
+  // Map only the Niphal "to be cut into" sense; the separate cut-off sense stays apart.
+  ["KRU07668","H01896","to be cut","to be cut into"],
+  // A second sense in the same Muktzeh entry: the dedicated tool for cutting figs.
+  ["KRU10885","M00596","a tool specially intended for cutting figs","the tool specially intended"],
+  // Match only the possession-claim segment; "taking possession" stays a separate sense.
+  ["KRU06888","H00556","claim based on undisturbed possession during a legally fixed period","claim based on undisturbed possession"],
+  // Match only the fecal-mass segment; the separate jet-of-urine sense remains independent.
+  ["KRU14617","P00866","fecal mass","the fecal mass in the rectum"],
+  // Match only the ceremony segment; the general severing gloss and Krupnik's timber sense remain separate.
+  ["KRU17632","S01839","a ceremony of severing family connections with a man who married beneath his social rank","a ceremony attending the sale of an heirloom to an outsider"],
+  // The two sources cite the same Toh. X, 7 passage for emptying the pit; keep "to sprinkle" separate.
+  ["KRU06469","G00500","to empty","empty over"],
+  ["KRU02534","B00536","house","house of"],
+  ["KRU02534","B00536","place","place of"],
+  ["KRU15603","Q01116","to roll","to roll in"]
+,
+  ["KRU04385","C01038","to be bestowed","to be bestowed"],
+  ["KRU04979","D00406","to be suspended","to be pushed aside"],
+  ["KRU04979","D00406","to be suspended","suspended"],
+  ["KRU06334","G00246","to let run","to let collected water run into a channel."],
+  ["KRU12677","N00685","detachment of troops","a detachment of troops sent to take hostages"],
+  ["KRU02031","A03131","the uppermost layer","the uppermost layer of a clay dam around a field"],
+  ["KRU18006","T00299","pavement","mosaic pavement"],
+  ["KRU03996","C00581","esp. a rabbinical enactment issued as a preventive measure","a rabbinical enactment issued as a guard"],
+  ["KRU06660","H00148","the festive offering","the festive offering of the visitors of the Temple on the festivals"],
+  ["KRU17472","S01547","branch sinews","branch sinews of the nervus ischiadicus"],
+  ["KRU03583","C00124","calyx or capsule of plants","calyx"],
+  ["KRU17047","A02909","Ctesiphon on the bank of Tigris","Ctesiphon"],
+  ["KRU08091","I00550","a place for keeping dishes warm","a place for chafing dishes"]
+ ];
+ const alternativePairsByRef=new Map();
+ for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
+  const key=[kr,jr].sort().join('|')+'::'+[clean(kg),clean(jg)].sort().join(' | ');
+  for(const [ref,own] of [[kr,kg],[jr,jg]]){
+   if(!alternativePairsByRef.has(ref))alternativePairsByRef.set(ref,[]);
+   alternativePairsByRef.get(ref).push({key,own});
+  }
+ }
+ const reviewedSourceAlternativePairs=new Set(reviewedSourceAlternativePairRecords.map(([kr,jr,kg,jg])=>
+  [kr,jr].sort().join('|')+'::'+[clean(kg),clean(jg)].sort().join(' | ')
+ ));
+ const senseSegments=text=>{
+  const out=[];let current='',depth=0;
+  for(const ch of String(text||'')){
+   if(ch==='(')depth++;else if(ch===')')depth=Math.max(0,depth-1);
+   if(ch===';'&&depth===0){if(clean(current))out.push(current.trim());current='';}
+   else current+=ch;
+  }
+  if(clean(current))out.push(current.trim());
+  return out;
+ };
+ function meaningBuckets(ref,meaning,dynamicPairsByRef){
+  const segments=senseSegments(meaning.text),mappings=[...(alternativePairsByRef.get(ref)||[]),...(dynamicPairsByRef?.get(ref)||[])];
+  const buckets=segments.map((segment,index)=>{
+   const alternatives=glossAlternatives(segment);
+   const bucketKeys=mappings.filter(mapping=>alternatives.some(value=>mapping.exact?clean(value)===clean(mapping.own):alternativeKey(value)===alternativeKey(mapping.own))).map(mapping=>mapping.key);
+   return {text:segment,bucketKeys:[...new Set(bucketKeys)],bucketId:bucketKeys.length?'reviewed-alternative-segment':'unmatched-segment:'+ref+':'+clean(meaning.label)+':'+index};
+  });
+  // Once a phrase has an attested match, keep each semicolon-delimited sense
+  // distinct. If none match, preserve the original source phrase unchanged.
+  if(!buckets.some(bucket=>bucket.bucketKeys.length))return [{text:meaning.text,bucketKeys:[],bucketId:null}];
+  return buckets;
+ }
  function reviewedEquivalent(source,item){
-  const pair=[source,item].map(s=>s.entry.r+'|'+s.meaning.text).sort();
-  return pair[0]==='A03220|accident, occurrence'&&pair[1]==='KRU02095|in accident';
+  if(!compatibleEntries(source.entry,item.entry))return false;
+  const otherMeaning=item.sourceMeaning||item.meaning;
+  const ids=[source.entry.r,item.entry.r].sort().join('|');
+  const glosses=[clean(source.meaning.text),clean(otherMeaning.text)].sort().join(' | ');
+  return reviewedSourceGlossPairs.has(ids+'::'+glosses);
+ }
+ function compatibleForm(a,b){
+  // A missing source label is unknown, not evidence of a different grammatical sense.
+  // Two explicit, conflicting labels remain separate.
+  return !a||!b||a===b;
  }
  function sameMeaning(group,item,word){
-  if(group.form!==stem(item.meaning.label)||(S.hasVowels(word)&&!group.sources.every(s=>compatible(s.spelling,item.spelling))))return false;
-  return synonymKey(group.text)===synonymKey(item.meaning.text)||
-   group.sources.some(s=>reviewedEquivalent(s,item))||reviewedGlossEquivalent(group.text,item.meaning.text);
+  const itemForm=stem(item.meaning.label);
+  if(!compatibleForm(group.form,itemForm)||!group.sources.every(s=>compatibleEntries(s.entry,item.entry,word)))return false;
+  if(group.bucketKeys?.some(key=>item.bucketKeys?.includes(key)))return true;
+  return canonicalGlossKey(group.text)===canonicalGlossKey(item.meaning.text)||
+   synonymKey(group.text)===synonymKey(item.meaning.text)||
+   sharesReviewedSynonym(group.text,item.meaning.text)||
+   group.sources.some(s=>reviewedEquivalent(s,item)||reviewedGlossEquivalent(s,item));
+ }
+ function exactAlternativeMappings(records,word){
+  const pairs=new Map();
+  const prepared=(records||[]).filter(record=>record.entry&&Array.isArray(record.meanings)).map(record=>{
+   const lookupWord=record.lookupWord||word;
+   return {...record,spelling:S.displayHeadword(record.entry,lookupWord)};
+  });
+  for(let i=0;i<prepared.length;i++)for(let j=i+1;j<prepared.length;j++){
+   const first=prepared[i],second=prepared[j];
+   const firstIsK=first.entry.source==='krupnik',secondIsK=second.entry.source==='krupnik';
+   if(firstIsK===secondIsK)continue;
+   const k=firstIsK?first:second,jastrow=firstIsK?second:first;
+   if(!compatibleEntries(k.entry,jastrow.entry,word))continue;
+   for(const jm of jastrow.meanings)for(const km of k.meanings){
+    if(!compatibleForm(stem(jm.label),stem(km.label)))continue;
+    const jSegments=senseSegments(jm.text),kSegments=senseSegments(km.text);
+    for(let ji=0;ji<jSegments.length;ji++)for(let ki=0;ki<kSegments.length;ki++){
+     const jSegment=jSegments[ji],kSegment=kSegments[ki];
+     const jSegmentId=[jastrow.entry.r,clean(jm.text),stem(jm.label),clean(jm.section),ji,clean(jSegment)].join('::');
+     const kSegmentId=[k.entry.r,clean(km.text),stem(km.label),ki,clean(kSegment)].join('::');
+     for(const ja of glossAlternatives(jSegment))for(const ka of glossAlternatives(kSegment)){
+      const jMatch=alternativeMatchKey(ja,jSegment),kMatch=alternativeMatchKey(ka,kSegment);
+      if(!jMatch.key||jMatch.key!==kMatch.key||jMatch.voice!==kMatch.voice)continue;
+      const jAlt=clean(ja),kAlt=clean(ka);
+      const key=[jastrow.entry.r,k.entry.r].sort().join('|')+'::'+[jAlt,kAlt].sort().join(' | ');
+      if(!pairs.has(key))pairs.set(key,{key,jastrow:new Map(),krupnik:new Map(),matches:[]});
+      const pair=pairs.get(key);
+      pair.jastrow.set(jSegmentId,{id:jSegmentId,label:stem(jm.label)});
+      pair.krupnik.set(kSegmentId,{id:kSegmentId,label:stem(km.label)});
+      pair.matches.push({jSegmentId,kSegmentId,jRef:jastrow.entry.r,kRef:k.entry.r,jAlt:ja,kAlt:ka});
+     }
+    }
+   }
+  }
+  const jTargets=new Map(),kTargets=new Map();
+  for(const pair of pairs.values())for(const match of pair.matches){
+   if(!jTargets.has(match.jSegmentId))jTargets.set(match.jSegmentId,new Set());
+   if(!kTargets.has(match.kSegmentId))kTargets.set(match.kSegmentId,new Set());
+   jTargets.get(match.jSegmentId).add(match.kSegmentId);
+   kTargets.get(match.kSegmentId).add(match.jSegmentId);
+  }
+  const byRef=new Map();
+  for(const pair of pairs.values()){
+   const labels=[...pair.jastrow.values(),...pair.krupnik.values()].map(item=>item.label).filter(Boolean);
+   const ambiguous=pair.jastrow.size!==1||pair.krupnik.size!==1||new Set(labels).size>1||
+    pair.matches.some(match=>jTargets.get(match.jSegmentId)?.size>1||kTargets.get(match.kSegmentId)?.size>1);
+   if(ambiguous)continue;
+   for(const match of pair.matches)for(const [ref,own] of [[match.jRef,match.jAlt],[match.kRef,match.kAlt]]){
+    if(!byRef.has(ref))byRef.set(ref,[]);
+    byRef.get(ref).push({key:pair.key,own,exact:true});
+   }
+  }
+  return byRef;
  }
  function merge(records,word){
-  const groups=[];
+  const groups=[],dynamicPairsByRef=exactAlternativeMappings(records,word);
   for(const {id,entry,meanings,lookupWord} of records)for(const meaning of meanings){
    if(!meaning.text?.trim())continue;
-   const matchingWord=lookupWord||word,spelling=S.displayHeadword(entry,matchingWord),item={id,entry,meaning,spelling};
-   let group=groups.find(g=>sameMeaning(g,item,word));
-   if(!group){group={text:meaning.text,form:stem(meaning.label),spelling,sources:[],rank:S.vowelRank(entry,matchingWord)};groups.push(group);}
-   if(parts(meaning.text).length>parts(group.text).length)group.text=meaning.text;
-   const rank=S.vowelRank(entry,matchingWord);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
-   if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label)))group.sources.push(item);
+   const matchingWord=lookupWord||word,spelling=S.displayHeadword(entry,matchingWord),sourceItem={id,entry,meaning,spelling};
+   for(const bucket of meaningBuckets(entry.r,meaning,dynamicPairsByRef)){
+    const item={...sourceItem,sourceMeaning:meaning,meaning:{...meaning,text:bucket.text},bucketKeys:bucket.bucketKeys||[]};
+    const matchingGroups=groups.filter(g=>sameMeaning(g,item,word));
+    let group=matchingGroups[0];
+    if(!group){group={text:bucket.text,form:stem(meaning.label),spelling,sources:[],displayAlternatives:[],bucketKeys:bucket.bucketKeys||[],rank:S.vowelRank(entry,matchingWord)};groups.push(group);}
+    else if((item.bucketKeys||[]).length>1&&matchingGroups.length>1){
+     // A single reviewed source sense may list multiple alternatives that map
+     // one-to-one to separate records in the other dictionary. Join those
+     // groups only when each is reached by a different reviewed key and all
+     // explicit grammatical labels/headword forms remain compatible.
+     const bridged=matchingGroups.filter(g=>g.bucketKeys?.some(key=>item.bucketKeys.includes(key)));
+     const matchingKeys=bridged.map(g=>g.bucketKeys.find(key=>item.bucketKeys.includes(key)));
+     const keyCounts=new Map();for(const key of matchingKeys)keyCounts.set(key,(keyCounts.get(key)||0)+1);
+     const labels=new Set(bridged.map(g=>g.form).filter(Boolean));
+     const sourceFormsCompatible=bridged.every((g,i)=>bridged.slice(0,i).every(other=>
+      other.sources.every(a=>g.sources.every(b=>compatibleEntries(a.entry,b.entry,S.hasVowels(a.spelling)?a.spelling:(S.hasVowels(b.spelling)?b.spelling:word))))));
+     if(bridged.length>1&&new Set(matchingKeys).size===bridged.length&&[...keyCounts.values()].every(count=>count===1)&&labels.size<=1&&sourceFormsCompatible){
+      for(const extra of bridged.slice(1)){
+       for(const source of extra.sources)if(!group.sources.some(s=>s.id===source.id&&s.meaning.text===source.meaning.text&&stem(s.meaning.label)===stem(source.meaning.label)))group.sources.push(source);
+       for(const alternative of extra.displayAlternatives){
+        const key=alternativeKey(alternative);
+        if(!group.displayAlternatives.some(value=>alternativeKey(value)===key))group.displayAlternatives.push(alternative);
+       }
+       for(const key of extra.bucketKeys||[])if(!group.bucketKeys.includes(key))group.bucketKeys.push(key);
+       if(extra.rank<group.rank){group.rank=extra.rank;group.spelling=extra.spelling;}
+       if(!group.form)group.form=extra.form;
+       groups.splice(groups.indexOf(extra),1);
+      }
+      group.text=group.displayAlternatives.join(', ');
+     }
+    }
+    if(!group.form)group.form=stem(meaning.label);
+    const rank=S.vowelRank(entry,matchingWord);if(rank<group.rank)group.spelling=spelling;group.rank=Math.min(group.rank,rank);
+    if(!group.sources.some(s=>s.id===id&&s.meaning.text===meaning.text&&stem(s.meaning.label)===stem(meaning.label)))group.sources.push(sourceItem);
+    for(const alternative of glossAlternatives(displayGloss(entry.r||id,bucket.text))){
+     const scoped=group.bucketKeys.length>0;
+     const key=scoped?alternativeKey(alternative):clean(alternative).replace(/^(?:a|an|the)\s+/,'');
+     const index=group.displayAlternatives.findIndex(value=>(scoped?alternativeKey(value):clean(value).replace(/^(?:a|an|the)\s+/,''))===key);
+     if(index<0)group.displayAlternatives.push(alternative);
+     else if(scoped&&/^to\s+/.test(alternative)&&!/^to\s+/.test(group.displayAlternatives[index]))group.displayAlternatives[index]=alternative;
+    }
+    for(const key of bucket.bucketKeys||[])if(!group.bucketKeys.includes(key))group.bucketKeys.push(key);
+    group.text=group.displayAlternatives.join(', ');
+   }
   }
   if(S.hasVowels(word))groups.sort((a,b)=>a.rank-b.rank);
   return groups;
@@ -67,7 +2478,7 @@
   const badge=element('span',String(number),'meaning-number');badge.setAttribute('aria-hidden','true');
   const content=element('div',undefined,'meaning-content'),spelling=element('div',group.spelling,'meaning-spelling');spelling.dir='rtl';
   content.append(spelling);
-  if(group.form)content.append(element('div',group.sources[0].meaning.label,'meaning-form'));
+  if(group.form)content.append(element('div',group.form,'meaning-form'));
   content.append(element('p',group.text,'meaning-text'));
   const refs=element('span',undefined,'meaning-references');refs.setAttribute('aria-label','Source references');
   const details=element('details',undefined,'scholarly-entry');
@@ -91,5 +2502,5 @@
   if(withoutMeanings.length){const details=element('details',undefined,'scholarly-entry original-only');details.append(element('summary','Additional dictionary references'));withoutMeanings.forEach((r,i)=>details.append(sourceBlock({...r,meaning:{text:'',label:''}},i)));section.append(details);}
   return section;
  }
- const api={merge,render,compatible,synonymKey};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.DictionaryMeanings=api;
+ const api={merge,render,compatible,synonymKey,sharesReviewedSynonym,canonicalGlossKey,alternativeMatchKey,reviewedGlossPairs,reviewedSourceGlossPairs,reviewedSourceAlternativePairs,rejectedSourceGlossPairs,deferredSourceGlossPairs,reviewedSourceGlossPairCount:reviewedSourceGlossPairs.size};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.DictionaryMeanings=api;
 })(typeof window!=='undefined'?window:globalThis);

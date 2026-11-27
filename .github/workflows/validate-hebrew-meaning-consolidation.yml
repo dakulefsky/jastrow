@@ -1,0 +1,52 @@
+name: Validate Hebrew meaning consolidation
+on:
+  pull_request:
+    paths:
+      - 'hebrew/**'
+      - '.github/workflows/validate-hebrew-meaning-consolidation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'hebrew/**'
+      - '.github/workflows/validate-hebrew-meaning-consolidation.yml'
+jobs:
+  hebrew-meanings:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Build the original Hebrew dictionary from its compressed source
+        run: |
+          python3 -c "import gzip,pathlib; p=pathlib.Path('hebrew/source.json.gz'); p.with_suffix('').write_bytes(gzip.decompress(p.read_bytes()))"
+          python3 hebrew/build.py
+      - name: Test Hebrew source and shared meaning grouping
+        run: |
+          node hebrew/test.cjs
+          node hebrew/test_meaning_consolidation.cjs
+          node hebrew/test_host.cjs
+          node hebrew/test_quick.cjs
+          node hebrew/test_recommendation_refresh.cjs
+          node --check hebrew/plugin/meaning-consolidation.js
+          node --check hebrew/plugin/quick-lookup.js
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Test Hebrew dictionary UI and offline behavior
+        env:
+          HEBREW_STORE_SCREENSHOT: hebrew-store.png
+        run: node hebrew/test_browser.cjs
+      - name: Build Hebrew synonym review queue
+        run: node hebrew/build-meaning-candidates.cjs
+      - name: Upload Hebrew synonym review queue
+        uses: actions/upload-artifact@v4
+        with:
+          name: hebrew-meaning-consolidation-candidates
+          path: hebrew/meaning-consolidation-candidates.json
+          if-no-files-found: error
+          retention-days: 30

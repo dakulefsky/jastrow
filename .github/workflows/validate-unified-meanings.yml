@@ -1,0 +1,28 @@
+name: Validate unified dictionary meanings
+on:
+  pull_request:
+    paths:
+      - 'plugin/unified-view.js'
+      - 'plugin/reading-view.js'
+      - 'plugin/search.js'
+      - 'plugin/data/**'
+      - 'test_unified.cjs'
+      - '.github/workflows/validate-unified-meanings.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'plugin/unified-view.js'
+      - 'plugin/reading-view.js'
+      - 'plugin/search.js'
+      - 'plugin/data/**'
+      - 'test_unified.cjs'
+jobs:
+  unified-meanings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test Jastrow/Krupnik meaning consolidation
+        run: node test_unified.cjs

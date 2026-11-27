@@ -1,0 +1,68 @@
+name: Build cross-dictionary synonym review inventory
+on:
+  pull_request:
+    paths:
+      - 'plugin/data/**'
+      - 'plugin/search.js'
+      - 'plugin/reading-view.js'
+      - 'plugin/unified-view.js'
+      - 'audit/build-meaning-candidates.cjs'
+      - 'hebrew/plugin/data.js'
+      - 'hebrew/source.json.gz'
+      - 'hebrew/build.py'
+      - 'hebrew/plugin/lookup.js'
+      - 'hebrew/plugin/meaning-consolidation.js'
+      - 'hebrew/build-meaning-candidates.cjs'
+      - '.github/workflows/build-meaning-candidates.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'plugin/data/**'
+      - 'plugin/search.js'
+      - 'plugin/reading-view.js'
+      - 'plugin/unified-view.js'
+      - 'audit/build-meaning-candidates.cjs'
+      - 'hebrew/plugin/data.js'
+      - 'hebrew/source.json.gz'
+      - 'hebrew/build.py'
+      - 'hebrew/plugin/lookup.js'
+      - 'hebrew/plugin/meaning-consolidation.js'
+      - 'hebrew/build-meaning-candidates.cjs'
+      - '.github/workflows/build-meaning-candidates.yml'
+jobs:
+  candidate-inventory:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Build candidate inventory from original dictionary data
+        run: node audit/build-meaning-candidates.cjs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Build original Hebrew dictionary from its compressed source
+        run: |
+          python3 -c "import gzip,pathlib; p=pathlib.Path('hebrew/source.json.gz'); p.with_suffix('').write_bytes(gzip.decompress(p.read_bytes()))"
+          python3 hebrew/build.py
+      - name: Build Hebrew synonym review inventory
+        run: node hebrew/build-meaning-candidates.cjs
+      - name: Upload human-review inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: meaning-consolidation-candidates
+          path: audit/meaning-consolidation-candidates.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload Hebrew human-review inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: hebrew-meaning-consolidation-candidates
+          path: hebrew/meaning-consolidation-candidates.json
+          if-no-files-found: error
+          retention-days: 30

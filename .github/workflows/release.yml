@@ -98,6 +98,8 @@ jobs:
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
+      - name: Audit reviewed meanings with the real Jastrow phrase extractor
+        run: node test_unified_phrase_audit.cjs
       - name: Test dictionary consistency in Chromium
         run: node test_consistency_ui.cjs
       - name: Test prefix and inflection lookups in Chromium
@@ -161,13 +163,23 @@ jobs:
           python3 -c "import gzip,pathlib; p=pathlib.Path('hebrew/source.json.gz'); p.with_suffix('').write_bytes(gzip.decompress(p.read_bytes()))"
           python3 hebrew/build.py
           node hebrew/test.cjs
+          node hebrew/test_meaning_consolidation.cjs
           node hebrew/test_host.cjs
           node hebrew/test_quick.cjs
+          node hebrew/build-meaning-candidates.cjs
           node hebrew/test_recommendation_refresh.cjs
+          node --check hebrew/plugin/meaning-consolidation.js
           node --check hebrew/plugin/quick-lookup.js
           node --check hebrew/plugin/translation-prefetch.js
           node --check hebrew/plugin/sefaria-offline.js
           node --check hebrew/plugin/sefaria-evidence.js
+      - name: Upload Hebrew meaning-consolidation review inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: hebrew-meaning-consolidation-candidates
+          path: hebrew/meaning-consolidation-candidates.json
+          if-no-files-found: error
+          retention-days: 30
       - name: Check Hebrew interface in Chromium
         env:
           HEBREW_STORE_SCREENSHOT: hebrew-store.png

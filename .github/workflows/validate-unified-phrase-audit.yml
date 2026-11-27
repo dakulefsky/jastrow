@@ -1,0 +1,31 @@
+name: Validate reviewed meanings with Jastrow phrase extractor
+on:
+  pull_request:
+    paths:
+      - 'plugin/unified-view.js'
+      - 'plugin/reading-view.js'
+      - 'plugin/data/**'
+      - 'test_unified_phrase_audit.cjs'
+      - '.github/workflows/validate-unified-phrase-audit.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'plugin/unified-view.js'
+      - 'plugin/reading-view.js'
+      - 'plugin/data/**'
+      - 'test_unified_phrase_audit.cjs'
+      - '.github/workflows/validate-unified-phrase-audit.yml'
+jobs:
+  phrase-audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Verify every reviewed gloss is returned by the real extractor
+        run: node test_unified_phrase_audit.cjs
