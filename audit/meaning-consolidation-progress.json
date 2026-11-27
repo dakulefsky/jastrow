@@ -75,7 +75,7 @@
     "deferredKnownCandidates": 60,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
-    "latestGeneratedFromCommit": "a07d4b57d68b3df111e73081d841f82305c8725b",
+    "latestGeneratedFromCommit": "ce67e94ae1cd401bec6d18cb1859ac0784e08927",
     "candidates": 4066
   },
   "reviewedTranche": {
@@ -9666,16 +9666,20 @@
     ]
   },
   "latestValidation": {
-    "commit": "a06cbe58e8dab332acca23b64fd0a7066272e5f0",
+    "commit": "ce67e94ae1cd401bec6d18cb1859ac0784e08927",
     "date": "2026-11-27",
     "checks": {
       "unifiedMeaningTests": "passed",
       "communityDictionary": "passed",
-      "phraseExtractorAudit": "in progress at checkpoint",
-      "hebrewConsolidation": "in progress at checkpoint",
-      "candidateInventory": "in progress at checkpoint",
-      "releaseWorkflow": "in progress at checkpoint; publishing steps are skipped on pull requests"
+      "phraseExtractorAudit": "passed",
+      "hebrewConsolidation": "passed",
+      "candidateInventory": "passed",
+      "englishOfflineBavliBuild": "passed",
+      "hebrewOfflineSteinsaltzBavliBuild": "passed",
+      "englishChromiumRegressions": "passed: dictionary consistency, prefix/inflection lookup, native reader submenu, redirect handling, unified dictionary UI, and cold-start submenu",
+      "hebrewChromiumAndOfflineBehavior": "passed",
+      "releaseWorkflow": "passed validation/build; store publishing, store-card updates, and installable release steps skipped because this is an open pull request"
     },
-    "regressionCoverage": "Added a real-source-inspired one-to-one test for Jastrow A03394 ('sign, type; letter') against Krupnik KRU02199's separately numbered sign and letter senses. A related A03396 cross-reference remains separate because its differently pointed headword is not the same lookup form."
+    "regressionCoverage": "Added a one-to-one test for Jastrow A03394 ('sign, type; letter') against Krupnik KRU02199's separately numbered sign and letter senses. Added a guard ensuring the differently pointed A03396 cross-reference remains independently accessible."
   }
 }
