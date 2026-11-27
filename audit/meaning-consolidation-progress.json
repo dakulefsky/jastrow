@@ -6,12 +6,12 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1,468 retained whole-gloss mappings and all 281 retained alternative-level mappings (1,749 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1,492 retained whole-gloss mappings and all 282 retained alternative-level mappings (1,774 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
     "reviewedSourceGlossPairCount": 1468,
-    "reviewedSourceAlternativePairCount": 281,
+    "reviewedSourceAlternativePairCount": 282,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
     "synonymGroupPolicy": "Curated synonym groups are grounded in explicit source gloss lists, scoped to the same headword, and merge only when every alternative on both sides belongs to the same group. Coordinated verb glosses may omit a repeated 'to'; the matcher restores it only when the first alternative is an infinitive, preserving noun/verb distinctions.",
@@ -9450,5 +9450,27 @@
     ],
     "currentTotal": 1468,
     "currentAlternativeTotal": 281
+  },
+  "seventySeventhReviewedTranche": {
+    "attemptedCandidates": 1,
+    "addedUniqueSourceGlossPairs": 0,
+    "addedSourceAlternativePairs": 1,
+    "acceptedAlternativePairs": [
+      [
+        "KRU06334",
+        "G00246",
+        "to let run",
+        "to let collected water run into a channel."
+      ]
+    ],
+    "evidence": [
+      "G00246/KRU06334: both define the Hifil הִזְחִיל as causing water to flow; both cite Mikvaot V:5, including אין מזחילין בו."
+    ],
+    "safeguards": [
+      "The mapping is scoped to the exact two source records and the Hifil phrase only; the separate Qal 'to flow, run' sense is untouched.",
+      "The Jastrow phrase is verified by the real reader extractor; the complete original entries and citation remain available."
+    ],
+    "currentTotal": 1492,
+    "currentAlternativeTotal": 282
   }
 }
