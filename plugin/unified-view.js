@@ -2293,7 +2293,8 @@
   ["KRU06334","G00246","to let run","to let collected water run into a channel."],
   ["KRU12677","N00685","detachment of troops","a detachment of troops sent to take hostages"],
   ["KRU02031","A03131","the uppermost layer","the uppermost layer of a clay dam around a field"],
-  ["KRU18006","T00299","pavement","mosaic pavement"]
+  ["KRU18006","T00299","pavement","mosaic pavement"],
+  ["KRU03996","C00581","esp. a rabbinical enactment issued as a preventive measure","a rabbinical enactment issued as a guard"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
