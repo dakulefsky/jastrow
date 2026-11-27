@@ -132,13 +132,19 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,286,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,287,'every source-scoped alternative match must be loaded');
 
 const steepMeaning=U.merge([
  {id:2401,entry:{h:'גִּידּוּד',r:'KRU04044',source:'krupnik'},meanings:[{text:'earth embankment, steep banks',label:'1'}]},
  {id:2402,entry:{h:'גִּידּוּד',r:'C00632'},meanings:[{text:'a steep',label:'',section:''}]}
 ],'גִּידּוּד');
 assert(steepMeaning.some(group=>group.sources.some(source=>source.entry.r==='KRU04044')&&group.sources.some(source=>source.entry.r==='C00632')),'the shared Eruvin 93b embankment sense should consolidate');
+
+const festivalOffering=U.merge([
+ {id:3061,entry:{h:'חֲגִיגָה',r:'H00148'},meanings:[{text:'the festive offering of the visitors of the Temple on the festivals',label:'',section:'—2)'}]},
+ {id:3062,entry:{h:'חֲגִיגָה',r:'KRU06660',source:'krupnik'},meanings:[{text:'the festive offering',label:'2'}]}
+],'חֲגִיגָה');
+assert(festivalOffering.some(group=>group.sources.some(source=>source.entry.r==='H00148')&&group.sources.some(source=>source.entry.r==='KRU06660')),'the shared festival-offering sense should consolidate');
 
 const preventiveEnactment=U.merge([
  {id:3059,entry:{h:'גְּזֵרָה',r:'C00581'},meanings:[{text:'a rabbinical enactment issued as a guard',label:'',section:'—3)'}]},
