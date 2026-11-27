@@ -1996,8 +1996,7 @@
   ["KRU14001","O01596","to corrupt","to make offensive, unsavory; to corrupt","Deferred: the combined Jastrow gloss spans corruption and making unsavory; do not assign it to one KRU sense alone."],
   ["KRU14001","O01596","to make unsavory","to make offensive, unsavory; to corrupt","Deferred: same one-to-many ambiguity between the combined Jastrow gloss and separate Krupnik senses."]
 ,
-  ["KRU17477","S01557","court","large court","Deferred: Jastrow's 'large court' is explained as centenaria/large weights or a large court in different contexts, while Krupnik's entry is a courtyard. The source examples and semantic focus do not establish equivalence."]
-
+  ["KRU17477","S01557","court","large court","Deferred: Jastrow's 'large court' is explained as centenaria/large weights or a large court in different contexts, while Krupnik's entry is a courtyard. The source examples and semantic focus do not establish equivalence."],
   ["KRU04579","C01287","seed of St. John’s bread","the seed of St.","Deferred: the Jastrow source markup splits “the seed of St. John’s bread” across adjacent italic spans. The actual reader extractor emits the incomplete fragment “the seed of St.” rather than the complete phrase, so it must not be matched to Krupnik’s full definition. Defer until the reader can surface the complete source phrase."],
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const reviewedSourceAlternativePairRecords=[
