@@ -132,13 +132,24 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,283,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,285,'every source-scoped alternative match must be loaded');
 
 const steepMeaning=U.merge([
  {id:2401,entry:{h:'גִּידּוּד',r:'KRU04044',source:'krupnik'},meanings:[{text:'earth embankment, steep banks',label:'1'}]},
  {id:2402,entry:{h:'גִּידּוּד',r:'C00632'},meanings:[{text:'a steep',label:'',section:''}]}
 ],'גִּידּוּד');
 assert(steepMeaning.some(group=>group.sources.some(source=>source.entry.r==='KRU04044')&&group.sources.some(source=>source.entry.r==='C00632')),'the shared Eruvin 93b embankment sense should consolidate');
+
+const uppermostLayer=U.merge([
+ {id:3055,entry:{h:'אַרְכַּבְתָּא',r:'A03131'},meanings:[{text:'the uppermost layer of a clay dam around a field',label:''}]},
+ {id:3056,entry:{h:'אַרְכַּבְתָּא',r:'KRU02031',source:'krupnik'},meanings:[{text:'the uppermost layer',label:''}]}
+],'אַרְכַּבְתָּא');
+assert(uppermostLayer.some(group=>group.sources.some(source=>source.entry.r==='A03131')&&group.sources.some(source=>source.entry.r==='KRU02031')),'the shared Bava Metzia 103b uppermost-layer sense should consolidate');
+const templePavement=U.merge([
+ {id:3057,entry:{h:'רוֹבֶד',r:'T00299'},meanings:[{text:'mosaic pavement',label:'',section:'1)'}]},
+ {id:3058,entry:{h:'רוֹבֶד',r:'KRU18006',source:'krupnik'},meanings:[{text:'pavement, terrace',label:'1'}]}
+],'רוֹבֶד');
+assert(templePavement.some(group=>group.sources.some(source=>source.entry.r==='T00299')&&group.sources.some(source=>source.entry.r==='KRU18006')),'the shared Yoma IV:3 Temple-pavement sense should consolidate');
 
 const troopDetachment=U.merge([
  {id:3053,entry:{h:'נִימוֹרֶת',r:'N00685'},meanings:[{text:'a detachment of troops sent to take hostages',label:''}]},
