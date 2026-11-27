@@ -75,7 +75,7 @@
     "deferredKnownCandidates": 60,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
-    "latestGeneratedFromCommit": "ce67e94ae1cd401bec6d18cb1859ac0784e08927",
+    "latestGeneratedFromCommit": "2ee4ba49fa590d3e07d6628352a56bbc86a2a7fb",
     "candidates": 4066
   },
   "reviewedTranche": {
@@ -9666,7 +9666,7 @@
     ]
   },
   "latestValidation": {
-    "commit": "ce67e94ae1cd401bec6d18cb1859ac0784e08927",
+    "commit": "2ee4ba49fa590d3e07d6628352a56bbc86a2a7fb",
     "date": "2026-11-27",
     "checks": {
       "unifiedMeaningTests": "passed",
@@ -9680,6 +9680,6 @@
       "hebrewChromiumAndOfflineBehavior": "passed",
       "releaseWorkflow": "passed validation/build; store publishing, store-card updates, and installable release steps skipped because this is an open pull request"
     },
-    "regressionCoverage": "Added a one-to-one test for Jastrow A03394 ('sign, type; letter') against Krupnik KRU02199's separately numbered sign and letter senses. Added a guard ensuring the differently pointed A03396 cross-reference remains independently accessible."
+    "regressionCoverage": "Added a one-to-one test for Jastrow A03394 ('sign, type; letter') against Krupnik KRU02199's separately numbered sign and letter senses. Added a test confirming that the related A03396 cross-reference remains separate for the אָת lookup form, and that the shared אָתָא alternate form does not force an ambiguous cross-dictionary merge."
   }
 }
