@@ -6,11 +6,11 @@
   "baseline": {
     "reviewedNonIdenticalGlossPairs": 917,
     "reviewedGlossEquivalenceGroups": 38,
-    "realReaderPhraseExtractorAudit": "All 1,491 retained whole-gloss mappings and all 291 retained alternative-level mappings (1,782 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
+    "realReaderPhraseExtractorAudit": "All 1,489 retained whole-gloss mappings and all 291 retained alternative-level mappings (1,780 total) are checked against original Krupnik glosses and the real Chromium JastrowReadingView.phrases extractor.",
     "distinctSensePolicy": "preserve distinct senses; never merge by headword or token overlap alone",
     "sourcePolicy": "each accepted mapping must be grounded in original source records and exact reader-displayed phrases",
     "exactGlossNormalization": "Deterministic canonical matching now consolidates complete gloss lists that differ only by punctuation, alternative order, leading articles, or coordinated active/passive infinitive markers; verb voice and word order within each alternative remain significant.",
-    "reviewedSourceGlossPairCount": 1491,
+    "reviewedSourceGlossPairCount": 1489,
     "reviewedSourceAlternativePairCount": 291,
     "alternativeLevelPolicy": "A source-scoped alternative mapping may consolidate one exact Jastrow phrase with one alternative embedded in a longer Krupnik gloss. Matching ignores parenthetical punctuation while retaining the words inside parentheses. Unmatched alternatives from that original gloss remain a separate result; More detail retains the complete original source wording.",
     "curatedSynonymGroups": 23,
@@ -7870,12 +7870,6 @@
         "fish"
       ],
       [
-        "KRU15991",
-        "Q01805",
-        "carriers of the litter",
-        "carriers of the"
-      ],
-      [
         "KRU01200",
         "A01818",
         "linen sheet",
@@ -8172,12 +8166,6 @@
         "B00781",
         "a species of pears",
         "pears"
-      ],
-      [
-        "KRU03037",
-        "B01005",
-        "dealer in spices",
-        "dealer in"
       ],
       [
         "KRU06628",
@@ -9637,5 +9625,44 @@
       "Keep the incomplete Jastrow fragment and complete Krupnik definition separate until the reader extractor can emit the full phrase."
     ],
     "removedIncorrectSourceGlossPairs": 1
+  },
+  "eightyFifthReviewedTranche": {
+    "attemptedCandidates": 2,
+    "addedUniqueSourceGlossPairs": 0,
+    "addedSourceAlternativePairs": 0,
+    "removedIncorrectSourceGlossPairs": 2,
+    "deferredCandidates": 2,
+    "deferredPairs": [
+      {
+        "records": [
+          "KRU15991",
+          "Q01805"
+        ],
+        "meanings": [
+          "carriers of the litter",
+          "carriers of the"
+        ],
+        "reason": "Jastrow's source markup splits “carriers of the (bridal) litter” across separate italic spans. The reader extractor emits the incomplete fragment “carriers of the” rather than the complete phrase."
+      },
+      {
+        "records": [
+          "KRU03037",
+          "B01005"
+        ],
+        "meanings": [
+          "dealer in spices",
+          "dealer in"
+        ],
+        "reason": "Jastrow's source markup gives “dealer in” and “manufacturer of, spices, perfumes” as separate italic fragments. The complete phrase “dealer in spices” is not emitted by the reader extractor."
+      }
+    ],
+    "evidence": [
+      "Q01805 original HTML: <i>carriers of the</i> (<i>bridal</i>) <i>litter</i>; KRU15991 defines “carriers of the litter”.",
+      "B01005 original HTML: <i>dealer in</i>, or <i>manufacturer of, spices, perfumes</i>; KRU03037 defines “dealer in spices”."
+    ],
+    "safeguards": [
+      "Removed both incomplete-phrase mappings so no partial English fragment can be displayed as a complete definition.",
+      "Keep both candidate pairs deferred until the reader extractor can represent the complete phrase and parenthetical structure."
+    ]
   }
 }
