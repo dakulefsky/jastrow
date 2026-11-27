@@ -1550,7 +1550,6 @@
   ["KRU04336", "C00962", "untrimmed stone", "untrimmed stone, cobble"],
   ["KRU04342", "C00970", "euphem. a menstruous woman", "a menstruous woman"],
   ["KRU04377", "C01022", "full draught", "quaffing, full draught"],
-  ["KRU04579", "C01287", "seed of St. John’s bread", "John’s bread"],
   ["KRU04875", "D00246", "dux, chief, commander", "dux, commander"],
   ["KRU04874", "D00250", "teacher’s platform", "teacher’s platform, pulpit"],
   ["KRU04950", "D00357", "sediment, lees", "sediment, lees, dregs"],
@@ -1999,6 +1998,7 @@
 ,
   ["KRU17477","S01557","court","large court","Deferred: Jastrow's 'large court' is explained as centenaria/large weights or a large court in different contexts, while Krupnik's entry is a courtyard. The source examples and semantic focus do not establish equivalence."]
 
+  ["KRU04579","C01287","seed of St. John’s bread","the seed of St.","Deferred: the Jastrow source markup splits “the seed of St. John’s bread” across adjacent italic spans. The actual reader extractor emits the incomplete fragment “the seed of St.” rather than the complete phrase, so it must not be matched to Krupnik’s full definition. Defer until the reader can surface the complete source phrase."],
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const reviewedSourceAlternativePairRecords=[
   ["KRU04451","C01128","to sigh heavily under an attack of angina pectoris","to sigh heavily under an attack of angina pectoris"],
