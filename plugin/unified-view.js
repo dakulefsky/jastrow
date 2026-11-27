@@ -2296,7 +2296,10 @@
   ["KRU18006","T00299","pavement","mosaic pavement"],
   ["KRU03996","C00581","esp. a rabbinical enactment issued as a preventive measure","a rabbinical enactment issued as a guard"],
   ["KRU06660","H00148","the festive offering","the festive offering of the visitors of the Temple on the festivals"],
-  ["KRU17472","S01547","branch sinews","branch sinews of the nervus ischiadicus"]
+  ["KRU17472","S01547","branch sinews","branch sinews of the nervus ischiadicus"],
+  ["KRU03583","C00124","calyx or capsule of plants","calyx"],
+  ["KRU17047","A02909","Ctesiphon on the bank of Tigris","Ctesiphon"],
+  ["KRU08091","I00550","a place for keeping dishes warm","a place for chafing dishes"]
  ];
  const alternativePairsByRef=new Map();
  for(const [kr,jr,kg,jg] of reviewedSourceAlternativePairRecords){
