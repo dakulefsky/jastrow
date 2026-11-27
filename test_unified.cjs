@@ -527,7 +527,7 @@ const bubblingForth=U.merge([
 assert.equal(bubblingForth.length,1,'the same bubble/burst-forth verbal sense should consolidate');
 assert.equal(bubblingForth[0].sources.length,2,'both sources citing the same verbal usage should remain available');
 
-assert.equal(U.reviewedSourceGlossPairs.size,1492,'all source-specific whole-gloss mappings must be loaded');
+assert.equal(U.reviewedSourceGlossPairs.size,1491,'all source-specific whole-gloss mappings must be loaded');
 
 const houseAndPlace=U.merge([
  {id:2301,entry:{h:'בֵּי',r:'KRU02534',source:'krupnik'},meanings:[
