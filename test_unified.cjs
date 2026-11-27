@@ -162,9 +162,10 @@ const signLetterCrossReference=U.merge([
   {text:'letter',label:'2'}
  ]}
 ],'אָת');
-assert(!signLetterCrossReference.some(group=>group.sources.some(source=>source.entry.r==='KRU02199')&&group.sources.some(source=>source.entry.r==='A03394')),'an ambiguous exact match must not be forced through the split Jastrow entry');
-assert(!signLetterCrossReference.some(group=>group.sources.some(source=>source.entry.r==='KRU02199')&&group.sources.some(source=>source.entry.r==='A03396')),'an undivided cross-reference gloss must not bridge two numbered Krupnik senses');
-assert.equal(signLetterCrossReference.filter(group=>group.sources.some(source=>source.entry.r==='KRU02199')).length,2,'the two Krupnik numbered senses must remain separately visible while their cross-reference mapping is ambiguous');
+assert(signLetterCrossReference.some(group=>group.sources.some(source=>source.entry.r==='KRU02199')&&group.sources.some(source=>source.entry.r==='A03394')),'the exact one-to-one A03394 alternatives should still consolidate');
+assert(!signLetterCrossReference.some(group=>group.sources.some(source=>source.entry.r==='KRU02199')&&group.sources.some(source=>source.entry.r==='A03396')),'the undivided אָתָא cross-reference must not be forced into the numbered אָת senses');
+assert.equal(signLetterCrossReference.filter(group=>group.sources.some(source=>source.entry.r==='KRU02199')).length,2,'the two Krupnik numbered senses must remain separately visible');
+assert(signLetterCrossReference.some(group=>group.sources.length===1&&group.sources[0].entry.r==='A03396'),'the differently pointed cross-reference should remain independently accessible');
 
 
 
