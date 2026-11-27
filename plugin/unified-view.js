@@ -1736,7 +1736,6 @@
   ["KRU05768","E00343","upturning, scratching (of chickens)","damage done by scratching chickens"],
   ["KRU14213","P00224","shrunk reed","shrunk"],
   ["KRU01926","A02946","a species of fish","fish"],
-  ["KRU15991","Q01805","carriers of the litter","carriers of the"],
   ["KRU01200","A01818","linen sheet","wrapping cloth, sheet, bathing clothes"],
   ["KRU02266","B00055","image, shadow","reflected image"],
   ["KRU02652","B00656","hair","thread, a single hair"]
@@ -1762,7 +1761,6 @@
   ["KRU03800","C00362","creature","inner body, creature"],
   ["KRU06435","G00440","entitled","entitled to possession"],
   ["KRU02813","B00781","a species of pears","pears"],
-  ["KRU03037","B01005","dealer in spices","dealer in"],
   ["KRU06628","H00082","a sort of cakes","cakes"],
   ["KRU06642","H00112","Parsee priest","Parsee"],
   ["KRU06720","H00248","cheese","soft cheese"],
@@ -1998,6 +1996,8 @@
 ,
   ["KRU17477","S01557","court","large court","Deferred: Jastrow's 'large court' is explained as centenaria/large weights or a large court in different contexts, while Krupnik's entry is a courtyard. The source examples and semantic focus do not establish equivalence."],
   ["KRU04579","C01287","seed of St. John’s bread","the seed of St.","Deferred: the Jastrow source markup splits “the seed of St. John’s bread” across adjacent italic spans. The actual reader extractor emits the incomplete fragment “the seed of St.” rather than the complete phrase, so it must not be matched to Krupnik’s full definition. Defer until the reader can surface the complete source phrase."],
+  ["KRU15991","Q01805","carriers of the litter","carriers of the","Deferred: Jastrow's source markup splits “carriers of the (bridal) litter” across separate italic spans. The reader extractor emits the incomplete fragment “carriers of the” rather than the complete phrase, so it must not be matched to Krupnik's full definition."],
+  ["KRU03037","B01005","dealer in spices","dealer in","Deferred: Jastrow's source markup gives “dealer in” and “manufacturer of, spices, perfumes” as separate italic fragments. The complete phrase “dealer in spices” is not emitted by the reader extractor, so the incomplete fragment must not be matched to Krupnik's complete definition."],
  ].map(([kr,jr,kg,jg,reason])=>[sourceGlossDecisionKey(kr,jr,kg,jg),reason]));
  const reviewedSourceAlternativePairRecords=[
   ["KRU04451","C01128","to sigh heavily under an attack of angina pectoris","to sigh heavily under an attack of angina pectoris"],
