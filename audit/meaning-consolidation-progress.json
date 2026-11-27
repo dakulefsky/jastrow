@@ -69,14 +69,14 @@
     "exactAlternativeCandidates": 2953,
     "runtimeRuleHandledCandidates": 2441,
     "ambiguityFlaggedExactCandidates": 512,
-    "nonExactSemanticCandidates": 1116,
-    "note": "Latest regenerated inventory from the original 47,919 source entries and the actual Jastrow reader phrase extractor: 4,069 candidate rows remain after decisions. Of these, 2,441 exact-alternative matches are handled by guarded runtime rules, 512 exact matches remain flagged for ambiguity review, and 1,116 non-exact semantic candidates remain for manual review. Twenty known false positives are rejected and 57 uncertain or extractor-limited cases remain deferred. Seven source-scoped alternative mappings were added since the prior checkpoint.",
+    "nonExactSemanticCandidates": 1113,
+    "note": "Latest successful regenerated inventory from the original 47,919 source entries and the actual Jastrow reader phrase extractor: 4,066 candidate rows remain after decisions. Of these, 2,441 exact-alternative matches are handled by guarded runtime rules, 512 exact matches remain flagged for ambiguity review, and 1,113 non-exact semantic candidates remain for manual review. Twenty known false positives are rejected and 60 uncertain or extractor-limited cases remain deferred.",
     "rejectedKnownCandidates": 20,
-    "deferredKnownCandidates": 57,
+    "deferredKnownCandidates": 60,
     "rawCandidates": 4321,
     "jastrowHeadwordIndexAssociations": 43604,
-    "latestGeneratedFromCommit": "743bbac8a98b486499caa424ae44ed4e19757e0a",
-    "candidates": 4069
+    "latestGeneratedFromCommit": "a07d4b57d68b3df111e73081d841f82305c8725b",
+    "candidates": 4066
   },
   "reviewedTranche": {
     "addedUniqueSourceGlossPairs": 17,
@@ -9664,5 +9664,18 @@
       "Removed both incomplete-phrase mappings so no partial English fragment can be displayed as a complete definition.",
       "Keep both candidate pairs deferred until the reader extractor can represent the complete phrase and parenthetical structure."
     ]
+  },
+  "latestValidation": {
+    "commit": "a06cbe58e8dab332acca23b64fd0a7066272e5f0",
+    "date": "2026-11-27",
+    "checks": {
+      "unifiedMeaningTests": "passed",
+      "communityDictionary": "passed",
+      "phraseExtractorAudit": "in progress at checkpoint",
+      "hebrewConsolidation": "in progress at checkpoint",
+      "candidateInventory": "in progress at checkpoint",
+      "releaseWorkflow": "in progress at checkpoint; publishing steps are skipped on pull requests"
+    },
+    "regressionCoverage": "Added a real-source-inspired one-to-one test for Jastrow A03394 ('sign, type; letter') against Krupnik KRU02199's separately numbered sign and letter senses. A related A03396 cross-reference remains separate because its differently pointed headword is not the same lookup form."
   }
 }
