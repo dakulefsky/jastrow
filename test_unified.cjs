@@ -151,6 +151,22 @@ assert(signSense&&signSense.sources.some(source=>source.entry.r==='A03394')&&sig
 assert(letterSense&&letterSense.sources.some(source=>source.entry.r==='A03394')&&letterSense.sources.some(source=>source.entry.r==='KRU02199'&&source.meaning.label==='2'),'the letter alternative should pair only with Krupnik sense 2');
 assert(!signSense.sources.some(source=>source.meaning.label==='2')&&!letterSense.sources.some(source=>source.meaning.label==='1'),'the two numbered Krupnik senses must not cross-merge');
 
+// The related Jastrow cross-reference A03396 lists both alternatives in one
+// undivided gloss. When it is present alongside A03394, neither Krupnik
+// numbered sense may be attached ambiguously to both Jastrow records.
+const signLetterCrossReference=U.merge([
+ {id:4211,entry:{h:'אָת',r:'A03394'},meanings:[{text:'sign, type; letter',label:'',section:''}]},
+ {id:4212,entry:{h:'אָתָא I',r:'A03396'},meanings:[{text:'letter, sign',label:'',section:''}]},
+ {id:4213,entry:{h:'אָת',r:'KRU02199',source:'krupnik'},meanings:[
+  {text:'sign',label:'1'},
+  {text:'letter',label:'2'}
+ ]}
+],'אָת');
+assert(!signLetterCrossReference.some(group=>group.sources.some(source=>source.entry.r==='KRU02199')&&group.sources.some(source=>source.entry.r==='A03394')),'an ambiguous exact match must not be forced through the split Jastrow entry');
+assert(!signLetterCrossReference.some(group=>group.sources.some(source=>source.entry.r==='KRU02199')&&group.sources.some(source=>source.entry.r==='A03396')),'an undivided cross-reference gloss must not bridge two numbered Krupnik senses');
+assert.equal(signLetterCrossReference.filter(group=>group.sources.some(source=>source.entry.r==='KRU02199')).length,2,'the two Krupnik numbered senses must remain separately visible while their cross-reference mapping is ambiguous');
+
+
 
 const steepMeaning=U.merge([
  {id:2401,entry:{h:'גִּידּוּד',r:'KRU04044',source:'krupnik'},meanings:[{text:'earth embankment, steep banks',label:'1'}]},
