@@ -132,13 +132,29 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,288,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,291,'every source-scoped alternative match must be loaded');
 
 const steepMeaning=U.merge([
  {id:2401,entry:{h:'גִּידּוּד',r:'KRU04044',source:'krupnik'},meanings:[{text:'earth embankment, steep banks',label:'1'}]},
  {id:2402,entry:{h:'גִּידּוּד',r:'C00632'},meanings:[{text:'a steep',label:'',section:''}]}
 ],'גִּידּוּד');
 assert(steepMeaning.some(group=>group.sources.some(source=>source.entry.r==='KRU04044')&&group.sources.some(source=>source.entry.r==='C00632')),'the shared Eruvin 93b embankment sense should consolidate');
+
+const calyx=U.merge([
+ {id:3065,entry:{h:'גִּבְעוֹל',r:'C00124'},meanings:[{text:'calyx',label:''}]},
+ {id:3066,entry:{h:'גִּבְעוֹל',r:'KRU03583',source:'krupnik'},meanings:[{text:'calyx or capsule of plants',label:''}]}
+],'גִּבְעוֹל');
+assert(calyx.some(group=>group.sources.some(source=>source.entry.r==='C00124')&&group.sources.some(source=>source.entry.r==='KRU03583')),'the shared plant-calyx sense should consolidate');
+const ctesiphon=U.merge([
+ {id:3067,entry:{h:'אִקְטִיסְפּוֹן',r:'A02909'},meanings:[{text:'Ctesiphon',label:''}]},
+ {id:3068,entry:{h:'אִקְטִיסְפּוֹן',r:'KRU17047',source:'krupnik'},meanings:[{text:'Ctesiphon on the bank of Tigris',label:''}]}
+],'אִקְטִיסְפּוֹן');
+assert(ctesiphon.some(group=>group.sources.some(source=>source.entry.r==='A02909')&&group.sources.some(source=>source.entry.r==='KRU17047')),'the shared Ctesiphon place-name sense should consolidate');
+const chafingPlace=U.merge([
+ {id:3069,entry:{h:'טְמִינָה',r:'I00550'},meanings:[{text:'a place for chafing dishes',label:''}]},
+ {id:3070,entry:{h:'טְמִינָה',r:'KRU08091',source:'krupnik'},meanings:[{text:'a place for keeping dishes warm',label:''}]}
+],'טְמִינָה');
+assert(chafingPlace.some(group=>group.sources.some(source=>source.entry.r==='I00550')&&group.sources.some(source=>source.entry.r==='KRU08091')),'the shared place for keeping dishes warm should consolidate');
 
 const branchSinews=U.merge([
  {id:3063,entry:{h:'קְנוֹקְנוֹת',r:'S01547'},meanings:[{text:'branch sinews of the nervus ischiadicus; thin branches of the grape vine',label:''}]},
