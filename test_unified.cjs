@@ -132,13 +132,21 @@ const nounVerbMismatch=U.merge([
 assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match merely because the leading "to" is normalized');
 
 
-assert.equal(U.reviewedSourceAlternativePairs.size,287,'every source-scoped alternative match must be loaded');
+assert.equal(U.reviewedSourceAlternativePairs.size,288,'every source-scoped alternative match must be loaded');
 
 const steepMeaning=U.merge([
  {id:2401,entry:{h:'גִּידּוּד',r:'KRU04044',source:'krupnik'},meanings:[{text:'earth embankment, steep banks',label:'1'}]},
  {id:2402,entry:{h:'גִּידּוּד',r:'C00632'},meanings:[{text:'a steep',label:'',section:''}]}
 ],'גִּידּוּד');
 assert(steepMeaning.some(group=>group.sources.some(source=>source.entry.r==='KRU04044')&&group.sources.some(source=>source.entry.r==='C00632')),'the shared Eruvin 93b embankment sense should consolidate');
+
+const branchSinews=U.merge([
+ {id:3063,entry:{h:'קְנוֹקְנוֹת',r:'S01547'},meanings:[{text:'branch sinews of the nervus ischiadicus; thin branches of the grape vine',label:''}]},
+ {id:3064,entry:{h:'קְנוֹקְנוֹת',r:'KRU17472',source:'krupnik'},meanings:[{text:'rods',label:'1'},{text:'branch sinews',label:'2'}]}
+],'קְנוֹקְנוֹת');
+assert(branchSinews.some(group=>group.sources.some(source=>source.entry.r==='S01547')&&group.sources.some(source=>source.entry.r==='KRU17472')),'the shared Hullin 92b branch-sinew sense should consolidate');
+const grapeBranches=branchSinews.find(group=>group.text==='thin branches of the grape vine');
+assert(grapeBranches&&grapeBranches.sources.length===1&&grapeBranches.sources[0].entry.r==='S01547','Jastrow’s separate Hullin 92a grape-vine branch sense must remain distinct');
 
 const festivalOffering=U.merge([
  {id:3061,entry:{h:'חֲגִיגָה',r:'H00148'},meanings:[{text:'the festive offering of the visitors of the Temple on the festivals',label:'',section:'—2)'}]},
