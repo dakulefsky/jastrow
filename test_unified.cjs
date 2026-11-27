@@ -134,6 +134,24 @@ assert.equal(nounVerbMismatch.length,2,'a noun and an infinitive must not match 
 
 assert.equal(U.reviewedSourceAlternativePairs.size,291,'every source-scoped alternative match must be loaded');
 
+// One Jastrow gloss contains two semicolon-separated senses, while Krupnik
+// numbers those same senses separately. The exact alternatives must pair
+// one-to-one without collapsing sign and letter into one result.
+const signAndLetter=U.merge([
+ {id:4201,entry:{h:'אָת',r:'A03394'},meanings:[{text:'sign, type; letter',label:'',section:''}]},
+ {id:4202,entry:{h:'אָת',r:'KRU02199',source:'krupnik'},meanings:[
+  {text:'sign',label:'1'},
+  {text:'letter',label:'2'}
+ ]}
+],'אָת');
+assert.equal(signAndLetter.length,2,'the two numbered sign/letter meanings must remain separate');
+const signSense=signAndLetter.find(group=>group.text.includes('sign'));
+const letterSense=signAndLetter.find(group=>group.text.includes('letter'));
+assert(signSense&&signSense.sources.some(source=>source.entry.r==='A03394')&&signSense.sources.some(source=>source.entry.r==='KRU02199'&&source.meaning.label==='1'),'the sign alternative should pair only with Krupnik sense 1');
+assert(letterSense&&letterSense.sources.some(source=>source.entry.r==='A03394')&&letterSense.sources.some(source=>source.entry.r==='KRU02199'&&source.meaning.label==='2'),'the letter alternative should pair only with Krupnik sense 2');
+assert(!signSense.sources.some(source=>source.meaning.label==='2')&&!letterSense.sources.some(source=>source.meaning.label==='1'),'the two numbered Krupnik senses must not cross-merge');
+
+
 const steepMeaning=U.merge([
  {id:2401,entry:{h:'גִּידּוּד',r:'KRU04044',source:'krupnik'},meanings:[{text:'earth embankment, steep banks',label:'1'}]},
  {id:2402,entry:{h:'גִּידּוּד',r:'C00632'},meanings:[{text:'a steep',label:'',section:''}]}
